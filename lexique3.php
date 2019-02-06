@@ -6,7 +6,7 @@ function startsWith($haystack, $needle)
      $length = strlen($needle);
      return (substr($haystack, 0, $length) === $needle);
 }
-
+// coucou+++++++------
 $file = fopen("Lexique382Small.csv","r");
 $word = $_GET["word"];
 $pos = $_GET["pos"];

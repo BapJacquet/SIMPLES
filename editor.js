@@ -51,6 +51,7 @@ refreshPageScale();
 function analyzeText(text){
   // Clear list of complex words
   complexWords.length = 0;
+  // Salut
   setLexique3Progress(0);
 
   var request = createCORSRequest("POST", 'http://sioux.univ-paris8.fr:9000/');

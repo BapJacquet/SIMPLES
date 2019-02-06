@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-
+header("Access-Control-Allow-Origin: *");
 function startsWith($haystack, $needle)
 {
      $length = strlen($needle);

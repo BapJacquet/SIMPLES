@@ -1,10 +1,14 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: .9em;
+    font-size: 14px;
     color: #000000;
     background-color: #FFFFFF;
     width: 100%
     height: 100%
+}
+
+p{
+  font-size: 14px;
 }
 
 html {
@@ -32,6 +36,29 @@ hr {
     border: none;
 }
 
+#toolbar{
+  background-color: #555;
+  color: white;
+  width: 100%;
+}
+
+.toolbar-button {
+  cursor: pointer;
+  height: 100%;
+  /*background-color: blue;
+  color: white;*/
+  border-style: solid;
+  border-width: 1;
+  border-color: #555;
+}
+
+#verify-button{
+  width: 300px;
+  height: 100%;
+  /*background-color: blue;
+  color: white;*/
+}
+
 .box {
   position: absolute;
   border: 1px solid black;
@@ -41,12 +68,92 @@ hr {
   width: 100%;
 }
 
+.hbox{
+  position: relative;
+  border: 1px solid black;
+  display: flex;
+  flex-flow: row;
+  height : 100%;
+  width: 100%;
+}
+
+.rotate{
+  transform: rotate(-90deg);
+  /* Safari */
+-webkit-transform: rotate(-90deg);
+
+/* Firefox */
+-moz-transform: rotate(-90deg);
+
+/* IE */
+-ms-transform: rotate(-90deg);
+
+/* Opera */
+-o-transform: rotate(-90deg);
+
+/* Internet Explorer */
+filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+.score{
+  font-size: 72px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.collapsible-content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.hcollapsible {
+  background-color: #777;
+  flex: 0,0,300px;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  height: 100%;
+  width: 24px;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.hcollapsible-content {
+  padding: 0 18px;
+  flex: 0,0,300px;
+  display: none;
+  overflow: auto;
+  width: 300px;
+  background-color: #ffffff;
+}
+
 #logo {
     margin-bottom: 10px;
     margin-left: 28px;
 }
 
-#menu button{
+/*#menu button{
   height: 30px;
   font-size: 24px;
   min-width: 30px;
@@ -54,20 +161,20 @@ hr {
   border-style: hidden;
   border-radius: 2px;
   border-width: 1px;
-  -webkit-transition-duration: 0.4s; /* Safari */
-  transition-duration: 0.4s;
-}
+  -webkit-transition-duration: 0.1s;
+  transition-duration: 0.1s;
+}*/
 
-#menu button:hover{
+/*#menu button:hover{
   color: #00f;
   text-decoration: underline;
   border-style: round;
   border-radius: 2px;
   border-width: 1px;
   border-color: #333;
-}
+}*/
 
-#toolbar select{
+/*#toolbar select{
   height: 30px;
   font-size: 24px;
   min-width: 40px;
@@ -79,9 +186,9 @@ hr {
   font-size: 24px;
   min-width: 40px;
   border-style: line;
-}
+}*/
 
-#toolbar button{
+/*#toolbar button{
   height: 30px;
   font-size: 24px;
   min-width: 40px;
@@ -89,9 +196,9 @@ hr {
   border-style: hidden;
   border-radius: 2px;
   border-width: 1px;
-  -webkit-transition-duration: 0.4s; /* Safari */
-  transition-duration: 0.4s;
-}
+  -webkit-transition-duration: 0.1s;
+  transition-duration: 0.1s;
+}*/
 
 button span {
   margin: auto;
@@ -102,7 +209,8 @@ button span {
   border-radius: 2px;
   border-width: 1px;
   border-color: #333;
-  box-shadow: 0 5px 5px 0 rgba(0,0,0,0.24), 0 5px 10px 0 rgba(0,0,0,0.19);
+  color: blue;
+  /*box-shadow: 0 5px 5px 0 rgba(0,0,0,0.24), 0 5px 10px 0 rgba(0,0,0,0.19);*/
 }
 
 #page {
@@ -116,8 +224,9 @@ button span {
 }
 
 #page-container{
-  /*background: #fafafa;
-  -webkit-transition-duration: 0.4s;
+  background: #777;
+  flex-grow:1;
+  /*-webkit-transition-duration: 0.4s;
   transition-duration: 0.4s;*/
   padding-top: 20px;
   padding-bottom: 20px;
@@ -127,16 +236,23 @@ button span {
   background: #eeeeee;
 }*/
 
+#analysis-container{
+  margin: 10px 20px 10px 20px;
+  flex: 0,0,200px;
+  width:400px;
+  background-color: #f1f1f1;
+}
+
 #content {
   position: relative;
-  margin: auto;
+  maafin: aut90
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: auto;
   width: 100%;
 
 	background:
-		/* Shadow covers */
+		af Shadow cov90s */
 		/*linear-gradient(white 30%, rgba(255,255,255,0)),
 		linear-gradient(rgba(255,255,255,0), white 70%) 0 100%,*/
 
@@ -158,23 +274,40 @@ button span {
 	/* Opera doesn't support this in the shorthand */
 	background-attachment: local, local, scroll, scroll;
 }
-/*
-#content:hover::after{
-  box-shadow:inset 0 0 10px #00000022;
+
+.slider-container{
+  width:100%;
+  background: #555;
 }
 
-#content::after {
-    content:'';
-    display:block;
-    box-shadow:inset 0 0 0px #00000022;
-    position:absolute;
-    pointer-events: none;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    margin-right: 17px;
-    margin-bottom: 17px;
-    -webkit-transition-duration: 0.4s;
-    transition-duration: 0.4s;
-}​*/
+.slider{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #777;
+  outline: none;
+  opacity: 0;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover{
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #af9050;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb{
+  width:25px;
+  height:25px;
+  background: #af9050;
+  cursor: pointer;
+}

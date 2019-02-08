@@ -1,23 +1,49 @@
 <?php
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
-function startsWith($haystack, $needle)
-{
-     $length = strlen($needle);
-     return (substr($haystack, 0, $length) === $needle);
-}
-// 
-$file = fopen("Lexique382Small.csv","r");
+
+session_start();
+require_once("connectMySQL.php");
+$base = connect();
+
 $word = $_GET["word"];
 $pos = $_GET["pos"];
-$data = [];
-while(! feof($file)) {
-  $array = fgetcsv($file);
-  if(strcmp($array[0], $word) == 0 && (startsWith($array[3], $pos) || strcmp($array[3], $pos) == 0)){
-    $data = ['word' => $array[0], 'pos' => $array[3], 'lemma' => $array[2], 'movies' => $array[6], 'books' => $array[7]];
-    break;
+
+$query = "SELECT `1_ortho` AS 'word', `4_cgram` AS 'pos', `3_lemme` AS 'lemma', `7_freqlemfilms2` AS 'movies', `8_freqlemlivres` AS 'books' FROM `Lexique3` WHERE `1_ortho` = '"
+  . $word . "' AND `4_cgram` LIKE ('%"
+  . $pos . "');";
+
+/*
+  function jsonResult($requete, $idcom) {
+  $result = $idcom->query($requete);
+  $debut = true;
+  $nbColonnes=$result->field_count;
+
+  $json =  "[";
+  if ($result->num_rows){
+  $colonnes = $result->fetch_fields();
+  while ($ligne = $result->fetch_array(MYSQLI_NUM)) {
+  	if ($debut){
+  		$json = $json . "{";
+  		$debut = false;
+  	} else {
+  		$json = $json . ",{";
+  	}
+  	for($j = 0; $j < $nbColonnes; $j++){
+  		$colonne = $colonnes[$j]->name;
+  		$json = $json . "\"".$colonne."\":\"". utf8_encode($ligne[$j])."\"";
+  		if ($j != $nbColonnes-1)	$json = $json .  ",";	//condition virgule dernière colonne
+  	}
+  	$json = $json .  "}";
   }
-}
-echo json_encode($data);
-fclose($file);
+  }
+  $json = $json .  "]";
+  return($json);
+  }
+////////
+$result = jsonResult($query,$base);
+*/
+$result = $base->query($query);
+$result = $result->fetch_array(MYSQLI_NUM);
+echo json_encode($result);
 ?>

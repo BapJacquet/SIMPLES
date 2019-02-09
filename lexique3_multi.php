@@ -7,7 +7,7 @@ require_once("connectMySQL.php");
 $base = connect();
 
 $word = $_GET["word"];
-$word = utf8_decode($word);
+//$word = utf8_decode($word);
 $pos = $_GET["pos"];
 
 $query = "SELECT `1_ortho` AS 'word', `4_cgram` AS 'pos', `3_lemme` AS 'lemma', `7_freqlemfilms2` AS 'movies', `8_freqlemlivres` AS 'books' FROM `Lexique3` WHERE `1_ortho` = '"
@@ -32,9 +32,9 @@ $query = "SELECT `1_ortho` AS 'word', `4_cgram` AS 'pos', `3_lemme` AS 'lemma', 
   	}
   	for($j = 0; $j < $nbColonnes; $j++){
   		$colonne = $colonnes[$j]->name;
-  		$json = $json . "\"".utf8_encode($colonne)."\":\"". utf8_encode($ligne[$j])."\"";
 
-    //    $json = $json . utf8_encode($colonne) . ":" . utf8_encode($ligne[$j]);
+  	//	$json = $json . "\"".utf8_encode($colonne)."\":\"". utf8_encode($ligne[$j])."\"";
+      $json = $json . "\"".$colonne."\":\"". $ligne[$j]."\"";
 
   		if ($j != $nbColonnes-1)	$json = $json .  ",";	//condition virgule dernière colonne
   	}

@@ -14,6 +14,7 @@ function connect()
 		exit();
 	}
 	$idcomW->query("SET sql_mode = 'ONLY_FULL_GROUP_BY'");
+	$idcomW->set_charset('utf8');
 	return $idcomW;
 }
 ?>

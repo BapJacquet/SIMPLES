@@ -13,36 +13,6 @@ $query = "SELECT `1_ortho` AS 'word', `4_cgram` AS 'pos', `3_lemme` AS 'lemma', 
   . $word . "' AND `4_cgram` LIKE ('%"
   . $pos . "');";
 
-/*
-  function jsonResult($requete, $idcom) {
-  $result = $idcom->query($requete);
-  $debut = true;
-  $nbColonnes=$result->field_count;
-
-  $json =  "[";
-  if ($result->num_rows){
-  $colonnes = $result->fetch_fields();
-  while ($ligne = $result->fetch_array(MYSQLI_NUM)) {
-  	if ($debut){
-  		$json = $json . "{";
-  		$debut = false;
-  	} else {
-  		$json = $json . ",{";
-  	}
-  	for($j = 0; $j < $nbColonnes; $j++){
-  		$colonne = $colonnes[$j]->name;
-  		$json = $json . "\"".$colonne."\":\"". utf8_encode($ligne[$j])."\"";
-  		if ($j != $nbColonnes-1)	$json = $json .  ",";	//condition virgule dernière colonne
-  	}
-  	$json = $json .  "}";
-  }
-  }
-  $json = $json .  "]";
-  return($json);
-  }
-////////
-$result = jsonResult($query,$base);
-*/
 $result = $base->query($query);
 $result = $result->fetch_array(MYSQLI_NUM);
 echo json_encode($result);

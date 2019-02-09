@@ -31,7 +31,8 @@ $query = "SELECT `1_ortho` AS 'word', `4_cgram` AS 'pos', `3_lemme` AS 'lemma', 
   	}
   	for($j = 0; $j < $nbColonnes; $j++){
   		$colonne = $colonnes[$j]->name;
-  		$json = $json . "\"".$colonne."\":\"". utf8_encode($ligne[$j])."\"";
+  	//	$json = $json . "\"".$colonne."\":\"". utf8_encode($ligne[$j])."\"";
+        $json = $json . $colonne . ":" . utf8_encode($ligne[$j]);
   		if ($j != $nbColonnes-1)	$json = $json .  ",";	//condition virgule dernière colonne
   	}
   	$json = $json .  "}";

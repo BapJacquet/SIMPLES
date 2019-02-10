@@ -55,6 +55,7 @@ function analyzeText(text){
   setLexique3Progress(0);
 
   var request = createCORSRequest("POST", 'http://sioux.univ-paris8.fr:9000/');
+  //var request = createCORSRequest("POST", 'localhost:9000/');
   request.onreadystatechange = async function(){
     if(request.readyState == 4){
       if(request.status == 200){
@@ -88,11 +89,16 @@ function analyzeText(text){
               // Autres informations
               let data = await checkLexique3(word);
               // Fréquence du mot
-              word.frequency = Math.max(data.movies, data.books);
-              // Ajoute le mot à la liste des mots complexes si besoin.
-              switch(frequencyToText(word.frequency)){
-                case 'inconnu': case 'très rare': case 'rare': case 'commun':
-                complexWords.push(word); break;
+              try {
+                word.frequency = Math.max(data.movies, data.books);
+                // Ajoute le mot à la liste des mots complexes si besoin.
+                switch(frequencyToText(word.frequency)){
+                  case 'inconnu': case 'très rare': case 'rare': case 'commun':
+                  complexWords.push(word); break;
+                }
+              }
+              catch {
+                console.log('Erreur data: ' + data);
               }
             }
             setLexique3Progress((++progress * 100) / totalTokens);
@@ -179,9 +185,14 @@ async function checkLexique3(word){
   if(text.startsWith("-")) text = text.substring(1, text.length);
   // Transforme la fonction syntaxique pour être compatible avec Lexique3.
   pos = convertPos(word.pos, 'Lexique3');
+  console.log(text + '  ' + pos);
+
+  ///////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  //let response = await fetch(`http://sioux.univ-paris8.fr/simples/lexique3.php?word=${text}&pos=${pos}`)
-  let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
+  let response = await fetch(`https://sioux.univ-paris8.fr/simplestest/lexique3_multi.php?word=${text}&pos=${pos}`)
+  //let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
+  //let response = await fetch(`http://localhost:8888/simples2/lexique3_multi.php?word=${text}&pos=${pos}`)
   .catch(function(error) {
     setStatus("Lexique3", "echec");
   });
@@ -189,7 +200,8 @@ async function checkLexique3(word){
 
   //console.log(text + "(" +pos +") : " + JSON.stringify(data));
   setStatus("Lexique3", "ok");
-  return data;
+  console.log(data);
+  return data[0];
 }
 
 function frequencyToText(frequency){

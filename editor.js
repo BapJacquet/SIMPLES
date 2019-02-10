@@ -97,7 +97,7 @@ function analyzeText(text){
                   complexWords.push(word); break;
                 }
               }
-              catch {
+              catch (e) {
                 console.log('Erreur data: ' + data);
               }
             }

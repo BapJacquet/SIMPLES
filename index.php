@@ -131,8 +131,11 @@
 
 	</div>
 
+	<!-- jQuery ready -->
+	<script src="index.js"></script>
 	<!-- Initialize Quill editor -->
 	<script type="text/javascript" src="editor.js"></script>
+<!--
 	<script>
 		var coll = document.getElementsByClassName("hcollapsible");
 		var i;
@@ -165,5 +168,6 @@
 		  });
 		}
 	</script>
+-->
 </body>
 </html>

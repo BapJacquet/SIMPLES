@@ -24,8 +24,10 @@
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-	<!-- jQuery library -->
+	<!-- jQuery library
+
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+-->
   <!-- Popper -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
@@ -36,15 +38,16 @@
 
 <body>
 	<div>
+		<!-- test readFile  -->
+		<input type="file" id="file-input" />
 
 		<div class="box">
-
 			<div id="header">
-				<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" />
-			</div>
+				<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49">
 
 			<div>
 				<div id="menu">
+					<!-- pour seb -->
 				</div>
 				<!-- Create toolbar container -->
 				<div class="hbox">

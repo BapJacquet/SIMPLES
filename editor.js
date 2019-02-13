@@ -234,7 +234,6 @@ function logHtmlContent(){
 
 function refreshPageScale(){
   var scaleFunction = 'scale(' + slider.value + ')';
-  //page.css('transform', scaleFunction);
   page.style.transform = scaleFunction;
 }
 
@@ -262,7 +261,7 @@ function onVerifyClick(){
 }
 
 function onPDFClick(){
-  var doc = new jspdf();
+  var doc = new jspdf();       
 }
 
 function createCORSRequest(method, url){

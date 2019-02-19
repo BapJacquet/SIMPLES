@@ -1,9 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head lang="<?php echo $str_language; ?>" xml:lang="<?php echo $str_language; ?>">
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>SimpLEs</title>
 
   <!-- === HTML to PDF ===-->
@@ -20,33 +19,45 @@
 	<!-- Include the Image Resize Module for Quill -->
 	<script src="image-resize.min.js"></script>
 
-
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 	<!-- ====== Bootstrap ====== -->
+
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-	<!-- jQuery library -->
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
   <!-- Popper -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" type="text/css" href="main.css"/>
+
 </head>
 
 <body style="visibility:hidden;">
 	<div>
 
+		<!-- test readFile  -->
+		<!-- <input type="file" id="file-input" />  -->
+
+		<!-- word display de google
+		<div>
+			<iframe src="https://docs.google.com/gview?url=https://sioux.univ-paris8.fr/simplestest/lorem.doc&embedded=true"  width='100%' height='300px'></iframe>
+		</div>  -->
+
+		<!-- word display de Microsoft
+		<div>
+			<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://sioux.univ-paris8.fr/simplestest/lorem.doc" width='100%' height='300px' frameborder='0'></iframe>
+		</div> -->
+
+
+		<!-- Baptiste -->
 		<div class="box">
-
 			<div id="header">
-				<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" />
-        <img src="outilsEdit.png">
-			</div>
-
+				<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="36">
 			<div>
-				<div id="menu">
+				<div id="menus">
+					<!-- pour seb -->
 				</div>
 				<!-- Create toolbar container -->
 				<div class="hbox">
@@ -133,61 +144,10 @@
 
 	</div>
 
-
-  <!-- jQuery ready -->
-  <script src="index.js"></script>
-
+	<!-- jQuery ready -->
+	<script src="index.js"></script>
 	<!-- Initialize Quill editor -->
 	<script type="text/javascript" src="editor.js"></script>
-
-<!--
-  <script>
-  $(document).ready(function () {
-  // à méditer pour Baptiste
-  $(".hcollapsible, .collapsible").on("click", function(e) {
-    $(this).toggleClass("active");
-    if ( $(this).next().css("display") == "block" )
-          $(this).next().css({"display": "none"});
-    else  $(this).next().css({"display": "block"});
-  } );
-  });
-  </script>
--->
-
-<!--
-	<script>
-		var coll = document.getElementsByClassName("hcollapsible");
-		var i;
-
-		for (i = 0; i < coll.length; i++) {
-		  coll[i].addEventListener("click", function() {
-		    this.classList.toggle("active");
-		    var content = this.nextElementSibling;
-		    if (content.style.display === "block") {
-		      content.style.display = "none";
-		    } else {
-		      content.style.display = "block";
-		    }
-		  });
-		}
-	</script>
-	<script>
-		var coll = document.getElementsByClassName("collapsible");
-		var i;
-
-		for (i = 0; i < coll.length; i++) {
-		  coll[i].addEventListener("click", function() {
-		    this.classList.toggle("active");
-		    var content = this.nextElementSibling;
-		    if (content.style.display === "block") {
-		      content.style.display = "none";
-		    } else {
-		      content.style.display = "block";
-		    }
-		  });
-		}
-	</script>
--->
 
 </body>
 </html>

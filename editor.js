@@ -261,7 +261,7 @@ function onVerifyClick(){
 }
 
 function onPDFClick(){
-  var doc = new jspdf();       
+  var doc = new jspdf();
 }
 
 function createCORSRequest(method, url){

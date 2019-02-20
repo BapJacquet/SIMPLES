@@ -46,7 +46,7 @@ $(document).ready(function () {
   });
 
   // Logo
-  $("#logo").css("opacity", 0.5);
+  $("#logo").css({"opacity": 0.5, "height": "45px", "padding-left": "60px"});
 
 
   //$("body").css({"margin-left":"3%", "margin-right":"3%"});

@@ -48,7 +48,7 @@ hr {
   /*background-color: blue;
   color: white;*/
   border-style: solid;
-  border-width: 1;
+  border-width: 0;
   border-color: #555;
 }
 
@@ -61,7 +61,7 @@ hr {
 
 .box {
   position: absolute;
-  border: 1px solid black;
+  border: none;
   display: flex;
   flex-flow: column;
   height: 100%;
@@ -70,7 +70,7 @@ hr {
 
 .hbox{
   position: relative;
-  border: 1px solid black;
+  border: none;
   display: flex;
   flex-flow: row;
   height : 100%;

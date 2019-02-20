@@ -1,8 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head lang="<?php echo $str_language; ?>" xml:lang="<?php echo $str_language; ?>">
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html charset=utf-8" />
 <meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>SimpLEs</title>
 
@@ -10,17 +9,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 
 	<!-- ====== Quill ====== -->
+
 	<!-- Include stylesheet -->
 	<!--link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.core.css"-->
 	<link href="quill.snow.css" rel="stylesheet">
+
 	<!-- Include the Quill library -->
 	<script src="quill.js"></script>
+
 	<!-- Include the Image Drop Module for Quill -->
 	<script src="image-drop.min.js"></script>
+
 	<!-- Include the Image Resize Module for Quill -->
 	<script src="image-resize.min.js"></script>
-
-
 
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
@@ -41,8 +42,8 @@
 		<div class="box">
 
 			<div id="header">
+				<img src="outilsEdit.png">
 				<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" />
-        <img src="outilsEdit.png">
 			</div>
 
 			<div>
@@ -134,25 +135,12 @@
 	</div>
 
 
-  <!-- jQuery ready -->
-  <script src="index.js"></script>
-
 	<!-- Initialize Quill editor -->
 	<script type="text/javascript" src="editor.js"></script>
 
-<!--
-  <script>
-  $(document).ready(function () {
-  // à méditer pour Baptiste
-  $(".hcollapsible, .collapsible").on("click", function(e) {
-    $(this).toggleClass("active");
-    if ( $(this).next().css("display") == "block" )
-          $(this).next().css({"display": "none"});
-    else  $(this).next().css({"display": "block"});
-  } );
-  });
-  </script>
--->
+	<!-- jQuery ready -->
+	<script src="index.js"></script>
+
 
 <!--
 	<script>

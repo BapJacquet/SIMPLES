@@ -25,8 +25,8 @@
 	<div>
 		<div class="box">
 
-			<div id="header">
-				<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" />
+			<div id="header" style="border: none;">
+			<!--	<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
 			</div>
 
 			<div>
@@ -37,9 +37,12 @@
 					<span id="toolbar">
 						<img src="outilsEdit.png">
 					</span>
+
+					<!--
 					<span id="analyze">
 						<button id="pdf-button" type="button" class="toolbar-button btn btn-primary">Exporter PDF</button>
 					</span>
+				-->
 					<span id="analyze">
 						<button id="verify-button" type="button" class="toolbar-button btn btn-success">Verifier</button>
 					</span>
@@ -90,9 +93,11 @@
 			</div>
 
 				<!--button onclick="logHtmlContent()">s HTML</button-->
+			<!--
 			<div class="slider-container">
 				<input type="range" step="0.1" min="0.1" max="5" value="1" class="slider" id="zoom-range"/>
 			</div>
+			-->
 		</div>
 
 	</div>

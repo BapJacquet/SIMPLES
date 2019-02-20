@@ -4,7 +4,7 @@ const editor = new Editor('#editor');
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');
-var verifyButton = document.getElementById('verify-button');
+
 var pdfButton = document.getElementById('pdf-button');
 var analysisContent = document.getElementById('analysis-content');
 var stanfordConnection = document.getElementById('stanford-connection');
@@ -14,11 +14,17 @@ var lexique3Progress = document.getElementById('lexique3-progress');
 var lastReadText;
 
 // Appelle la fonction pour le zoom dés le début.
-refreshPageScale();
+//refreshPageScale();
 
-verifyButton.onclick = onVerifyClick;
-pdfButton.onclick = onPDFClick;
-slider.oninput = refreshPageScale;
+$("#verify-button").on("click", function () {
+    if ( !$(".hcollapsible").hasClass("active") ) {
+      $(".hcollapsible").trigger("click").blur();
+    }
+    onVerifyClick();
+} );
+// pdfButton.onclick = onPDFClick;
+// slider.oninput = refreshPageScale;
+
 
 ////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////// F U N C T I O N S
@@ -170,6 +176,7 @@ $(document).ready(function () {
 
   // à méditer pour Baptiste
   $(".hcollapsible, .collapsible").on("click", function(e) {
+    $(this).blur();
     $(this).toggleClass("active");
     if ( $(this).next().css("display") == "block" )
           $(this).next().css({"display": "none"});

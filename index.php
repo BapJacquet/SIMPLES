@@ -8,6 +8,10 @@
   <!-- === HTML to PDF ===-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 
+  <!-- ======  RTE  ====== -->
+	<script language="JavaScript" type="text/javascript" src="../cbrte/html2xhtml.min.js"></script>
+	<script language="JavaScript" type="text/javascript" src="../cbrte/richtext.js"></script>
+
 	<!-- ====== Quill ====== -->
 	<!-- Include stylesheet -->
 	<!--link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.core.css"-->
@@ -23,13 +27,11 @@
 
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-	<!-- jQuery library -->
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <!-- Popper -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" type="text/css" href="main.css"/>
 </head>
@@ -49,25 +51,7 @@
 				<!-- Create toolbar container -->
 				<div class="hbox">
 					<span id="toolbar">
-						<span class="ql-formats">
-					    <select class="ql-size">
-							  <option selected>14</option>
-					      <option value="small" selected>16</option>
-					      <option value="large">21</option>
-					      <option value="huge">32</option>
-					    </select>
-					  </span>
-					  <a class="ql-bold"><span style="font-weight:bold; font-family:'Cambria'">G</span></a>
-						<span class="ql-formats">
-						  <select class="ql-color">
-								<option value="#000" selected>Black</option>
-		    				<option value="red" >Red</option>
-						    <option value="green">Green</option>
-						    <option value="blue">Blue</option>
-							</select>
-						</span>
-						<button class="ql-align" selected><span class="glyphicon glyphicon-align-left"></span></button>
-						<button class="ql-align" value="center"><span class="glyphicon glyphicon-align-center"></span></button>
+						
 					</span>
 					<span id="analyze">
 						<button id="pdf-button" type="button" class="toolbar-button btn btn-primary">Exporter PDF</button>
@@ -84,8 +68,9 @@
 						<div id="page">
 							<!-- Create the editor container -->
 							<div id="editor">
-							  <p>D'un point de vue méthodologique, ils apportent une objectivité nécessaire à la validation scientifique en traitement automatique du langage naturel. L'information n'est plus empirique, elle est vérifiée par le corpus. Il est donc possible de s'appuyer sur des corpus (à condition qu'ils soient bien formés) pour formuler et vérifier des hypothèses scientifiques.</p>
+
 							</div>
+
 						</div>
 					</div>
 				</div>
@@ -131,8 +116,9 @@
 
 	</div>
 
-	<!-- Initialize Quill editor -->
+	<!-- Initialize analyzer editor -->
 	<script type="text/javascript" src="editor.js"></script>
+	<script type="text/javascript" src="analyzer.js"></script>
 	<script>
 		var coll = document.getElementsByClassName("hcollapsible");
 		var i;

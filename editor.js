@@ -1,280 +1,228 @@
+/**
+ * A prévoir : Event formatChanged pour quand le format de la selection est différent du précédent
+ * A prévoir : fonction setFormat(object)
+ *
+ */
+class Editor {
+  /**
+   * @constructor
+   * @param {string} id - The DOM ID of the editor element.
+   */
+  constructor(id, toolbarID){
+    this.id = id;
+    this.addBlock("", false);
 
-/*=======================================================================
-  VARIABLES
-  =======================================================================*/
-var quill = new Quill('#editor', {
-  modules: {
-    toolbar: {
-	    container: '#toolbar'
-	  },
-    imageResize: {
-      displaySize: true
-    },
-    imageDrop: true
-  },
-  theme: 'snow'
-});
-var babelnetKey = "4ac54b0c-b866-4afd-bd04-678a98cc4da0";
-var slider = document.getElementById('zoom-range');
-var page = document.getElementById('page');
-var verifyButton = document.getElementById('verify-button');
-var pdfButton = document.getElementById('pdf-button');
-var analysisContent = document.getElementById('analysis-content');
-var stanfordConnection = document.getElementById('stanford-connection');
-var lexique3Connection = document.getElementById('lexique3-connection');
-var lexique3Progress = document.getElementById('lexique3-progress');
+    this.registerEvents();
+  }
 
-var complexWords = [];
+  /**
+   * Get the current amount of blocks in the editor.
+   * @return {int} - Number of blocks.
+   */
+  get blockCount() {
+    return $(".editor-block").length;
+  }
 
-/*=======================================================================
-  QUILL EVENTS
-  =======================================================================*/
-quill.on('selection-change', onSelectionChange);
+  /**
+   * Register all the events of the editor.
+   */
+  registerEvents(){
+    $(this.id).on("keypress", ".editor-block", event => { this.onKeypress(event) });
+    $(this.id).on("blur", ".media-body", event => { this.onBlur(event) })
+  }
 
-/*=======================================================================
-  EVENTS
-  =======================================================================*/
-
-verifyButton.onclick = onVerifyClick;
-pdfButton.onclick = onPDFClick;
-slider.oninput = refreshPageScale;
-
-/*=======================================================================
-  INITIALIZATION
-  =======================================================================*/
-
-refreshPageScale();
-
-/*=======================================================================
-  FUNCTIONS
-  =======================================================================*/
-
-function analyzeText(text){
-  // Clear list of complex words
-  complexWords.length = 0;
-  // Salut
-  setLexique3Progress(0);
-
-  var request = createCORSRequest("POST", 'http://sioux.univ-paris8.fr:9000/');
-  request.onreadystatechange = async function(){
-    if(request.readyState == 4){
-      if(request.status == 200){
-        setStatus("Stanford", "ok");
-        // Parse la réponse en JSON.
-        var obj = JSON.parse(request.responseText);
-
-        // Count the total number of tokens.
-        var totalTokens = 0;
-        for(var i = 0; i < obj.sentences.length; i++){
-          totalTokens += obj.sentences[i].tokens.length;
+  /**
+   * Handle special keys in editor blocks.
+   * ENTER should add a new line or a new block if there is already a new line
+   * BACKSPACE should remove a character or the current block if this one is empty
+   * @param {KeypressEvent} event - The event to handle.
+   */
+  onKeypress(event){
+    let caller = event.target;
+    let id = parseInt(caller.id.substring(4));
+    switch(event.which){
+      case 13: //Line breaks
+        event.stopPropagation();
+        event.preventDefault();
+        let sel = this.getSelection();
+        let range = sel.getRangeAt(0);
+        let previousNode = range.startContainer;
+        //if(previousNode && previousNode.nodeName === 'BR' && range.startOffset === 0){
+          this.insertBlockAfter(id, "", true);
+        //} else {*/
+          //document.execCommand("insertHTML", true, null);
+          //document.execCommand("bold", true, null);
+          //document.execCommand("insertText", true, " ");
+        //}
+        //this.processNewLine(id);
+        break;
+      case 8: //Return
+        if(this.getTextContent(id).length == 0 && id != 0){
+          this.removeBlockAt(id, id-1);
         }
-        var progress = 0;
+        break;
+    }
+    /* DEBUG */
+    let selection = this.getSelection();
+    let range = selection.getRangeAt(0);
+    console.log(range.startContainer.parentNode.nodeName);
+  }
 
-        // Récupère le résultat pour chaque phrase.
-        for(var i = 0; i < obj.sentences.length; i++){
-          var s = obj.sentences[i];
-          // Récupère le résultat pour chaque mot.
-          for(var t = 0; t < s.tokens.length; t++){
-            var word = {};
-            // Position de la première lettre
-            word.startOffset = s.tokens[t].characterOffsetBegin;
-            // Longueur
-            word.length = s.tokens[t].characterOffsetEnd - word.startOffset;
-            // Le mot
-            word.text = s.tokens[t].word;
-            // Sa fonction
-            word.pos = s.tokens[t].pos;
-            // Recherche plus d'informations dans le lexique si nécessaire.
-            if(needLexique3(word.pos)){
-              // Autres informations
-              let data = await checkLexique3(word);
-              // Fréquence du mot
-              word.frequency = Math.max(data.movies, data.books);
-              // Ajoute le mot à la liste des mots complexes si besoin.
-              switch(frequencyToText(word.frequency)){
-                case 'inconnu': case 'très rare': case 'rare': case 'commun':
-                complexWords.push(word); break;
-              }
-            }
-            setLexique3Progress((++progress * 100) / totalTokens);
-          }
-        }
+  /**
+   * Handle switching focus out of text blocks.
+   * @param {BlurEvent} event - The event to handle.
+   */
+  onBlur(event){
+    let caller = event.target;
+    //alert("leaving " + caller.id);
+  }
 
-        displayAnalysisResults();
-        setTimeout(clearStatus, 1000);
+  /**
+   * Get the current selection within focused blocks.
+   * @return {Selection} - The user's current selection.
+   */
+  getSelection(){
+    if(getSelection().modify) { /* chrome */
+      return window.getSelection();
+    } else { /* IE */
+      return getSelection();
+    }
+  }
+
+  /**
+   * Add a new line at the caret position.
+   * @deprecated
+   */
+  processNewLine(id){
+    if(getSelection().modify) {     /* chrome */
+      var selection = window.getSelection(),
+        range = selection.getRangeAt(0),
+        br = document.createElement('br');
+      range.deleteContents();
+      range.insertNode(br);
+      if(br.previousSibling.tagName === 'BR'){
+        br.previousSibling.remove();
+        br.remove();
+        this.insertBlockAfter(id, "", true);
       } else {
-        setStatus("Stanford", "echec");
+        range.setStartAfter(br);
+        range.setEndAfter(br);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);       /* end chrome */
       }
     } else {
-      setStatus("Stanford", "en cours");
+      br = document.createElement('br');    /* internet explorer */
+      var range = getSelection().getRangeAt(0);
+      range.surroundContents(br);
+      if(br.previousSibling.nodeName === 'BR'){
+        br.previousSibling.remove();
+        br.remove();
+        this.insertBlockAfter(id, "", true);
+      } else {
+        range.selectNode(br.nextSibling);   /* end Internet Explorer 11 */
+      }
     }
   }
-  request.send(text);
-}
 
-function setLexique3Progress(value){
-  let percent = ''+Math.floor(value)+'%';
-  lexique3Progress.style.width = percent;
-  lexique3Progress.setAttribute('aria-valuenow', value);
-  lexique3Progress.innerHTML = percent;
-}
-
-function displayAnalysisResults(){
-  // Ajoute les résultats à la page d'analyse.
-  analysisContent.innerHTML = "";
-  if(complexWords.length > 0){
-    analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-danger" role="alert">${complexWords.length} mots compliqués !</div>`);
-    for(var i = 0; i < complexWords.length; i++){
-      analysisContent.insertAdjacentHTML('beforeend',
-      `<input type='button' title='${frequencyToText(complexWords[i].frequency)}' class='btn btn-outline-danger btn-sm' type="button" value='${complexWords[i].text}'
-      onclick='quill.setSelection(${complexWords[i].startOffset}, ${complexWords[i].length});' />`);
+  /**
+   * Remove the block with the given ID and switch focus to a new id.
+   * @param {int} id - ID of the block to remove.
+   * @param {int} focusID - ID of the block that will get the focus.
+   */
+  removeBlockAt(id, focusID){
+    $("#blc-" + id).remove();
+    $("#txt-" + focusID).focus();
+    for(let i = id + 1; i < this.blockCount; i++){
+      this.changeBlockID(i, i-1);
     }
-  } else {
-    analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-success" role="alert">Les mots semblent simples !</div>`);
   }
-}
 
-async function parseSentence(sentence){
-
-}
-
-function setStatus(moduleName, status){
-  var divText;
-  switch(status){
-    case 'en cours':
-    divText = `<div class="alert alert-info" role="alert">${moduleName} : En cours</div>`; break;
-    case 'echec':
-    divText = `<div class="alert alert-danger" role="alert">${moduleName} : Echec</div>`; break;
-    case 'ok':
-    divText = `<div class="alert alert-success" role="alert">${moduleName} : OK</div>`; break;
-  }
-  switch(moduleName){
-    case 'Stanford':
-    stanfordConnection.innerHTML=divText;
-    stanfordConnection.style.display = 'block';
-    break;
-    case 'Lexique3':
-    lexique3Connection.style.display = 'block';
-    break;
-  }
-}
-
-function clearStatus(){
-  console.log("Test");
-  stanfordConnection.style.display = 'none';
-  lexique3Connection.style.dipslay = 'none';
-}
-
-function needLexique3(pos){
-  switch(pos){
-    case 'PUNCT' : case 'ADP' : case 'DET' : case 'PRON' : return false;
-    default: return true;
-  }
-}
-
-async function checkLexique3(word){
-  setStatus("Lexique3", "en cours");
-  // S'assure que le mot est en minuscules.
-  let text = word.text.toLowerCase();
-  // Enlève le tiret si il y en a un au début du mot.
-  if(text.startsWith("-")) text = text.substring(1, text.length);
-  // Transforme la fonction syntaxique pour être compatible avec Lexique3.
-  pos = convertPos(word.pos, 'Lexique3');
-  // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  //let response = await fetch(`http://sioux.univ-paris8.fr/simples/lexique3.php?word=${text}&pos=${pos}`)
-  let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
-  .catch(function(error) {
-    setStatus("Lexique3", "echec");
-  });
-  let data = await response.json();
-
-  //console.log(text + "(" +pos +") : " + JSON.stringify(data));
-  setStatus("Lexique3", "ok");
-  return data;
-}
-
-function frequencyToText(frequency){
-  if (typeof frequency == 'undefined') return "inconnu";
-  if(frequency < 5) return "très rare";
-  if(frequency < 10) return "rare";
-  if(frequency < 20) return "commun";
-  if(frequency < 50) return "fréquent";
-  return "très fréquent";
-}
-
-function convertPos(pos, targetFormat){
-  switch(targetFormat){
-    case 'Lexique3':
-    switch(pos){
-      case 'VERB': return 'VER';
-      case 'INTJ': return 'ONO';
-      case 'PRON': return 'PRO';
-      case 'NOUN': return 'NOM';
-      default: return pos;
+  /**
+   * Insert a block just below the block with the given index.
+   * @param {int} index - ID of the block that the new block should follow.
+   * @param {string} text - Text the new block should be initialized with.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  insertBlockAfter(index, text, focus){
+    for(let i = this.blockCount - 1; i > index; i--){
+      this.changeBlockID(i, i+1);
     }
-    break;
-    default: return pos;
-  }
-}
-
-function logHtmlContent(){
-  console.log(quill.root.innerHTML);
-}
-
-function refreshPageScale(){
-  var scaleFunction = 'scale(' + slider.value + ')';
-  //page.css('transform', scaleFunction);
-  page.style.transform = scaleFunction;
-}
-
-function onSelectionChange(range, oldRange, source){
-  if (range) {
-   if (range.length == 0) {
-     console.log('User cursor is on', range.index);
-   } else {
-     var text = quill.getText(range.index, range.length);
-     console.log('User has highlighted', text);
-     //requestDefinition(text);
-   }
- } else {
-   console.log('Cursor not in the editor');
- }
-}
-
-function onVerifyClick(){
-  var selection = quill.getSelection();
-  if(selection && selection.length > 0){
-    analyzeText(quill.getText(selection.index, selection.length));
-  } else {
-    analyzeText(quill.getText());
-  }
-}
-
-function onPDFClick(){
-  var doc = new jsPDF();
-
-  var totalWidth = 210; // 210 mm, 21 cm
-  var margin = 25.4; // 1 inch = 25.4mm
-  doc.fromHTML($('#page').get(0),
-    margin,
-    margin,
-    {
-      'width': (totalWidth - (margin*2))
+    $("#blc-"+index).after(this.newBlockString(index+1, text));
+    if(focus){
+      $("#txt-"+(index+1)).focus();
     }
-  );
-
-  doc.save('Test.pdf');
-}
-
-function createCORSRequest(method, url){
-  var xhr = new XMLHttpRequest();
-  if("withCredentials" in xhr){
-    xhr.open(method, url, true);
-  } else if( typeof XDomainRequest != "undefined"){
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
-  } else {
-    xhr = null;
+    this.setImage("#img-" + (index+1), "img/placeholder.png");
   }
-  return xhr;
+
+  /**
+   * Add a block at the end of the editor.
+   * @param {string} text - Text the new block should be initialized with.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  addBlock(text, focus){
+    let id = this.blockCount;
+    $(this.id).append(this.newBlockString(id, text));
+    if(focus){
+      $("#txt-"+id).focus();
+    }
+    this.setImage("#img-" + id, "img/placeholder.png");
+  }
+
+  /**
+   * Get the text content of the block with the given id.
+   * @param {int} id - ID of the block to extract text from.
+   * @return {string} - The extracted text.
+   */
+  getTextContent(id){
+    let element = $("#txt-" + id).get(0);
+    return element.textContent;
+  }
+
+  /**
+   * Get a HTML string to initialize a block.
+   * @param {int} id - ID of the new block.
+   * @param {string} text - Text the new block should be initialized with.
+   * @return {string} - HTML string of the new block.
+   */
+  newBlockString(id, text){
+    return `<div id="blc-${id}" class="editor-block media">`+
+             `<div id="txt-${id}" class="media-body align-self-center mr-3 border" contenteditable="true" style="margin:10px 0px 10px 0px">` +
+                text +
+             `</div>` +
+             `<canvas id="img-${id}" class="align-self-center mr-3 hoverable" style="width:100px"/>`+
+           `</div>`;
+  }
+
+  /**
+   * Change the DOM ID of the block with the given id to the given new id.
+   * @param {int} oldID - ID the block had until now.
+   * @param {int} newID - ID the block should be having.
+   */
+  changeBlockID(oldID, newID){
+    $("#blc-" + oldID).attr("id", "blc-" + newID);
+    $("#txt-" + oldID).attr("id", "txt-" + newID);
+    $("#img-" + oldID).attr("id", "img-" + newID);
+  }
+
+  /**
+   * Set the image in the block with the given id, making it DataURL-ready.
+   * @param {int} id - ID of the block.
+   * @param {string} path - Path of the image source.
+   */
+  setImage(id, path){
+    var img = new Image();
+    img.setAttribute('crossOrigin', 'anonymous');
+    img.onload = function () {
+        var canvas = $(id).get(0);
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(this, 0, 0);
+        //var dataURL = canvas.toDataURL("image/png");
+        //alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+    };
+    img.src = path;
+  }
 }

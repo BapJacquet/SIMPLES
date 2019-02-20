@@ -1,30 +1,8 @@
-
 /*=======================================================================
   VARIABLES
   =======================================================================*/
-/*var quill = new Quill('#editor', {
-  modules: {
-    toolbar: {
-	    container: '#toolbar'
-	  },
-    imageResize: {
-      displaySize: true
-    },
-    imageDrop: true
-  },
-  theme: 'snow'
-});*/
-var editor = new Editor('#editor', '#toolbar');
 
-var slider = document.getElementById('zoom-range');
-var page = document.getElementById('page');
-var verifyButton = document.getElementById('verify-button');
-var pdfButton = document.getElementById('pdf-button');
-var analysisContent = document.getElementById('analysis-content');
-var stanfordConnection = document.getElementById('stanford-connection');
-var lexique3Connection = document.getElementById('lexique3-connection');
-var lexique3Progress = document.getElementById('lexique3-progress');
-
+var body = $("body").get(0);
 var complexWords = [];
 
 /*=======================================================================
@@ -34,7 +12,7 @@ var complexWords = [];
 // NEED TO RAISE AN EVENT WHEN PROGRESS IS CHANGED
 var progressChanged = new CustomEvent("progressChanged", {
   detail: {
-    progress: 0
+    value: 0
   },
   bubbles: false,
   cancelable : false
@@ -48,23 +26,13 @@ var analysisCompleted = new CustomEvent("analysisCompleted", {
   cancelable : false
 });
 
-/*=======================================================================
-  LISTENERS
-  =======================================================================*/
+// NEED TO RAISE AN EVENT WHEN ANALYSIS IS COMPLETED
+var analysisStatusChanged = new CustomEvent("analysisStatusChanged", {
+  detail: {},
+  bubbles: false,
+  cancelable : false
+});
 
-/* INDEX.JS */
-verifyButton.onclick = onVerifyClick;
-/* INDEX.JS */
-pdfButton.onclick = onPDFClick;
-/* INDEX.JS */
-slider.oninput = refreshPageScale;
-
-/*=======================================================================
-  INITIALIZATION
-  =======================================================================*/
-
-/* INDEX.JS */
-refreshPageScale();
 
 /*=======================================================================
   FUNCTIONS
@@ -77,14 +45,21 @@ refreshPageScale();
 function analyzeText(text){
   // Clear list of complex words
   complexWords.length = 0;
-  setLexique3Progress(0);
+
+  progressChanged.detail.value = 0;
+  body.dispatchEvent(progressChanged);
 
   var request = createCORSRequest("POST", 'http://sioux.univ-paris8.fr:9000/');
   //var request = createCORSRequest("POST", 'localhost:9000/');
   request.onreadystatechange = async function(){
     if(request.readyState == 4){
       if(request.status == 200){
-        setStatus("Stanford", "ok");
+
+        analysisStatusChanged.detail.status = "ok";
+        analysisStatusChanged.detail.module = "stanford";
+        body.dispatchEvent(analysisStatusChanged);
+        //setStatus("Stanford", "ok");
+
         // Parse la réponse en JSON.
         var obj = JSON.parse(request.responseText);
 
@@ -126,76 +101,33 @@ function analyzeText(text){
                 console.log('Erreur data: ' + data);
               }
             }
-            setLexique3Progress((++progress * 100) / totalTokens);
+            progressChanged.detail.value = (++progress * 100) / totalTokens;
+            body.dispatchEvent(progressChanged);
+            //setLexique3Progress((++progress * 100) / totalTokens);
           }
         }
 
-        displayAnalysisResults();
-        setTimeout(clearStatus, 1000);
+        analysisCompleted.detail.complexWords = complexWords;
+        body.dispatchEvent(analysisCompleted);
+        //displayAnalysisResults();
       } else {
-        setStatus("Stanford", "echec");
+        analysisStatusChanged.detail.status = "echec";
+        analysisStatusChanged.detail.module = "stanford";
+        body.dispatchEvent(analysisStatusChanged);
+        //setStatus("Stanford", "echec");
       }
     } else {
-      setStatus("Stanford", "en cours");
+      analysisStatusChanged.detail.status = "en cours";
+      analysisStatusChanged.detail.module = "stanford";
+      body.dispatchEvent(analysisStatusChanged);
+      //setStatus("Stanford", "en cours");
     }
   }
   request.send(text);
 }
 
-/* INDEX.JS */
-function setLexique3Progress(value){
-  let percent = ''+Math.floor(value)+'%';
-  lexique3Progress.style.width = percent;
-  lexique3Progress.setAttribute('aria-valuenow', value);
-  lexique3Progress.innerHTML = percent;
-}
-
-/* INDEX.JS */
-function displayAnalysisResults(){
-  // Ajoute les résultats à la page d'analyse.
-  analysisContent.innerHTML = "";
-  if(complexWords.length > 0){
-    analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-danger" role="alert">${complexWords.length} mots compliqués !</div>`);
-    for(var i = 0; i < complexWords.length; i++){
-      analysisContent.insertAdjacentHTML('beforeend',
-      `<input type='button' title='${frequencyToText(complexWords[i].frequency)}' class='btn btn-outline-danger btn-sm' type="button" value='${complexWords[i].text}'
-      onclick='quill.setSelection(${complexWords[i].startOffset}, ${complexWords[i].length});' />`);
-    }
-  } else {
-    analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-success" role="alert">Les mots semblent simples !</div>`);
-  }
-}
-
 async function parseSentence(sentence){
 
-}
-
-/* INDEX.JS */
-function setStatus(moduleName, status){
-  var divText;
-  switch(status){
-    case 'en cours':
-    divText = `<div class="alert alert-info" role="alert">${moduleName} : En cours</div>`; break;
-    case 'echec':
-    divText = `<div class="alert alert-danger" role="alert">${moduleName} : Echec</div>`; break;
-    case 'ok':
-    divText = `<div class="alert alert-success" role="alert">${moduleName} : OK</div>`; break;
-  }
-  switch(moduleName){
-    case 'Stanford':
-    stanfordConnection.innerHTML=divText;
-    stanfordConnection.style.display = 'block';
-    break;
-    case 'Lexique3':
-    lexique3Connection.style.display = 'block';
-    break;
-  }
-}
-
-/* INDEX.JS */
-function clearStatus(){
-  stanfordConnection.style.display = 'none';
-  lexique3Connection.style.dipslay = 'none';
 }
 
 /**
@@ -216,7 +148,10 @@ function needLexique3(pos){
  * @return {Object} - Data returned from Lexique3.
  */
 async function checkLexique3(word){
-  setStatus("Lexique3", "en cours");
+  analysisStatusChanged.detail.status = "en cours";
+  analysisStatusChanged.detail.module = "lexique3";
+  body.dispatchEvent(analysisStatusChanged);
+  //setStatus("Lexique3", "en cours");
   // S'assure que le mot est en minuscules.
   let text = word.text.toLowerCase();
   // Enlève le tiret si il y en a un au début du mot.
@@ -232,12 +167,18 @@ async function checkLexique3(word){
   //let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
   //let response = await fetch(`http://localhost:8888/simples2/lexique3_multi.php?word=${text}&pos=${pos}`)
   .catch(function(error) {
-    setStatus("Lexique3", "echec");
+    analysisStatusChanged.detail.status = "echec";
+    analysisStatusChanged.detail.module = "lexique3";
+    body.dispatchEvent(analysisStatusChanged);
+    //setStatus("Lexique3", "echec");
   });
   let data = await response.json();
 
   //console.log(text + "(" +pos +") : " + JSON.stringify(data));
-  setStatus("Lexique3", "ok");
+  analysisStatusChanged.detail.status = "ok";
+  analysisStatusChanged.detail.module = "lexique3";
+  body.dispatchEvent(analysisStatusChanged);
+  //setStatus("Lexique3", "ok");
   console.log(data);
   return data[0];
 }
@@ -276,41 +217,6 @@ function convertPos(pos, targetFormat){
     break;
     default: return pos;
   }
-}
-
-// INDEX.JS
-function refreshPageScale(){
-  var scaleFunction = 'scale(' + slider.value + ')';
-  //page.css('transform', scaleFunction);
-  page.style.transform = scaleFunction;
-}
-
-/* INDEX.JS */
-function onVerifyClick(){
-  let content = [];
-  alert(editor.blockCount);
-  for(let i = 0; i < editor.blockCount; i++){
-    content.push(editor.getTextContent(i));
-  }
-  analyzeText(content.join("\n"));
-  alert(content.join("\n"));
-}
-
-/* INDEX.JS */
-function onPDFClick(){
-  var doc = new jsPDF();
-
-  var totalWidth = 210; // 210 mm, 21 cm
-  var margin = 25.4; // 1 inch = 25.4mm
-  doc.fromHTML($('#page').get(0),
-    margin,
-    margin,
-    {
-      'width': (totalWidth - (margin*2))
-    }
-  );
-
-  doc.save('Test.pdf');
 }
 
 /**

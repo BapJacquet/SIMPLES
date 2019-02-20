@@ -23,7 +23,6 @@
 
 <body style="visibility:hidden;">
 	<div>
-
 		<div class="box">
 
 			<div id="header">
@@ -52,9 +51,7 @@
 					<div id="page-container">
 						<div id="page">
 							<!-- Create the editor container -->
-							<div id="editor">
-							  <p>D'un point de vue méthodologique, ils apportent une objectivité nécessaire à la validation scientifique en traitement automatique du langage naturel. L'information n'est plus empirique, elle est vérifiée par le corpus. Il est donc possible de s'appuyer sur des corpus (à condition qu'ils soient bien formés) pour formuler et vérifier des hypothèses scientifiques.</p>
-							</div>
+							<div id="editor"></div>
 						</div>
 					</div>
 				</div>
@@ -103,6 +100,7 @@
 
 	<!-- Initialize Quill editor -->
 	<script type="text/javascript" src="editor.js"></script>
+	<script type="text/javascript" src="analyzer.js"></script>
 
 	<!-- jQuery ready -->
 	<script src="index.js"></script>

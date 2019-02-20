@@ -8,21 +8,6 @@
   <!-- === HTML to PDF ===-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 
-	<!-- ====== Quill ====== -->
-
-	<!-- Include stylesheet -->
-	<!--link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.core.css"-->
-	<link href="quill.snow.css" rel="stylesheet">
-
-	<!-- Include the Quill library -->
-	<script src="quill.js"></script>
-
-	<!-- Include the Image Drop Module for Quill -->
-	<script src="image-drop.min.js"></script>
-
-	<!-- Include the Image Resize Module for Quill -->
-	<script src="image-resize.min.js"></script>
-
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">

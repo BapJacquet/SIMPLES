@@ -2,6 +2,19 @@
 
 const editor = new Editor('#editor');
 
+const CURSOR_DATA = {
+    "bold-false": "-60px",
+    "bold-true": "-25px",
+    "size-small": "-94px",
+    "size-medium": "-60px",
+    "size-large": "-26px",
+};
+
+var activeTools = {
+  bold: "false",
+  size: "medium",
+};
+
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');
 
@@ -16,12 +29,6 @@ var lastReadText;
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();
 
-$("#verify-button").on("click", function () {
-    if ( !$(".hcollapsible").hasClass("active") ) {
-      $(".hcollapsible").trigger("click").blur();
-    }
-    onVerifyClick();
-} );
 // pdfButton.onclick = onPDFClick;
 // slider.oninput = refreshPageScale;
 
@@ -129,12 +136,12 @@ function refreshPageScale(){
  */
 function onVerifyClick(){
   let content = [];
-  alert(editor.blockCount);
+  //alert(editor.blockCount);
   for(let i = 0; i < editor.blockCount; i++){
     content.push(editor.getTextContent(i));
   }
   analyzeText(content.join("\n"));
-  alert(content.join("\n"));
+  //alert(content.join("\n"));
 }
 
 /**
@@ -155,26 +162,48 @@ function onPDFClick(){
 
   doc.save('Test.pdf');
 }
+
+// click on toolbar
+function toolClick(e, toolTag) {
+  var classes = $(toolTag).get(0).classList.value;
+  var toolVal = classes.split(" ")[1];
+  var tool = toolVal.split("-")[0];
+  var val = toolVal.split("-")[1];
+  // update toolBar state infos
+  activeTools[tool] = val;
+  moveCursor(tool, val);
+  // appel vers Baptiste
+  // setFormatAtSelection(activeTools);
+}
+//function setFormatAtToolbar
+
+function moveCursor(tool, val) {
+  var cursor = "#" + tool + "-cursor";
+  var newTool = tool + "-" + val;
+  var position = CURSOR_DATA[newTool];
+  $(cursor).animate({"left": position}, 300);
+}
+
 //////////////////////////////////////////////////  Fin F U N C T I O N S
 
 /////////////////////////////////////////////////////////////////////////
 // ---------------------------------------------------------- R E A D Y
 $(document).ready(function () {
 
-  // Evenements qui viennent de analyser.js
+// Events from analyser.js
   $("body").on("progressChanged", setLexique3Progress);
   $("body").on("analysisStatusChanged", setStatus);
   $("body").on("analysisCompleted", displayAnalysisResults);
 
-  $("#conted").on("mouseup", function(e) {
-    console.log(window.getSelection().toString());
-    console.log(window.getSelection().getRangeAt(0).toString());
+// click on verify button and open panel if closed
+  $("#verify-button").on("click", function () {
+      if ( !$(".hcollapsible").hasClass("active") ) {
+        $(".hcollapsible").trigger("click").blur();
+      }
+      onVerifyClick();
   } );
 
-  // choix fichier texte sur disque client
-  $("#file-input").on('change', readFile);
-
-  // à méditer pour Baptiste
+// à méditer pour Baptiste
   $(".hcollapsible, .collapsible").on("click", function(e) {
     $(this).blur();
     $(this).toggleClass("active");
@@ -183,13 +212,35 @@ $(document).ready(function () {
     else  $(this).next().css({"display": "block"});
   } );
 
+// toolbar events
+  $(".tool").on("click", function(e) {
+    e.preventDefault();
+    $(this).animate({"top": "-10px"}, 100,
+      function () {
+        toolClick(e, this);
+        $(this).animate({"top": "0px"}, 300,
+          function () { $(this).blur();
+        });
+      }
+    );
+  } );
+
+//  editor requires  toolbar update
+  $('#editor').on('currentformatchanged', setFormatAtToolbar);
+
+  $("#conted").on("mouseup", function(e) {
+    console.log(window.getSelection().toString());
+    console.log(window.getSelection().getRangeAt(0).toString());
+  } );
+
+// choix fichier texte sur disque client
+  $("#file-input").on('change', readFile);
+
+
   // ouverture port 9000
   $.ajax({
     'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
   });
-
-  // Logo
-  $("#logo").css({"opacity": 0.5, "height": "45px", "padding-left": "60px"});
 
 
   //$("body").css({"margin-left":"3%", "margin-right":"3%"});
@@ -198,7 +249,16 @@ $(document).ready(function () {
   $("td").css({"border":0});
   $("#td-test").css({"text-align":"center"});
 
-
+// blocages double clic
+  $( document ).on('dblclick', function() {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  });
+  $(".tool").on("dblclick", function (){
+    $(target).blur();
+    $("#page").trigger("click");
+  });
 
    $('body').css({"visibility":"visible"});
 }); // ------------------------------------------------------  fin ready

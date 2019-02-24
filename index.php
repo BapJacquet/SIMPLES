@@ -21,33 +21,87 @@
   <link rel="stylesheet" type="text/css" href="main.css"/>
 </head>
 
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <body style="visibility:hidden;">
+<!--
+	<div style=" z-index: 100; position: fixed; top: 50px; left: 20px;">graisse   taille</div>
+-->
+
 	<div>
 		<div class="box">
-
-			<div id="header" style="border: none;">
-			<!--	<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
+			<div id="header">
+				<!-- <img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
 			</div>
-
-			<div>
-				<div id="menu">
+			<!-- 												M E N U B A R -->
+			<div id="main-menubar">
+				<div id="file-menu" class="dropdown main-menu">
+					<!-- class="btn btn-secondary dropdown-toggle" -->
+					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fichier</button>
+					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<a class="dropdown-item" href="#">Something else here</a>
+					</div>
 				</div>
-				<!-- Create toolbar container -->
-				<div class="hbox">
-					<span id="toolbar">
-						<img src="outilsEdit.png">
+				<div id="resource-menu" class="dropdown main-menu">
+					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ressource</button>
+					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<a class="dropdown-item" href="#">Something else here</a>
+					</div>
+				</div>
+				<div  id="logo">
+					<img src="SimpLES.png" alt="SIMPLES Logo" width="120" height="40" />
+				</div>
+			</div>
+				<!--           			T O O L B A R -->
+				<div id="toolbar">
+					<div id="toolbarlist">
+
+						<div id="bold">
+							<div id="bold-caption" class="caption">graisse</div>
+							<div class="tool bold-false">a</div>
+							<div class="tool bold-true">a</div>
+							<div  id="bold-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+						</div>
+
+						<div id="size">
+							<div id="size-caption" class="caption">taille</div>
+							<div class="tool size-small">a</div>
+							<div class="tool size-medium">a</div>
+							<div class="tool size-large">a</div>
+							<div  id="size-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+						</div>
+
+						<div></div>
+					</div>
+
+					<!-- 							VERIFY BUTTON    -->
+					<span id="analyze" class="simples-span" >
+						<button id="verify-button" type="button" class="simples-button btn btn-success">Simples !</button>
 					</span>
+
+				</div>
+
+				<!-- <div >  class="hbox" ???? -->
+
 
 					<!--
 					<span id="analyze">
 						<button id="pdf-button" type="button" class="toolbar-button btn btn-primary">Exporter PDF</button>
 					</span>
-				-->
+
 					<span id="analyze">
 						<button id="verify-button" type="button" class="toolbar-button btn btn-success">Verifier</button>
 					</span>
 				</div>
 			</div>
+		-->
 
 			<div class="hbox">
 				<div id="content">
@@ -91,16 +145,7 @@
 					<p>Hello World</p>
 				</div-->
 			</div>
-
-				<!--button onclick="logHtmlContent()">s HTML</button-->
-			<!--
-			<div class="slider-container">
-				<input type="range" step="0.1" min="0.1" max="5" value="1" class="slider" id="zoom-range"/>
-			</div>
-			-->
-		</div>
-
-	</div>
+	<!--	</div> ???? -->
 
 
 	<!-- Initialize Quill editor -->

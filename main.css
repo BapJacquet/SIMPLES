@@ -3,8 +3,8 @@ body {
     font-size: 14px;
     color: #000000;
     background-color: #FFFFFF;
-    width: 100%
-    height: 100%
+    width: 100%;
+    height: 100%;
 }
 
 p{
@@ -36,47 +36,6 @@ hr {
     border: none;
 }
 
-#toolbar{
-  background-color: #EEE;
-  color: white;
-  width: 100%;
-}
-
-.toolbar-button {
-  cursor: pointer;
-  height: 100%;
-  /*background-color: blue;
-  color: white;*/
-  border-style: solid;
-  border-width: 1;
-  border-color: #555;
-}
-
-#verify-button{
-  width: 100px;
-  height: 100%;
-  /*background-color: blue;
-  color: white;*/
-}
-
-.box {
-  position: absolute;
-  /* border: 1px solid black; */
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  width: 100%;
-}
-
-.hbox{
-  position: relative;
-  /* border: 1px solid black; */
-  display: flex;
-  flex-flow: row;
-  height : 100%;
-  width: 100%;
-  background-color: #DDD;
-}
 
 .rotate{
   transform: rotate(-90deg);
@@ -149,10 +108,6 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
   background-color: #ffffff;
 }
 
-#logo {
-    margin-bottom: 10px;
-    margin-left: 28px;
-}
 
 /*#menu button{
   height: 30px;
@@ -205,14 +160,6 @@ button span {
   margin: auto;
 }
 
-#toolbar button:hover{
-  border-style: round;
-  border-radius: 2px;
-  border-width: 1px;
-  border-color: #333;
-  color: blue;
-  /*box-shadow: 0 5px 5px 0 rgba(0,0,0,0.24), 0 5px 10px 0 rgba(0,0,0,0.19);*/
-}
 
 #page {
   width: 21cm;
@@ -251,7 +198,187 @@ button span {
   overflow-y: auto;
   overflow-x: auto;
   width: 100%;
-/*
+}
+
+#toolbar{
+  background-color: #EEE;
+  color: white;
+  width: 100%;
+}
+
+
+#toolbar button:hover{
+/*  border-style: round;
+  border-radius: 2px;
+  border-width: 1px;
+  border-color: #333;
+  color: blue; */
+  /*box-shadow: 0 5px 5px 0 rgba(0,0,0,0.24), 0 5px 10px 0 rgba(0,0,0,0.19);*/
+}
+
+#verify-button{
+  /* width: 100px; */
+
+  /* background-color: blue;
+  color: white; */
+}
+
+.box {
+  position: absolute;
+  /* border: 1px solid black; */
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+}
+
+.hbox{
+  position: relative;
+  display: flex;
+  flex-flow: row;
+  height : 100%;
+  width: 100%;
+  background-color: #DDD;
+}
+
+/*  ------------------  S E B   ------------------ */
+
+/* main menu  */
+
+#main-menubar {
+  margin-top: 2px;
+  margin-left: 15px;
+}
+
+.main-menu {
+  height: 34px;
+  display: inline-block;
+  position: relative;
+  top: 5px;
+}
+.dropdown-toggle:hover {
+  cursor: pointer;
+}
+#logo {
+  display: inline-block;
+  float: right;
+  opacity: 0.3;
+  margin-right: 55px;
+}
+
+/*                      toolbar  */
+
+#toolbar {
+  height: 76px;
+}
+
+#toolbarlist {
+  position: relative;
+}
+
+#toolbarlist div {
+	display: inline-block;
+  position: relative;
+}
+
+#toolbarlist > div {  /* bold size etc. */
+  font-family: sans-serif;
+  position: relative;
+  left: -30px;
+}
+
+.caption {
+  pointer-events: none;
+  position: absolute;
+  top: -30px;
+  z-index: 100;
+  font-weight: 400;
+  font-size: 18px;
+  color: #888;
+}
+#bold-caption {
+  left: 64px;
+}
+#size-caption {
+  left: 70px;
+}
+
+.cursor {
+  position: absolute;
+  top: +14px;
+  z-index: 100;
+}
+#bold-cursor {
+  left: -60px;
+}
+#size-cursor {
+  left: -94px;
+}
+
+.tool {
+  width: 30px;
+  text-align: center;
+  vertical-align: baseline;
+
+}
+
+.tool:hover{
+  color: hsla(38, 100%, 50%, 1)  ;
+  cursor: pointer;
+}
+
+.clearfix {
+  overflow: auto;
+}
+
+/*                  BOLD */
+#bold {
+  color: black;
+}
+.bold-false {
+  font-weight: 300;
+  font-size: 38px;
+}
+.bold-true {
+  font-weight: 900;
+  font-size: 38px;
+}
+
+/*                  SIZE */
+#size {
+  color: black;
+}
+.size-small {
+  font-weight: 300;
+  font-size: 28px;
+}
+.size-medium {
+  font-weight: 200;
+  font-size: 38px;
+}
+.size-large {
+  font-weight: 100;
+  font-size: 48px;
+}
+
+/*            Simples! button */
+.simples-span {
+  float: right;
+  position: relative;
+  top: -40px;
+  right: 22px;
+  z-index: 110;
+}
+
+.simples-button {
+  cursor: pointer;
+  height: 100%;
+  width: 190px;
+}
+
+
+
+/*             ...suite #content
 	background:
 		af Shadow cov90s
 		/*linear-gradient(white 30%, rgba(255,255,255,0)),
@@ -278,8 +405,10 @@ button span {
 */
 	/* Opera doesn't support this in the shorthand */
 /*	background-attachment: local, local, scroll, scroll; */
-}
+/* } */
 
+
+/*
 .slider-container{
   width:100%;
   background: #DDD;
@@ -316,3 +445,4 @@ button span {
   background: #af9050;
   cursor: pointer;
 }
+*/

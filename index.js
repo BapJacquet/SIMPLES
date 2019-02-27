@@ -172,7 +172,7 @@ function toolClick(e, toolTag) {
   else activeTools[tool] = val;
   moveCursor(tool, val, true);
   // send data to editor
-  // setFormatAtSelection(activeTools);
+  editor.setFormatAtSelection(activeTools);
 }
 
 //  move tool cursor
@@ -193,10 +193,15 @@ function moveCursor(tool, val, anim) {
 
 // toolbar update from editor
 function setFormatAtToolbar(format) {
-  activeTool.bold = format.bold;
+  activeTools.bold = format.bold;
   moveCursor("bold", format.bold, false);
-  activeTool.size = format.size;
   moveCursor("size", format.size, false);
+  activeTools.size = format.size;
+
+  moveCursor("bullet", format.listitem, false);
+  activeTools.bullet = format.listitem;
+
+
 }
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S

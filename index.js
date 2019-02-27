@@ -156,9 +156,9 @@ function onPDFClick(){
 $(document).ready(function () {
 
   // Evenements qui viennent de analyser.js
-  $("body").on("progressChanged", setLexique3Progress);
-  $("body").on("analysisStatusChanged", setStatus);
-  $("body").on("analysisCompleted", displayAnalysisResults);
+  $("body").on("progresschanged", setLexique3Progress);
+  $("body").on("analysisstatuschanged", setStatus);
+  $("body").on("analysiscompleted", displayAnalysisResults);
 
   $("#conted").on("mouseup", function(e) {
     console.log(window.getSelection().toString());

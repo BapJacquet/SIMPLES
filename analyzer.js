@@ -1,81 +1,91 @@
-/*=======================================================================
-  VARIABLES
-  =======================================================================*/
+/* eslint no-unused-vars: ["warn", { "varsIgnorePattern": "analyzeText" }] */
+/* global $ */
+/* global CustomEvent */
+/* global XMLHttpRequest */
+/* global XDomainRequest */
+/* global fetch */
+/* =======================================================================
+   VARIABLES
+   ======================================================================= */
 
-var body = $("body").get(0);
-var complexWords = [];
+var body = $('body').get(0);
 
-/*=======================================================================
-  EVENTS
-  =======================================================================*/
+/* =======================================================================
+   EVENTS
+   ======================================================================= */
 
 // NEED TO RAISE AN EVENT WHEN PROGRESS IS CHANGED
-var progressChanged = new CustomEvent("progressChanged", {
+var progressChanged = new CustomEvent('progresschanged', {
   detail: {
     value: 0
   },
   bubbles: false,
-  cancelable : false
+  cancelable: false
 });
+function dispatchProgressChanged (value) {
+  progressChanged.detail.value = value;
+  body.dispatchEvent(progressChanged);
+}
 // NEED TO RAISE AN EVENT WHEN ANALYSIS IS COMPLETED
-var analysisCompleted = new CustomEvent("analysisCompleted", {
+var analysisCompleted = new CustomEvent('analysiscompleted', {
   detail: {
     complexWords: []
   },
   bubbles: false,
-  cancelable : false
+  cancelable: false
 });
+function dispatchAnalysisCompleted (complexWords) {
+  analysisCompleted.detail.complexWords = complexWords;
+  body.dispatchEvent(analysisCompleted);
+}
 
 // NEED TO RAISE AN EVENT WHEN ANALYSIS IS COMPLETED
-var analysisStatusChanged = new CustomEvent("analysisStatusChanged", {
+var analysisStatusChanged = new CustomEvent('analysisstatuschanged', {
   detail: {},
   bubbles: false,
-  cancelable : false
+  cancelable: false
 });
+function dispatchAnalysisStatusChanged (moduleName, status) {
+  analysisStatusChanged.detail.module = moduleName;
+  analysisStatusChanged.detail.status = status;
+  body.dispatchEvent(analysisStatusChanged);
+}
 
-
-/*=======================================================================
-  FUNCTIONS
-  =======================================================================*/
+/* =======================================================================
+   FUNCTIONS
+   ======================================================================= */
 
 /**
  * Begins the analysis of the given text.
  * @param {string} text - Multiline string to analyse.
  */
-function analyzeText(text){
-  // Clear list of complex words
-  complexWords.length = 0;
+function analyzeText (text) {
+  dispatchProgressChanged(0);
 
-  progressChanged.detail.value = 0;
-  body.dispatchEvent(progressChanged);
-
-  var request = createCORSRequest("POST", 'http://sioux.univ-paris8.fr:9000/');
-  //var request = createCORSRequest("POST", 'localhost:9000/');
-  request.onreadystatechange = async function(){
-    if(request.readyState == 4){
-      if(request.status == 200){
-
-        analysisStatusChanged.detail.status = "ok";
-        analysisStatusChanged.detail.module = "stanford";
-        body.dispatchEvent(analysisStatusChanged);
-        //setStatus("Stanford", "ok");
+  var request = createCORSRequest('POST', 'http://sioux.univ-paris8.fr:9000/');
+  // var request = createCORSRequest("POST", 'localhost:9000/');
+  request.onreadystatechange = async function () {
+    if (request.readyState === 4) {
+      if (request.status === 200) {
+        dispatchAnalysisStatusChanged('stanford', 'ok');
+        let complexWords = [];
 
         // Parse la réponse en JSON.
         var obj = JSON.parse(request.responseText);
 
         // Count the total number of tokens.
-        var totalTokens = 0;
-        for(var i = 0; i < obj.sentences.length; i++){
+        let totalTokens = 0;
+        for (let i = 0; i < obj.sentences.length; i++) {
           totalTokens += obj.sentences[i].tokens.length;
         }
-        var progress = 0;
+        let progress = 0;
 
         // Récupère le résultat pour chaque phrase.
-        for(var i = 0; i < obj.sentences.length; i++){
-          var s = obj.sentences[i];
+        for (let i = 0; i < obj.sentences.length; i++) {
+          let s = obj.sentences[i];
           // Récupère le résultat pour chaque mot.
-          for(var t = 0; t < s.tokens.length; t++){
-            var word = {};
+          for (let t = 0; t < s.tokens.length; t++) {
+            let word = {};
             // Position de la première lettre
             word.startOffset = s.tokens[t].characterOffsetBegin;
             // Longueur
@@ -85,49 +95,33 @@ function analyzeText(text){
             // Sa fonction
             word.pos = s.tokens[t].pos;
             // Recherche plus d'informations dans le lexique si nécessaire.
-            if(needLexique3(word.pos)){
+            if (needLexique3(word.pos)) {
               // Autres informations
               let data = await checkLexique3(word);
               // Fréquence du mot
               try {
                 word.frequency = Math.max(data.movies, data.books);
                 // Ajoute le mot à la liste des mots complexes si besoin.
-                switch(frequencyToText(word.frequency)){
+                switch (frequencyToText(word.frequency)) {
                   case 'inconnu': case 'très rare': case 'rare': case 'commun':
-                  complexWords.push(word); break;
+                    complexWords.push(word); break;
                 }
-              }
-              catch (e) {
+              } catch (e) {
                 console.log('Erreur data: ' + data);
               }
             }
-            progressChanged.detail.value = (++progress * 100) / totalTokens;
-            body.dispatchEvent(progressChanged);
-            //setLexique3Progress((++progress * 100) / totalTokens);
+            dispatchProgressChanged((++progress * 100) / totalTokens);
           }
         }
-
-        analysisCompleted.detail.complexWords = complexWords;
-        body.dispatchEvent(analysisCompleted);
-        //displayAnalysisResults();
+        dispatchAnalysisCompleted(complexWords);
       } else {
-        analysisStatusChanged.detail.status = "echec";
-        analysisStatusChanged.detail.module = "stanford";
-        body.dispatchEvent(analysisStatusChanged);
-        //setStatus("Stanford", "echec");
+        dispatchAnalysisStatusChanged('stanford', 'echec');
       }
     } else {
-      analysisStatusChanged.detail.status = "en cours";
-      analysisStatusChanged.detail.module = "stanford";
-      body.dispatchEvent(analysisStatusChanged);
-      //setStatus("Stanford", "en cours");
+      dispatchAnalysisStatusChanged('stanford', 'en cours');
     }
-  }
+  };
   request.send(text);
-}
-
-async function parseSentence(sentence){
-
 }
 
 /**
@@ -135,8 +129,8 @@ async function parseSentence(sentence){
  * @param {string} pos - The Part-Of-Speech to test.
  * @return {boolean} - Whether the Part-Of-Speech requires a check or not.
  */
-function needLexique3(pos){
-  switch(pos){
+function needLexique3 (pos) {
+  switch (pos) {
     case 'PUNCT' : case 'ADP' : case 'DET' : case 'PRON' : return false;
     default: return true;
   }
@@ -147,38 +141,27 @@ function needLexique3(pos){
  * @param {Word} word - Word object to check the database with.
  * @return {Object} - Data returned from Lexique3.
  */
-async function checkLexique3(word){
-  analysisStatusChanged.detail.status = "en cours";
-  analysisStatusChanged.detail.module = "lexique3";
-  body.dispatchEvent(analysisStatusChanged);
-  //setStatus("Lexique3", "en cours");
+async function checkLexique3 (word) {
+  dispatchAnalysisStatusChanged('lexique3', 'en cours');
   // S'assure que le mot est en minuscules.
   let text = word.text.toLowerCase();
   // Enlève le tiret si il y en a un au début du mot.
-  if(text.startsWith("-")) text = text.substring(1, text.length);
+  if (text.startsWith('-')) text = text.substring(1, text.length);
   // Transforme la fonction syntaxique pour être compatible avec Lexique3.
-  pos = convertPos(word.pos, 'Lexique3');
+  let pos = convertPos(word.pos, 'Lexique3');
   console.log(text + '  ' + pos);
-
-  ///////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
   let response = await fetch(`https://sioux.univ-paris8.fr/simplestest/lexique3_multi.php?word=${text}&pos=${pos}`)
-  //let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
-  //let response = await fetch(`http://localhost:8888/simples2/lexique3_multi.php?word=${text}&pos=${pos}`)
-  .catch(function(error) {
-    analysisStatusChanged.detail.status = "echec";
-    analysisStatusChanged.detail.module = "lexique3";
-    body.dispatchEvent(analysisStatusChanged);
-    //setStatus("Lexique3", "echec");
-  });
+  // let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
+  // let response = await fetch(`http://localhost:8888/simples2/lexique3_multi.php?word=${text}&pos=${pos}`)
+    .catch(function (error) {
+      dispatchAnalysisStatusChanged('lexique3', 'echec');
+      console.log(error);
+    });
   let data = await response.json();
 
-  //console.log(text + "(" +pos +") : " + JSON.stringify(data));
-  analysisStatusChanged.detail.status = "ok";
-  analysisStatusChanged.detail.module = "lexique3";
-  body.dispatchEvent(analysisStatusChanged);
-  //setStatus("Lexique3", "ok");
+  // console.log(text + "(" +pos +") : " + JSON.stringify(data));
+  dispatchAnalysisStatusChanged('lexique3', 'ok');
   console.log(data);
   return data[0];
 }
@@ -188,13 +171,13 @@ async function checkLexique3(word){
  * @param {int} frequency - The frequency of the word.
  * @return {string} - A user friendly text.
  */
-function frequencyToText(frequency){
-  if (typeof frequency == 'undefined') return "inconnu";
-  if(frequency < 5) return "très rare";
-  if(frequency < 10) return "rare";
-  if(frequency < 20) return "commun";
-  if(frequency < 50) return "fréquent";
-  return "très fréquent";
+function frequencyToText (frequency) {
+  if (typeof frequency === 'undefined') return 'inconnu';
+  if (frequency < 5) return 'très rare';
+  if (frequency < 10) return 'rare';
+  if (frequency < 20) return 'commun';
+  if (frequency < 50) return 'fréquent';
+  return 'très fréquent';
 }
 
 /**
@@ -204,17 +187,16 @@ function frequencyToText(frequency){
  * @param {string} targetFormat - The target format. Can be Lexique3 or Google.
  * @return {string} - The converted Part-Of-Speech label.
  */
-function convertPos(pos, targetFormat){
-  switch(targetFormat){
+function convertPos (pos, targetFormat) {
+  switch (targetFormat) {
     case 'Lexique3':
-    switch(pos){
-      case 'VERB': return 'VER';
-      case 'INTJ': return 'ONO';
-      case 'PRON': return 'PRO';
-      case 'NOUN': return 'NOM';
-      default: return pos;
-    }
-    break;
+      switch (pos) {
+        case 'VERB': return 'VER';
+        case 'INTJ': return 'ONO';
+        case 'PRON': return 'PRO';
+        case 'NOUN': return 'NOM';
+        default: return pos;
+      }
     default: return pos;
   }
 }
@@ -225,11 +207,11 @@ function convertPos(pos, targetFormat){
  * @param {string} url - The url of the request.
  * @return - Either a XMLHttpRequest.
  */
-function createCORSRequest(method, url){
+function createCORSRequest (method, url) {
   var xhr = new XMLHttpRequest();
-  if("withCredentials" in xhr){
+  if ('withCredentials' in xhr) {
     xhr.open(method, url, true);
-  } else if( typeof XDomainRequest != "undefined"){
+  } else if (typeof XDomainRequest !== 'undefined') {
     xhr = new XDomainRequest();
     xhr.open(method, url);
   } else {

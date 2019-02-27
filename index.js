@@ -172,7 +172,7 @@ function toolClick(e, toolTag) {
   else activeTools[tool] = val;
   moveCursor(tool, val, true);
   // send data to editor
-  // setFormatAtSelection(activeTools);
+  setFormatAtSelection(activeTools);
 }
 
 //  move tool cursor

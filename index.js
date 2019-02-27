@@ -226,6 +226,21 @@ $(document).ready(function () {
       onVerifyClick();
   } );
 
+// à méditer pour Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
+  $(window).on("load resize", function() {
+    let grid = $(".box");
+    let h = window.innerHeight;
+    let remaining = h;
+    for(let i = 0; i < grid.get(0).childNodes.length; i++){
+      let n = grid.get(0).childNodes[i];
+      if(n.classList && !n.classList.contains('hbox')){
+        remaining -= $(n).outerHeight();
+      }
+    }
+    $('.hbox').css("max-height", remaining + "px");
+    $('.hbox').css("margin", "0px");
+    $('.box').css("overflow", "hidden");
+  });
 // à méditer pour Baptiste
   $(".hcollapsible, .collapsible").on("click", function(e) {
     $(this).blur();

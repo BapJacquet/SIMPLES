@@ -22,30 +22,127 @@
 	<link rel="stylesheet" type="text/css" href="editor.css"/>
 </head>
 
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <body style="visibility:hidden;">
+<!--
+	<div style=" z-index: 100; position: fixed; top: 50px; left: 20px;">graisse   taille</div>
+-->
+
 	<div>
 		<div class="box">
-
 			<div id="header">
-				<img src="SimpLES.png" id="logo" alt="SIMPLES Logo" height="49" />
+				<!-- <img src="SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
 			</div>
-
-			<div>
-				<div id="menu">
+			<!-- 												M E N U B A R -->
+			<div id="main-menubar">
+				<div id="file-menu" class="dropdown main-menu">
+					<!-- class="btn btn-secondary dropdown-toggle" -->
+					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fichier</button>
+					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<a class="dropdown-item" href="#">Something else here</a>
+					</div>
 				</div>
-				<!-- Create toolbar container -->
-				<div class="hbox">
-					<span id="toolbar">
-						<img src="outilsEdit.png">
+				<div id="resource-menu" class="dropdown main-menu">
+					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ressource</button>
+					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<a class="dropdown-item" href="#">Something else here</a>
+					</div>
+				</div>
+				<!-- LOGO -->
+				<div  id="logo">
+					<img src="SimpLES_white.png" alt="SIMPLES Logo" width="130" height="45" />
+				</div>
+			</div>
+				<!--           			T O O L B A R -->
+				<div id="toolbar">
+					<div id="toolbarlist">
+
+						<div id="bold">
+							<div id="bold-caption" class="caption">gras</div>
+							<div class="tool bold-true">a</div>
+							<div  id="bold-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+						</div>
+
+						<div id="size">
+							<div id="size-caption" class="caption">taille</div>
+							<div class="tool size-small">a</div>
+							<div class="tool size-medium">a</div>
+							<div class="tool size-large">a</div>
+							<div  id="size-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+						</div>
+
+						<div id="color">
+							<div id="color-caption" class="caption">couleur</div>
+							<div class="tool color-black">a</div>
+							<div class="tool color-red">a</div>
+							<div class="tool color-blue">a</div>
+							<div class="tool color-green">a</div>
+							<div class="tool color-custom">?</div>
+							<div  id="color-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+							<div id="tool-limit">|</div>
+						</div>
+
+						<div id="title">
+							<div id="title-caption" class="caption">titre</div>
+							<div class="tool title-h1">T</div>
+							<div class="tool title-h2">T</div>
+							<div class="tool title-h3">T</div>
+							<div class="tool title-h4">T</div>
+							<div  id="title-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+						</div>
+
+						<div id="border">
+							<div id="border-caption" class="caption">cadre</div>
+							<div class="tool-border-bullet border-true"><img src="borderTrue.png" /></div>
+							<div  id="border-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+						</div>
+
+						<div id="bullet">
+							<div id="bullet-caption" class="caption">puce</div>
+							<div class="tool-border-bullet bullet-true"><img src="bulletTrue.png" /></div>
+							<div  id="bullet-cursor" class="tool-cursor">
+								<img src="arrow-u-black.png" />
+							</div>
+						</div>
+
+						<div></div>
+					</div>
+
+					<!-- 							VERIFY BUTTON    -->
+					<span id="analyze" class="simples-span" >
+						<button id="verify-button" type="button" class="simples-button  btn-info">&nbsp;</button>
 					</span>
+
+				</div>
+
+				<!-- <div >  class="hbox" ???? -->
+
+
+					<!--
 					<span id="analyze">
 						<button id="pdf-button" type="button" class="toolbar-button btn btn-primary">Exporter PDF</button>
 					</span>
+
 					<span id="analyze">
 						<button id="verify-button" type="button" class="toolbar-button btn btn-success">Verifier</button>
 					</span>
 				</div>
 			</div>
+		-->
 
 			<div class="hbox">
 				<div id="content">
@@ -56,15 +153,15 @@
 						</div>
 					</div>
 				</div>
-				<button class="hcollapsible"><div class="rotate">Analyse</div></button>
+				<button class="hcollapsible"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
 				<div class="hcollapsible-content">
 					<div id="stanford-connection"></div>
-					<div class="alert alert-info" role="alert" id="lexique3-connection">
+					<div class="alert alert-light" role="alert" id="lexique3-connection">
 						<div>Lexique3 : </div>
 						<div class="progress">
-							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="70"
-							aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:70%">
-								70%
+							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0"
+							aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
+								0%
 							</div>
 						</div>
 					</div>
@@ -89,14 +186,7 @@
 					<p>Hello World</p>
 				</div-->
 			</div>
-
-				<!--button onclick="logHtmlContent()">s HTML</button-->
-			<div class="slider-container">
-				<input type="range" step="0.1" min="0.1" max="5" value="1" class="slider" id="zoom-range"/>
-			</div>
-		</div>
-
-	</div>
+	<!--	</div> ???? -->
 
 
 	<!-- Initialize Simples Editor -->

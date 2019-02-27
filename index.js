@@ -205,10 +205,10 @@ function setFormatAtToolbar(format) {
 // ********************************************************** R E A D Y
 $(document).ready(function () {
 
-// Events from analyser.js
-  $("body").on("progressChanged", setLexique3Progress);
-  $("body").on("analysisStatusChanged", setStatus);
-  $("body").on("analysisCompleted", displayAnalysisResults);
+  // Evenements qui viennent de analyser.js
+  $("body").on("progresschanged", setLexique3Progress);
+  $("body").on("analysisstatuschanged", setStatus);
+  $("body").on("analysiscompleted", displayAnalysisResults);
 
   $("#lexique3-connection").css("display", "none");
 

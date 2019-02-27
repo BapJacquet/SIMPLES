@@ -1,0 +1,17 @@
+.editor-image {
+  position: relative;
+  top: 0px;
+  -webkit-filter: none;
+  filter: none;
+  -webkit-transition: top 0.25s, -webkit-filter 0.25s;
+  transition: top 0.25s, filter 0.25s;
+}
+
+.editor-image:hover {
+  position: relative;
+  top: -5px;
+  -webkit-filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
+  -webkit-transition: top 0.25s, -webkit-filter 0.25s;
+  transition: top 0.25s, filter 0.25s;
+}

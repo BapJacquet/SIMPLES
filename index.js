@@ -1,37 +1,5 @@
 //index.js
 
-const editor = new Editor('#editor');
-
-const CURSOR_DATA = {
-    "bold-false": "-60px",
-    "bold-true": "-25px",
-    "size-small": "-94px",
-    "size-medium": "-60px",
-    "size-large": "-26px",
-};
-
-var activeTools = {
-  bold: "false",
-  size: "medium",
-};
-
-var slider = document.getElementById('zoom-range');
-var page = document.getElementById('page');
-
-var pdfButton = document.getElementById('pdf-button');
-var analysisContent = document.getElementById('analysis-content');
-var stanfordConnection = document.getElementById('stanford-connection');
-var lexique3Connection = document.getElementById('lexique3-connection');
-var lexique3Progress = document.getElementById('lexique3-progress');
-
-var lastReadText;
-
-// Appelle la fonction pour le zoom dés le début.
-//refreshPageScale();
-
-// pdfButton.onclick = onPDFClick;
-// slider.oninput = refreshPageScale;
-
 
 ////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////// F U N C T I O N S
@@ -62,6 +30,11 @@ function setLexique3Progress(event){
   lexique3Progress.style.width = percent;
   lexique3Progress.setAttribute('aria-valuenow', value);
   lexique3Progress.innerHTML = percent;
+  if ( $(lexique3Connection).css("display") == "none" )
+    $(lexique3Connection).css("display", "block");
+  if ( value == 100 ) {
+    $(lexique3Connection).css("display", "none");
+  }
 }
 
 /**
@@ -163,31 +136,73 @@ function onPDFClick(){
   doc.save('Test.pdf');
 }
 
+// ******************************************** T O O L B A R
+
+function initToolbar() { // tool cursor initial values
+  $("#bold-cursor").css("left", CURSOR_DATA["bold-" + BOLD_INIT]);
+  $("#size-cursor").css("left", CURSOR_DATA["size-" + SIZE_INIT]);
+  $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
+//  $("#title-cursor").css("left", CURSOR_DATA["size-" + TITLE_INIT]);
+  activeTools.bold = BOLD_INIT;
+  activeTools.size = SIZE_INIT;
+  activeTools.color = COLOR_INIT;
+  activeTools.title = TITLE_INIT;
+  activeTools.border = BORDER_INIT;
+  activeTools.bullet = BULLET_INIT;
+  moveCursor("bold", activeTools.bold, false);
+  moveCursor("size", activeTools.size, false);
+  moveCursor("color", activeTools.color, false);
+  moveCursor("title", activeTools.title, false);
+  moveCursor("border", activeTools.border, false);
+  moveCursor("bullet", activeTools.bullet, false);
+}
+
 // click on toolbar
 function toolClick(e, toolTag) {
   var classes = $(toolTag).get(0).classList.value;
   var toolVal = classes.split(" ")[1];
   var tool = toolVal.split("-")[0];
   var val = toolVal.split("-")[1];
-  // update toolBar state infos
-  activeTools[tool] = val;
-  moveCursor(tool, val);
-  // appel vers Baptiste
+
+  if ( !(tool == "size" || tool == "color" ) &&
+          val == activeTools[tool] ) {
+    activeTools[tool] = "none";
+    val = "none";
+  }
+  else activeTools[tool] = val;
+  moveCursor(tool, val, true);
+  // send data to editor
   // setFormatAtSelection(activeTools);
 }
-//function setFormatAtToolbar
 
-function moveCursor(tool, val) {
+//  move tool cursor
+function moveCursor(tool, val, anim) {
   var cursor = "#" + tool + "-cursor";
-  var newTool = tool + "-" + val;
-  var position = CURSOR_DATA[newTool];
-  $(cursor).animate({"left": position}, 300);
+  var oldVis = $(cursor).css("visibility");
+  if ( val == "none" ) $(cursor).css("visibility", "hidden");
+  else {
+    $(cursor).css("visibility", "visible");
+    var newTool = tool + "-" + val;
+    var position = CURSOR_DATA[newTool];
+/*  if ( anim ) */
+
+    if ( oldVis != "hidden" ) $(cursor).animate({"left": position}, 300);
+    else $(cursor).css({"left": position});
+  }
 }
 
-//////////////////////////////////////////////////  Fin F U N C T I O N S
+// toolbar update from editor
+function setFormatAtToolbar(format) {
+  activeTool.bold = format.bold;
+  moveCursor("bold", format.bold, false);
+  activeTool.size = format.size;
+  moveCursor("size", format.size, false);
+}
 
-/////////////////////////////////////////////////////////////////////////
-// ---------------------------------------------------------- R E A D Y
+////////////////////////////////////////////////  Fin F U N C T I O N S
+
+//*********************************************************************
+// ********************************************************** R E A D Y
 $(document).ready(function () {
 
 // Events from analyser.js
@@ -195,8 +210,11 @@ $(document).ready(function () {
   $("body").on("analysisStatusChanged", setStatus);
   $("body").on("analysisCompleted", displayAnalysisResults);
 
+  $("#lexique3-connection").css("display", "none");
+
 // click on verify button and open panel if closed
   $("#verify-button").on("click", function () {
+      $(this).blur();
       if ( !$(".hcollapsible").hasClass("active") ) {
         $(".hcollapsible").trigger("click").blur();
       }
@@ -210,23 +228,61 @@ $(document).ready(function () {
     if ( $(this).next().css("display") == "block" )
           $(this).next().css({"display": "none"});
     else  $(this).next().css({"display": "block"});
+
+    if ( $(".hcollapsible").hasClass("active") )
+          $(".hcollapsible div").text("Masquer\xA0l'analyse");
+    else  $(".hcollapsible div").text("Montrer\xA0l'analyse");
+
+    $(".hcollapsible").css("background-color", "#6c757d");
   } );
 
-// toolbar events
-  $(".tool").on("click", function(e) {
+/*
+$("#verify-button").on("click", function () {
+  $(this).blur();
+  if ( !$(".hcollapsible").hasClass("active") ) {
+    $(".hcollapsible").trigger("click").blur();
+  }
+
+  onVerifyClick();
+}
+*/
+
+
+
+
+//                                        toolbar events
+
+// jquery tool hover
+  $(".tool, .tool-border-bullet").mouseenter( function () {
+//    console.log("avant enter: " + $(this).css("top") + $(this).css("cursor"));
+    $(this).css({"top":"-5px", "cursor": "pointer"});
+//    console.log("après enter: " + $(this).css("top") + $(this).css("cursor"));
+  } ).mouseleave( function () {
+//    console.log("avant leave: " + $(this).css("top") + $(this).css("cursor"));
+    $(this).css({"top":"0", "cursor": "default"});
+//    console.log("après leave: " + $(this).css("top") + $(this).css("cursor"));
+  } );
+
+//  tool click
+  $(".tool, .tool-border-bullet").on("click", function(e) {
     e.preventDefault();
     $(this).animate({"top": "-10px"}, 100,
       function () {
-        toolClick(e, this);
         $(this).animate({"top": "0px"}, 300,
           function () { $(this).blur();
         });
       }
     );
+    toolClick(e, this);
   } );
 
-//  editor requires  toolbar update
-  $('#editor').on('currentformatchanged', setFormatAtToolbar);
+//  editor requires toolbar update
+  $('#editor').on('currentformatchanged', function(e) {
+    setFormatAtToolbar(e.detail);
+  } );
+
+  // toolbar init
+  initToolbar();
 
   $("#conted").on("mouseup", function(e) {
     console.log(window.getSelection().toString());
@@ -249,16 +305,59 @@ $(document).ready(function () {
   $("td").css({"border":0});
   $("#td-test").css({"text-align":"center"});
 
-// blocages double clic
-  $( document ).on('dblclick', function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  });
-  $(".tool").on("dblclick", function (){
-    $(target).blur();
-    $("#page").trigger("click");
-  });
-
    $('body').css({"visibility":"visible"});
-}); // ------------------------------------------------------  fin ready
+
+}); // ******************************************************  F I N   R E A D Y
+//  ****************************************************************************
+
+const editor = new Editor('#editor');
+
+const CURSOR_DATA = {
+
+    "bold-true": "-38px",
+
+    "size-small": "-94px",
+    "size-medium": "-72px",
+    "size-large": "-46px",
+
+    "color-black": "-162px",
+    "color-red": "-138px",
+    "color-blue": "-113px",
+    "color-green": "-90px",
+    "color-custom":"-65px",
+
+    "title-h1": "-128px",
+    "title-h2": "-104px",
+    "title-h3": "-80px",
+    "title-h4":"-58px",
+
+    "border-true": "-6px",
+
+    "bullet-true": "-26px",
+};
+
+const BOLD_INIT = "none";
+const SIZE_INIT = "medium";
+const COLOR_INIT = "black";
+const TITLE_INIT = "none";
+const BORDER_INIT = "none";
+const BULLET_INIT = "none";
+
+var activeTools = {}; // tools present state
+
+var slider = document.getElementById('zoom-range');
+var page = document.getElementById('page');
+
+var pdfButton = document.getElementById('pdf-button');
+var analysisContent = document.getElementById('analysis-content');
+var stanfordConnection = document.getElementById('stanford-connection');
+var lexique3Connection = document.getElementById('lexique3-connection');
+var lexique3Progress = document.getElementById('lexique3-progress');
+
+var lastReadText;
+
+// Appelle la fonction pour le zoom dés le début.
+//refreshPageScale();
+
+// pdfButton.onclick = onPDFClick;
+// slider.oninput = refreshPageScale;

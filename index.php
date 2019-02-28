@@ -52,97 +52,94 @@
 						<a class="dropdown-item" href="#">Something else here</a>
 					</div>
 				</div>
-				<!-- LOGO -->
-				<div  id="logo">
-					<img src="SimpLES_white.png" alt="SIMPLES Logo" width="130" height="45" />
-				</div>
+				<!-- fin main-menubar -->
 			</div>
-				<!--           			T O O L B A R -->
-				<div id="toolbar">
-					<div id="toolbarlist">
+			<!--           			T O O L B A R -->
+			<div id="toolbar">
+				<div id="toolbarlist">
 
-						<div id="bold">
-							<div id="bold-caption" class="caption">gras</div>
-							<div class="tool bold-true">a</div>
-							<div  id="bold-cursor" class="tool-cursor">
-								<img src="arrow-u-black.png" />
-							</div>
+					<div id="bold">
+						<div id="bold-caption" class="caption">gras</div>
+						<div class="tool bold-false">a</div>
+						<div class="tool bold-true">a</div>
+						<div  id="bold-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
 						</div>
-
-						<div id="size">
-							<div id="size-caption" class="caption">taille</div>
-							<div class="tool size-small">a</div>
-							<div class="tool size-medium">a</div>
-							<div class="tool size-large">a</div>
-							<div  id="size-cursor" class="tool-cursor">
-								<img src="arrow-u-black.png" />
-							</div>
-						</div>
-
-						<div id="color">
-							<div id="color-caption" class="caption">couleur</div>
-							<div class="tool color-black">a</div>
-							<div class="tool color-red">a</div>
-							<div class="tool color-blue">a</div>
-							<div class="tool color-green">a</div>
-							<div class="tool color-custom">?</div>
-							<div  id="color-cursor" class="tool-cursor">
-								<img src="arrow-u-black.png" />
-							</div>
-							<div id="tool-limit">|</div>
-						</div>
-
-						<div id="title">
-							<div id="title-caption" class="caption">titre</div>
-							<div class="tool title-h1">T</div>
-							<div class="tool title-h2">T</div>
-							<div class="tool title-h3">T</div>
-							<div class="tool title-h4">T</div>
-							<div  id="title-cursor" class="tool-cursor">
-								<img src="arrow-u-black.png" />
-							</div>
-						</div>
-
-						<div id="border">
-							<div id="border-caption" class="caption">cadre</div>
-							<div class="tool-border-bullet border-true"><img src="borderTrue.png" /></div>
-							<div  id="border-cursor" class="tool-cursor">
-								<img src="arrow-u-black.png" />
-							</div>
-						</div>
-
-						<div id="bullet">
-							<div id="bullet-caption" class="caption">puce</div>
-							<div class="tool-border-bullet bullet-true"><img src="bulletTrue.png" /></div>
-							<div  id="bullet-cursor" class="tool-cursor">
-								<img src="arrow-u-black.png" />
-							</div>
-						</div>
-
-						<div></div>
 					</div>
 
-					<!-- 							VERIFY BUTTON    -->
-					<span id="analyze" class="simples-span" >
-						<button id="verify-button" type="button" class="simples-button  btn-info">&nbsp;</button>
-					</span>
+					<div id="size">
+						<div id="size-caption" class="caption">taille</div>
+						<div class="tool size-s1">a</div>
+						<div class="tool size-s2">a</div>
+						<div class="tool size-s3">a</div>
+						<div  id="size-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+					</div>
 
+					<div id="color">
+						<div id="color-caption" class="caption">couleur</div>
+						<div class="tool color-black">a</div>
+						<div class="tool color-red">a</div>
+						<div class="tool color-blue">a</div>
+						<div class="tool color-green">a</div>
+						<div class="tool color-custom">?</div>
+						<div  id="color-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+						<div id="tool-limit">|</div>
+					</div>
+
+					<div id="title">
+						<div id="title-caption" class="caption">titre</div>
+						<div class="tool title-h1">T</div>
+						<div class="tool title-h2">T</div>
+						<div class="tool title-h3">T</div>
+						<div class="tool title-h4">T</div>
+						<div class="tool title-none"><img src="titleNone.png"></div>
+						<div  id="title-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+					</div>
+
+					<div id="frame">
+						<div id="frame-caption" class="caption">cadre</div>
+						<div class="tool-frame-bullet frame-true"><img src="frameTrue.png" /></div>
+						<div class="tool-frame-bullet frame-false"><img src="titleNone.png" /></div>
+						<div  id="frame-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+					</div>
+
+					<div id="bullet">
+						<div id="bullet-caption" class="caption">puce</div>
+						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
+						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
+						<div  id="bullet-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+					</div>
+
+					<div></div>
+				</div>  <!-- fin toolbarlist -->
+
+
+				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
+				<div class="arrows arrow-l">  <!-- scroll toolbar -->
+					<img id="img-l" src="arrow-l-white.png">
 				</div>
 
-				<!-- <div >  class="hbox" ???? -->
+				<span id="analyze" class="simples-span" >
+					<button id="verify-button" type="button" class="simples-button  btn-info">
+						<img src="SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
+					</button>
+				</span>
 
-
-					<!--
-					<span id="analyze">
-						<button id="pdf-button" type="button" class="toolbar-button btn btn-primary">Exporter PDF</button>
-					</span>
-
-					<span id="analyze">
-						<button id="verify-button" type="button" class="toolbar-button btn btn-success">Verifier</button>
-					</span>
+				<div class="arrows arrow-r">  <!-- scroll toolbar -->
+					<img id="img-r" src="arrow-r-white.png">
 				</div>
+
 			</div>
-		-->
 
 			<div class="hbox">
 				<div id="content">

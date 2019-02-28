@@ -168,14 +168,18 @@ function toolClick(e, toolTag) {
 //                                             move tool cursor
 function moveCursor(tool, val, anim) {
   var cursor = "#" + tool + "-cursor";
-//  if ( val == "ambiguous" ) $(cursor).css("visibility", "hidden");
-  var newTool = tool + "-" + val;
-  var position = CURSOR_DATA[newTool];
+  if ( val == "ambiguous" ) {
+    $(cursor).css("visibility", "hidden");
+  }
+  else {
+    $(cursor).css("visibility", "visible");
+    var newTool = tool + "-" + val;
+    var position = CURSOR_DATA[newTool];
 
-/*  if ( anim ) */
-  $(cursor).animate({"left": position}, 300);
-//  $(cursor).css({"left": position});
-
+  /*  if ( anim ) */
+    $(cursor).animate({"left": position}, 300);
+  //  $(cursor).css({"left": position});
+  }
 }
 
 //                                    send toolbar data to editor
@@ -199,9 +203,10 @@ function sendtoEditor(tool, val) {
 
 //                                    toolbar update from editor
 function setFormatAtToolbar(format) {
-  var color;
   var items = format.listitem;
-  switch( format.color ) {
+  var color = items.color;
+
+  switch( color ) {
     case "#ff0000":
     color = 'red'; break;
     case "#00ff00":

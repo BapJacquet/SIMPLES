@@ -37,8 +37,14 @@ class Editor {
     $(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
     $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent(event.target.id); });
-    $(this.id).on('mouseup', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
+    $('body').on('mouseup', event => {
+      if (this.capturedMouseDown) {
+        this.updateFormat();
+      }
+      this.capturedMouseDown = false;
+    });
   }
 
   /**
@@ -107,7 +113,7 @@ class Editor {
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({bold: true, listitem: true});
+          this.setFormatAtSelection({bold: true, bullet: true});
         }
         break;
       case 'Backspace':
@@ -168,12 +174,13 @@ class Editor {
   updateFormat () {
     let oldFormat = this.format;
     this.format = this.getCurrentFormat();
+    console.log(this.format);
     if (oldFormat == null) {
       this.dispatchCurrentFormatChanged(this.format);
     } else {
       let boldChanged = oldFormat.bold !== this.format.bold;
       let titleChanged = oldFormat.title !== this.format.title;
-      let listChanged = oldFormat.listitem !== this.format.listitem;
+      let listChanged = oldFormat.bullet !== this.format.bullet;
       if (boldChanged || titleChanged || listChanged) {
         this.dispatchCurrentFormatChanged(this.format);
       }
@@ -186,7 +193,7 @@ class Editor {
    */
   getCurrentFormat () {
     let selection = this.getSelection();
-    console.log(selection);
+    //console.log(selection);
     if (selection.rangeCount === 0) return {};
     let range = selection.getRangeAt(0);
     return this.checkFormatAcrossSelection(this.getFormatForNode(range.startContainer));
@@ -202,7 +209,7 @@ class Editor {
     let h5 = this.hasReccursiveTag('H5', element);
     let result = {};
     result.bold = bold;
-    result.listitem = listitem;
+    result.bullet = listitem;
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
     return result;
   }
@@ -210,7 +217,7 @@ class Editor {
   checkFormatAcrossSelection (format) {
     let selection = this.getSelection();
     let bold = format.bold;
-    let listitem = format.listitem;
+    let listitem = format.bullet;
     let title = format.title;
     for (let i = 0; i < selection.rangeCount; i++) {
       let range = selection.getRangeAt(i);
@@ -233,7 +240,7 @@ class Editor {
     let result = [];
     do {
       result.push(startNode);
-    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null)
+    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
     // TODO do stuff.
     return result;
   }
@@ -252,10 +259,11 @@ class Editor {
   }
 
   mergeFormats (left, right) {
-    let result = {};
-    if (left.bold === null || right.bold === null || left.bold !== right.bold) result.bold = null;
-    if (left.listitem === null || right.listitem === null || left.listitem !== right.listitem) result.listitem = null;
-    if (left.title === null || right.title === null || left.title !== right.title) result.title = null;
+    let result = {bold: left.bold, bullet: left.bullet, title: left.title};
+    if (left.bold === null || right.bold === null || left.bold !== right.bold) result.bold = 'ambiguous';
+    if (left.bullet === null || right.bullet === null || left.bullet !== right.bullet) result.bullet = 'ambiguous';
+    if (left.title === null || right.title === null || left.title !== right.title) result.title = 'ambiguous';
+    // console.log({left: left, right: right, result: result});
     return result;
   }
 
@@ -427,7 +435,7 @@ class Editor {
           document.execCommand('bold', true, null);
         }
       }
-      if (typeof (format.listitem) !== 'undefined' && format.listitem !== list) {
+      if (typeof (format.bullet) !== 'undefined' && format.bullet !== list) {
         document.execCommand('insertUnorderedList', true, null);
       }
       this.updateFormat();
@@ -450,6 +458,7 @@ class Editor {
       var ctx = canvas.getContext('2d');
       ctx.drawImage(this, 0, 0);
       // var dataURL = canvas.toDataURL("image/png");
+      // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
     };
     img.src = src;

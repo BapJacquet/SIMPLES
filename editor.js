@@ -437,9 +437,9 @@ class Editor {
   /**
    * Set the image in the block with the given id, making it DataURL-ready.
    * @param {int} id - ID of the block.
-   * @param {string} path - Path of the image source.
+   * @param {string} src - Path of the image source.
    */
-  setImage (id, path) {
+  setImage (id, src) {
     var img = new Image();
     img.setAttribute('crossOrigin', 'anonymous');
     img.onload = function () {
@@ -452,7 +452,7 @@ class Editor {
       // var dataURL = canvas.toDataURL("image/png");
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
     };
-    img.src = path;
+    img.src = src;
   }
 
   /**

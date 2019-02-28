@@ -138,70 +138,91 @@ function onPDFClick(){
 
 // ******************************************** T O O L B A R
 
-function initToolbar() { // tool cursor initial values
+function initToolbar() {                 // tool cursor initial values
   $("#bold-cursor").css("left", CURSOR_DATA["bold-" + BOLD_INIT]);
   $("#size-cursor").css("left", CURSOR_DATA["size-" + SIZE_INIT]);
   $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
-//  $("#title-cursor").css("left", CURSOR_DATA["size-" + TITLE_INIT]);
-  activeTools.bold = BOLD_INIT;
-  activeTools.size = SIZE_INIT;
-  activeTools.color = COLOR_INIT;
-  activeTools.title = TITLE_INIT;
-  activeTools.border = BORDER_INIT;
-  activeTools.bullet = BULLET_INIT;
-  moveCursor("bold", activeTools.bold, false);
-  moveCursor("size", activeTools.size, false);
-  moveCursor("color", activeTools.color, false);
-  moveCursor("title", activeTools.title, false);
-  moveCursor("border", activeTools.border, false);
-  moveCursor("bullet", activeTools.bullet, false);
+  $("#title-cursor").css("left", CURSOR_DATA["title-" + TITLE_INIT]);
+  $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
+  $("#bullet-cursor").css("left", CURSOR_DATA["bullet-" + BULLET_INIT]);
+
+  activeTool("bold", BOLD_INIT);
+  activeTool("size", SIZE_INIT);
+  activeTool("color", COLOR_INIT);
+  activeTool("title", TITLE_INIT);
+  activeTool("frame", FRAME_INIT);
+  activeTool("bullet", BULLET_INIT);
 }
 
-// click on toolbar
+//                                            click on toolbar
 function toolClick(e, toolTag) {
   var classes = $(toolTag).get(0).classList.value;
   var toolVal = classes.split(" ")[1];
   var tool = toolVal.split("-")[0];
   var val = toolVal.split("-")[1];
-
-  if ( !(tool == "size" || tool == "color" ) &&
-          val == activeTools[tool] ) {
-    activeTools[tool] = "none";
-    val = "none";
-  }
-  else activeTools[tool] = val;
+  activeTools[tool] = val;
   moveCursor(tool, val, true);
-  // send data to editor
-  editor.setFormatAtSelection(activeTools);
+  sendtoEditor(tool, val);
 }
 
-//  move tool cursor
+//                                             move tool cursor
 function moveCursor(tool, val, anim) {
   var cursor = "#" + tool + "-cursor";
-  var oldVis = $(cursor).css("visibility");
-  if ( val == "none" ) $(cursor).css("visibility", "hidden");
-  else {
-    $(cursor).css("visibility", "visible");
-    var newTool = tool + "-" + val;
-    var position = CURSOR_DATA[newTool];
-/*  if ( anim ) */
+//  if ( val == "ambiguous" ) $(cursor).css("visibility", "hidden");
+  var newTool = tool + "-" + val;
+  var position = CURSOR_DATA[newTool];
 
-    if ( oldVis != "hidden" ) $(cursor).animate({"left": position}, 300);
-    else $(cursor).css({"left": position});
-  }
+/*  if ( anim ) */
+  $(cursor).animate({"left": position}, 300);
+//  $(cursor).css({"left": position});
+
 }
 
-// toolbar update from editor
+//                                    send toolbar data to editor
+function sendtoEditor(tool, val) {
+  var v = val;
+  if ( tool == "color" ) {
+    switch( val ) {
+      case 'red':
+      v = "#ff0000"; break;
+      case 'green':
+      v = "#00ff00"; break;
+      case 'blue':
+      v = "#0000ff"; break;
+      case 'black':
+      v = "#000000"; break;
+    }
+  }
+  dataObj = `\{"${tool}": ${v}"\}`;
+  editor.setFormatAtSelection(dataObj);
+}
+
+//                                    toolbar update from editor
 function setFormatAtToolbar(format) {
-  activeTools.bold = format.bold;
-  moveCursor("bold", format.bold, false);
-  moveCursor("size", format.size, false);
-  activeTools.size = format.size;
+  var color;
+  var items = format.listitem;
+  switch( format.color ) {
+    case "#ff0000":
+    color = 'red'; break;
+    case "#00ff00":
+    color = 'green'; break;
+    case "#0000ff":
+    color = 'blue'; break;
+    case "#000000":
+    color = 'black'; break;
+  }
+  activTool("color", color);
+  activTool("bold", items.bold);
+  activTool("size", items.size);
+  activTool("title", items.title);
+  activTool("frame", items.frame);
+  activTool("bullet", items.bullet);
+}
 
-  moveCursor("bullet", format.listitem, false);
-  activeTools.bullet = format.listitem;
-
-
+// update cursor & activeTools
+function activeTool(tool, value) {
+  activeTools.tool = value;
+  moveCursor(tool, value, false);
 }
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
@@ -254,11 +275,11 @@ $("#verify-button").on("click", function () {
 
 
 
-
+////////////////////////////////////////////////////////
 //                                        toolbar events
 
 // jquery tool hover
-  $(".tool, .tool-border-bullet").mouseenter( function () {
+  $(".tool, .tool-frame-bullet").mouseenter( function () {
 //    console.log("avant enter: " + $(this).css("top") + $(this).css("cursor"));
     $(this).css({"top":"-5px", "cursor": "pointer"});
 //    console.log("après enter: " + $(this).css("top") + $(this).css("cursor"));
@@ -269,7 +290,7 @@ $("#verify-button").on("click", function () {
   } );
 
 //  tool click
-  $(".tool, .tool-border-bullet").on("click", function(e) {
+  $(".tool, .tool-frame-bullet").on("click", function(e) {
     e.preventDefault();
     $(this).animate({"top": "-10px"}, 100,
       function () {
@@ -280,6 +301,36 @@ $("#verify-button").on("click", function () {
     );
     toolClick(e, this);
   } );
+
+//  toolbar scroll
+/*
+  $(".arrow-l").on("click", function() {
+    var offset = $("#toolbarlist").offset();
+    $("#toolbarlist").animate({"top": 0, "left": offset.left - 90}, 200);
+  });
+  $(".arrow-r").on("click", function() {
+    var offset = $("#toolbarlist").offset();
+    $("#toolbarlist").animate({"top": 0, "left": offset.left + 90}, 200);
+  });
+*/
+  $(".arrow-l, .arrow-r").on("mousedown", function(e) {
+    if( mousedownID == -1 )  //Prevent multimple loops!
+      mousedownID = setInterval(function() {
+        var offset = $("#toolbarlist").offset();
+        var decal;
+        if ( $(e.target).hasClass("arrow-l") ) decal = 8;
+        else decal = -8;
+        $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
+      }, 25 /*execute every 100ms*/);
+  });
+  $(".arrow-l, .arrow-r").on("mouseup mouseout", function() {
+    if(mousedownID!=-1) {  //Only stop if exists
+      clearInterval(mousedownID);
+      mousedownID=-1;
+    }
+  });
+
+
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
@@ -305,12 +356,12 @@ $("#verify-button").on("click", function () {
 
 
   //$("body").css({"margin-left":"3%", "margin-right":"3%"});
-  $("table").css({"margin-left":"auto", "margin-right":"auto", "min-width":900, "max-width":900});
+  //$("table").css({"margin-left":"auto", "margin-right":"auto", "min-width":900, "max-width":900});
   //$("#page").height(1100).width(800);
-  $("td").css({"border":0});
-  $("#td-test").css({"text-align":"center"});
+  //$("td").css({"border":0});
+  //$("#td-test").css({"text-align":"center"});
 
-   $('body').css({"visibility":"visible"});
+  $('body').css({"visibility":"visible"});
 
 }); // ******************************************************  F I N   R E A D Y
 //  ****************************************************************************
@@ -319,36 +370,41 @@ const editor = new Editor('#editor');
 
 const CURSOR_DATA = {
 
+    "bold-false": "-63px",
     "bold-true": "-38px",
 
-    "size-small": "-94px",
-    "size-medium": "-72px",
-    "size-large": "-46px",
+    "size-s1": "-97px",
+    "size-s2": "-74px",
+    "size-s3": "-46px",
 
-    "color-black": "-162px",
-    "color-red": "-138px",
-    "color-blue": "-113px",
-    "color-green": "-90px",
-    "color-custom":"-65px",
+    "color-black": "-168px",
+    "color-red": "-143px",
+    "color-blue": "-118px",
+    "color-green": "-93px",
+    "color-custom":"-67px",
 
-    "title-h1": "-128px",
-    "title-h2": "-104px",
-    "title-h3": "-80px",
-    "title-h4":"-58px",
+    "title-h1": "-168px",
+    "title-h2": "-142px",
+    "title-h3": "-117px",
+    "title-h4":"-94px",
+    "title-none":"-70px",
 
-    "border-true": "-6px",
+    "frame-true": "-50px",
+    "frame-false": "-7px",
 
-    "bullet-true": "-26px",
+    "bullet-true": "-50px",
+    "bullet-false": "-7px",
 };
 
-const BOLD_INIT = "none";
-const SIZE_INIT = "medium";
+const BOLD_INIT = "false";
+const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
-const BORDER_INIT = "none";
-const BULLET_INIT = "none";
+const FRAME_INIT = "false";
+const BULLET_INIT = "false";
 
 var activeTools = {}; // tools present state
+var mousedownID = -1;
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

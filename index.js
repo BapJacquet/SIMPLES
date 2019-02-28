@@ -196,9 +196,17 @@ function sendtoEditor(tool, val) {
       case 'black':
       v = "#000000"; break;
     }
+  } else {
+    switch (val) {
+      case 'true':
+        v = true; break;
+      case 'false':
+        v = false; break;
+    }
   }
-  dataObj = `\{"${tool}": "${v}"\}`;
-  editor.setFormatAtSelection(JSON.parse(dataObj));
+  let dataObj = {};
+  dataObj[tool] = v;
+  editor.setFormatAtSelection(dataObj);
 }
 
 //                                    toolbar update from editor

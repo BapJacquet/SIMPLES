@@ -18,6 +18,8 @@ class Editor {
     this.id = id;
     this.format = null;
     this.addBlock('', false);
+    this.lastBlock = 0;
+    this.lastSelection = null;
 
     this.registerEvents();
   }
@@ -31,6 +33,14 @@ class Editor {
   }
 
   /**
+   * Check whether the editor has the focus.
+   * @return {boolean} - true if it does have the focus, false otherwise.
+   */
+  get hasFocus () {
+    return $(document.activeElement).hasClass('.editor-text');
+  }
+
+  /**
    * Register all the events of the editor.
    */
   registerEvents () {
@@ -38,6 +48,7 @@ class Editor {
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
     $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent(event.target.id); });
     $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); })
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
     $('body').on('mouseup', event => {
       if (this.capturedMouseDown) {
@@ -47,6 +58,14 @@ class Editor {
     });
   }
 
+  onBlur (event) {
+    let caller = event.target;
+    let id = parseInt(caller.id.substring(4));
+    this.lastBlock = id;
+    this.lastSelection = this.getSelection();
+    console.log(this.lastSelection);
+    this.updateFormat();
+  }
   /**
    * Handle special keys in editor blocks.
    * @param {KeyboardEvent} event - Event to handle.
@@ -418,6 +437,11 @@ class Editor {
    * @param {Object} format - The format object describing the changes to make.
    */
   setFormatAtSelection (format) {
+    console.log(format);
+    if (!this.hasFocus) {
+      console.log('Trying to get the focus.');
+      $('#txt-' + this.lastBlock).focus();
+    }
     if (this.getSelection().rangeCount > 0) {
       let bold = this.format.bold;
       let list = this.format.listitem;
@@ -428,10 +452,10 @@ class Editor {
         document.execCommand('formatBlock', true, t);
       }
       if (typeof (format.bold) !== 'undefined' && format.bold !== bold) {
-        if (format.bold || bold) {
+        if (bold !== 'ambiguous' && format.bold === false) {
+          document.execCommand('bold', true, null);
           document.execCommand('bold', true, null);
         } else {
-          document.execCommand('bold', true, null);
           document.execCommand('bold', true, null);
         }
       }

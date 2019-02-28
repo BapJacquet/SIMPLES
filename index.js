@@ -197,14 +197,14 @@ function sendtoEditor(tool, val) {
       v = "#000000"; break;
     }
   }
-  dataObj = `\{"${tool}": ${v}"\}`;
-  editor.setFormatAtSelection(dataObj);
+  dataObj = `\{"${tool}": "${v}"\}`;
+  editor.setFormatAtSelection(JSON.parse(dataObj));
 }
 
 //                                    toolbar update from editor
 function setFormatAtToolbar(format) {
   var items = format.listitem;
-  var color = items.color;
+  var color = format.color;
 
   switch( color ) {
     case "#ff0000":
@@ -216,12 +216,13 @@ function setFormatAtToolbar(format) {
     case "#000000":
     color = 'black'; break;
   }
+
   activeTool("color", color);
-  activeTool("bold", items.bold);
-  activeTool("size", items.size);
-  activeTool("title", items.title);
-  activeTool("frame", items.frame);
-  activeTool("bullet", items.bullet);
+  activeTool("bold", format.bold);
+  activeTool("size", format.size);
+  activeTool("title", format.title);
+  activeTool("frame", format.frame);
+  activeTool("bullet", format.bullet);
 }
 
 // update cursor & activeTools
@@ -354,7 +355,7 @@ $("#verify-button").on("click", function () {
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
-    setFormatAtToolbar(e.detail);
+    setFormatAtToolbar(e.detail.format);
   } );
 
   // toolbar init

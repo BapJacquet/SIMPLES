@@ -232,12 +232,6 @@ button span {
   box-shadow: 0 5px 5px 0 rgba(0,0,0,0.24), 0 5px 10px 0rgba(0,0,0,0.19);
 } */
 
-#verify-button {
-  /* width: 100px; */
-
-  /* background-color: blue;
-  color: white; */
-}
 
 .box {
   position: absolute;
@@ -260,19 +254,21 @@ button span {
 
 /*  ------------------  S E B   ------------------ */
 
+/*  ------------------  S E B   ------------------ */
+
 /* main menu  */
 
 #main-menubar {
   user-select: none;
-  margin-top: 2px;
   margin-left: 15px;
+  height: 36px;
 }
 
 .main-menu {
-  height: 34px;
+  font-size: 16px;
   display: inline-block;
   position: relative;
-  top: 5px;
+  top: 1px;
 }
 
 .dropdown-toggle:hover {
@@ -285,13 +281,21 @@ button span {
   height: 72px; /* 76 */
   background-color: #eee;
   color: white;
-  /* width: 100%; */
 }
 
 #toolbarlist {
   position: relative;
+  left: 0;
   user-select: none;
   white-space: nowrap; /* anti wrapping */
+}
+
+#toolbarlist > div {
+  pointer-events: none;
+}
+
+#toolbarlist > div > div {
+  pointer-events: initial;
 }
 
 #toolbarlist div { /* #bold  .tool etc. */
@@ -308,7 +312,7 @@ button span {
   z-index: 500;
 }
 
-.tool-border-bullet {
+.tool-frame-bullet {
   width: 30px;
   top: 0;
 }
@@ -316,7 +320,7 @@ button span {
 /*                  BOLD */
 #bold {
   color: black;
-  left: 8px;
+  left: 0px;
 }
 
 .bold-false {
@@ -333,21 +337,21 @@ button span {
 /*                  SIZE */
 #size {
   color: black;
-  left: -46px;
+  left: -64px;
 }
 
-.size-small {
+.size-s1 {
   font-weight: 300;
   font-size: 28px;
 }
 
-.size-medium {
+.size-s2 {
   font-weight: 200;
   font-size: 38px;
   left: -12px;
 }
 
-.size-large {
+.size-s3 {
   font-weight: 100;
   font-size: 48px;
   left: -20px;
@@ -356,7 +360,7 @@ button span {
 /*                  COLOR */
 #color {
   color: black;
-  left: -130px;
+  left: -158px;
 }
 
 .color-black {
@@ -404,7 +408,7 @@ button span {
 /*                  TITLE */
 #title {
   color: black;
-  left: -210px;
+  left: -240px;
 }
 
 .title-h1 {
@@ -430,32 +434,44 @@ button span {
   left: -32px;
 }
 
-/*                  BORDER */
-#border {
-  color: black;
-  left: -305px;
+.title-none {
+  font-weight: 200;
+  font-size: 38px;
+  left: -42px;
 }
-.border-false {
+
+/*                  FRAME */
+#frame {
+  color: black;
+  left: -335px;
+}
+
+.frame-true {
   font-weight: 200;
   font-size: 38px;
 }
 
-.border-true {
+.frame-false {
   font-weight: 200;
   font-size: 38px;
-  left: 10px;
+  left: 24px;
 }
 
 /*                  BULLET */
 #bullet {
   color: black;
-  left: -300px;
+  left: -364px;
 }
 
 .bullet-true {
   font-weight: 200;
   font-size: 38px;
-  left: -10px;
+}
+
+.bullet-false {
+  font-weight: 200;
+  font-size: 38px;
+  left: 24px;
 }
 
 /*              caption     */
@@ -470,68 +486,99 @@ button span {
 }
 
 #bold-caption {
-  left: 25px;
+  left: 50px;
 }
 
 #size-caption {
-  left: 60px;
-}
-
-#color-caption {
-  left: 93px;
-}
-
-#title-caption {
-  left: 68px;
-}
-
-#border-caption {
   left: 62px;
 }
 
+#color-caption {
+  left: 96px;
+}
+
+#title-caption {
+  left: 82px;
+}
+
+#frame-caption {
+  left: 65px;
+}
+
 #bullet-caption {
-  left: 39px;
+  left: 65px;
 }
 
 .tool-cursor {
   position: absolute;
   top: +14px;
   z-index: 80;
-  visibility: hidden;
 }
 
-/*            Simples! button */
+/* *********************** */
+
+/*      simples span     */
 .simples-span {
   user-select: none;
   float: right;
   position: relative;
   top: -68px;
-  right: 0; /* 30px */
+  right: 0;
   z-index: 600;
 }
 
+/*     scroll toolbar */
+.arrows {
+  user-select: none;
+  pointer-events: initial;
+  display: inline-block;
+  position: relative;
+  top: -68px;
+  cursor: pointer;
+  background-color: #ddd; /* #6c757d; */
+  width: 24px;
+  height: 65px;
+  z-index: 500;
+  opacity: 50%;
+}
+
+.arrows:hover {
+  background-color: #bbb;
+}
+
+.arrow-l {
+  float: left;
+}
+
+.arrow-r {
+  float: right;
+}
+
+#img-l {
+  position: relative;
+  top: 16px;
+  left: 10px;
+  pointer-events: none;
+}
+
+#img-r {
+  position: relative;
+  top: 16px;
+  right: 0;
+  pointer-events: none;
+}
+
+/*     Simples! button */
 .simples-button {
   padding-top: 16px;
   padding-bottom: 16px;
   cursor: pointer;
-  width: 209px; /* 174px */
-  height: 64px;
+  width: 84px;
+  height: 65px; /* 64 */
 
-  /* background-color: hsla(167, 39%, 31%, 1); */
-  background-color: hsla(166, 100%, 30%, 1);
-}
-
-#logo {
-  pointer-events: none;
-  display: inline-block;
-  float: right;
-  opacity: 1;
-
-  /* margin-right: 55px; */
-  position: relative;
-  top: 60px;
-  right: 65px; /* 34px */
-  z-index: 620;
+  /* background-color: hsla(167, 39%, 31%, 1);
+  hsla(166, 100%, 30%, 1); */
+  background-color: #2ea35f;
 }
 
 /*  divers */

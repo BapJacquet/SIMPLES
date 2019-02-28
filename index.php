@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="content-type" content="text/html charset=utf-8" />
-<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta http-equiv="content-type" content="text/html charset=utf-8" />
+	<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>SimpLEs</title>
 
   <!-- === HTML to PDF ===-->
@@ -183,7 +183,8 @@
 					<p>Hello World</p>
 				</div-->
 			</div>
-	<!--	</div> ???? -->
+	</div>
+</div>
 
 
 	<!-- Initialize Simples Editor -->

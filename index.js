@@ -211,12 +211,12 @@ function setFormatAtToolbar(format) {
     case "#000000":
     color = 'black'; break;
   }
-  activTool("color", color);
-  activTool("bold", items.bold);
-  activTool("size", items.size);
-  activTool("title", items.title);
-  activTool("frame", items.frame);
-  activTool("bullet", items.bullet);
+  activeTool("color", color);
+  activeTool("bold", items.bold);
+  activeTool("size", items.size);
+  activeTool("title", items.title);
+  activeTool("frame", items.frame);
+  activeTool("bullet", items.bullet);
 }
 
 // update cursor & activeTools

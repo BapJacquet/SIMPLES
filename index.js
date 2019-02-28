@@ -318,8 +318,8 @@ $("#verify-button").on("click", function () {
       mousedownID = setInterval(function() {
         var offset = $("#toolbarlist").offset();
         var decal;
-        if ( $(e.target).hasClass("arrow-l") ) decal = 8;
-        else decal = -8;
+        if ( $(e.target).hasClass("arrow-l") ) decal = -8;
+        else decal = 8;
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25 /*execute every 100ms*/);
   });

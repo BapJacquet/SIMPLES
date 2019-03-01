@@ -196,15 +196,23 @@ function sendtoEditor(tool, val) {
       case 'black':
       v = "#000000"; break;
     }
+  } else {
+    switch (val) {
+      case 'true':
+        v = true; break;
+      case 'false':
+        v = false; break;
+    }
   }
-  dataObj = `\{"${tool}": ${v}"\}`;
+  let dataObj = {};
+  dataObj[tool] = v;
   editor.setFormatAtSelection(dataObj);
 }
 
 //                                    toolbar update from editor
 function setFormatAtToolbar(format) {
   var items = format.listitem;
-  var color = items.color;
+  var color = format.color;
 
   switch( color ) {
     case "#ff0000":
@@ -216,12 +224,13 @@ function setFormatAtToolbar(format) {
     case "#000000":
     color = 'black'; break;
   }
+
   activeTool("color", color);
-  activeTool("bold", items.bold);
-  activeTool("size", items.size);
-  activeTool("title", items.title);
-  activeTool("frame", items.frame);
-  activeTool("bullet", items.bullet);
+  activeTool("bold", format.bold);
+  activeTool("size", format.size);
+  activeTool("title", format.title);
+  activeTool("frame", format.frame);
+  activeTool("bullet", format.bullet);
 }
 
 // update cursor & activeTools
@@ -252,6 +261,21 @@ $(document).ready(function () {
       onVerifyClick();
   } );
 
+// à méditer pour Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
+  $(window).on("load resize", function() {
+    let grid = $(".box");
+    let h = window.innerHeight;
+    let remaining = h;
+    for(let i = 0; i < grid.get(0).childNodes.length; i++){
+      let n = grid.get(0).childNodes[i];
+      if(n.classList && !n.classList.contains('hbox')){
+        remaining -= $(n).outerHeight();
+      }
+    }
+    $('.hbox').css("max-height", remaining + "px");
+    $('.hbox').css("margin", "0px");
+    $('.box').css("overflow", "hidden");
+  });
 // à méditer pour Baptiste
   $(".hcollapsible, .collapsible").on("click", function(e) {
     $(this).blur();
@@ -318,6 +342,7 @@ $("#verify-button").on("click", function () {
     $("#toolbarlist").animate({"top": 0, "left": offset.left + 90}, 200);
   });
 */
+
   $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
 //    $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
     if( mousedownID == -1 )  //Prevent multimple loops!
@@ -341,7 +366,7 @@ $("#verify-button").on("click", function () {
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
-    setFormatAtToolbar(e.detail);
+    setFormatAtToolbar(e.detail.format);
   } );
 
   // toolbar init

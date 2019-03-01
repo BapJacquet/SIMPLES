@@ -18,6 +18,8 @@ class Editor {
     this.id = id;
     this.format = null;
     this.addBlock('', false);
+    this.lastBlock = 0;
+    this.lastSelection = null;
 
     this.registerEvents();
   }
@@ -31,16 +33,59 @@ class Editor {
   }
 
   /**
+   * Check whether the editor has the focus.
+   * @return {boolean} - true if it does have the focus, false otherwise.
+   */
+  get hasFocus () {
+    return $(document.activeElement).hasClass('editor-text');
+  }
+
+  /**
+   * Get the id of the currently active block.
+   * @return {int} - id of the block.
+   */
+  get activeBlockId () {
+    if (this.hasFocus) {
+      let current = document.activeElement;
+      while (!$(current).hasClass('editor-text')) {
+        current = current.parentNode;
+      }
+      return parseInt(current.id.substring(4));
+    } else {
+      return this.lastBlock;
+    }
+  }
+
+  /**
    * Register all the events of the editor.
    */
   registerEvents () {
     $(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
     $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent(event.target.id); });
-    $(this.id).on('mouseup', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('click', '.editor-block', event => {
+      if ($(event.target).hasClass('.editor-block')) $('#' + event.target.id.replace('blc', 'txt')).focus();
+    });
     $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
+    $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
+    $('body').on('mouseup', event => {
+      if (this.capturedMouseDown) {
+        this.updateFormat();
+      }
+      this.capturedMouseDown = false;
+    });
   }
 
+  onBlur (event) {
+    let caller = event.target;
+    let id = parseInt(caller.id.substring(4));
+    console.log(id + ' has lost focus.');
+    this.lastBlock = id;
+    this.lastSelection = this.getSelection();
+    console.log(this.lastSelection);
+    this.updateFormat();
+  }
   /**
    * Handle special keys in editor blocks.
    * @param {KeyboardEvent} event - Event to handle.
@@ -107,7 +152,14 @@ class Editor {
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({bold: true, listitem: true});
+          this.setFormatAtSelection({bold: true, bullet: true});
+        }
+        break;
+      case 'i':
+        if (event.ctrlKey) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.setFormatAtSelection({picture: !this.format.picture});
         }
         break;
       case 'Backspace':
@@ -168,12 +220,13 @@ class Editor {
   updateFormat () {
     let oldFormat = this.format;
     this.format = this.getCurrentFormat();
+    console.log(this.format);
     if (oldFormat == null) {
       this.dispatchCurrentFormatChanged(this.format);
     } else {
       let boldChanged = oldFormat.bold !== this.format.bold;
       let titleChanged = oldFormat.title !== this.format.title;
-      let listChanged = oldFormat.listitem !== this.format.listitem;
+      let listChanged = oldFormat.bullet !== this.format.bullet;
       if (boldChanged || titleChanged || listChanged) {
         this.dispatchCurrentFormatChanged(this.format);
       }
@@ -186,7 +239,6 @@ class Editor {
    */
   getCurrentFormat () {
     let selection = this.getSelection();
-    console.log(selection);
     if (selection.rangeCount === 0) return {};
     let range = selection.getRangeAt(0);
     return this.checkFormatAcrossSelection(this.getFormatForNode(range.startContainer));
@@ -202,15 +254,17 @@ class Editor {
     let h5 = this.hasReccursiveTag('H5', element);
     let result = {};
     result.bold = bold;
-    result.listitem = listitem;
+    result.bullet = listitem;
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
+    result.frame = $('#blc-' + this.activeBlockId).hasClass('frame');
+    result.picture = $('#img-' + this.activeBlockId).is(':visible');
     return result;
   }
 
   checkFormatAcrossSelection (format) {
     let selection = this.getSelection();
     let bold = format.bold;
-    let listitem = format.listitem;
+    let listitem = format.bullet;
     let title = format.title;
     for (let i = 0; i < selection.rangeCount; i++) {
       let range = selection.getRangeAt(i);
@@ -233,7 +287,7 @@ class Editor {
     let result = [];
     do {
       result.push(startNode);
-    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null)
+    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
     // TODO do stuff.
     return result;
   }
@@ -252,10 +306,17 @@ class Editor {
   }
 
   mergeFormats (left, right) {
-    let result = {};
-    if (left.bold === null || right.bold === null || left.bold !== right.bold) result.bold = null;
-    if (left.listitem === null || right.listitem === null || left.listitem !== right.listitem) result.listitem = null;
-    if (left.title === null || right.title === null || left.title !== right.title) result.title = null;
+    let result = {
+      bold: left.bold,
+      bullet: left.bullet,
+      title: left.title,
+      frame: left.frame,
+      picture: left.picture
+    };
+    if (left.bold === null || right.bold === null || left.bold !== right.bold) result.bold = 'ambiguous';
+    if (left.bullet === null || right.bullet === null || left.bullet !== right.bullet) result.bullet = 'ambiguous';
+    if (left.title === null || right.title === null || left.title !== right.title) result.title = 'ambiguous';
+    // console.log({left: left, right: right, result: result});
     return result;
   }
 
@@ -387,7 +448,7 @@ class Editor {
    */
   newBlockString (id, text) {
     return `<div id="blc-${id}" class="editor-block media" style="font-size: 14pt;">` +
-             `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3 border" contenteditable="true" style="margin:10px 0px 10px 0px; min-height: 22px">` +
+             `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3" contenteditable="true">` +
                 `<div>${text}</div>` +
              `</div>` +
              `<canvas id="img-${id}" class="editor-image align-self-center mr-3 hoverable" style="width:100px"/>` +
@@ -410,25 +471,48 @@ class Editor {
    * @param {Object} format - The format object describing the changes to make.
    */
   setFormatAtSelection (format) {
+    console.log(format);
+    console.log(!this.hasFocus);
+    if (!this.hasFocus) {
+      $('#txt-' + this.lastBlock).focus();
+    }
     if (this.getSelection().rangeCount > 0) {
       let bold = this.format.bold;
-      let list = this.format.listitem;
+      let list = this.format.bullet;
+      let frame = this.format.frame;
       let title = this.format.title;
+      let picture = this.format.picture;
       if (typeof (format.title) !== 'undefined' && format.title !== title) {
         let t = format.title;
         if (t === 'none') t = 'div';
         document.execCommand('formatBlock', true, t);
       }
+      if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
+        console.log('Frame: ' + format.frame);
+        if (format.frame) {
+          console.log('Adding frame on block ' + this.activeBlockId);
+          $('#blc-' + this.activeBlockId).addClass('frame');
+        } else {
+          $('#blc-' + this.activeBlockId).removeClass('frame');
+        }
+      }
       if (typeof (format.bold) !== 'undefined' && format.bold !== bold) {
-        if (format.bold || bold) {
+        if (bold === 'ambiguous' && format.bold === false) {
+          document.execCommand('bold', true, null);
           document.execCommand('bold', true, null);
         } else {
           document.execCommand('bold', true, null);
-          document.execCommand('bold', true, null);
         }
       }
-      if (typeof (format.listitem) !== 'undefined' && format.listitem !== list) {
+      if (typeof (format.bullet) !== 'undefined' && format.bullet !== list) {
         document.execCommand('insertUnorderedList', true, null);
+      }
+      if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
+        if (format.picture) {
+          $('#img-' + this.activeBlockId).show();
+        } else {
+          $('#img-' + this.activeBlockId).hide();
+        }
       }
       this.updateFormat();
     }
@@ -450,6 +534,7 @@ class Editor {
       var ctx = canvas.getContext('2d');
       ctx.drawImage(this, 0, 0);
       // var dataURL = canvas.toDataURL("image/png");
+      // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
     };
     img.src = src;

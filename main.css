@@ -78,6 +78,7 @@ hr {
 }
 
 .collapsible-content {
+  -webkit-user-select: none;
   user-select: none;
   padding: 0 18px;
   display: none;
@@ -87,6 +88,7 @@ hr {
 }
 
 .hcollapsible {
+  -webkit-user-select: none;
   user-select: none;
   background-color: #6c757d;
 
@@ -111,6 +113,7 @@ hr {
 }
 
 .hcollapsible-content {
+  -webkit-user-select: none;
   user-select: none;
   padding: 0 18px;
   flex: 0, 0, 300px;
@@ -259,6 +262,7 @@ button span {
 /* main menu  */
 
 #main-menubar {
+  -webkit-user-select: none;
   user-select: none;
   margin-left: 15px;
   height: 36px;
@@ -286,8 +290,15 @@ button span {
 #toolbarlist {
   position: relative;
   left: 0;
+  -webkit-user-select: none;
   user-select: none;
   white-space: nowrap; /* anti wrapping */
+}
+
+#toolbarlist div { /* #bold  .tool etc. */
+  display: inline-block;
+  position: relative;
+  font-family: sans-serif;
 }
 
 #toolbarlist > div {
@@ -296,12 +307,6 @@ button span {
 
 #toolbarlist > div > div {
   pointer-events: initial;
-}
-
-#toolbarlist div { /* #bold  .tool etc. */
-  display: inline-block;
-  position: relative;
-  font-family: sans-serif;
 }
 
 .tool {
@@ -519,6 +524,7 @@ button span {
 
 /*      simples span     */
 .simples-span {
+  -webkit-user-select: none;
   user-select: none;
   float: right;
   position: relative;
@@ -529,6 +535,7 @@ button span {
 
 /*     scroll toolbar */
 .arrows {
+  -webkit-user-select: none;
   user-select: none;
   pointer-events: initial;
   display: inline-block;
@@ -584,6 +591,15 @@ button span {
 /*  divers */
 #lexique3-connection {
   display: none;
+}
+
+/* rebonds sur .tool */
+.tool:hover,
+.tool-frame-bullet:hover {
+  top: -5px;
+  -webkit-transition: top 0.15s;
+  transition: top 0.15s;
+  cursor: pointer;
 }
 
 /*             ...suite #content

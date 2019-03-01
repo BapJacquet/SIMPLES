@@ -62,7 +62,7 @@ class Editor {
   registerEvents () {
     $(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
-    $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent(event.target.id); });
+    $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
       if ($(event.target).hasClass('.editor-block')) $('#' + event.target.id.replace('blc', 'txt')).focus();
     });
@@ -98,14 +98,14 @@ class Editor {
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          document.execCommand('insertUnorderedList', true, null);
+          document.execCommand('insertUnorderedList', false, null);
         }
         break;
       case 'b':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          document.execCommand('bold', true, null);
+          document.execCommand('bold', false, null);
         }
         break;
       case 'h':
@@ -117,7 +117,7 @@ class Editor {
           let formats = ['div', 'h1', 'h2', 'h3', 'h4', 'h5'];
           let index = formats.indexOf(current) + 1;
           if (index === formats.length) index = 0;
-          document.execCommand('formatBlock', true, formats[index]);
+          document.execCommand('formatBlock', false, formats[index]);
         }
         break;
       case '+':
@@ -245,7 +245,7 @@ class Editor {
   }
 
   getFormatForNode (element) {
-    let bold = this.hasReccursiveTag('B', element);
+    let bold = this.hasReccursiveTag('B', element) || this.hasReccursiveTag('STRONG', element);
     let listitem = this.hasReccursiveTag('LI', element);
     let h1 = this.hasReccursiveTag('H1', element);
     let h2 = this.hasReccursiveTag('H2', element);
@@ -485,7 +485,7 @@ class Editor {
       if (typeof (format.title) !== 'undefined' && format.title !== title) {
         let t = format.title;
         if (t === 'none') t = 'div';
-        document.execCommand('formatBlock', true, t);
+        document.execCommand('formatBlock', false, t);
       }
       if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
         console.log('Frame: ' + format.frame);
@@ -498,10 +498,10 @@ class Editor {
       }
       if (typeof (format.bold) !== 'undefined' && format.bold !== bold) {
         if (bold === 'ambiguous' && format.bold === false) {
-          document.execCommand('bold', true, null);
-          document.execCommand('bold', true, null);
+          document.execCommand('bold', false, null);
+          document.execCommand('bold', false, null);
         } else {
-          document.execCommand('bold', true, null);
+          document.execCommand('bold', false, null);
         }
       }
       if (typeof (format.bullet) !== 'undefined' && format.bullet !== list) {

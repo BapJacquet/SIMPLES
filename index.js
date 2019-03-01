@@ -17,7 +17,7 @@ function readFile(e) {
     lastReadText = e.target.result;
     console.log("lastReadText: " + lastReadText);
   };
-  reader.readAsText(file);
+  reader.readAsDataURL(file);     // readAsText(file);
 }
 
 /**
@@ -302,47 +302,62 @@ $("#verify-button").on("click", function () {
 }
 */
 
+/********************  image click  ********/
+$("#editor").on("imageclick", function(ev) {
+  globalImageId = ev.detail.id;
+  console.log("click image " + globalImageId);
+  $("#imageClickModal").modal();
+});
 
+$("#imgFromDisk").on("change", function readFile(e) {
+  // bouton dans dialog modal
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    globalImageSrc = e.target.result;
+    console.log("globalImageSrc: " + globalImageSrc);
+  };
+  reader.readAsDataURL(file);     // ou readAsText(file);
+});
+
+$("#imageClickModal").on('hidden.bs.modal', function (e) {
+  // send image to editor
+  editor.setImage(globalImageId, globalImageSrc);
+  
+  // pour test
+  //var img = new Image();
+  //img.src = globalImageSrc;
+  //$("#editor").prepend(img);
+});
 
 ////////////////////////////////////////////////////////
 //                                        toolbar events
 
 // jquery tool hover
+/*
   $(".tool, .tool-frame-bullet").mouseenter( function () {
-//    console.log("avant enter: " + $(this).css("top") + $(this).css("cursor"));
     $(this).css({"top":"-5px", "cursor": "pointer"});
-//    console.log("après enter: " + $(this).css("top") + $(this).css("cursor"));
   } ).mouseleave( function () {
-//    console.log("avant leave: " + $(this).css("top") + $(this).css("cursor"));
     $(this).css({"top":"0", "cursor": "default"});
-//    console.log("après leave: " + $(this).css("top") + $(this).css("cursor"));
   } );
+*/
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-    e.preventDefault();
-    $(this).animate({"top": "-10px"}, 100,
+    //e.preventDefault();
+/*    $(this).animate({"top": "-16px"}, 200,
       function () {
-        $(this).animate({"top": "0px"}, 300,
+        $(this).animate({"top": "0px"}, 100,
           function () { $(this).blur();
         });
       }
-    );
+    ); */
     toolClick(e, this);
+    $(this).trigger("mouseleave");
   } );
 
 //  toolbar scroll
-/*
-  $(".arrow-l").on("click", function() {
-    var offset = $("#toolbarlist").offset();
-    $("#toolbarlist").animate({"top": 0, "left": offset.left - 90}, 200);
-  });
-  $(".arrow-r").on("click", function() {
-    var offset = $("#toolbarlist").offset();
-    $("#toolbarlist").animate({"top": 0, "left": offset.left + 90}, 200);
-  });
-*/
-
   $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
 //    $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
     if( mousedownID == -1 )  //Prevent multimple loops!
@@ -378,7 +393,7 @@ $("#verify-button").on("click", function () {
   } );
 
 // choix fichier texte sur disque client
-  $("#file-input").on('change', readFile);
+//  $("#file-input").on('change', readFile);
 
 
   // ouverture port 9000
@@ -481,7 +496,8 @@ var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
 
-var lastReadText;
+var globalImageSrc;
+var globalImageId;
 
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();

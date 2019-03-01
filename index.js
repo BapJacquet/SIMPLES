@@ -318,8 +318,8 @@ $("#verify-button").on("click", function () {
     $("#toolbarlist").animate({"top": 0, "left": offset.left + 90}, 200);
   });
 */
-//  $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
-    $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
+  $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
+//    $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
     if( mousedownID == -1 )  //Prevent multimple loops!
       mousedownID = setInterval(function() {
         var offset = $("#toolbarlist").offset();
@@ -329,8 +329,8 @@ $("#verify-button").on("click", function () {
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25 /*execute every 100ms*/);
   });
-  //$(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
-  $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
+  $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
+// $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
     if(mousedownID!=-1) {  //Only stop if exists
       clearInterval(mousedownID);
       mousedownID=-1;

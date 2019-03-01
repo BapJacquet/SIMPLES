@@ -361,6 +361,40 @@ $("#verify-button").on("click", function () {
     'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
   });
 
+  // -----------------------------------    BLOQUAGES DIVERS
+  $( window ).on("resize", function (event) {  // stop rubberband scroll
+    event.stopPropagation();
+    event.preventDefault();
+    $( document ).width(screen.innerWidth).height(screen.innerHeight);
+    return false;
+  });
+
+/*
+  document.addEventListener('backbutton', function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  }, false);
+*/
+
+$( document ).on('dblclick', function() {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  } );
+
+  //screen.lockOrientation('portrait');
+
+  $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
+
+  $( window ).on("resize orientationchange", function() {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  });
+
+
+
 
   //$("body").css({"margin-left":"3%", "margin-right":"3%"});
   //$("table").css({"margin-left":"auto", "margin-right":"auto", "min-width":900, "max-width":900});

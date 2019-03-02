@@ -313,11 +313,35 @@ $("#imgFromDisk").on("change", function readFile(e) {
 
 $("#imageClickModal").on('hidden.bs.modal', function (ev) {
   // send image to editor
-  var url = $("#imageClickModal").find("#image-url").val()
+  var url = $("#imageClickModal").find("#image-url").val();
   if ( url ) editor.setImage(globalImageId, url);
   else editor.setImage(globalImageId, globalImageSrc);
 });
 
+//                                        image drag & drop
+$("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
+    e.stopPropagation();
+    e.preventDefault();
+    var ev = e.originalEvent;
+    ev.dataTransfer.dropEffect = 'copy';
+});
+
+// Get file data on drop
+$("#editor").find(".editor-image").on('drop', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    globalImageId = e.target.id;
+    var ev = e.originalEvent;
+    var file = ev.dataTransfer.files[0];
+    if ( !file ) return;
+    var reader = new FileReader();
+    reader.onload = function(e2) {
+        globalImageSrc = e2.target.result;
+        console.log("globalImageSrc: " + globalImageSrc);
+        editor.setImage(globalImageId, globalImageSrc);
+    };
+    reader.readAsDataURL(file); // start reading the file data.
+});
 ////////////////////////////////////////////////////////
 //                                        toolbar events
 

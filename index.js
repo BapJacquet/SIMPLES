@@ -330,7 +330,7 @@ $("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
 $("#editor").find(".editor-image").on('drop', function(e) {
     e.stopPropagation();
     e.preventDefault();
-    globalImageId = e.target.id;
+    globalImageId = "#" + e.target.id;
     var ev = e.originalEvent;
     var file = ev.dataTransfer.files[0];
     if ( !file ) return;

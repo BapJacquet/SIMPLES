@@ -588,11 +588,6 @@ button span {
   background-color: #2ea35f;
 }
 
-/*  divers */
-#lexique3-connection {
-  display: none;
-}
-
 /* rebonds sur .tool */
 .tool:hover,
 .tool-frame-bullet:hover {
@@ -600,6 +595,15 @@ button span {
   -webkit-transition: top 0.15s;
   transition: top 0.15s;
   cursor: pointer;
+}
+
+/*  divers */
+#lexique3-connection {
+  display: none;
+}
+
+.modal {
+  
 }
 
 /*             ...suite #content

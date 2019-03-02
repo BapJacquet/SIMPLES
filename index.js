@@ -318,14 +318,14 @@ $("#imageClickModal").on('hidden.bs.modal', function (ev) {
   else editor.setImage(globalImageId, globalImageSrc);
 });
 
-/*
-$("body").on('dragover', function(e) { // Optional.
-    e.stopPropagation();
-    e.preventDefault();
+//  ***************************  image drag & drop  ************
+
+// prevention du drop n'importe ou
+$(document).on('drop dragover', function(e){
+  if ( !( $(e.target).hasClass("editor-image") ) )
     return false;
 });
-*/
-//  ***************************  image drag & drop  ************
+
 //$("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
 $("#editor").on('dragover', ".editor-image", function(e) { // Optional.
     e.stopPropagation();

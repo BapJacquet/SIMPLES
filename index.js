@@ -291,21 +291,11 @@ $(document).ready(function () {
     $(".hcollapsible").css("background-color", "#6c757d");
   } );
 
-/*
-$("#verify-button").on("click", function () {
-  $(this).blur();
-  if ( !$(".hcollapsible").hasClass("active") ) {
-    $(".hcollapsible").trigger("click").blur();
-  }
-
-  onVerifyClick();
-}
-*/
-
-/********************  image click  ********/
+/********************  image click  ***************/
 $("#editor").on("imageclick", function(ev) {
   globalImageId = ev.detail.id;
   console.log("click image " + globalImageId);
+  $("#imageClickModal").find("#image-url").val("");
   $("#imageClickModal").modal();
 });
 
@@ -321,14 +311,11 @@ $("#imgFromDisk").on("change", function readFile(e) {
   reader.readAsDataURL(file);     // ou readAsText(file);
 });
 
-$("#imageClickModal").on('hidden.bs.modal', function (e) {
+$("#imageClickModal").on('hidden.bs.modal', function (ev) {
   // send image to editor
-  editor.setImage(globalImageId, globalImageSrc);
-  
-  // pour test
-  //var img = new Image();
-  //img.src = globalImageSrc;
-  //$("#editor").prepend(img);
+  var url = $("#imageClickModal").find("#image-url").val()
+  if ( url ) editor.setImage(globalImageId, url);
+  else editor.setImage(globalImageId, globalImageSrc);
 });
 
 ////////////////////////////////////////////////////////
@@ -496,7 +483,7 @@ var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
 
-var globalImageSrc;
+var globalImageSrc = false;
 var globalImageId;
 
 // Appelle la fonction pour le zoom dés le début.

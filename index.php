@@ -191,27 +191,22 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Choisir une image</h5>
+        <h3 class="modal-title">Choisir une image</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true">&times;</span> 
         </button>
       </div>
       <div class="modal-body">
-        <form>
           <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Chemin du fichier image:</label>
-            <input id="imgFromDisk" type="file" class="form-control" id="recipient-name">
+            <input id="imgFromDisk" type="file"  id="recipient-name">
           </div>
           <div class="form-group">
-            <label for="message-text" class="col-form-label">Message:</label>
-            <textarea class="form-control" id="message-text"></textarea>
+            <label for="message-text" class="col-form-label">Entrer un URL:</label>
+            <input type="url" class="form-control" id="image-url"></textarea>
           </div>
-        </form>
       </div>
       <div class="modal-footer">
-
-        <button type="button" class=" btn-primary">coucou</button>
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+				<button type="button" class="btn btn-dark" data-dismiss="modal">OK</button>
       </div>
     </div>
   </div>

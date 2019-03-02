@@ -543,10 +543,9 @@ button span {
   top: -68px;
   cursor: pointer;
   background-color: #ddd; /* #6c757d; */
-  width: 24px;
+  width: 24px; /* 24px; */
   height: 65px;
   z-index: 500;
-  opacity: 50%;
 }
 
 .arrows:hover {
@@ -603,7 +602,7 @@ button span {
 }
 
 .modal {
-  
+
 }
 
 /*             ...suite #content

@@ -318,8 +318,16 @@ $("#imageClickModal").on('hidden.bs.modal', function (ev) {
   else editor.setImage(globalImageId, globalImageSrc);
 });
 
-//                                        image drag & drop
-$("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
+/*
+$("body").on('dragover', function(e) { // Optional.
+    e.stopPropagation();
+    e.preventDefault();
+    return false;
+});
+*/
+//  ***************************  image drag & drop  ************
+//$("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
+$("#editor").on('dragover', ".editor-image", function(e) { // Optional.
     e.stopPropagation();
     e.preventDefault();
     var ev = e.originalEvent;
@@ -327,7 +335,8 @@ $("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
 });
 
 // Get file data on drop
-$("#editor").find(".editor-image").on('drop', function(e) {
+//$("#editor").find(".editor-image").on('drop',  function(e) {
+  $("#editor").on('drop', ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
     globalImageId = "#" + e.target.id;
@@ -420,13 +429,11 @@ $("#editor").find(".editor-image").on('drop', function(e) {
     return false;
   });
 
-/*
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
     return false;
   }, false);
-*/
 
 $( document ).on('dblclick', function() {
     event.stopPropagation();

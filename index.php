@@ -35,25 +35,44 @@
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
-				<div id="file-menu" class="dropdown main-menu">
-					<!-- class="btn btn-secondary dropdown-toggle" -->
-					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fichier</button>
-					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
-						<a class="dropdown-item" href="#">Action</a>
-						<a class="dropdown-item" href="#">Another action</a>
-						<a class="dropdown-item" href="#">Something else here</a>
-					</div>
+
+				<div class="btn-group" role="group">
+				  <div class="btn-group" role="group">
+				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Fichier
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+				      <a class="dropdown-item" href="#">Nouveau fichier vierge</a>
+				      <a class="dropdown-item" href="#">Nouveau fichier sur un modèle...</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="#">Ouvrir</a>
+							<a class="dropdown-item" href="#">Enregistrer</a>
+							<a class="dropdown-item" href="#">Importer...</a>
+							<a class="dropdown-item" href="#">Exporter...</a>
+
+				    </div>
+				  </div>
+
+					<div class="btn-group" role="group">
+				    <button id="btnResources" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Resources
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+				      <a class="dropdown-item" href="#">Importer un dictionnaire...</a>
+				      <a class="dropdown-item" href="#">Exporter un dictonnaire...</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="#">Importer un lexique...</a>
+							<a class="dropdown-item" href="#">Exporter un lexique...</a>
+				    </div>
+				  </div>
+
 				</div>
-				<div id="resource-menu" class="dropdown main-menu">
-					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ressource</button>
-					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
-						<a class="dropdown-item" href="#">Action</a>
-						<a class="dropdown-item" href="#">Another action</a>
-						<a class="dropdown-item" href="#">Something else here</a>
-					</div>
-				</div>
+
+
 				<!-- fin main-menubar -->
 			</div>
+
+
 			<!--           			T O O L B A R -->
 			<div id="toolbar">
 				<div id="toolbarlist">
@@ -193,12 +212,17 @@
       <div class="modal-header">
         <h3 class="modal-title">Choisir une image</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span> 
+          <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <div class="form-group">
-            <input id="imgFromDisk" type="file"  id="recipient-name">
+          <div class="input-group mb-3">
+        <!--    <input id="imgFromDisk" type="file" > -->
+						<div class="custom-file">
+							<input id="imgFromDisk" type="file" class="custom-file-input">
+							<label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
+						</div>
+
           </div>
           <div class="form-group">
             <label for="message-text" class="col-form-label">Entrer un URL:</label>

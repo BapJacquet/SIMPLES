@@ -302,20 +302,24 @@ $("#editor").on("imageclick", function(ev) {
 $("#imgFromDisk").on("change", function readFile(e) {
   // bouton dans dialog modal
   var file = e.target.files[0];
-  if (!file) return;
+  if ( !file || (!file.type.match(/image.*/)) ) {
+    $("#imageClickModal .close").trigger("click");
+    return;
+  }
   var reader = new FileReader();
   reader.onload = function(e) {
-    globalImageSrc = e.target.result;
-    console.log("globalImageSrc: " + globalImageSrc);
+    // globalImageSrc = e.target.result;
+    console.log("globalImageSrc: " + e.target.result);
+    $("#imageClickModal .btn-dark").trigger("click");
+    editor.setImage(globalImageId, e.target.result);
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
 });
 
 $("#imageClickModal").on('hidden.bs.modal', function (ev) {
-  // send image to editor
+  // send url to editor
   var url = $("#imageClickModal").find("#image-url").val();
   if ( url ) editor.setImage(globalImageId, url);
-  else editor.setImage(globalImageId, globalImageSrc);
 });
 
 //  ***************************  image drag & drop  ************
@@ -343,6 +347,7 @@ $("#editor").on('dragover', ".editor-image", function(e) { // Optional.
     var ev = e.originalEvent;
     var file = ev.dataTransfer.files[0];
     if ( !file ) return;
+    if ( (!file.type.match(/image.*/)) ) return;
     var reader = new FileReader();
     reader.onload = function(e2) {
         globalImageSrc = e2.target.result;
@@ -351,6 +356,13 @@ $("#editor").on('dragover', ".editor-image", function(e) { // Optional.
     };
     reader.readAsDataURL(file); // start reading the file data.
 });
+
+////////////////////////////////////////////////////////
+//                                        menubar
+$(".main-menu, .hcollapsible ").on("focus", function () {
+  $(this).blur();
+});
+
 ////////////////////////////////////////////////////////
 //                                        toolbar events
 
@@ -391,13 +403,11 @@ $("#editor").on('dragover', ".editor-image", function(e) { // Optional.
   });
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
 // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
-    if(mousedownID!=-1) {  //Only stop if exists
+    if( mousedownID != -1 ) {  //Only stop if exists
       clearInterval(mousedownID);
       mousedownID=-1;
     }
   });
-
-
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
@@ -411,10 +421,6 @@ $("#editor").on('dragover', ".editor-image", function(e) { // Optional.
     console.log(window.getSelection().toString());
     console.log(window.getSelection().getRangeAt(0).toString());
   } );
-
-// choix fichier texte sur disque client
-//  $("#file-input").on('change', readFile);
-
 
   // ouverture port 9000
   $.ajax({
@@ -435,7 +441,7 @@ $("#editor").on('dragover', ".editor-image", function(e) { // Optional.
     return false;
   }, false);
 
-$( document ).on('dblclick', function() {
+  $( document ).on('dblclick', function() {
     event.stopPropagation();
     event.preventDefault();
     return false;

@@ -292,15 +292,23 @@ $(document).ready(function () {
   } );
 
 /********************  image click  ***************/
+/*
 $("#editor").on("imageclick", function(ev) {
   globalImageId = ev.detail.id;
   console.log("click image " + globalImageId);
   $("#imageClickModal").find("#image-url").val("");
   $("#imageClickModal").modal();
 });
+*/
 
+$("#editor").on("click", ".editor-image", function(ev) {
+  $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
+  $("#imageClickModal").find("#image-url").val("");
+  $("#imageClickModal").modal();
+});
+
+// bouton dans dialog modal
 $("#imgFromDisk").on("change", function readFile(e) {
-  // bouton dans dialog modal
   var file = e.target.files[0];
   if ( !file || (!file.type.match(/image.*/)) ) {
     $("#imageClickModal .close").trigger("click");
@@ -308,18 +316,19 @@ $("#imgFromDisk").on("change", function readFile(e) {
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    // globalImageSrc = e.target.result;
-    console.log("globalImageSrc: " + e.target.result);
     $("#imageClickModal .btn-dark").trigger("click");
-    editor.setImage(globalImageId, e.target.result);
+    var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+    // editor.setImage(globalImageId, e.target.result);
+    editor.setImage(imageId, e.target.result);
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
 });
 
 $("#imageClickModal").on('hidden.bs.modal', function (ev) {
-  // send url to editor
+  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var url = $("#imageClickModal").find("#image-url").val();
-  if ( url ) editor.setImage(globalImageId, url);
+  // send url to editor
+  if ( url ) editor.setImage(imageId, url);
 });
 
 //  ***************************  image drag & drop  ************
@@ -330,8 +339,8 @@ $(document).on('drop dragover', function(e){
     return false;
 });
 
-//$("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
-$("#editor").on('dragover', ".editor-image", function(e) { // Optional.
+//$("#editor").find(".editor-image").on('dragover', function(e) {
+$("#editor").on('dragover', ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
     var ev = e.originalEvent;
@@ -343,16 +352,15 @@ $("#editor").on('dragover', ".editor-image", function(e) { // Optional.
   $("#editor").on('drop', ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
-    globalImageId = "#" + e.target.id;
+    var imageId = "#" + e.target.id;
     var ev = e.originalEvent;
     var file = ev.dataTransfer.files[0];
     if ( !file ) return;
     if ( (!file.type.match(/image.*/)) ) return;
     var reader = new FileReader();
     reader.onload = function(e2) {
-        globalImageSrc = e2.target.result;
-        console.log("globalImageSrc: " + globalImageSrc);
-        editor.setImage(globalImageId, globalImageSrc);
+        var imageSrc = e2.target.result;
+        editor.setImage(imageId, imageSrc);
     };
     reader.readAsDataURL(file); // start reading the file data.
 });
@@ -519,9 +527,6 @@ var analysisContent = document.getElementById('analysis-content');
 var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
-
-var globalImageSrc = false;
-var globalImageId;
 
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();

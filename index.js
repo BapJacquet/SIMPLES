@@ -5,19 +5,39 @@
 /////////////////////////////////////////////// F U N C T I O N S
 ////////////////////////////////////////////////////////////////////
 
-// copie fichier text disque -> lastReadText
-function readFile(e) {
+// Ecriture fichier texte sur disque
+function writeFile(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}
+
+// lecture fichier texte et envoie à l'éditeur
+function readFile(ev) {
   // <!-- test readFile  -->
   // <input type="file" id="file-input" />
-  var file = e.target.files[0];
-  if (!file) return;
-
+  var file = ev.target.files[0];
+  if ( !file || !( file.type.match(/text*/)) ) return;
   var reader = new FileReader();
-  reader.onload = function(e) {
-    lastReadText = e.target.result;
-    console.log("lastReadText: " + lastReadText);
+  reader.onload = function(ev2) {
+    var text = ev2.target.result;
+    console.log("textFile: " + text);
+    // ici envoyer à l'éditeur
+    // fuctionEdit(globalMenuItem, text);
   };
-  reader.readAsDataURL(file);     // readAsText(file);
+  reader.readAsText(file); // readAsDataURL(file);
 }
 
 /**
@@ -133,7 +153,7 @@ function onPDFClick(){
     }
   );
 
-  doc.save('Test.pdf');
+  doc.save('Mon fichier.pdf');
 }
 
 // ******************************************** T O O L B A R
@@ -292,14 +312,6 @@ $(document).ready(function () {
   } );
 
 /********************  image click  ***************/
-/*
-$("#editor").on("imageclick", function(ev) {
-  globalImageId = ev.detail.id;
-  console.log("click image " + globalImageId);
-  $("#imageClickModal").find("#image-url").val("");
-  $("#imageClickModal").modal();
-});
-*/
 
 $("#editor").on("click", ".editor-image", function(ev) {
   $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
@@ -308,7 +320,7 @@ $("#editor").on("click", ".editor-image", function(ev) {
 });
 
 // bouton dans dialog modal
-$("#imgFromDisk").on("change", function readFile(e) {
+$("#imgFromDisk").on("change", function (e) {
   var file = e.target.files[0];
   if ( !file || (!file.type.match(/image.*/)) ) {
     $("#imageClickModal .close").trigger("click");
@@ -367,8 +379,23 @@ $("#editor").on('dragover', ".editor-image", function(e) {
 
 ////////////////////////////////////////////////////////
 //                                        menubar
-$(".main-menu, .hcollapsible ").on("focus", function () {
+$(".main-menu, .hcollapsible").on("focus", function () {
   $(this).blur();
+});
+
+////////////////////////////////////////// menubar
+// read text files
+$(".read-file").on("click", function () {
+  globalMenuItem = $(this).attr("id");
+  $("#openFileInput").trigger("click");
+});
+
+$("#openFileInput").on("change", readFile);
+
+// write text file
+$(".write-file").on("click", function () {
+  if ( $(this).attr("id") == "exportFile" ) onPDFClick();
+  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 
 ////////////////////////////////////////////////////////
@@ -519,10 +546,11 @@ const BULLET_INIT = "false";
 var activeTools = {}; // tools present state
 var mousedownID = -1;
 
+var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
+
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');
 
-var pdfButton = document.getElementById('pdf-button');
 var analysisContent = document.getElementById('analysis-content');
 var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
@@ -531,5 +559,4 @@ var lexique3Progress = document.getElementById('lexique3-progress');
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();
 
-// pdfButton.onclick = onPDFClick;
 // slider.oninput = refreshPageScale;

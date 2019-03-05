@@ -87,28 +87,35 @@ hr {
   background-color: #fff;
 }
 
+
+.hcollapsible:hover {
+  color: #2ea35f;
+  background-color: #eee !important;
+}
+
 .hcollapsible {
   -webkit-user-select: none;
   user-select: none;
   background-color: #6c757d;
-
-  /*  flex: 0,0,60px;  /* 0,0,300px; */
   color: white;
   cursor: pointer;
   padding-top: 80px;
   padding-right: 2px;
   padding-left: 0;
-  height: 160px;  /* 30% */
+  height: 170px;  /* 164px */
   width: 28px; /* 24px */
   border: none;
-
   /* text-align: center; */
   outline: none;
-  font-size: 14px; /* 15px */
+  font-size: 15px; /* 15px */
   letter-spacing: 1px;
 }
 
-.active, .collapsible:hover {
+.hcollapsible div {
+
+}
+
+.collapsible:hover {
   background-color: #aaa;
 }
 
@@ -266,7 +273,7 @@ button span {
   user-select: none;
   margin-left: 20px; /* 24px; */
   margin-top: 2px;
-  height: 36px;
+  height: 36px;  /* 42px; */
   font-size: 18px; /* 15px */
 }
 
@@ -276,8 +283,9 @@ button span {
   border: none;
 }
 
-.main-menu:hover {
-  background-color: #bbb;
+.main-menu:hover,
+.simples-button:hover {
+  background-color: #888;
 }
 
 .dropdown-toggle:hover {
@@ -527,17 +535,6 @@ button span {
 
 /* *********************** */
 
-/*      simples span     */
-.simples-span {
-  -webkit-user-select: none;
-  user-select: none;
-  float: right;
-  position: relative;
-  top: -68px;
-  right: 0;
-  z-index: 600;
-}
-
 /*     scroll toolbar */
 .arrows {
   -webkit-user-select: none;
@@ -545,11 +542,11 @@ button span {
   pointer-events: initial;
   display: inline-block;
   position: relative;
-  top: -68px;
+  top: -64px;
   cursor: pointer;
   background-color: #ddd; /* #6c757d; */
   width: 24px; /* 24px; */
-  height: 65px;
+  height: 57px;  /* 65px; */
   z-index: 500;
 }
 
@@ -565,31 +562,49 @@ button span {
   float: right;
 }
 
-#img-l {
+#img-arrow-l {
   position: relative;
-  top: 16px;
-  left: 10px;
+  top: 13px;
+  left: 8px;
   pointer-events: none;
 }
 
-#img-r {
+#img-arrow-r {
   position: relative;
-  top: 16px;
-  right: 0;
+  top: 13px;
+  right: -9px;
   pointer-events: none;
+}
+
+/*      simples span     */
+.simples-span {
+  -webkit-user-select: none;
+  user-select: none;
+  float: right;
+  position: relative;
+  top: -68px; /* -68 */
+  right: 0;
+  z-index: 600;
 }
 
 /*     Simples! button */
 .simples-button {
+  position: relative;
+  top: -3px;
+  border: none;
   padding-top: 16px;
   padding-bottom: 16px;
   cursor: pointer;
   width: 84px;
-  height: 65px; /* 64 */
+  height: 71px; /* 65 */
 
   /* background-color: hsla(167, 39%, 31%, 1);
   hsla(166, 100%, 30%, 1); */
   background-color: #2ea35f;
+}
+
+.simples-button img {
+  z-index: 1000;
 }
 
 /* rebonds sur .tool */

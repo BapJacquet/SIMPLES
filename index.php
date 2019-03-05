@@ -37,19 +37,18 @@
 			<div id="main-menubar">
 
 				<div class="btn-group" role="group">
-				  <div class="btn-group" role="group">
+					<div class="btn-group" role="group">
 				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				      Fichier
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-				      <a class="dropdown-item" href="#">Nouveau fichier vierge</a>
-				      <a class="dropdown-item" href="#">Nouveau fichier sur un modèle...</a>
+				      <a id="newFile" class="dropdown-item" href="#">Nouveau fichier vierge</a>
+				      <a id="newModFile" class="dropdown-item" href="#">Nouveau fichier sur un modèle...</a>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href="#">Ouvrir</a>
-							<a class="dropdown-item" href="#">Enregistrer</a>
-							<a class="dropdown-item" href="#">Importer...</a>
-							<a class="dropdown-item" href="#">Exporter...</a>
-
+							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
+							<a id="saveFile" class="write-file dropdown-item" href="#">Enregistrer...</a>
+							<a id="importFile" class="read-file dropdown-item" href="#">Importer...</a>
+							<a id="exportFile" class="write-file dropdown-item" href="#">Exporter...</a>
 				    </div>
 				  </div>
 
@@ -58,17 +57,18 @@
 				      Resources
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-				      <a class="dropdown-item" href="#">Importer un dictionnaire...</a>
+				      <a class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>
 				      <a class="dropdown-item" href="#">Exporter un dictonnaire...</a>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href="#">Importer un lexique...</a>
+							<a class="dropdown-item read-file" href="#">Importer un lexique...</a>
 							<a class="dropdown-item" href="#">Exporter un lexique...</a>
 				    </div>
 				  </div>
 
 				</div>
 
-
+				<!-- input hidden pour file dialog -->
+				<input type="file" id="openFileInput" style="display:none;">
 				<!-- fin main-menubar -->
 			</div>
 
@@ -145,7 +145,8 @@
 
 				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
 				<div class="arrows arrow-l">  <!-- scroll toolbar -->
-					<img id="img-l" src="arrow-l-white.png">
+				<!--	<img id="img-arrow-l" src="arrow-l-white.png"> -->
+				<img id="img-arrow-l" src="carat-l-white.png">
 				</div>
 
 				<span id="analyze" class="simples-span" >
@@ -155,7 +156,8 @@
 				</span>
 
 				<div class="arrows arrow-r">  <!-- scroll toolbar -->
-					<img id="img-r" src="arrow-r-white.png">
+				<!--	<img id="img-arrow-r" src="arrow-r-white.png">  -->
+				<img id="img-arrow-r" src="carat-r-white.png">
 				</div>
 
 			</div>
@@ -197,10 +199,6 @@
 	  				<p>Résultats de l'analyze</p>
 					</div>
 				</div>
-				<!--div id="analysis-container">
-					<h1>90</h1>
-					<p>Hello World</p>
-				</div-->
 			</div>
 	</div>
 </div>

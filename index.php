@@ -35,25 +35,55 @@
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
-				<div id="file-menu" class="dropdown main-menu">
-					<!-- class="btn btn-secondary dropdown-toggle" -->
-					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fichier</button>
-					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
-						<a class="dropdown-item" href="#">Action</a>
-						<a class="dropdown-item" href="#">Another action</a>
-						<a class="dropdown-item" href="#">Something else here</a>
-					</div>
+
+				<div class="btn-group" role="group">
+					<div class="btn-group" role="group">
+				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Fichier
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+				      <a id="newFile" class="dropdown-item" href="#">Nouveau</a>
+				      <a id="newModFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
+							<div class="dropdown-divider"></div>
+							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
+							<a id="saveFile" class="write-file dropdown-item" href="#">Enregistrer...</a>
+							<a id="importFile" class="read-file dropdown-item" href="#">Importer...</a>
+							<a id="exportFile" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
+				    </div>
+				  </div>
+
+					<div class="btn-group" role="group">
+				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Edition
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+							<a id="cutItem" class="dropdown-item" href="#">Couper</a>
+				      <a id="copyItem" class="dropdown-item" href="#">Copier</a>
+							<a id="pasteItem" class="dropdown-item" href="#">Coller</a>
+				    </div>
+				  </div>
+
+					<div class="btn-group" role="group">
+				    <button id="btnResources" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Resources
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+				      <a class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>
+				      <a class="dropdown-item" href="#">Exporter un dictonnaire...</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item read-file" href="#">Importer un lexique...</a>
+							<a class="dropdown-item" href="#">Exporter un lexique...</a>
+				    </div>
+				  </div>
+
 				</div>
-				<div id="resource-menu" class="dropdown main-menu">
-					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ressource</button>
-					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
-						<a class="dropdown-item" href="#">Action</a>
-						<a class="dropdown-item" href="#">Another action</a>
-						<a class="dropdown-item" href="#">Something else here</a>
-					</div>
-				</div>
+
+				<!-- input hidden pour file dialog -->
+				<input type="file" id="openFileInput" style="display:none;">
 				<!-- fin main-menubar -->
 			</div>
+
+
 			<!--           			T O O L B A R -->
 			<div id="toolbar">
 				<div id="toolbarlist">
@@ -126,7 +156,8 @@
 
 				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
 				<div class="arrows arrow-l">  <!-- scroll toolbar -->
-					<img id="img-l" src="arrow-l-white.png">
+				<!--	<img id="img-arrow-l" src="arrow-l-white.png"> -->
+				<img id="img-arrow-l" src="carat-l-white.png">
 				</div>
 
 				<span id="analyze" class="simples-span" >
@@ -136,7 +167,8 @@
 				</span>
 
 				<div class="arrows arrow-r">  <!-- scroll toolbar -->
-					<img id="img-r" src="arrow-r-white.png">
+				<!--	<img id="img-arrow-r" src="arrow-r-white.png">  -->
+				<img id="img-arrow-r" src="carat-r-white.png">
 				</div>
 
 			</div>
@@ -178,10 +210,6 @@
 	  				<p>Résultats de l'analyze</p>
 					</div>
 				</div>
-				<!--div id="analysis-container">
-					<h1>90</h1>
-					<p>Hello World</p>
-				</div-->
 			</div>
 	</div>
 </div>
@@ -193,12 +221,17 @@
       <div class="modal-header">
         <h3 class="modal-title">Choisir une image</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span> 
+          <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <div class="form-group">
-            <input id="imgFromDisk" type="file"  id="recipient-name">
+          <div class="input-group mb-3">
+        <!--    <input id="imgFromDisk" type="file" > -->
+						<div class="custom-file">
+							<input id="imgFromDisk" type="file" class="custom-file-input">
+							<label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
+						</div>
+
           </div>
           <div class="form-group">
             <label for="message-text" class="col-form-label">Entrer un URL:</label>

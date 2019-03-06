@@ -5,19 +5,39 @@
 /////////////////////////////////////////////// F U N C T I O N S
 ////////////////////////////////////////////////////////////////////
 
-// copie fichier text disque -> lastReadText
-function readFile(e) {
+// Ecriture fichier texte sur disque
+function writeFile(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}
+
+// lecture fichier texte et envoie à l'éditeur
+function readFile(ev) {
   // <!-- test readFile  -->
   // <input type="file" id="file-input" />
-  var file = e.target.files[0];
-  if (!file) return;
-
+  var file = ev.target.files[0];
+  if ( !file || !( file.type.match(/text*/)) ) return;
   var reader = new FileReader();
-  reader.onload = function(e) {
-    lastReadText = e.target.result;
-    console.log("lastReadText: " + lastReadText);
+  reader.onload = function(ev2) {
+    var text = ev2.target.result;
+    console.log("textFile: " + text);
+    // ici envoyer à l'éditeur
+    // fuctionEdit(globalMenuItem, text);
   };
-  reader.readAsDataURL(file);     // readAsText(file);
+  reader.readAsText(file); // readAsDataURL(file);
 }
 
 /**
@@ -133,7 +153,7 @@ function onPDFClick(){
     }
   );
 
-  doc.save('Test.pdf');
+  doc.save('Mon fichier.pdf');
 }
 
 // ******************************************** T O O L B A R
@@ -292,34 +312,47 @@ $(document).ready(function () {
   } );
 
 /********************  image click  ***************/
-$("#editor").on("imageclick", function(ev) {
-  globalImageId = ev.detail.id;
-  console.log("click image " + globalImageId);
+
+$("#editor").on("click", ".editor-image", function(ev) {
+  $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
   $("#imageClickModal").find("#image-url").val("");
   $("#imageClickModal").modal();
 });
 
-$("#imgFromDisk").on("change", function readFile(e) {
-  // bouton dans dialog modal
+// bouton dans dialog modal
+$("#imgFromDisk").on("change", function (e) {
   var file = e.target.files[0];
-  if (!file) return;
+  if ( !file || (!file.type.match(/image.*/)) ) {
+    $("#imageClickModal .close").trigger("click");
+    return;
+  }
   var reader = new FileReader();
   reader.onload = function(e) {
-    globalImageSrc = e.target.result;
-    console.log("globalImageSrc: " + globalImageSrc);
+    $("#imageClickModal .btn-dark").trigger("click");
+    var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+    // editor.setImage(globalImageId, e.target.result);
+    editor.setImage(imageId, e.target.result);
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
 });
 
 $("#imageClickModal").on('hidden.bs.modal', function (ev) {
-  // send image to editor
+  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var url = $("#imageClickModal").find("#image-url").val();
-  if ( url ) editor.setImage(globalImageId, url);
-  else editor.setImage(globalImageId, globalImageSrc);
+  // send url to editor
+  if ( url ) editor.setImage(imageId, url);
 });
 
-//                                        image drag & drop
-$("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
+//  ***************************  image drag & drop  ************
+
+// prevention du drop n'importe ou
+$(document).on('drop dragover', function(e){
+  if ( !( $(e.target).hasClass("editor-image") ) )
+    return false;
+});
+
+//$("#editor").find(".editor-image").on('dragover', function(e) {
+$("#editor").on('dragover', ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
     var ev = e.originalEvent;
@@ -327,21 +360,62 @@ $("#editor").find(".editor-image").on('dragover', function(e) { // Optional.
 });
 
 // Get file data on drop
-$("#editor").find(".editor-image").on('drop', function(e) {
+//$("#editor").find(".editor-image").on('drop',  function(e) {
+  $("#editor").on('drop', ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
-    globalImageId = "#" + e.target.id;
+    var imageId = "#" + e.target.id;
     var ev = e.originalEvent;
     var file = ev.dataTransfer.files[0];
     if ( !file ) return;
+    if ( (!file.type.match(/image.*/)) ) return;
     var reader = new FileReader();
     reader.onload = function(e2) {
-        globalImageSrc = e2.target.result;
-        console.log("globalImageSrc: " + globalImageSrc);
-        editor.setImage(globalImageId, globalImageSrc);
+        var imageSrc = e2.target.result;
+        editor.setImage(imageId, imageSrc);
     };
     reader.readAsDataURL(file); // start reading the file data.
 });
+
+////////////////////////////////////////////////////////
+//                                             menubar
+
+$(".main-menu, .hcollapsible").on("focus", function () {
+  $(this).blur();
+});
+
+$("#editor").on("blur", ".editor-text", function () {
+  lastBlockBlur = $(this).attr("id");
+});
+//////////////////////////////////////////
+// read text files
+$(".read-file").on("click", function () {
+  globalMenuItem = $(this).attr("id");
+  $("#openFileInput").trigger("click");
+});
+
+$("#openFileInput").on("change", readFile);
+
+// write text file
+$(".write-file").on("click", function () {
+  if ( $(this).attr("id") == "exportFile" ) onPDFClick();
+  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
+});
+
+// edit menu
+$("#cutItem").on("click", function() {
+  document.execCommand("cut");
+});
+$("#copyItem").on("click", function() {
+  document.execCommand("copy");
+});
+$("#pasteItem").on("click", function() {
+  setInterval(function() {
+    $(lastBlockBlur).focus();
+  }, 10);
+  document.execCommand("paste");
+});
+
 ////////////////////////////////////////////////////////
 //                                        toolbar events
 
@@ -378,17 +452,15 @@ $("#editor").find(".editor-image").on('drop', function(e) {
         if ( $(e.target).hasClass("arrow-l") ) decal = 8;
         else decal = -8;
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
-      }, 25 /*execute every 100ms*/);
+      }, 25);
   });
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
 // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
-    if(mousedownID!=-1) {  //Only stop if exists
+    if( mousedownID != -1 ) {  //Only stop if exists
       clearInterval(mousedownID);
       mousedownID=-1;
     }
   });
-
-
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
@@ -403,10 +475,6 @@ $("#editor").find(".editor-image").on('drop', function(e) {
     console.log(window.getSelection().getRangeAt(0).toString());
   } );
 
-// choix fichier texte sur disque client
-//  $("#file-input").on('change', readFile);
-
-
   // ouverture port 9000
   $.ajax({
     'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
@@ -420,15 +488,13 @@ $("#editor").find(".editor-image").on('drop', function(e) {
     return false;
   });
 
-/*
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
     return false;
   }, false);
-*/
 
-$( document ).on('dblclick', function() {
+  $( document ).on('dblclick', function() {
     event.stopPropagation();
     event.preventDefault();
     return false;
@@ -498,20 +564,18 @@ const BULLET_INIT = "false";
 var activeTools = {}; // tools present state
 var mousedownID = -1;
 
+var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
+var lastBlockBlur = ""; // id dernier bloc
+
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');
 
-var pdfButton = document.getElementById('pdf-button');
 var analysisContent = document.getElementById('analysis-content');
 var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
 
-var globalImageSrc = false;
-var globalImageId;
-
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();
 
-// pdfButton.onclick = onPDFClick;
 // slider.oninput = refreshPageScale;

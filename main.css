@@ -283,8 +283,7 @@ button span {
   border: none;
 }
 
-.main-menu:hover,
-.simples-button:hover {
+.main-menu:hover {
   background-color: #888;
 }
 
@@ -597,14 +596,13 @@ button span {
   cursor: pointer;
   width: 84px;
   height: 71px; /* 65 */
-
   /* background-color: hsla(167, 39%, 31%, 1);
   hsla(166, 100%, 30%, 1); */
   background-color: #2ea35f;
 }
 
-.simples-button img {
-  z-index: 1000;
+.simples-button:hover {
+  background-color: #37B25C
 }
 
 /* rebonds sur .tool */

@@ -378,12 +378,16 @@ $("#editor").on('dragover', ".editor-image", function(e) {
 });
 
 ////////////////////////////////////////////////////////
-//                                        menubar
+//                                             menubar
+
 $(".main-menu, .hcollapsible").on("focus", function () {
   $(this).blur();
 });
 
-////////////////////////////////////////// menubar
+$("#editor").on("blur", ".editor-text", function () {
+  lastBlockBlur = $(this).attr("id");
+});
+//////////////////////////////////////////
 // read text files
 $(".read-file").on("click", function () {
   globalMenuItem = $(this).attr("id");
@@ -396,6 +400,20 @@ $("#openFileInput").on("change", readFile);
 $(".write-file").on("click", function () {
   if ( $(this).attr("id") == "exportFile" ) onPDFClick();
   else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
+});
+
+// edit menu
+$("#cutItem").on("click", function() {
+  document.execCommand("cut");
+});
+$("#copyItem").on("click", function() {
+  document.execCommand("copy");
+});
+$("#pasteItem").on("click", function() {
+  setInterval(function() {
+    $(lastBlockBlur).focus();
+  }, 10);
+  document.execCommand("paste");
 });
 
 ////////////////////////////////////////////////////////
@@ -434,7 +452,7 @@ $(".write-file").on("click", function () {
         if ( $(e.target).hasClass("arrow-l") ) decal = 8;
         else decal = -8;
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
-      }, 25 /*execute every 100ms*/);
+      }, 25);
   });
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
 // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
@@ -547,6 +565,7 @@ var activeTools = {}; // tools present state
 var mousedownID = -1;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
+var lastBlockBlur = ""; // id dernier bloc
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

@@ -42,13 +42,24 @@
 				      Fichier
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-				      <a id="newFile" class="dropdown-item" href="#">Nouveau fichier vierge</a>
-				      <a id="newModFile" class="dropdown-item" href="#">Nouveau fichier sur un modèle...</a>
+				      <a id="newFile" class="dropdown-item" href="#">Nouveau</a>
+				      <a id="newModFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
 							<div class="dropdown-divider"></div>
 							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
 							<a id="saveFile" class="write-file dropdown-item" href="#">Enregistrer...</a>
 							<a id="importFile" class="read-file dropdown-item" href="#">Importer...</a>
-							<a id="exportFile" class="write-file dropdown-item" href="#">Exporter...</a>
+							<a id="exportFile" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
+				    </div>
+				  </div>
+
+					<div class="btn-group" role="group">
+				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Edition
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+							<a id="cutItem" class="dropdown-item" href="#">Couper</a>
+				      <a id="copyItem" class="dropdown-item" href="#">Copier</a>
+							<a id="pasteItem" class="dropdown-item" href="#">Coller</a>
 				    </div>
 				  </div>
 

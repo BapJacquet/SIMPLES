@@ -227,7 +227,10 @@ class Editor {
       let boldChanged = oldFormat.bold !== this.format.bold;
       let titleChanged = oldFormat.title !== this.format.title;
       let listChanged = oldFormat.bullet !== this.format.bullet;
-      if (boldChanged || titleChanged || listChanged) {
+      let frameChanged = oldFormat.frame !== this.format.frame;
+      let colorChanged = oldFormat.color !== this.format.color;
+      let pictureChanged = oldFormat.picture !== this.format.picture;
+      if (boldChanged || titleChanged || listChanged || frameChanged || colorChanged || pictureChanged) {
         this.dispatchCurrentFormatChanged(this.format);
       }
     }
@@ -252,20 +255,31 @@ class Editor {
     let h3 = this.hasReccursiveTag('H3', element);
     let h4 = this.hasReccursiveTag('H4', element);
     let h5 = this.hasReccursiveTag('H5', element);
+    let color = this.getNodeFontColor(element) || '#000000';
     let result = {};
     result.bold = bold;
     result.bullet = listitem;
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
     result.frame = $('#blc-' + this.activeBlockId).hasClass('frame');
     result.picture = $('#img-' + this.activeBlockId).is(':visible');
+    result.color = color;
     return result;
+  }
+
+  getNodeFontColor (element) {
+    if (element.nodeName === 'FONT') {
+      return element.color;
+    } else {
+      let e = this.findParentElementWithTag('FONT', element);
+      if (e !== null) {
+        return e.color;
+      }
+    }
+    return null;
   }
 
   checkFormatAcrossSelection (format) {
     let selection = this.getSelection();
-    let bold = format.bold;
-    let listitem = format.bullet;
-    let title = format.title;
     for (let i = 0; i < selection.rangeCount; i++) {
       let range = selection.getRangeAt(i);
       let nodes = this.getNodesInRange(range);
@@ -311,11 +325,13 @@ class Editor {
       bullet: left.bullet,
       title: left.title,
       frame: left.frame,
-      picture: left.picture
+      picture: left.picture,
+      color: left.color
     };
     if (left.bold === null || right.bold === null || left.bold !== right.bold) result.bold = 'ambiguous';
     if (left.bullet === null || right.bullet === null || left.bullet !== right.bullet) result.bullet = 'ambiguous';
     if (left.title === null || right.title === null || left.title !== right.title) result.title = 'ambiguous';
+    if (left.color === null || right.color === null || left.color !== right.color) result.color = 'ambiguous';
     // console.log({left: left, right: right, result: result});
     return result;
   }
@@ -512,6 +528,7 @@ class Editor {
       let frame = this.format.frame;
       let title = this.format.title;
       let picture = this.format.picture;
+      let color = this.format.color;
       if (typeof (format.title) !== 'undefined' && format.title !== title) {
         let t = format.title;
         if (t === 'none') t = 'div';
@@ -535,7 +552,7 @@ class Editor {
         }
       }
       if (typeof (format.bullet) !== 'undefined' && format.bullet !== list) {
-        document.execCommand('insertUnorderedList', true, null);
+        document.execCommand('insertUnorderedList', false, null);
       }
       if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
         if (format.picture) {
@@ -543,6 +560,9 @@ class Editor {
         } else {
           $('#img-' + this.activeBlockId).hide();
         }
+      }
+      if (typeof (format.color) !== 'undefined' && format.color !== color) {
+        document.execCommand('foreColor', false, format.color);
       }
       this.updateFormat();
     }

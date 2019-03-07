@@ -394,9 +394,7 @@ class Editor {
   removeBlockAt (id, focusID) {
     $('#blc-' + id).remove();
     $('#txt-' + focusID).focus();
-    for (let i = id + 1; i < this.blockCount; i++) {
-      this.changeBlockID(i, i - 1);
-    }
+    this.refreshAllBlockID();
   }
 
   /**
@@ -406,14 +404,29 @@ class Editor {
    * @param {boolean} focus - Whether the new block should be focused.
    */
   insertBlockAfter (index, text, focus) {
-    for (let i = this.blockCount - 1; i > index; i--) {
-      this.changeBlockID(i, i + 1);
-    }
     $('#blc-' + index).after(this.newBlockString(index + 1, text));
+    this.refreshAllBlockID();
     if (focus) {
       $('#txt-' + (index + 1)).focus();
     }
     this.setImage('#img-' + (index + 1), 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(index + 1);
+  }
+
+  /**
+   * Insert a block just above the block with the given index.
+   * @param {int} index - ID of the block that the new block should precede.
+   * @param {string} text - Text the new block should be initialized with.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  insertBlockBefore (index, text, focus) {
+    $('#blc-' + index).before(this.newBlockString(index, text));
+    this.refreshAllBlockID();
+    if (focus) {
+      $('#txt-' + (index)).focus();
+    }
+    this.setImage('#img-' + (index), 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(index);
   }
 
   /**
@@ -428,6 +441,7 @@ class Editor {
       $('#txt-' + id).focus();
     }
     this.setImage('#img-' + id, 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(id);
   }
 
   /**
@@ -459,11 +473,27 @@ class Editor {
    * Change the DOM ID of the block with the given id to the given new id.
    * @param {int} oldID - ID the block had until now.
    * @param {int} newID - ID the block should be having.
+   * @deprecated
    */
   changeBlockID (oldID, newID) {
     $('#blc-' + oldID).attr('id', 'blc-' + newID);
     $('#txt-' + oldID).attr('id', 'txt-' + newID);
     $('#img-' + oldID).attr('id', 'img-' + newID);
+  }
+
+  /**
+   * Refresh all the IDs of the blocks in the editor.
+   */
+  refreshAllBlockID () {
+    $('.editor-block').each(function (index) {
+      $(this).attr('id', 'blc-' + index);
+    });
+    $('.editor-text').each(function (index) {
+      $(this).attr('id', 'txt-' + index);
+    });
+    $('.editor-image').each(function (index) {
+      $(this).attr('id', 'img-' + index);
+    });
   }
 
   /**
@@ -541,13 +571,16 @@ class Editor {
   }
 
   /**
-   * Send an event telling that an image has been clicked.
-   * @param {string} id - The DOM ID of the image canvas.
+   * Send an event telling that a block has been created.
+   * @param {int} id - The integer ID of the new block.
    */
-  dispatchImageClickEvent (id) {
-    let e = new CustomEvent('imageclick', {
+  dispatchBlockCreatedEvent (id) {
+    let e = new CustomEvent('blockcreated', {
       detail: {
-        id: id
+        intid: id,
+        blockid: 'blc-' + id,
+        textid: 'txt-' + id,
+        imageid: 'img-' + id
       },
       bubbles: false,
       cancelable: false

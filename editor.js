@@ -163,7 +163,7 @@ class Editor {
         }
         break;
       case 'Backspace':
-        if (this.getTextContent(id).length === 0 && id !== 0) {
+        if (this.getRawTextContent(id).length === 0 && id !== 0) {
           this.removeBlockAt(id, id - 1);
         }
         break;
@@ -325,7 +325,25 @@ class Editor {
     do {
       result.push(startNode);
     } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
-    // TODO do stuff.
+    return result;
+  }
+
+  /**
+   * Get all the nodes in the given element.
+   * @param {DOMElement} element - Element.
+   * @return {DOMElementList} - List of nodes within that element.
+   */
+  getNodesInElement (element) {
+    let startNode = element.firstChild;
+    let endNode = element;
+    if (startNode === endNode && startNode.childNodes.length === 0) {
+      return [startNode];
+    }
+
+    let result = [];
+    do {
+      result.push(startNode);
+    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
     return result;
   }
 
@@ -545,7 +563,7 @@ class Editor {
    * @param {int} id - ID of the block to extract text from.
    * @return {string} - The extracted text.
    */
-  getTextContent (id) {
+  getRawTextContent (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
     let element = $('#txt-' + id).get(0);
@@ -672,6 +690,51 @@ class Editor {
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
     };
     img.src = src;
+  }
+
+  /**
+   * Sets the selection in the editor.
+   * @param {int} blockIndex - Index of the block.
+   * @param {int} startIndex - Start index of the selection.
+   * @param {int} length - (optional) length of the selection;
+   */
+  select (blockIndex, startIndex, length = 0) {
+    let sel = this.getSelection();
+    sel.removeAllRanges();
+    let range = document.createRange();
+    let elemAndOffset = this.getBlockElementAndOffsetAtIndex(blockIndex, startIndex);
+    if (elemAndOffset !== null) {
+      range.setStart(elemAndOffset.element, elemAndOffset.offset);
+      if (length > 0) {
+        elemAndOffset = this.getBlockElementAndOffsetAtIndex(blockIndex, startIndex + length);
+        if (elemAndOffset !== null) {
+          range.setEnd(elemAndOffset.element, elemAndOffset.offset);
+        }
+      }
+    }
+    sel.addRange(range);
+  }
+
+  /**
+   * Get the node and the offset at the given index.
+   * @param {int} blockIndex - Index of the block to look into.
+   * @param {int} index - Index of the character.
+   * @return {Object} - Corresponding node and offset.
+   */
+  getBlockElementAndOffsetAtIndex (blockIndex, index) {
+    let root = $('#txt-' + blockIndex).get(0);
+    let remainingChars = index;
+    let nodes = this.getNodesInElement(root);
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].nodeType === 3) {
+        if (remainingChars < nodes[i].length) {
+          return {element: nodes[i], offset: remainingChars};
+        } else {
+          remainingChars -= nodes[i].length;
+        }
+      }
+    }
+    return null;
   }
 
   /**

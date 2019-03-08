@@ -70,7 +70,7 @@ function displayAnalysisResults(event){
     for(var i = 0; i < complexWords.length; i++){
       analysisContent.insertAdjacentHTML('beforeend',
       `<input type='button' title='${frequencyToText(complexWords[i].frequency)}' class='btn btn-outline-danger btn-sm' type="button" value='${complexWords[i].text}'
-      onclick='quill.setSelection(${complexWords[i].startOffset}, ${complexWords[i].length});' />`);
+      onclick='editor.select(${complexWords[i].blockIndex}, ${complexWords[i].startOffset}, ${complexWords[i].length});' />`);
     }
   } else {
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-success" role="alert">Les mots semblent simples !</div>`);
@@ -127,14 +127,15 @@ function refreshPageScale(){
  * When Verify Button is clicked
  * Start the analysis.
  */
-function onVerifyClick(){
-  let content = [];
+function onVerifyClick () {
+  /*let content = [];
   //alert(editor.blockCount);
   for(let i = 0; i < editor.blockCount; i++){
     content.push(editor.getTextContent(i));
   }
   analyzeText(content.join("\n"));
-  //alert(content.join("\n"));
+  //alert(content.join("\n"));*/
+  analyzeAllEditorContent();
 }
 
 /**

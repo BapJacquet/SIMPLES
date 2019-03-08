@@ -4,6 +4,7 @@
 /* global XMLHttpRequest */
 /* global XDomainRequest */
 /* global fetch */
+/* global editor */
 /* =======================================================================
    VARIABLES
    ======================================================================= */
@@ -55,11 +56,20 @@ function dispatchAnalysisStatusChanged (moduleName, status) {
    FUNCTIONS
    ======================================================================= */
 
+function analyzeAllEditorContent() {
+  dispatchProgressChanged(0);
+
+  for (let i = 0; i < editor.blockCount; i++) {
+    analyzeText(i, editor.getRawTextContent(i));
+  }
+}
+
 /**
  * Begins the analysis of the given text.
- * @param {string} text - Multiline string to analyse.
+ * @param {int} blockIndex - Index of the block containing the text.
+ * @param {string} text - Text to analyze.
  */
-function analyzeText (text) {
+function analyzeText (blockIndex, text) {
   dispatchProgressChanged(0);
 
   var request = createCORSRequest('POST', 'http://sioux.univ-paris8.fr:9000/');
@@ -86,6 +96,7 @@ function analyzeText (text) {
           // Récupère le résultat pour chaque mot.
           for (let t = 0; t < s.tokens.length; t++) {
             let word = {};
+            word.blockIndex = blockIndex;
             // Position de la première lettre
             word.startOffset = s.tokens[t].characterOffsetBegin;
             // Longueur

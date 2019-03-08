@@ -410,11 +410,19 @@ class Editor {
   removeBlockAt (id, focusID) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
-    $('#blc-' + id).remove();
-    if (typeof (focusID) === 'number') {
-      $('#txt-' + focusID).focus();
+    if (id === 0 && this.blockCount === 1) {
+      // There is only one block. Clear it instead of removing it.
+      $('#txt-0').empty();
+      this.setImage('#img-0', 'img/placeholder.png');
+      $('#txt-0').focus();
+    } else {
+      // There will be at least one block remaining.
+      $('#blc-' + id).remove();
+      if (typeof (focusID) === 'number') {
+        $('#txt-' + focusID).focus();
+      }
+      this.refreshAllBlockID();
     }
-    this.refreshAllBlockID();
   }
 
   /**
@@ -451,6 +459,34 @@ class Editor {
     }
     this.setImage('#img-' + (index), 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index);
+  }
+
+  /**
+   * Move a block up by the given amount.
+   * @param {int} index - ID of the block to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   */
+  moveBlockUp (index, amount = 1) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
+    if (index - amount >= 0) {
+      $('#blc-' + index).insertBefore('#blc-' + (index - amount));
+      this.refreshAllBlockID();
+    }
+  }
+
+  /**
+   * Move a block down by the given amount.
+   * @param {int} index - ID of the block to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   */
+  moveBlockDown (index, amount = 1) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
+    if (index + amount < this.blockCount) {
+      $('#blc-' + index).insertAfter('#blc-' + (index + amount));
+      this.refreshAllBlockID();
+    }
   }
 
   /**

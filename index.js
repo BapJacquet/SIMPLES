@@ -489,7 +489,7 @@ $("#pasteItem").on("click", function() {
   });
 
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    activeBlocId = this.id.split("-")[1];
+    activeBlocId = Number(this.id.split("-")[1]);
   });
 
   //  blockCmd
@@ -518,7 +518,7 @@ $("#pasteItem").on("click", function() {
 
   // block Events
   $("#blockCmdInter div").on("click", function (ev) {
-    editor.insertBlockAfter( Number(activeBlocId), "", true);
+    editor.insertBlockAfter( activeBlocId, "", true);
   });
 
   $("#blockCmd .block-delete").on("click", function (ev) {

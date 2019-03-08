@@ -489,7 +489,7 @@ $("#pasteItem").on("click", function() {
   });
 
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    activeBlocId = this.id.split("-")[1];
+    activeBlocId = Number(this.id.split("-")[1]);
   });
 
   //  blockCmd

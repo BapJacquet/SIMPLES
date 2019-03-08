@@ -518,7 +518,7 @@ $("#pasteItem").on("click", function() {
 
   // block Events
   $("#blockCmdInter div").on("click", function (ev) {
-    editor.insertBlockAfter( activeBlocId, "", true);
+    editor.insertBlockAfter( Number(activeBlocId), "", true);
   });
 
   $("#blockCmd .block-delete").on("click", function (ev) {

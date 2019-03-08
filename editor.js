@@ -408,8 +408,12 @@ class Editor {
    * @param {int} focusID - ID of the block that will get the focus.
    */
   removeBlockAt (id, focusID) {
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+
     $('#blc-' + id).remove();
-    $('#txt-' + focusID).focus();
+    if (typeof (focusID) === 'number') {
+      $('#txt-' + focusID).focus();
+    }
     this.refreshAllBlockID();
   }
 
@@ -420,6 +424,8 @@ class Editor {
    * @param {boolean} focus - Whether the new block should be focused.
    */
   insertBlockAfter (index, text, focus) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
     $('#blc-' + index).after(this.newBlockString(index + 1, text));
     this.refreshAllBlockID();
     if (focus) {
@@ -436,6 +442,8 @@ class Editor {
    * @param {boolean} focus - Whether the new block should be focused.
    */
   insertBlockBefore (index, text, focus) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
     $('#blc-' + index).before(this.newBlockString(index, text));
     this.refreshAllBlockID();
     if (focus) {
@@ -466,6 +474,8 @@ class Editor {
    * @return {string} - The extracted text.
    */
   getTextContent (id) {
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+
     let element = $('#txt-' + id).get(0);
     return element.textContent;
   }
@@ -570,14 +580,16 @@ class Editor {
 
   /**
    * Set the image in the block with the given id, making it DataURL-ready.
-   * @param {int} id - ID of the block.
+   * @param {string} selector - ID of the block.
    * @param {string} src - Path of the image source.
    */
-  setImage (id, src) {
+  setImage (selector, src) {
+    if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
+
     var img = new Image();
     img.setAttribute('crossOrigin', 'anonymous');
     img.onload = function () {
-      var canvas = $(id).get(0);
+      var canvas = $(selector).get(0);
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
 

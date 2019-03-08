@@ -43,10 +43,11 @@
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
 				      <a id="newFile" class="dropdown-item" href="#">Nouveau</a>
-				      <a id="newModFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
+				      <a id="newModelFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
 							<div class="dropdown-divider"></div>
 							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
 							<a id="saveFile" class="write-file dropdown-item" href="#">Enregistrer...</a>
+							<div class="dropdown-divider"></div>
 							<a id="importFile" class="read-file dropdown-item" href="#">Importer...</a>
 							<a id="exportFile" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
 				    </div>
@@ -84,7 +85,7 @@
 			</div>
 
 
-			<!--           			T O O L B A R -->
+			<!--           							T O O L B A R -->
 			<div id="toolbar">
 				<div id="toolbarlist">
 
@@ -155,9 +156,9 @@
 
 
 				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
-				<div class="arrows arrow-l">  <!-- scroll toolbar -->
-				<!--	<img id="img-arrow-l" src="arrow-l-white.png"> -->
-				<img id="img-arrow-l" src="carat-l-white.png">
+
+				<div class="arrows arrow-l"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
+					<img id="img-arrow-l" src="carat-l-white.png">
 				</div>
 
 				<span id="analyze" class="simples-span" >
@@ -166,9 +167,8 @@
 					</button>
 				</span>
 
-				<div class="arrows arrow-r">  <!-- scroll toolbar -->
-				<!--	<img id="img-arrow-r" src="arrow-r-white.png">  -->
-				<img id="img-arrow-r" src="carat-r-white.png">
+				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
+					<img id="img-arrow-r" src="carat-r-white.png">
 				</div>
 
 			</div>
@@ -178,7 +178,26 @@
 					<div id="page-container">
 						<div id="page">
 							<!-- Create the editor container -->
-							<div id="editor"></div>
+							<div id="editor">
+								<!-- Block command box -->
+								<div id="blockCmd">
+									<div class="block-up"  data-toggle="tooltip" data-placement="left" title="Dépacer le bloc">  <!--  block up -->
+										<img src="carat-u-black.png">
+									</div>
+									<div class="block-delete"  data-toggle="tooltip" data-placement="left" title="Supprimer le bloc">  <!--  block delete -->
+										<img src="delete-black.png">
+									</div>
+									<div class="block-down"  data-toggle="tooltip" data-placement="left" title="Dépacer le bloc">  <!--  block down -->
+										<img src="carat-d-black.png">
+									</div>
+								</div>
+								<!-- block commande inter -->
+								<div id="blockCmdInter">
+									<div class="block-new"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc">
+										<img src="plus-black.png">
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

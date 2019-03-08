@@ -62,7 +62,7 @@ class Editor {
   registerEvents () {
     $(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
-    $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
+    // $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
       if ($(event.target).hasClass('.editor-block')) $('#' + event.target.id.replace('blc', 'txt')).focus();
     });

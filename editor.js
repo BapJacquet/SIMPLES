@@ -217,6 +217,9 @@ class Editor {
     }
   }
 
+  /**
+   * Update the cached format from the current selection.
+   */
   updateFormat () {
     let oldFormat = this.format;
     this.format = this.getCurrentFormat();
@@ -247,6 +250,11 @@ class Editor {
     return this.checkFormatAcrossSelection(this.getFormatForNode(range.startContainer));
   }
 
+  /**
+   * Get the format for the given node.
+   * @param {DOMElement} element - Element to check the format for.
+   * @return {Format} - The format of the element.
+   */
   getFormatForNode (element) {
     let bold = this.hasReccursiveTag('B', element) || this.hasReccursiveTag('STRONG', element);
     let listitem = this.hasReccursiveTag('LI', element);
@@ -266,6 +274,11 @@ class Editor {
     return result;
   }
 
+  /**
+   * Get the font color of the element as it is displayed to the user.
+   * @param {DOMElement} element - Element to check the color for.
+   * @return {String} - String representing the color in hexadecimal.
+   */
   getNodeFontColor (element) {
     if (element.nodeName === 'FONT') {
       return element.color;
@@ -278,6 +291,11 @@ class Editor {
     return null;
   }
 
+  /**
+   * Check all nodes in the current selection and merge formats into one.
+   * @param {Format} format - Initial format.
+   * @return {Format} - Format of the entire selection.
+   */
   checkFormatAcrossSelection (format) {
     let selection = this.getSelection();
     for (let i = 0; i < selection.rangeCount; i++) {
@@ -291,6 +309,11 @@ class Editor {
     return format;
   }
 
+  /**
+   * Get all the nodes in the given range.
+   * @param {Range} range - Selection range.
+   * @return {DOMElementList} - List of nodes within that range.
+   */
   getNodesInRange (range) {
     let startNode = range.startContainer.childNodes[range.startOffset] || range.startContainer;
     let endNode = range.endContainer.childNodes[range.endOffset] || range.endContainer;
@@ -306,6 +329,13 @@ class Editor {
     return result;
   }
 
+  /**
+   * Get the node next to the given node.
+   * @param {DOMElement} node - The previous node.
+   * @param {boolean} skipChildren - Whether the children nodes should be skipped.
+   * @param {DOMElement} endNode - The final node.
+   * @param {DOMElement} - The next node in the hierarchy.
+   */
   getNextNode (node, skipChildren, endNode) {
     if (endNode === node) {
       return null;
@@ -319,6 +349,12 @@ class Editor {
     return node.nextSibling || this.getNextNode(node.parentNode, true, endNode);
   }
 
+  /**
+   * Merge formats to create a combination of the two.
+   * @param {Format} left - Format from the previous node.
+   * @param {Format} right - Format from the next node.
+   * @return {Format} - The resulting format.
+   */
   mergeFormats (left, right) {
     let result = {
       bold: left.bold,

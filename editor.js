@@ -570,14 +570,14 @@ class Editor {
 
   /**
    * Set the image in the block with the given id, making it DataURL-ready.
-   * @param {int} id - ID of the block.
+   * @param {string} selector - ID of the block.
    * @param {string} src - Path of the image source.
    */
-  setImage (id, src) {
+  setImage (selector, src) {
     var img = new Image();
     img.setAttribute('crossOrigin', 'anonymous');
     img.onload = function () {
-      var canvas = $(id).get(0);
+      var canvas = $(selector).get(0);
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
 

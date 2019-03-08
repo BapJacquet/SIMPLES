@@ -408,7 +408,7 @@ class Editor {
    * @param {int} focusID - ID of the block that will get the focus.
    */
   removeBlockAt (id, focusID) {
-    if (typeof (index) !== 'number') throw new Error('Param "id" should be an integer!');
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
     $('#blc-' + id).remove();
     if (typeof (focusID) === 'number') {
@@ -424,7 +424,7 @@ class Editor {
    * @param {boolean} focus - Whether the new block should be focused.
    */
   insertBlockAfter (index, text, focus) {
-    if (typeof (index) !== 'number') throw new Error('Param "index" should be an integer!');
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
 
     $('#blc-' + index).after(this.newBlockString(index + 1, text));
     this.refreshAllBlockID();
@@ -442,7 +442,7 @@ class Editor {
    * @param {boolean} focus - Whether the new block should be focused.
    */
   insertBlockBefore (index, text, focus) {
-    if (typeof (index) !== 'number') throw new Error('Param "index" should be an integer!');
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
 
     $('#blc-' + index).before(this.newBlockString(index, text));
     this.refreshAllBlockID();
@@ -474,7 +474,7 @@ class Editor {
    * @return {string} - The extracted text.
    */
   getTextContent (id) {
-    if (typeof (id) !== 'number') throw new Error('Param "id" should be an integer!');
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
     let element = $('#txt-' + id).get(0);
     return element.textContent;

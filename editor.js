@@ -408,8 +408,12 @@ class Editor {
    * @param {int} focusID - ID of the block that will get the focus.
    */
   removeBlockAt (id, focusID) {
+    if (typeof (index) !== 'number') throw new Error('Param "id" should be an integer!');
+
     $('#blc-' + id).remove();
-    $('#txt-' + focusID).focus();
+    if (typeof (focusID) === 'number') {
+      $('#txt-' + focusID).focus();
+    }
     this.refreshAllBlockID();
   }
 
@@ -420,6 +424,8 @@ class Editor {
    * @param {boolean} focus - Whether the new block should be focused.
    */
   insertBlockAfter (index, text, focus) {
+    if (typeof (index) !== 'number') throw new Error('Param "index" should be an integer!');
+
     $('#blc-' + index).after(this.newBlockString(index + 1, text));
     this.refreshAllBlockID();
     if (focus) {
@@ -436,6 +442,8 @@ class Editor {
    * @param {boolean} focus - Whether the new block should be focused.
    */
   insertBlockBefore (index, text, focus) {
+    if (typeof (index) !== 'number') throw new Error('Param "index" should be an integer!');
+
     $('#blc-' + index).before(this.newBlockString(index, text));
     this.refreshAllBlockID();
     if (focus) {
@@ -466,6 +474,8 @@ class Editor {
    * @return {string} - The extracted text.
    */
   getTextContent (id) {
+    if (typeof (id) !== 'number') throw new Error('Param "id" should be an integer!');
+
     let element = $('#txt-' + id).get(0);
     return element.textContent;
   }
@@ -574,6 +584,8 @@ class Editor {
    * @param {string} src - Path of the image source.
    */
   setImage (selector, src) {
+    if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
+
     var img = new Image();
     img.setAttribute('crossOrigin', 'anonymous');
     img.onload = function () {

@@ -605,7 +605,7 @@ button span {
   background-color: #37B25C
 }
 
-/* rebonds sur .tool */
+/* rebonds sur .tool */ 
 .tool:hover,
 .tool-frame-bullet:hover {
   top: -5px;
@@ -620,7 +620,7 @@ button span {
 }
 
 .custom-file-input ~ .custom-file-label::after {
-    content: "";
+  content: "";
 }
 
 /*             ...suite #content

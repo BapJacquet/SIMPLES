@@ -10,7 +10,7 @@ function writeFile(data, filename, type) {
     var file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename);
-    else { // Others
+    else {
         var a = document.createElement("a"),
                 url = URL.createObjectURL(file);
         a.href = url;
@@ -35,7 +35,7 @@ function readFile(ev) {
     var text = ev2.target.result;
     console.log("textFile: " + text);
     // ici envoyer à l'éditeur
-    // fuctionEdit(globalMenuItem, text);
+    // functionEdit(globalMenuItem, text);
   };
   reader.readAsText(file); // readAsDataURL(file);
 }
@@ -480,6 +480,55 @@ $("#pasteItem").on("click", function() {
     'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
   });
 
+  //////////////////////////////////////////////////////////
+  ////////////////////////////////////////////// B L O C K S
+
+
+  $("#editor").on("blockcreated", function (ev) {
+    console.log("Nouveau bloc: " + ev.detail.blockid);
+  });
+
+  $("#editor").on("mouseenter", ".editor-block", function (ev) {
+    activeBlocId = this.id.split("-")[1];
+  });
+
+  //  blockCmd
+  $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
+    //if ( document.activeElement.)
+    var offset = $(this).offset();
+    var left = $("#page").offset().left + 55;
+    offset.left = left;
+    $("#blockCmd").offset(offset);
+    $("#blockCmd").css({"opacity": 1});
+  });
+
+  //  blockCmdInter
+  $("#editor").on("mouseenter", ".editor-block, #blockCmdInter", function (ev) {
+    var offset = $(this).offset();
+    var left = $("#page").offset().left + 698;
+    offset.left = left;
+    $("#blockCmdInter").offset(offset);
+    $("#blockCmdInter").css({"opacity": 1});
+  });
+
+  // blockCmd  et   blockCmdInter
+  $("#editor").on("mouseleave", ".editor-block, #blockCmd, #blockCmdInter", function (ev) {
+    $("#blockCmd, #blockCmdInter").css({"opacity": 0});
+  });
+
+  // block Events
+  $("#blockCmdInter div").on("click", function (ev) {
+    editor.insertBlockAfter( activeBlocId, "", true);
+  });
+
+  $("#blockCmd .block-delete").on("click", function (ev) {
+    console.log("Supprimer bloc " + activeBlocId);
+    editor.removeBlockAt( activeBlocId, 0);
+  });
+
+
+
+
   // -----------------------------------    BLOQUAGES DIVERS
   $( window ).on("resize", function (event) {  // stop rubberband scroll
     event.stopPropagation();
@@ -518,6 +567,10 @@ $("#pasteItem").on("click", function() {
   //$("#page").height(1100).width(800);
   //$("td").css({"border":0});
   //$("#td-test").css({"text-align":"center"});
+
+  $(function () { // enable tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+  });
 
   $('body').css({"visibility":"visible"});
 
@@ -566,6 +619,7 @@ var mousedownID = -1;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
+var activeBlockId;
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

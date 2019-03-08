@@ -1,6 +1,6 @@
 .editor-image {
   position: relative;
-  top: 0px;
+  top: 0;
   -webkit-filter: none;
   filter: none;
   -webkit-transition: top 0.25s, -webkit-filter 0.25s;
@@ -9,27 +9,24 @@
 
 .editor-image:hover {
   position: relative;
-  top: -5px;
-  -webkit-filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
-  filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.3));
-  -webkit-transition: top 0.25s, -webkit-filter 0.25s;
-  transition: top 0.25s, filter 0.25s;
+  top: -5px; */
+
+  /*
+  -webkit-filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
+  */
+  -webkit-transition: top 0.05s, -webkit-filter 0.25s;
+  transition: top 0.05s, filter 0.25s;
   cursor: pointer;
 }
 
 .frame {
   border-style: solid;
-  border-width: 5px;
+  border-width: 5px; /* 5 */
 }
 
 .editor-block {
   margin-top: 5px;
-}
-
-.editor-block:hover .editor-text {
-  border-style: solid;
-  border-width: 1px;
-  border-color: rgba(0,0,0,0.25);
 }
 
 .editor-text {
@@ -37,6 +34,57 @@
   min-height: 22px;
 }
 
+.editor-block:hover .editor-text:hover {
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
 .editor-text h1 {
   text-align: center;
+}
+
+/* B L O C K    C O M M A N D */
+
+#blockCmd {
+  position: absolute;
+  opacity: 0;
+  width: 40px;
+  height: 110px;
+  z-index: 1000;
+}
+
+#blockCmdInter {
+  position: absolute;
+  opacity: 0;
+  width: 50px;
+  height: 110px;
+  z-index: 1000;
+}
+
+#blockCmd div,
+#blockCmdInter div {
+  position: relative;
+  width: 35px;
+  height: 35px;
+  margin: 2px;
+  border-radius: 25px;
+}
+
+#blockCmdInter div {
+  top: 100px;
+}
+
+#blockCmd div:hover,
+#blockCmdInter div:hover {
+  cursor: pointer;
+  background-color: #ddd;
+}
+
+#blockCmd img,
+#blockCmdInter img {
+  position: relative;
+  pointer-events: none;
+  left: 10px;
+  top: 2px;
 }

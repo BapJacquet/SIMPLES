@@ -142,18 +142,7 @@ function onVerifyClick () {
  * Create a PDF from the page.
  */
 function onPDFClick(){
-  var doc = new jsPDF();
-
-  var totalWidth = 210; // 210 mm, 21 cm
-  var margin = 25.4; // 1 inch = 25.4mm
-  doc.fromHTML($('#page').get(0),
-    margin,
-    margin,
-    {
-      'width': (totalWidth - (margin*2))
-    }
-  );
-
+  let doc = editor.toPDF();
   doc.save('Mon fichier.pdf');
 }
 

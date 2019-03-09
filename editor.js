@@ -3,6 +3,7 @@
 /* global Image */
 /* global Utils */
 /* global CustomEvent */
+/* global jsPDF */
 
 /**
  * A prévoir : Event formatChanged pour quand le format de la selection est différent du précédent
@@ -735,6 +736,47 @@ class Editor {
       }
     }
     return null;
+  }
+
+  /**
+   * Turn the content of the editor into a PDF document.
+   */
+  toPDF () {
+    let doc = new jsPDF();
+
+    let totalWidth = 210; // 210 mm, 21 cm
+    let margin = 25.4; // 1 inch = 25.4mm
+    let pageHeight = 297;
+
+    let currentYOffset = margin;
+
+    for (let i = 0; i < this.blockCount; i++) {
+      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).outerHeight()) > pageHeight - margin) {
+        doc = doc.addPage();
+        currentYOffset = margin;
+      }
+      doc.fromHTML($('#txt-' + i).get(0),
+        margin,
+        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
+        {
+          'width': Utils.pixelToCm($('#txt-' + i).width()),
+          'height': Utils.pixelToCm($('#txt-' + i).height())
+        }
+      );
+
+      doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
+        totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
+        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
+        Utils.pixelToCm($('#img-' + i).width()),
+        Utils.pixelToCm($('#img-' + i).height()),
+        '',
+        'NONE',
+        0
+      );
+
+      currentYOffset += Utils.pixelToCm($('#blc-' + i).outerHeight());
+    }
+    return doc;
   }
 
   /**

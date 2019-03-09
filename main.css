@@ -403,7 +403,7 @@ button span {
 .color-green {
   font-weight: 200;
   font-size: 38px;
-  color: green;
+  color: #3bff11;
   left: -30px;
 }
 
@@ -605,7 +605,7 @@ button span {
   background-color: #37B25C
 }
 
-/* rebonds sur .tool */ 
+/* rebonds sur .tool */
 .tool:hover,
 .tool-frame-bullet:hover {
   top: -5px;

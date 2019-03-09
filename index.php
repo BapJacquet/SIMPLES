@@ -173,31 +173,34 @@
 				</div>
 
 			</div>
-
+			<!--															E D I T O R  -->
 			<div class="hbox">
 				<div id="content">
 					<div id="page-container">
 						<div id="page">
 							<!-- Create the editor container -->
 							<div id="editor">
+
 								<!-- Block command box -->
 								<div id="blockCmd">
-									<div class="block-up"  data-toggle="tooltip" data-placement="left" title="Dépacer le bloc">  <!--  block up -->
-										<img src="carat-u-black.png">
-									</div>
-									<div class="block-delete"  data-toggle="tooltip" data-placement="left" title="Supprimer le bloc">  <!--  block delete -->
-										<img src="delete-black.png">
-									</div>
-									<div class="block-down"  data-toggle="tooltip" data-placement="left" title="Dépacer le bloc">  <!--  block down -->
-										<img src="carat-d-black.png">
-									</div>
-								</div>
-								<!-- block commande inter -->
-								<div id="blockCmdInter">
-									<div class="block-new"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc">
+									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
 										<img src="plus-black.png">
 									</div>
+									<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
+										<img src="delete-black.png">
+									</div>
+									<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
+										<img src="plus-black.png">
+									</div>
+									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Descendre le bloc">  <!--  block down -->
+										<img src="carat-d-black.png">
+									</div>
+									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Monter le bloc">  <!--  block up -->
+										<img src="carat-u-black.png">
+									</div>
+
 								</div>
+
 							</div>
 						</div>
 					</div>

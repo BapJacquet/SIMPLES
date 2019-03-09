@@ -1,3 +1,4 @@
+/*
 .editor-image {
   position: relative;
   top: 0;
@@ -6,6 +7,7 @@
   -webkit-transition: top 0.25s, -webkit-filter 0.25s;
   transition: top 0.25s, filter 0.25s;
 }
+*/
 
 .editor-image:hover {
   position: relative;
@@ -48,21 +50,11 @@
 #blockCmd {
   position: absolute;
   opacity: 0;
-  width: 40px;
+  width: 80px;
   height: 110px;
-  z-index: 1000;
 }
 
-#blockCmdInter {
-  position: absolute;
-  opacity: 0;
-  width: 50px;
-  height: 110px;
-  z-index: 1000;
-}
-
-#blockCmd div,
-#blockCmdInter div {
+#blockCmd div {
   position: relative;
   width: 35px;
   height: 35px;
@@ -70,20 +62,24 @@
   border-radius: 25px;
 }
 
-#blockCmdInter div {
-  top: 100px;
-}
-
-#blockCmd div:hover,
-#blockCmdInter div:hover {
+#blockCmd div:hover {
   cursor: pointer;
   background-color: #ddd;
 }
 
-#blockCmd img,
-#blockCmdInter img {
+#blockCmd img {
   position: relative;
   pointer-events: none;
   left: 10px;
   top: 2px;
+}
+
+#blockCmd .block-move-down {
+  top: -37px;
+  left: 40px;
+}
+
+#blockCmd .block-move-up {
+  top: -149px;
+  left: 40px;
 }

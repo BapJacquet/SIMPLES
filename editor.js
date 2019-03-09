@@ -224,7 +224,7 @@ class Editor {
   updateFormat () {
     let oldFormat = this.format;
     this.format = this.getCurrentFormat();
-    console.log(this.format);
+    // console.log(this.format);
     if (oldFormat == null) {
       this.dispatchCurrentFormatChanged(this.format);
     } else {

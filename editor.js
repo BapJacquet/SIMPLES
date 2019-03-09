@@ -3,6 +3,7 @@
 /* global Image */
 /* global Utils */
 /* global CustomEvent */
+/* global jsPDF */
 
 /**
  * A prévoir : Event formatChanged pour quand le format de la selection est différent du précédent
@@ -163,7 +164,7 @@ class Editor {
         }
         break;
       case 'Backspace':
-        if (this.getTextContent(id).length === 0 && id !== 0) {
+        if (this.getRawTextContent(id).length === 0 && id !== 0) {
           this.removeBlockAt(id, id - 1);
         }
         break;
@@ -217,10 +218,13 @@ class Editor {
     }
   }
 
+  /**
+   * Update the cached format from the current selection.
+   */
   updateFormat () {
     let oldFormat = this.format;
     this.format = this.getCurrentFormat();
-    console.log(this.format);
+    // console.log(this.format);
     if (oldFormat == null) {
       this.dispatchCurrentFormatChanged(this.format);
     } else {
@@ -247,6 +251,11 @@ class Editor {
     return this.checkFormatAcrossSelection(this.getFormatForNode(range.startContainer));
   }
 
+  /**
+   * Get the format for the given node.
+   * @param {DOMElement} element - Element to check the format for.
+   * @return {Format} - The format of the element.
+   */
   getFormatForNode (element) {
     let bold = this.hasReccursiveTag('B', element) || this.hasReccursiveTag('STRONG', element);
     let listitem = this.hasReccursiveTag('LI', element);
@@ -266,6 +275,11 @@ class Editor {
     return result;
   }
 
+  /**
+   * Get the font color of the element as it is displayed to the user.
+   * @param {DOMElement} element - Element to check the color for.
+   * @return {String} - String representing the color in hexadecimal.
+   */
   getNodeFontColor (element) {
     if (element.nodeName === 'FONT') {
       return element.color;
@@ -278,6 +292,11 @@ class Editor {
     return null;
   }
 
+  /**
+   * Check all nodes in the current selection and merge formats into one.
+   * @param {Format} format - Initial format.
+   * @return {Format} - Format of the entire selection.
+   */
   checkFormatAcrossSelection (format) {
     let selection = this.getSelection();
     for (let i = 0; i < selection.rangeCount; i++) {
@@ -291,6 +310,11 @@ class Editor {
     return format;
   }
 
+  /**
+   * Get all the nodes in the given range.
+   * @param {Range} range - Selection range.
+   * @return {DOMElementList} - List of nodes within that range.
+   */
   getNodesInRange (range) {
     let startNode = range.startContainer.childNodes[range.startOffset] || range.startContainer;
     let endNode = range.endContainer.childNodes[range.endOffset] || range.endContainer;
@@ -302,10 +326,35 @@ class Editor {
     do {
       result.push(startNode);
     } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
-    // TODO do stuff.
     return result;
   }
 
+  /**
+   * Get all the nodes in the given element.
+   * @param {DOMElement} element - Element.
+   * @return {DOMElementList} - List of nodes within that element.
+   */
+  getNodesInElement (element) {
+    let startNode = element.firstChild;
+    let endNode = element;
+    if (startNode === endNode && startNode.childNodes.length === 0) {
+      return [startNode];
+    }
+
+    let result = [];
+    do {
+      result.push(startNode);
+    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
+    return result;
+  }
+
+  /**
+   * Get the node next to the given node.
+   * @param {DOMElement} node - The previous node.
+   * @param {boolean} skipChildren - Whether the children nodes should be skipped.
+   * @param {DOMElement} endNode - The final node.
+   * @param {DOMElement} - The next node in the hierarchy.
+   */
   getNextNode (node, skipChildren, endNode) {
     if (endNode === node) {
       return null;
@@ -319,6 +368,12 @@ class Editor {
     return node.nextSibling || this.getNextNode(node.parentNode, true, endNode);
   }
 
+  /**
+   * Merge formats to create a combination of the two.
+   * @param {Format} left - Format from the previous node.
+   * @param {Format} right - Format from the next node.
+   * @return {Format} - The resulting format.
+   */
   mergeFormats (left, right) {
     let result = {
       bold: left.bold,
@@ -509,7 +564,7 @@ class Editor {
    * @param {int} id - ID of the block to extract text from.
    * @return {string} - The extracted text.
    */
-  getTextContent (id) {
+  getRawTextContent (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
     let element = $('#txt-' + id).get(0);
@@ -636,6 +691,92 @@ class Editor {
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
     };
     img.src = src;
+  }
+
+  /**
+   * Sets the selection in the editor.
+   * @param {int} blockIndex - Index of the block.
+   * @param {int} startIndex - Start index of the selection.
+   * @param {int} length - (optional) length of the selection;
+   */
+  select (blockIndex, startIndex, length = 0) {
+    let sel = this.getSelection();
+    sel.removeAllRanges();
+    let range = document.createRange();
+    let elemAndOffset = this.getBlockElementAndOffsetAtIndex(blockIndex, startIndex);
+    if (elemAndOffset !== null) {
+      range.setStart(elemAndOffset.element, elemAndOffset.offset);
+      if (length > 0) {
+        elemAndOffset = this.getBlockElementAndOffsetAtIndex(blockIndex, startIndex + length);
+        if (elemAndOffset !== null) {
+          range.setEnd(elemAndOffset.element, elemAndOffset.offset);
+        }
+      }
+    }
+    sel.addRange(range);
+  }
+
+  /**
+   * Get the node and the offset at the given index.
+   * @param {int} blockIndex - Index of the block to look into.
+   * @param {int} index - Index of the character.
+   * @return {Object} - Corresponding node and offset.
+   */
+  getBlockElementAndOffsetAtIndex (blockIndex, index) {
+    let root = $('#txt-' + blockIndex).get(0);
+    let remainingChars = index;
+    let nodes = this.getNodesInElement(root);
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].nodeType === 3) {
+        if (remainingChars < nodes[i].length) {
+          return {element: nodes[i], offset: remainingChars};
+        } else {
+          remainingChars -= nodes[i].length;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Turn the content of the editor into a PDF document.
+   */
+  toPDF () {
+    let doc = new jsPDF();
+
+    let totalWidth = 210; // 210 mm, 21 cm
+    let margin = 25.4; // 1 inch = 25.4mm
+    let pageHeight = 297;
+
+    let currentYOffset = margin;
+
+    for (let i = 0; i < this.blockCount; i++) {
+      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).outerHeight()) > pageHeight - margin) {
+        doc = doc.addPage();
+        currentYOffset = margin;
+      }
+      doc.fromHTML($('#txt-' + i).get(0),
+        margin,
+        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
+        {
+          'width': Utils.pixelToCm($('#txt-' + i).width()),
+          'height': Utils.pixelToCm($('#txt-' + i).height())
+        }
+      );
+
+      doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
+        totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
+        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
+        Utils.pixelToCm($('#img-' + i).width()),
+        Utils.pixelToCm($('#img-' + i).height()),
+        '',
+        'NONE',
+        0
+      );
+
+      currentYOffset += Utils.pixelToCm($('#blc-' + i).outerHeight());
+    }
+    return doc;
   }
 
   /**

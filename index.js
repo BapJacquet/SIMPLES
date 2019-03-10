@@ -472,86 +472,165 @@ $("#pasteItem").on("click", function() {
   });
 */
 
+// editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-
     activeBlocId = Number(this.id.split("-")[1]);
 
-    // enable .block-move-up
+  // enable .block-move-up
     if ( activeBlocId == 0 ) {
       $("#blockCmd").find(".block-move-up").css({"opacity": 0.3, "pointer-events": "none"});
     }
     else {
       $("#blockCmd").find(".block-move-up").css({"opacity": 1, "pointer-events": "initial"});
     }
-
-    // enable .block-move-down
+  // enable .block-move-down
     if ( $(this).next().length == 0 ) {
       $("#blockCmd").find(".block-move-down").css({"opacity": 0.3, "pointer-events": "none"});
     }
     else {
       $("#blockCmd").find(".block-move-down").css({"opacity": 1, "pointer-events": "initial"});
     }
-
-    // enable .block-delete
+  // enable .block-delete
     if ( $(this).siblings().length == 1 ) {
       $("#blockCmd").find(".block-delete").css({"opacity": 0.3, "pointer-events": "none"});
     }
     else {
       $("#blockCmd").find(".block-delete").css({"opacity": 1, "pointer-events": "initial"});
     }
-
   });
 
-  //  blockCmd enter
+//  .editor-block  LEAVE
+  $("#editor").on("mouseleave", ".editor-block", function (ev) {
+  //  $("#blockCmd").css("opacity", 0);
+  });
+
+//  .editor-block + #blockCmd   ENTER
   $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
 
     var offset = $(this).offset();
 
-    var left = $("#page").offset().left + 15; // 55
+    var left = $("#page").offset().left + 15;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#editor").find("#blockCmd").height();
-    offset.top = top + ((height - commandHeight) /2);
+    var decal;
+    if ( this.id == "blockCmd") decal = 0;
+    else decal = 4;
+    offset.top = top + ((height - commandHeight) /2) + decal;
 
     $("#blockCmd").offset(offset);
     $("#blockCmd").css({"opacity": 1});
   });
 
-  // blockCmd leave
-  $("#editor").on("mouseleave", ".editor-block, #blockCmd", function (ev) {
-    $("#blockCmd, #blockCmdInter").css({"opacity": 0});
+  // blockCmd LEAVE     .editor-block,
+  $("#editor").on("mouseleave", "#blockCmd", function (ev) {
+
+    //$("#blockCmd").css({"opacity": 0});
   });
 
-  // block Events
+  // .editor-block  LEAVE
+  $("#editor").on("mouseleave", ".editor-block", function (ev) {
+    $(this).trigger("mouseenter");
+  });
+
+  // SUPER COOOOOL!
+  $("#editor").on("keyup", ".editor-block", function (ev) {
+    $(this).trigger("mouseenter");
+  });
+
+
+  // blockCmd move
+  /*$("#editor").on("mousemove", function (ev) {
+    console.log("coucou");
+  });*/
+
+/////////////////////////////////////  B L O C K   C O M M A N D S
+
+// insertBlockAfter
   $("#blockCmd .block-new-down").on("click", function (ev) {
-    editor.insertBlockAfter( activeBlocId, "", true);
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var blockHeight = $("#blc-" + String(activeBlocId)).height();
+    var commandHeight = $("#blockCmd").height();
+    var downHeight = (blockHeight + commandHeight) /2;
+
+    $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
+      editor.insertBlockAfter( activeBlocId, "", true);
+      setTimeout( function () {
+        $("#blc-" + String(activeBlocId + 1)).trigger("mouseenter");
+      }, 10);
+    });
   });
 
+//  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
-    editor.insertBlockBefore( activeBlocId, "", true);
+    var interBloc = 14;
+    var newBlc = 100;
+    var top = $("#blockCmd").position().top;
+    var blockHeight = $("#blc-" + String(activeBlocId)).height();
+    var commandHeight = $("#blockCmd").height();
+    var upHeight = (blockHeight + commandHeight) /2;
+
+    $("#blockCmd").animate({"top": top - upHeight + interBloc /2 + newBlc}, 300, function () {
+      editor.insertBlockBefore( activeBlocId, "", true);
+      setTimeout( function () {
+        $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+      }, 10);
+
+    });
   });
 
+//  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
-    editor.removeBlockAt( activeBlocId, 0);
+
+    $("#blc-" + String(activeBlocId)).slideUp(300);
+
+    setTimeout( function () {
+      $("#blc-" + String(activeBlocId)).show();
+      editor.removeBlockAt( activeBlocId, activeBlocId - 1);
+      $("#blc-" + String(activeBlocId - 1)).trigger("mouseenter");
+    }, 300);
   });
 
+//  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
-    editor.moveBlockDown( activeBlocId);
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
+
+    $("#blc-" + String(activeBlocId + 1)).slideUp(300);
+
+    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
+      $("#blc-" + String(activeBlocId + 1)).show();
+      editor.moveBlockDown( activeBlocId);
+      $("#blc-" + String(activeBlocId + 1)).trigger("mouseenter");
+    });
   });
 
+//  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
-    editor.moveBlockUp( activeBlocId);
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
+
+    $("#blc-" + String(activeBlocId - 1)).slideUp(300);
+
+    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
+      $("#blc-" + String(activeBlocId - 1)).show();
+      editor.moveBlockUp( activeBlocId);
+      $("#blc-" + String(activeBlocId - 1)).trigger("mouseenter");
+    });
   });
+
+  // resize
+  $( window ).on("resize", function (event) {  // stop rubberband scroll
+    $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+  });
+
+
 
   // -----------------------------------    BLOQUAGES DIVERS
-  $( window ).on("resize", function (event) {  // stop rubberband scroll
-    event.stopPropagation();
-    event.preventDefault();
-    $( document ).width(screen.innerWidth).height(screen.innerHeight);
-    return false;
-  });
-
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();

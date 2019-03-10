@@ -80,7 +80,7 @@
 
 				</div>
 
-				<!-- input hidden pour file dialog -->
+				<!-- hidden input for file dialog -->
 				<input type="file" id="openFileInput" style="display:none;">
 				<!-- fin main-menubar -->
 			</div>
@@ -192,10 +192,10 @@
 									<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
 										<img src="plus-black.png">
 									</div>
-									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Descendre le bloc">  <!--  block down -->
+									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
 										<img src="carat-d-black.png">
 									</div>
-									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Monter le bloc">  <!--  block up -->
+									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="carat-u-black.png">
 									</div>
 
@@ -218,7 +218,7 @@
 						</div>
 					</div>
 					<div class="score">90</div>
-  				<p>Résultats de l'analyze :</p>
+  				<!-- <p>Résultats de l'analyze :</p> -->
 					<div id="analysis-content"></div>
 					<button class="collapsible">Règles prioritaires</button>
 					<div class="collapsible-content">

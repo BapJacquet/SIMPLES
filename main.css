@@ -87,7 +87,6 @@ hr {
   background-color: #fff;
 }
 
-
 .hcollapsible:hover {
   color: #2ea35f;
   background-color: #eee !important;
@@ -105,14 +104,9 @@ hr {
   height: 170px;  /* 164px */
   width: 28px; /* 24px */
   border: none;
-  /* text-align: center; */
   outline: none;
   font-size: 15px; /* 15px */
   letter-spacing: 1px;
-}
-
-.hcollapsible div {
-
 }
 
 .collapsible:hover {
@@ -596,13 +590,11 @@ button span {
   cursor: pointer;
   width: 84px;
   height: 71px; /* 65 */
-  /* background-color: hsla(167, 39%, 31%, 1);
-  hsla(166, 100%, 30%, 1); */
   background-color: #2ea35f;
 }
 
 .simples-button:hover {
-  background-color: #37B25C
+  background-color: #37b25c;
 }
 
 /* rebonds sur .tool */

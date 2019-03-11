@@ -368,8 +368,8 @@ $("#editor").on('dragover', ".editor-image", function(e) {
     reader.readAsDataURL(file); // start reading the file data.
 });
 
-////////////////////////////////////////////////////////
-//                                             menubar
+////////////////////////////////////////////////////////////
+//                                             M E N U B A R
 
 $(".main-menu, .hcollapsible").on("focus", function () {
   $(this).blur();
@@ -401,8 +401,8 @@ $("#copyItem").on("click", function() {
   document.execCommand("copy");
 });
 $("#pasteItem").on("click", function() {
-  setInterval(function() {
-    $(lastBlockBlur).focus();
+  setTimeout(function() {
+    $("#txt-" + String(activeBlocId)).focus();
   }, 10);
   document.execCommand("paste");
 });
@@ -485,8 +485,8 @@ $("#pasteItem").on("click", function() {
 */
 
 // cacher #blockCmd
-  $("#page").on("click", function () {
-    $("#blockCmd").css("opacity", 0);
+  $("#page").on("click", function ( ev ) {
+    if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
   });
 
 // editor-block   ENTER
@@ -736,7 +736,7 @@ var mousedownID = -1;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
-var activeBlockId = 0;
+var activeBlocId = 0;
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

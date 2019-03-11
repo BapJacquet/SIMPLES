@@ -146,15 +146,17 @@ function initToolbar() {                 // tool cursor initial values
   $("#size-cursor").css("left", CURSOR_DATA["size-" + SIZE_INIT]);
   $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
   $("#title-cursor").css("left", CURSOR_DATA["title-" + TITLE_INIT]);
-  $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
   $("#bullet-cursor").css("left", CURSOR_DATA["bullet-" + BULLET_INIT]);
+  $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
+  $("#picture-cursor").css("left", CURSOR_DATA["picture-" + PICTURE_INIT]);
 
   activeTool("bold", BOLD_INIT);
   activeTool("size", SIZE_INIT);
   activeTool("color", COLOR_INIT);
   activeTool("title", TITLE_INIT);
-  activeTool("frame", FRAME_INIT);
   activeTool("bullet", BULLET_INIT);
+  activeTool("frame", FRAME_INIT);
+  activeTool("picture", PICTURE_INIT);
 }
 
 //                                            click on toolbar
@@ -232,8 +234,9 @@ function setFormatAtToolbar(format) {
   activeTool("bold", format.bold);
   activeTool("size", format.size);
   activeTool("title", format.title);
-  activeTool("frame", format.frame);
   activeTool("bullet", format.bullet);
+  activeTool("frame", format.frame);
+  activeTool("picture", format.picture);
 }
 
 // update cursor & activeTools
@@ -399,8 +402,8 @@ $("#pasteItem").on("click", function() {
   document.execCommand("paste");
 });
 
-////////////////////////////////////////////////////////
-//                                        toolbar events
+////////////////////////////////////////////////////////////////
+//                                   T O O L B A R   E V E N T S
 
 // jquery tool hover
 /*
@@ -423,6 +426,7 @@ $("#pasteItem").on("click", function() {
     ); */
     toolClick(e, this);
     $(this).trigger("mouseleave");
+    $("#blc-" + String(activeBlocId)).trigger("mouseenter");
   } );
 
 //  toolbar scroll
@@ -559,7 +563,7 @@ $("#pasteItem").on("click", function() {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
         $("#blc-" + String(activeBlocId + 1)).trigger("mouseenter");
-      }, 10);
+      }, 15);
     });
   });
 
@@ -576,7 +580,7 @@ $("#pasteItem").on("click", function() {
       editor.insertBlockBefore( activeBlocId, "", true);
       setTimeout( function () {
         $("#blc-" + String(activeBlocId)).trigger("mouseenter");
-      }, 10);
+      }, 15);
 
     });
   });
@@ -694,26 +698,29 @@ const CURSOR_DATA = {
     "title-h4":"-94px",
     "title-none":"-70px",
 
+    "bullet-true": "-50px",
+    "bullet-false": "-7px",
     "frame-true": "-50px",
     "frame-false": "-7px",
 
-    "bullet-true": "-50px",
-    "bullet-false": "-7px",
+    "picture-true": "-50px",
+    "picture-false": "-7px",
 };
 
 const BOLD_INIT = "false";
 const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
-const FRAME_INIT = "false";
 const BULLET_INIT = "false";
+const FRAME_INIT = "false";
+const PICTURE_INIT = "true";
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
-var activeBlockId;
+var activeBlockId = 0;
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

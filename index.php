@@ -119,7 +119,7 @@
 						<div  id="color-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
-						<div id="tool-limit">|</div>
+						<div id="tool-limit-color" class="tool-limit">|</div>
 					</div>
 
 					<div id="title">
@@ -134,6 +134,16 @@
 						</div>
 					</div>
 
+					<div id="bullet">
+						<div id="bullet-caption" class="caption">puce</div>
+						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
+						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
+						<div  id="bullet-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+						<div id="tool-limit-bullet" class="tool-limit">|</div>
+					</div>
+
 					<div id="frame">
 						<div id="frame-caption" class="caption">cadre</div>
 						<div class="tool-frame-bullet frame-true"><img src="frameTrue.png" /></div>
@@ -143,11 +153,11 @@
 						</div>
 					</div>
 
-					<div id="bullet">
-						<div id="bullet-caption" class="caption">puce</div>
-						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
-						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
-						<div  id="bullet-cursor" class="tool-cursor">
+					<div id="picture">
+						<div id="picture-caption" class="caption">image</div>
+						<div class="tool-frame-bullet picture-true"><img src="pictureTrue.png" /></div>
+						<div class="tool-frame-bullet picture-false"><img src="titleNone.png" /></div>
+						<div  id="picture-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
 					</div>

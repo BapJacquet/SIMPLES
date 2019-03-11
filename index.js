@@ -491,7 +491,7 @@ $("#pasteItem").on("click", function() {
 
 // editor-block   ENTER
 
-  $("#blockCmd").css("opacity", 1);
+  //$("#blockCmd").css("opacity", 1);
 
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
     activeBlocId = Number(this.id.split("-")[1]);

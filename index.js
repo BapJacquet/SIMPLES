@@ -222,7 +222,7 @@ function setFormatAtToolbar(format) {
   switch( color ) {
     case "#ff0000":
     color = 'red'; break;
-    case "#00ff00":
+    case "#3bff11":
     color = 'green'; break;
     case "#0000ff":
     color = 'blue'; break;

@@ -245,6 +245,12 @@ function activeTool(tool, value) {
   moveCursor(tool, value, false);
 }
 
+function triggerPseudoMouseenter( decal ) {
+  $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
+  $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+  $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0)");
+}
+
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
 //*********************************************************************
@@ -297,7 +303,7 @@ $(document).ready(function () {
     $(".hcollapsible").css("background-color", "#6c757d");
 
     setTimeout( function () {
-      $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+      triggerPseudoMouseenter(0);
     }, 15);
 
   } );
@@ -432,7 +438,7 @@ $("#pasteItem").on("click", function() {
     toolClick(e, this);
     $(this).trigger("mouseleave");
     setTimeout( function () {
-      $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+      triggerPseudoMouseenter(0);
     }, 15);
 
   } );
@@ -490,11 +496,11 @@ $("#pasteItem").on("click", function() {
   });
 
 // editor-block   ENTER
-
-  //$("#blockCmd").css("opacity", 1);
-
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
     activeBlocId = Number(this.id.split("-")[1]);
+
+  // hover in block text
+    $(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
 
   // enable .block-move-up
     if ( activeBlocId == 0 ) {
@@ -519,11 +525,6 @@ $("#pasteItem").on("click", function() {
     }
   });
 
-//  .editor-block  LEAVE
-  $("#editor").on("mouseleave", ".editor-block", function (ev) {
-  //  $("#blockCmd").css("opacity", 0);
-  });
-
 //  .editor-block + #blockCmd   ENTER
   $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
 
@@ -534,16 +535,18 @@ $("#pasteItem").on("click", function() {
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#editor").find("#blockCmd").height();
+    /*
     var decal;
     if ( this.id == "blockCmd") decal = 0;
     else decal = 4;
-    offset.top = top + ((height - commandHeight) /2) + decal;
+    */
+    offset.top = top + ((height - commandHeight) /2) /* + decal */ ;
 
     $("#blockCmd").offset(offset);
     $("#blockCmd").css({"opacity": 1});
   });
 
-  // blockCmd LEAVE     .editor-block,
+  // blockCmd LEAVE
   $("#editor").on("mouseleave", "#blockCmd", function (ev) {
 
     //$("#blockCmd").css({"opacity": 0});
@@ -551,10 +554,14 @@ $("#pasteItem").on("click", function() {
 
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
+
     $(this).trigger("mouseenter");
+    // hover out block text
+    //$(ev.target).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+    $("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
-  // SUPER COOOOOL!
+  // update #blockCmd
   $("#editor").on("keyup", ".editor-block", function (ev) {
     $(this).trigger("mouseenter");
   });
@@ -578,7 +585,7 @@ $("#pasteItem").on("click", function() {
     $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
-        $("#blc-" + String(activeBlocId + 1)).trigger("mouseenter");
+        triggerPseudoMouseenter(1);
       }, 15);
     });
   });
@@ -595,7 +602,7 @@ $("#pasteItem").on("click", function() {
     $("#blockCmd").animate({"top": top - upHeight + interBloc /2 + newBlc}, 300, function () {
       editor.insertBlockBefore( activeBlocId, "", true);
       setTimeout( function () {
-        $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+        triggerPseudoMouseenter(0);
       }, 15);
 
     });
@@ -609,7 +616,7 @@ $("#pasteItem").on("click", function() {
     setTimeout( function () {
       $("#blc-" + String(activeBlocId)).show();
       editor.removeBlockAt( activeBlocId, activeBlocId - 1);
-      $("#blc-" + String(activeBlocId - 1)).trigger("mouseenter");
+      triggerPseudoMouseenter(-1);
     }, 300);
   });
 
@@ -624,7 +631,7 @@ $("#pasteItem").on("click", function() {
     $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
       $("#blc-" + String(activeBlocId + 1)).show();
       editor.moveBlockDown( activeBlocId);
-      $("#blc-" + String(activeBlocId + 1)).trigger("mouseenter");
+      triggerPseudoMouseenter(1);
     });
   });
 
@@ -639,13 +646,13 @@ $("#pasteItem").on("click", function() {
     $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
       $("#blc-" + String(activeBlocId - 1)).show();
       editor.moveBlockUp( activeBlocId);
-      $("#blc-" + String(activeBlocId - 1)).trigger("mouseenter");
+      triggerPseudoMouseenter(-1);
     });
   });
 
   // resize
   $( window ).on("resize", function (event) {  // stop rubberband scroll
-    $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+    triggerPseudoMouseenter(0);
   });
 
 

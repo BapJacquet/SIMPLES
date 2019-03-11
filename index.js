@@ -264,7 +264,6 @@ $(document).ready(function () {
       if ( !$(".hcollapsible").hasClass("active") ) {
         $(".hcollapsible").trigger("click").blur();
       }
-
       onVerifyClick();
   } );
 
@@ -485,7 +484,15 @@ $("#pasteItem").on("click", function() {
   });
 */
 
+// cacher #blockCmd
+  $("#page").on("click", function () {
+    $("#blockCmd").css("opacity", 0);
+  });
+
 // editor-block   ENTER
+
+  $("#blockCmd").css("opacity", 1);
+
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
     activeBlocId = Number(this.id.split("-")[1]);
 

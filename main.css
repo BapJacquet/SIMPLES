@@ -101,11 +101,11 @@ hr {
   padding-top: 80px;
   padding-right: 2px;
   padding-left: 0;
-  height: 170px;  /* 164px */
-  width: 28px; /* 24px */
+  height: 170px;
+  width: 28px;
   border: none;
   outline: none;
-  font-size: 15px; /* 15px */
+  font-size: 15px;
   letter-spacing: 1px;
 }
 
@@ -265,10 +265,10 @@ button span {
 #main-menubar {
   -webkit-user-select: none;
   user-select: none;
-  margin-left: 20px; /* 24px; */
+  margin-left: 20px;
   margin-top: 2px;
-  height: 36px;  /* 42px; */
-  font-size: 18px; /* 15px */
+  height: 36px;
+  font-size: 18px;
 }
 
 .main-menu { /* menu button */

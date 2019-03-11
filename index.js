@@ -264,6 +264,7 @@ $(document).ready(function () {
       if ( !$(".hcollapsible").hasClass("active") ) {
         $(".hcollapsible").trigger("click").blur();
       }
+
       onVerifyClick();
   } );
 
@@ -295,6 +296,11 @@ $(document).ready(function () {
     else  $(".hcollapsible div").text("Montrer\xA0l'analyse");
 
     $(".hcollapsible").css("background-color", "#6c757d");
+
+    setTimeout( function () {
+      $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+    }, 15);
+
   } );
 
 /********************  image click  ***************/
@@ -426,7 +432,10 @@ $("#pasteItem").on("click", function() {
     ); */
     toolClick(e, this);
     $(this).trigger("mouseleave");
-    $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+    setTimeout( function () {
+      $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+    }, 15);
+
   } );
 
 //  toolbar scroll

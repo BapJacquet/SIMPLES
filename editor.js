@@ -122,6 +122,13 @@ class Editor {
           document.execCommand('formatBlock', false, formats[index]);
         }
         break;
+      case 'o':
+        if (event.ctrlKey) {
+          event.stopPropagation();
+          event.preventDefault();
+          console.log(this.toHTML());
+        }
+        break;
       case '+':
         if (event.ctrlKey) {
           event.stopPropagation();
@@ -148,13 +155,6 @@ class Editor {
           }
           let size = Utils.pixelToPoint(parseFloat($(container).css('font-size')));
           $(container).css('font-size', `${Utils.pointToPixel(size - 1)}px`);
-        }
-        break;
-      case 'r':
-        if (event.ctrlKey) {
-          event.stopPropagation();
-          event.preventDefault();
-          this.setFormatAtSelection({bold: true, bullet: true});
         }
         break;
       case 'i':
@@ -770,12 +770,20 @@ class Editor {
    * Turn the content of the editor into a website-ready HTML.
    * @return {string} - The HTML string.
    */
-  toHTML () {
-    $('.editor-text').prop('contenteditable', false);
-    let result = $(this.id).html();
-    $('.editor-text').prop('contenteditable', true);
-    result = '<!-- IMPORT BOOTSTRAP IN YOUR HEADER -->\n' + String(result);
-    return result;
+  toHTML (bootstrap = true) {
+    if (bootstrap) {
+      let result = '<!-- IMPORT BOOTSTRAP IN YOUR HEADER -->\n';
+      for (let i = 0; i < this.blockCount; i++) {
+        result += `<div class="media${$('#blc-' + i).hasClass('frame') ? ' frame' : ''}" style="font-size: 14pt;">` +
+        `\n<div class="media-body align-self-center mr-3">` +
+        $('#txt-' + i).html() +
+        `</div>\n` + ($('#img-' + i).is(':visible') ? `<img src="${$('#img-' + i)[0].toDataURL()}" class="align-self-center mr-3" style="width:100px"/>` : '') +
+        `</div>\n` + '<!-- END OF CONTENT GENERATED IN SIMPLES -->';
+      }
+      return result;
+    } else {
+      return '<!-- CASE WITHOUT BOOTSTRAP -->';
+    }
   }
 
   /**

@@ -69,6 +69,7 @@ class Editor {
     });
     $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
+    $(this.id).on('click', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
     $('body').on('mouseup', event => {
       if (this.capturedMouseDown) {

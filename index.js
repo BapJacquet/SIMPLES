@@ -248,7 +248,6 @@ function activeTool(tool, value) {
 function triggerPseudoMouseenter( decal ) {
   $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
   $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
-  $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0)");
 }
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
@@ -386,6 +385,11 @@ $("#editor").on("blur", ".editor-text", function () {
   lastBlockBlur = $(this).attr("id");
 });
 //////////////////////////////////////////
+// new file
+$("#newFile").on("click", function () {
+  editor.clear();
+});
+
 // read text files
 $(".read-file").on("click", function () {
   globalMenuItem = $(this).attr("id");
@@ -396,7 +400,17 @@ $("#openFileInput").on("change", readFile);
 
 // write text file
 $(".write-file").on("click", function () {
-  if ( $(this).attr("id") == "exportFile" ) onPDFClick();
+  if ( $(this).attr("id") == "exportFilePDF" ) onPDFClick();
+/*
+  if ( $(this).attr("id") == "exportFilePDF" ) {
+    var docu = editor.toPDF();
+    writeFile( docu, "mon fichier.pdf", "text/plain");
+  }
+*/
+  else if ( $(this).attr("id") == "exportFileHTML" )  {
+    var docu = editor.toHTML();
+    writeFile( docu, "mon fichier.txt", "text/plain");
+  }
   else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 
@@ -428,14 +442,15 @@ $("#pasteItem").on("click", function() {
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-    //e.preventDefault();
-/*    $(this).animate({"top": "-16px"}, 200,
+/*
+    $(this).animate({"top": "-16px"}, 200,
       function () {
         $(this).animate({"top": "0px"}, 100,
           function () { $(this).blur();
         });
       }
-    ); */
+    );
+*/
     toolClick(e, this);
     $(this).trigger("mouseleave");
     setTimeout( function () {
@@ -536,18 +551,12 @@ $("#pasteItem").on("click", function() {
   $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
 
     var offset = $(this).offset();
-
     var left = $("#page").offset().left + 15;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#editor").find("#blockCmd").height();
-    /*
-    var decal;
-    if ( this.id == "blockCmd") decal = 0;
-    else decal = 4;
-    */
-    offset.top = top + ((height - commandHeight) /2) /* + decal */ ;
+    offset.top = top + ((height - commandHeight) /2);
 
     $("#blockCmd").offset(offset);
     $("#blockCmd").css({"opacity": 1});

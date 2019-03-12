@@ -630,7 +630,7 @@ button span {
 /* rebonds sur .tool */
 .tool:hover,
 .tool-frame-bullet:hover {
-  top: -5px;
+  top: -6px;
   -webkit-transition: top 0.15s;
   transition: top 0.15s;
   cursor: pointer;

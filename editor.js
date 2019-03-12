@@ -458,6 +458,14 @@ class Editor {
   }
 
   /**
+   * Clear all blocks of the document.
+   */
+  clear () {
+    $('.editor-block').remove();
+    this.addBlock('', true);
+  }
+
+  /**
    * Remove the block with the given ID and switch focus to a new id.
    * @param {int} id - ID of the block to remove.
    * @param {int} focusID - ID of the block that will get the focus.
@@ -717,6 +725,25 @@ class Editor {
   }
 
   /**
+   * Select the first occurence of the given text.
+   * @param {string} text - Text to search for.
+   * @param {boolean} word - Whether to look for words or any string.
+   */
+  selectFirst (text, word = false) {
+    let offset = -1;
+    let patt = new RegExp('(?:^|[^a-zA-Z0-9éèêîïû])(' + text + ')(?:[^a-zA-Z0-9éèêîïû]|$)');
+    for (let i = 0; i < this.blockCount; i++) {
+      let matches = this.getRawTextContent(i).match(patt);
+      if (matches != null) {
+        offset = matches.index;
+        offset += matches[0].search(matches[1]);
+        this.select(i, offset, text.length);
+        break;
+      }
+    }
+  }
+
+  /**
    * Get the node and the offset at the given index.
    * @param {int} blockIndex - Index of the block to look into.
    * @param {int} index - Index of the character.
@@ -736,6 +763,18 @@ class Editor {
       }
     }
     return null;
+  }
+
+  /**
+   * Turn the content of the editor into a website-ready HTML.
+   * @return {string} - The HTML string.
+   */
+  toHTML () {
+    $('.editor-text').prop('contenteditable', false);
+    let result = $(this.id).html();
+    $('.editor-text').prop('contenteditable', true);
+    result = '<!-- IMPORT BOOTSTRAP IN YOUR HEADER -->\n' + String(result);
+    return result;
   }
 
   /**

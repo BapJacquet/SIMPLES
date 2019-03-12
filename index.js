@@ -70,7 +70,7 @@ function displayAnalysisResults(event){
     for(var i = 0; i < complexWords.length; i++){
       analysisContent.insertAdjacentHTML('beforeend',
       `<input type='button' title='${frequencyToText(complexWords[i].frequency)}' class='btn btn-outline-danger btn-sm' type="button" value='${complexWords[i].text}'
-      onclick='editor.select(${complexWords[i].blockIndex}, ${complexWords[i].startOffset}, ${complexWords[i].length});' />`);
+      onclick='editor.selectFirst("${complexWords[i].text}", true);' />`);
     }
   } else {
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-success" role="alert">Les mots semblent simples !</div>`);

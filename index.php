@@ -80,7 +80,7 @@
 
 				</div>
 
-				<!-- input hidden pour file dialog -->
+				<!-- hidden input for file dialog -->
 				<input type="file" id="openFileInput" style="display:none;">
 				<!-- fin main-menubar -->
 			</div>
@@ -119,7 +119,7 @@
 						<div  id="color-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
-						<div id="tool-limit">|</div>
+						<div id="tool-limit-color" class="tool-limit">|</div>
 					</div>
 
 					<div id="title">
@@ -134,6 +134,16 @@
 						</div>
 					</div>
 
+					<div id="bullet">
+						<div id="bullet-caption" class="caption">puce</div>
+						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
+						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
+						<div  id="bullet-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+						<div id="tool-limit-bullet" class="tool-limit">|</div>
+					</div>
+
 					<div id="frame">
 						<div id="frame-caption" class="caption">cadre</div>
 						<div class="tool-frame-bullet frame-true"><img src="frameTrue.png" /></div>
@@ -143,11 +153,11 @@
 						</div>
 					</div>
 
-					<div id="bullet">
-						<div id="bullet-caption" class="caption">puce</div>
-						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
-						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
-						<div  id="bullet-cursor" class="tool-cursor">
+					<div id="picture">
+						<div id="picture-caption" class="caption">image</div>
+						<div class="tool-frame-bullet picture-true"><img src="pictureTrue.png" /></div>
+						<div class="tool-frame-bullet picture-false"><img src="titleNone.png" /></div>
+						<div  id="picture-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
 					</div>
@@ -173,31 +183,34 @@
 				</div>
 
 			</div>
-
+			<!--															E D I T O R  -->
 			<div class="hbox">
 				<div id="content">
 					<div id="page-container">
 						<div id="page">
 							<!-- Create the editor container -->
 							<div id="editor">
+
 								<!-- Block command box -->
 								<div id="blockCmd">
-									<div class="block-up"  data-toggle="tooltip" data-placement="left" title="Dépacer le bloc">  <!--  block up -->
-										<img src="carat-u-black.png">
-									</div>
-									<div class="block-delete"  data-toggle="tooltip" data-placement="left" title="Supprimer le bloc">  <!--  block delete -->
-										<img src="delete-black.png">
-									</div>
-									<div class="block-down"  data-toggle="tooltip" data-placement="left" title="Dépacer le bloc">  <!--  block down -->
-										<img src="carat-d-black.png">
-									</div>
-								</div>
-								<!-- block commande inter -->
-								<div id="blockCmdInter">
-									<div class="block-new"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc">
+									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
 										<img src="plus-black.png">
 									</div>
+									<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
+										<img src="delete-black.png">
+									</div>
+									<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
+										<img src="plus-black.png">
+									</div>
+									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
+										<img src="carat-d-black.png">
+									</div>
+									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
+										<img src="carat-u-black.png">
+									</div>
+
 								</div>
+
 							</div>
 						</div>
 					</div>
@@ -215,7 +228,7 @@
 						</div>
 					</div>
 					<div class="score">90</div>
-  				<p>Résultats de l'analyze :</p>
+  				<!-- <p>Résultats de l'analyze :</p> -->
 					<div id="analysis-content"></div>
 					<button class="collapsible">Règles prioritaires</button>
 					<div class="collapsible-content">

@@ -1,3 +1,4 @@
+
 .editor-image {
   position: relative;
   top: 0;
@@ -10,34 +11,34 @@
 .editor-image:hover {
   position: relative;
   top: -5px;
-
   -webkit-filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
   filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
-
   -webkit-transition: top 0.05s, -webkit-filter 0.25s;
   transition: top 0.05s, filter 0.25s;
   cursor: pointer;
 }
 
 .frame {
-  border-style: solid;
-  border-width: 5px; /* 5 */
+  border: 5px solid black !important;
 }
 
 .editor-block {
   margin-top: 5px;
+/*  border: 5px solid #fff; */
 }
 
 .editor-text {
   margin: 10px 1em 10px 1em;
   min-height: 22px;
+  margin-top: 5px;
+/*  border: 1px solid rgba(0, 0, 0, 0); */
 }
 
-.editor-block:hover .editor-text:hover {
-  border-style: solid;
-  border-width: 1px;
-  border-color: rgba(0, 0, 0, 0.25);
+/* .editor-block:hover,
+.editor-text:hover {
+  border-color: rgba(0, 0, 0, 0.15);
 }
+*/
 
 .editor-text h1 {
   text-align: center;
@@ -48,21 +49,13 @@
 #blockCmd {
   position: absolute;
   opacity: 0;
-  width: 40px;
+  width: 80px;
   height: 110px;
-  z-index: 1000;
+  border-radius: 20px;
+  background-color: #eee;
 }
 
-#blockCmdInter {
-  position: absolute;
-  opacity: 0;
-  width: 50px;
-  height: 110px;
-  z-index: 1000;
-}
-
-#blockCmd div,
-#blockCmdInter div {
+#blockCmd div {
   position: relative;
   width: 35px;
   height: 35px;
@@ -70,20 +63,33 @@
   border-radius: 25px;
 }
 
-#blockCmdInter div {
-  top: 100px;
-}
-
-#blockCmd div:hover,
-#blockCmdInter div:hover {
+#blockCmd div:hover {
   cursor: pointer;
-  background-color: #ddd;
+  background-color: #bfb; /* #ddd; */
 }
 
-#blockCmd img,
-#blockCmdInter img {
+#blockCmd img {
   position: relative;
+  user-select: none;
   pointer-events: none;
   left: 10px;
   top: 2px;
+}
+
+#blockCmd .block-move-down {
+  top: -37px;
+  left: 40px;
+}
+
+#blockCmd .block-move-down:hover {
+  display: block;
+}
+
+#blockCmd .block-move-up {
+  top: -149px;
+  left: 40px;
+}
+
+#blockCmd .block-delete:hover {
+  background-color: #fbb;
 }

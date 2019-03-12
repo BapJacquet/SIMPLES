@@ -127,14 +127,7 @@ function refreshPageScale(){
  * When Verify Button is clicked
  * Start the analysis.
  */
-function onVerifyClick () {
-  /*let content = [];
-  //alert(editor.blockCount);
-  for(let i = 0; i < editor.blockCount; i++){
-    content.push(editor.getTextContent(i));
-  }
-  analyzeText(content.join("\n"));
-  //alert(content.join("\n"));*/
+function onVerifyClick(){
   analyzeAllEditorContent();
 }
 
@@ -153,15 +146,17 @@ function initToolbar() {                 // tool cursor initial values
   $("#size-cursor").css("left", CURSOR_DATA["size-" + SIZE_INIT]);
   $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
   $("#title-cursor").css("left", CURSOR_DATA["title-" + TITLE_INIT]);
-  $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
   $("#bullet-cursor").css("left", CURSOR_DATA["bullet-" + BULLET_INIT]);
+  $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
+  $("#picture-cursor").css("left", CURSOR_DATA["picture-" + PICTURE_INIT]);
 
   activeTool("bold", BOLD_INIT);
   activeTool("size", SIZE_INIT);
   activeTool("color", COLOR_INIT);
   activeTool("title", TITLE_INIT);
-  activeTool("frame", FRAME_INIT);
   activeTool("bullet", BULLET_INIT);
+  activeTool("frame", FRAME_INIT);
+  activeTool("picture", PICTURE_INIT);
 }
 
 //                                            click on toolbar
@@ -200,7 +195,7 @@ function sendtoEditor(tool, val) {
       case 'red':
       v = "#ff0000"; break;
       case 'green':
-      v = "#00ff00"; break;
+      v = "#3bff11"; break;
       case 'blue':
       v = "#0000ff"; break;
       case 'black':
@@ -227,7 +222,7 @@ function setFormatAtToolbar(format) {
   switch( color ) {
     case "#ff0000":
     color = 'red'; break;
-    case "#00ff00":
+    case "#3bff11":
     color = 'green'; break;
     case "#0000ff":
     color = 'blue'; break;
@@ -239,8 +234,9 @@ function setFormatAtToolbar(format) {
   activeTool("bold", format.bold);
   activeTool("size", format.size);
   activeTool("title", format.title);
-  activeTool("frame", format.frame);
   activeTool("bullet", format.bullet);
+  activeTool("frame", format.frame);
+  activeTool("picture", format.picture);
 }
 
 // update cursor & activeTools
@@ -249,8 +245,15 @@ function activeTool(tool, value) {
   moveCursor(tool, value, false);
 }
 
+function triggerPseudoMouseenter( decal ) {
+  $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
+  $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+  $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0)");
+}
+
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
+//*********************************************************************
 //*********************************************************************
 // ********************************************************** R E A D Y
 $(document).ready(function () {
@@ -299,6 +302,11 @@ $(document).ready(function () {
     else  $(".hcollapsible div").text("Montrer\xA0l'analyse");
 
     $(".hcollapsible").css("background-color", "#6c757d");
+
+    setTimeout( function () {
+      triggerPseudoMouseenter(0);
+    }, 15);
+
   } );
 
 /********************  image click  ***************/
@@ -367,8 +375,8 @@ $("#editor").on('dragover', ".editor-image", function(e) {
     reader.readAsDataURL(file); // start reading the file data.
 });
 
-////////////////////////////////////////////////////////
-//                                             menubar
+////////////////////////////////////////////////////////////
+//                                             M E N U B A R
 
 $(".main-menu, .hcollapsible").on("focus", function () {
   $(this).blur();
@@ -400,14 +408,14 @@ $("#copyItem").on("click", function() {
   document.execCommand("copy");
 });
 $("#pasteItem").on("click", function() {
-  setInterval(function() {
-    $(lastBlockBlur).focus();
+  setTimeout(function() {
+    $("#txt-" + String(activeBlocId)).focus();
   }, 10);
   document.execCommand("paste");
 });
 
-////////////////////////////////////////////////////////
-//                                        toolbar events
+////////////////////////////////////////////////////////////////
+//                                   T O O L B A R   E V E N T S
 
 // jquery tool hover
 /*
@@ -430,23 +438,33 @@ $("#pasteItem").on("click", function() {
     ); */
     toolClick(e, this);
     $(this).trigger("mouseleave");
+    setTimeout( function () {
+      triggerPseudoMouseenter(0);
+    }, 15);
+
   } );
 
 //  toolbar scroll
+
   $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
-//    $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
-    if( mousedownID == -1 )  //Prevent multimple loops!
+  //  $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
+    if( mousedownID == -1 )  //anti loops!
       mousedownID = setInterval(function() {
         var offset = $("#toolbarlist").offset();
-        var decal;
-        if ( $(e.target).hasClass("arrow-l") ) decal = 8;
-        else decal = -8;
+        var decal = 0;
+        if ( $(e.target).hasClass("arrow-l") ) {
+          if ( offset.left < 500 ) decal = 8;
+        }
+        else {
+          if ( offset.left > -500 ) decal = -8;
+        }
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25);
   });
+
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
-// $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
-    if( mousedownID != -1 ) {  //Only stop if exists
+  // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
+    if( mousedownID != -1 ) {  // stop if exists
       clearInterval(mousedownID);
       mousedownID=-1;
     }
@@ -473,60 +491,180 @@ $("#pasteItem").on("click", function() {
   //////////////////////////////////////////////////////////
   ////////////////////////////////////////////// B L O C K S
 
-
+/*
   $("#editor").on("blockcreated", function (ev) {
     console.log("Nouveau bloc: " + ev.detail.blockid);
   });
+*/
 
-  $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    activeBlocId = Number(this.id.split("-")[1]);
+// cacher #blockCmd
+  $("#page").on("click", function ( ev ) {
+    if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
   });
 
-  //  blockCmd
+// editor-block   ENTER
+  $("#editor").on("mouseenter", ".editor-block", function (ev) {
+    activeBlocId = Number(this.id.split("-")[1]);
+
+  // hover in block text
+    $(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
+
+  // enable .block-move-up
+    if ( activeBlocId == 0 ) {
+      $("#blockCmd").find(".block-move-up").css({"opacity": 0.3, "pointer-events": "none"});
+    }
+    else {
+      $("#blockCmd").find(".block-move-up").css({"opacity": 1, "pointer-events": "initial"});
+    }
+  // enable .block-move-down
+    if ( $(this).next().length == 0 ) {
+      $("#blockCmd").find(".block-move-down").css({"opacity": 0.3, "pointer-events": "none"});
+    }
+    else {
+      $("#blockCmd").find(".block-move-down").css({"opacity": 1, "pointer-events": "initial"});
+    }
+  // enable .block-delete
+    if ( $(this).siblings().length == 1 ) {
+      $("#blockCmd").find(".block-delete").css({"opacity": 0.3, "pointer-events": "none"});
+    }
+    else {
+      $("#blockCmd").find(".block-delete").css({"opacity": 1, "pointer-events": "initial"});
+    }
+  });
+
+//  .editor-block + #blockCmd   ENTER
   $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
-    //if ( document.activeElement.)
+
     var offset = $(this).offset();
-    var left = $("#page").offset().left + 55;
+
+    var left = $("#page").offset().left + 15;
     offset.left = left;
+    var top = offset.top;
+    var height = $(this).height();
+    var commandHeight = $("#editor").find("#blockCmd").height();
+    /*
+    var decal;
+    if ( this.id == "blockCmd") decal = 0;
+    else decal = 4;
+    */
+    offset.top = top + ((height - commandHeight) /2) /* + decal */ ;
+
     $("#blockCmd").offset(offset);
     $("#blockCmd").css({"opacity": 1});
   });
 
-  //  blockCmdInter
-  $("#editor").on("mouseenter", ".editor-block, #blockCmdInter", function (ev) {
-    var offset = $(this).offset();
-    var left = $("#page").offset().left + 698;
-    offset.left = left;
-    $("#blockCmdInter").offset(offset);
-    $("#blockCmdInter").css({"opacity": 1});
+  // blockCmd LEAVE
+  $("#editor").on("mouseleave", "#blockCmd", function (ev) {
+
+    //$("#blockCmd").css({"opacity": 0});
   });
 
-  // blockCmd  et   blockCmdInter
-  $("#editor").on("mouseleave", ".editor-block, #blockCmd, #blockCmdInter", function (ev) {
-    $("#blockCmd, #blockCmdInter").css({"opacity": 0});
+  // .editor-block  LEAVE
+  $("#editor").on("mouseleave", ".editor-block", function (ev) {
+
+    $(this).trigger("mouseenter");
+    // hover out block text
+    //$(ev.target).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+    $("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
-  // block Events
-  $("#blockCmdInter div").on("click", function (ev) {
-    editor.insertBlockAfter( activeBlocId, "", true);
+  // update #blockCmd
+  $("#editor").on("keyup", ".editor-block", function (ev) {
+    $(this).trigger("mouseenter");
   });
 
+
+  // blockCmd move
+  /*$("#editor").on("mousemove", function (ev) {
+    console.log("coucou");
+  });*/
+
+/////////////////////////////////////  B L O C K   C O M M A N D S
+
+// insertBlockAfter
+  $("#blockCmd .block-new-down").on("click", function (ev) {
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var blockHeight = $("#blc-" + String(activeBlocId)).height();
+    var commandHeight = $("#blockCmd").height();
+    var downHeight = (blockHeight + commandHeight) /2;
+
+    $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
+      editor.insertBlockAfter( activeBlocId, "", true);
+      setTimeout( function () {
+        triggerPseudoMouseenter(1);
+      }, 15);
+    });
+  });
+
+//  insertBlockBefore
+  $("#blockCmd .block-new-up").on("click", function (ev) {
+    var interBloc = 14;
+    var newBlc = 100;
+    var top = $("#blockCmd").position().top;
+    var blockHeight = $("#blc-" + String(activeBlocId)).height();
+    var commandHeight = $("#blockCmd").height();
+    var upHeight = (blockHeight + commandHeight) /2;
+
+    $("#blockCmd").animate({"top": top - upHeight + interBloc /2 + newBlc}, 300, function () {
+      editor.insertBlockBefore( activeBlocId, "", true);
+      setTimeout( function () {
+        triggerPseudoMouseenter(0);
+      }, 15);
+
+    });
+  });
+
+//  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
-    console.log("Supprimer bloc " + activeBlocId);
-    editor.removeBlockAt( activeBlocId, 0);
+
+    $("#blc-" + String(activeBlocId)).slideUp(300);
+
+    setTimeout( function () {
+      $("#blc-" + String(activeBlocId)).show();
+      editor.removeBlockAt( activeBlocId, activeBlocId - 1);
+      triggerPseudoMouseenter(-1);
+    }, 300);
   });
 
+//  moveBlockDown
+  $("#blockCmd .block-move-down").on("click", function (ev) {
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
+
+    $("#blc-" + String(activeBlocId + 1)).slideUp(300);
+
+    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
+      $("#blc-" + String(activeBlocId + 1)).show();
+      editor.moveBlockDown( activeBlocId);
+      triggerPseudoMouseenter(1);
+    });
+  });
+
+//  moveBlockUp
+  $("#blockCmd .block-move-up").on("click", function (ev) {
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
+
+    $("#blc-" + String(activeBlocId - 1)).slideUp(300);
+
+    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
+      $("#blc-" + String(activeBlocId - 1)).show();
+      editor.moveBlockUp( activeBlocId);
+      triggerPseudoMouseenter(-1);
+    });
+  });
+
+  // resize
+  $( window ).on("resize", function (event) {  // stop rubberband scroll
+    triggerPseudoMouseenter(0);
+  });
 
 
 
   // -----------------------------------    BLOQUAGES DIVERS
-  $( window ).on("resize", function (event) {  // stop rubberband scroll
-    event.stopPropagation();
-    event.preventDefault();
-    $( document ).width(screen.innerWidth).height(screen.innerHeight);
-    return false;
-  });
-
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -590,26 +728,29 @@ const CURSOR_DATA = {
     "title-h4":"-94px",
     "title-none":"-70px",
 
+    "bullet-true": "-50px",
+    "bullet-false": "-7px",
     "frame-true": "-50px",
     "frame-false": "-7px",
 
-    "bullet-true": "-50px",
-    "bullet-false": "-7px",
+    "picture-true": "-50px",
+    "picture-false": "-7px",
 };
 
 const BOLD_INIT = "false";
 const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
-const FRAME_INIT = "false";
 const BULLET_INIT = "false";
+const FRAME_INIT = "false";
+const PICTURE_INIT = "true";
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
-var activeBlockId;
+var activeBlocId = 0;
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

@@ -254,6 +254,7 @@ function triggerPseudoMouseenter( decal ) {
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
 //*********************************************************************
+//*********************************************************************
 // ********************************************************** R E A D Y
 $(document).ready(function () {
 
@@ -444,20 +445,26 @@ $("#pasteItem").on("click", function() {
   } );
 
 //  toolbar scroll
+
   $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
-//    $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
-    if( mousedownID == -1 )  //Prevent multimple loops!
+  //  $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
+    if( mousedownID == -1 )  //anti loops!
       mousedownID = setInterval(function() {
         var offset = $("#toolbarlist").offset();
-        var decal;
-        if ( $(e.target).hasClass("arrow-l") ) decal = 8;
-        else decal = -8;
+        var decal = 0;
+        if ( $(e.target).hasClass("arrow-l") ) {
+          if ( offset.left < 500 ) decal = 8;
+        }
+        else {
+          if ( offset.left > -500 ) decal = -8;
+        }
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25);
   });
+
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
-// $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
-    if( mousedownID != -1 ) {  //Only stop if exists
+  // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
+    if( mousedownID != -1 ) {  // stop if exists
       clearInterval(mousedownID);
       mousedownID=-1;
     }

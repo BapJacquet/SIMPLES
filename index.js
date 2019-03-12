@@ -385,6 +385,11 @@ $("#editor").on("blur", ".editor-text", function () {
   lastBlockBlur = $(this).attr("id");
 });
 //////////////////////////////////////////
+// new file
+$("#newFile").on("click", function () {
+  editor.clear();
+});
+
 // read text files
 $(".read-file").on("click", function () {
   globalMenuItem = $(this).attr("id");
@@ -395,7 +400,17 @@ $("#openFileInput").on("change", readFile);
 
 // write text file
 $(".write-file").on("click", function () {
-  if ( $(this).attr("id") == "exportFile" ) onPDFClick();
+  if ( $(this).attr("id") == "exportFilePDF" ) onPDFClick();
+/*
+  if ( $(this).attr("id") == "exportFilePDF" ) {
+    var docu = editor.toPDF();
+    writeFile( docu, "mon fichier.pdf", "text/plain");
+  }
+*/
+  else if ( $(this).attr("id") == "exportFileHTML" )  {
+    var docu = editor.toHTML();
+    writeFile( docu, "mon fichier.txt", "text/plain");
+  }
   else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 

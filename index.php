@@ -50,7 +50,8 @@
 							<a id="saveFile" class="write-file dropdown-item" href="#">Enregistrer...</a>
 							<div class="dropdown-divider"></div>
 							<a id="importFile" class="read-file dropdown-item" href="#">Importer...</a>
-							<a id="exportFile" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
+							<a id="exportFilePDF" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
+							<a id="exportFileHTML" class="write-file dropdown-item" href="#">Exporter au format HTML...</a>
 				    </div>
 				  </div>
 

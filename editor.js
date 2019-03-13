@@ -778,8 +778,9 @@ class Editor {
         `\n<div class="media-body align-self-center mr-3">` +
         $('#txt-' + i).html() +
         `</div>\n` + ($('#img-' + i).is(':visible') ? `<img src="${$('#img-' + i)[0].toDataURL()}" class="align-self-center mr-3" style="width:100px"/>` : '') +
-        `</div>\n` + '<!-- END OF CONTENT GENERATED IN SIMPLES -->';
+        `</div>\n`;
       }
+      result += '<!-- END OF CONTENT GENERATED IN SIMPLES -->';
       return result;
     } else {
       return '<!-- CASE WITHOUT BOOTSTRAP -->';

@@ -56,20 +56,22 @@ function dispatchAnalysisStatusChanged (moduleName, status) {
    FUNCTIONS
    ======================================================================= */
 
-function analyzeAllEditorContent() {
-  dispatchProgressChanged(0);
-
+/**
+ * Analyzes all the content of the editor.
+ */
+function analyzeAllEditorContent () {
+  let array = [];
   for (let i = 0; i < editor.blockCount; i++) {
-    analyzeText(i, editor.getRawTextContent(i));
+    array.push(editor.getRawTextContent(i));
   }
+  analyzeText(array.join('\n'));
 }
 
 /**
  * Begins the analysis of the given text.
- * @param {int} blockIndex - Index of the block containing the text.
  * @param {string} text - Text to analyze.
  */
-function analyzeText (blockIndex, text) {
+function analyzeText (text) {
   dispatchProgressChanged(0);
 
   var request = createCORSRequest('POST', 'http://sioux.univ-paris8.fr:9000/');
@@ -96,7 +98,6 @@ function analyzeText (blockIndex, text) {
           // Récupère le résultat pour chaque mot.
           for (let t = 0; t < s.tokens.length; t++) {
             let word = {};
-            word.blockIndex = blockIndex;
             // Position de la première lettre
             word.startOffset = s.tokens[t].characterOffsetBegin;
             // Longueur
@@ -216,12 +217,13 @@ function convertPos (pos, targetFormat) {
  * Create a CORS request.
  * @param {string} method - Either GET or POST.
  * @param {string} url - The url of the request.
- * @return - Either a XMLHttpRequest.
+ * @param {boolean} async - (optional) Whether the request is async or not.
+ * @return - Either a XMLHttpRequest or an XDomainRequest or null.
  */
-function createCORSRequest (method, url) {
+function createCORSRequest (method, url, async = true) {
   var xhr = new XMLHttpRequest();
   if ('withCredentials' in xhr) {
-    xhr.open(method, url, true);
+    xhr.open(method, url, async);
   } else if (typeof XDomainRequest !== 'undefined') {
     xhr = new XDomainRequest();
     xhr.open(method, url);

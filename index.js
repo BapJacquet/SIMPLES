@@ -135,8 +135,9 @@ function onVerifyClick(){
  * Create a PDF from the page.
  */
 function onPDFClick(){
-  let doc = editor.toPDF();
-  doc.save('Mon fichier.pdf');
+  editor.toPDF().then( function (doc) {
+    doc.save('Mon fichier.pdf');
+  });
 }
 
 // ******************************************** T O O L B A R
@@ -361,9 +362,12 @@ $("#editor").on('dragover', ".editor-image", function(e) {
   $("#editor").on('drop', ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
+    console.log(e);
     var imageId = "#" + e.target.id;
     var ev = e.originalEvent;
+    console.log(ev);
     var file = ev.dataTransfer.files[0];
+    console.log(file);
     if ( !file ) return;
     if ( (!file.type.match(/image.*/)) ) return;
     var reader = new FileReader();

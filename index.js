@@ -627,43 +627,17 @@ $("#pasteItem").on("click", function() {
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
 
-    $("#blc-" + String(activeBlocId)).slideUp(300);
-
-    setTimeout( function () {
-      $("#blc-" + String(activeBlocId)).show();
-      editor.removeBlockAt( activeBlocId, activeBlocId - 1);
-      triggerPseudoMouseenter(-1);
-    }, 300);
+    editor.removeBlockAt( activeBlocId, activeBlocId - 1);
   });
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
-    var interBloc = 14;
-    var top = $("#blockCmd").position().top;
-    var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
-
-    $("#blc-" + String(activeBlocId + 1)).slideUp(300);
-
-    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
-      $("#blc-" + String(activeBlocId + 1)).show();
-      editor.moveBlockDown( activeBlocId);
-      triggerPseudoMouseenter(1);
-    });
+    editor.moveBlockDown( activeBlocId);
   });
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
-    var interBloc = 14;
-    var top = $("#blockCmd").position().top;
-    var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
-
-    $("#blc-" + String(activeBlocId - 1)).slideUp(300);
-
-    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
-      $("#blc-" + String(activeBlocId - 1)).show();
-      editor.moveBlockUp( activeBlocId);
-      triggerPseudoMouseenter(-1);
-    });
+    editor.moveBlockUp( activeBlocId);
   });
 
   // resize

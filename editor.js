@@ -6,9 +6,7 @@
 /* global jsPDF */
 
 /**
- * A prévoir : Event formatChanged pour quand le format de la selection est différent du précédent
- * A prévoir : fonction setFormat(object)
- *
+ * Class containing all the functions and tools for the editor.
  */
 class Editor {
   /**

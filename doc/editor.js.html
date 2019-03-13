@@ -1,4 +1,32 @@
-/* eslint no-unused-vars: ["warn", { "varsIgnorePattern": "Editor" }] */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: editor.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* eslint no-unused-vars: ["warn", { "varsIgnorePattern": "Editor" }] */
 /* global $ */
 /* global Image */
 /* global Utils */
@@ -136,7 +164,7 @@ class Editor {
           var sel = this.getSelection();
           var range = sel.getRangeAt(0);
           var container = range.startContainer;
-          while (!(container.classList && container.classList.contains('editor-block'))) {
+          while (!(container.classList &amp;&amp; container.classList.contains('editor-block'))) {
             container = container.parentNode;
           }
           let size = Utils.pixelToPoint(parseFloat($(container).css('font-size')));
@@ -150,7 +178,7 @@ class Editor {
           let sel = this.getSelection();
           let range = sel.getRangeAt(0);
           let container = range.startContainer;
-          while (!(container.classList && container.classList.contains('editor-block'))) {
+          while (!(container.classList &amp;&amp; container.classList.contains('editor-block'))) {
             container = container.parentNode;
           }
           let size = Utils.pixelToPoint(parseFloat($(container).css('font-size')));
@@ -165,7 +193,7 @@ class Editor {
         }
         break;
       case 'Backspace':
-        if (this.getRawTextContent(id).length === 0 && id !== 0) {
+        if (this.getRawTextContent(id).length === 0 &amp;&amp; id !== 0) {
           this.removeBlockAt(id, id - 1);
         }
         break;
@@ -189,7 +217,7 @@ class Editor {
         let range = sel.getRangeAt(0);
         let previousNode = range.startContainer;
         console.log(previousNode);
-        if (!event.shiftKey && previousNode && previousNode.nodeName === 'DIV' && previousNode.childNodes[0].nodeName === 'BR' && previousNode.childNodes.length === 1) {
+        if (!event.shiftKey &amp;&amp; previousNode &amp;&amp; previousNode.nodeName === 'DIV' &amp;&amp; previousNode.childNodes[0].nodeName === 'BR' &amp;&amp; previousNode.childNodes.length === 1) {
           previousNode.remove();
           event.stopPropagation();
           event.preventDefault();
@@ -197,7 +225,7 @@ class Editor {
         }
         break;
       case 8: // Return
-        if (this.getTextContent(id).length === 0 && id !== 0) {
+        if (this.getTextContent(id).length === 0 &amp;&amp; id !== 0) {
           this.removeBlockAt(id, id - 1);
         }
         break;
@@ -300,10 +328,10 @@ class Editor {
    */
   checkFormatAcrossSelection (format) {
     let selection = this.getSelection();
-    for (let i = 0; i < selection.rangeCount; i++) {
+    for (let i = 0; i &lt; selection.rangeCount; i++) {
       let range = selection.getRangeAt(i);
       let nodes = this.getNodesInRange(range);
-      for (let n = 0; n < nodes.length; n++) {
+      for (let n = 0; n &lt; nodes.length; n++) {
         let f = this.getFormatForNode(nodes[n]);
         format = this.mergeFormats(format, f);
       }
@@ -319,7 +347,7 @@ class Editor {
   getNodesInRange (range) {
     let startNode = range.startContainer.childNodes[range.startOffset] || range.startContainer;
     let endNode = range.endContainer.childNodes[range.endOffset] || range.endContainer;
-    if (startNode === endNode && startNode.childNodes.length === 0) {
+    if (startNode === endNode &amp;&amp; startNode.childNodes.length === 0) {
       return [startNode];
     }
 
@@ -338,7 +366,7 @@ class Editor {
   getNodesInElement (element) {
     let startNode = element.firstChild;
     let endNode = element;
-    if (startNode === endNode && startNode.childNodes.length === 0) {
+    if (startNode === endNode &amp;&amp; startNode.childNodes.length === 0) {
       return [startNode];
     }
 
@@ -360,7 +388,7 @@ class Editor {
     if (endNode === node) {
       return null;
     }
-    if (node.firstChild && !skipChildren) {
+    if (node.firstChild &amp;&amp; !skipChildren) {
       return node.firstChild;
     }
     if (!node.parentNode) {
@@ -409,11 +437,11 @@ class Editor {
    * @return {DOMElement} The element which has the given tag, or null.
    */
   findParentElementWithTag (tag, startElement) {
-    if (startElement.classList && startElement.classList.contains('editor-text')) return null;
+    if (startElement.classList &amp;&amp; startElement.classList.contains('editor-text')) return null;
     let currentElement = startElement;
     while (currentElement.parentNode) {
       let parent = currentElement.parentNode;
-      if (parent.classList && parent.classList.contains('editor-text')) break;
+      if (parent.classList &amp;&amp; parent.classList.contains('editor-text')) break;
       if (parent.nodeName === tag) return parent;
       else {
         currentElement = parent;
@@ -474,7 +502,7 @@ class Editor {
   removeBlockAt (id, focusID) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
-    if (id === 0 && this.blockCount === 1) {
+    if (id === 0 &amp;&amp; this.blockCount === 1) {
       // There is only one block. Clear it instead of removing it.
       $('#txt-0').empty();
       this.setImage('#img-0', 'img/placeholder.png');
@@ -547,7 +575,7 @@ class Editor {
   moveBlockDown (index, amount = 1) {
     if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
 
-    if (index + amount < this.blockCount) {
+    if (index + amount &lt; this.blockCount) {
       $('#blc-' + index).insertAfter('#blc-' + (index + amount));
       this.refreshAllBlockID();
     }
@@ -587,12 +615,12 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newBlockString (id, text) {
-    return `<div id="blc-${id}" class="editor-block media" style="font-size: 14pt;">` +
-             `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3" contenteditable="true">` +
-                `<div>${text}</div>` +
-             `</div>` +
-             `<canvas id="img-${id}" class="editor-image align-self-center mr-3 hoverable" style="width:100px"/>` +
-           `</div>`;
+    return `&lt;div id="blc-${id}" class="editor-block media" style="font-size: 14pt;">` +
+             `&lt;div id="txt-${id}" class="editor-text media-body align-self-center mr-3" contenteditable="true">` +
+                `&lt;div>${text}&lt;/div>` +
+             `&lt;/div>` +
+             `&lt;canvas id="img-${id}" class="editor-image align-self-center mr-3 hoverable" style="width:100px"/>` +
+           `&lt;/div>`;
   }
 
   /**
@@ -639,12 +667,12 @@ class Editor {
       let title = this.format.title;
       let picture = this.format.picture;
       let color = this.format.color;
-      if (typeof (format.title) !== 'undefined' && format.title !== title) {
+      if (typeof (format.title) !== 'undefined' &amp;&amp; format.title !== title) {
         let t = format.title;
         if (t === 'none') t = 'div';
         document.execCommand('formatBlock', false, t);
       }
-      if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
+      if (typeof (format.frame) !== 'undefined' &amp;&amp; format.frame !== frame) {
         console.log('Frame: ' + format.frame);
         if (format.frame) {
           console.log('Adding frame on block ' + this.activeBlockId);
@@ -653,25 +681,25 @@ class Editor {
           $('#blc-' + this.activeBlockId).removeClass('frame');
         }
       }
-      if (typeof (format.bold) !== 'undefined' && format.bold !== bold) {
-        if (bold === 'ambiguous' && format.bold === false) {
+      if (typeof (format.bold) !== 'undefined' &amp;&amp; format.bold !== bold) {
+        if (bold === 'ambiguous' &amp;&amp; format.bold === false) {
           document.execCommand('bold', false, null);
           document.execCommand('bold', false, null);
         } else {
           document.execCommand('bold', false, null);
         }
       }
-      if (typeof (format.bullet) !== 'undefined' && format.bullet !== list) {
+      if (typeof (format.bullet) !== 'undefined' &amp;&amp; format.bullet !== list) {
         document.execCommand('insertUnorderedList', false, null);
       }
-      if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
+      if (typeof (format.picture) !== 'undefined' &amp;&amp; format.picture !== picture) {
         if (format.picture) {
           $('#img-' + this.activeBlockId).show();
         } else {
           $('#img-' + this.activeBlockId).hide();
         }
       }
-      if (typeof (format.color) !== 'undefined' && format.color !== color) {
+      if (typeof (format.color) !== 'undefined' &amp;&amp; format.color !== color) {
         document.execCommand('foreColor', false, format.color);
       }
       this.updateFormat();
@@ -733,7 +761,7 @@ class Editor {
   selectFirst (text, word = false) {
     let offset = -1;
     let patt = new RegExp('(?:^|[^a-zA-Z0-9éèêîïû])(' + text + ')(?:[^a-zA-Z0-9éèêîïû]|$)');
-    for (let i = 0; i < this.blockCount; i++) {
+    for (let i = 0; i &lt; this.blockCount; i++) {
       let matches = this.getRawTextContent(i).match(patt);
       if (matches != null) {
         offset = matches.index;
@@ -754,9 +782,9 @@ class Editor {
     let root = $('#txt-' + blockIndex).get(0);
     let remainingChars = index;
     let nodes = this.getNodesInElement(root);
-    for (let i = 0; i < nodes.length; i++) {
+    for (let i = 0; i &lt; nodes.length; i++) {
       if (nodes[i].nodeType === 3) {
-        if (remainingChars < nodes[i].length) {
+        if (remainingChars &lt; nodes[i].length) {
           return {element: nodes[i], offset: remainingChars};
         } else {
           remainingChars -= nodes[i].length;
@@ -772,18 +800,18 @@ class Editor {
    */
   toHTML (bootstrap = true) {
     if (bootstrap) {
-      let result = '<!-- IMPORT BOOTSTRAP IN YOUR HEADER -->\n';
-      for (let i = 0; i < this.blockCount; i++) {
-        result += `<div class="media${$('#blc-' + i).hasClass('frame') ? ' frame' : ''}" style="font-size: 14pt;">` +
-        `\n<div class="media-body align-self-center mr-3">` +
+      let result = '&lt;!-- IMPORT BOOTSTRAP IN YOUR HEADER -->\n';
+      for (let i = 0; i &lt; this.blockCount; i++) {
+        result += `&lt;div class="media${$('#blc-' + i).hasClass('frame') ? ' frame' : ''}" style="font-size: 14pt;">` +
+        `\n&lt;div class="media-body align-self-center mr-3">` +
         $('#txt-' + i).html() +
-        `</div>\n` + ($('#img-' + i).is(':visible') ? `<img src="${$('#img-' + i)[0].toDataURL()}" class="align-self-center mr-3" style="width:100px"/>` : '') +
-        `</div>\n`;
+        `&lt;/div>\n` + ($('#img-' + i).is(':visible') ? `&lt;img src="${$('#img-' + i)[0].toDataURL()}" class="align-self-center mr-3" style="width:100px"/>` : '') +
+        `&lt;/div>\n`;
       }
-      result += '<!-- END OF CONTENT GENERATED IN SIMPLES -->';
+      result += '&lt;!-- END OF CONTENT GENERATED IN SIMPLES -->';
       return result;
     } else {
-      return '<!-- CASE WITHOUT BOOTSTRAP -->';
+      return '&lt;!-- CASE WITHOUT BOOTSTRAP -->';
     }
   }
 
@@ -800,7 +828,7 @@ class Editor {
 
     let currentYOffset = margin;
 
-    for (let i = 0; i < this.blockCount; i++) {
+    for (let i = 0; i &lt; this.blockCount; i++) {
       if (currentYOffset + Utils.pixelToCm($('#blc-' + i).outerHeight()) > pageHeight - margin) {
         doc = doc.addPage();
         currentYOffset = margin;
@@ -866,3 +894,26 @@ class Editor {
     $(this.id).get(0).dispatchEvent(e);
   }
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Editor.html">Editor</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Mar 13 2019 01:57:03 GMT+0100 (GMT+01:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

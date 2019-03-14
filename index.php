@@ -6,7 +6,8 @@
 	<title>SimpLEs</title>
 
   <!-- === HTML to PDF ===-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+	<script src="./html2canvas.min.js"></script>
+  <script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
 
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
@@ -35,26 +36,58 @@
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
-				<div id="file-menu" class="dropdown main-menu">
-					<!-- class="btn btn-secondary dropdown-toggle" -->
-					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fichier</button>
-					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
-						<a class="dropdown-item" href="#">Action</a>
-						<a class="dropdown-item" href="#">Another action</a>
-						<a class="dropdown-item" href="#">Something else here</a>
-					</div>
+
+				<div class="btn-group" role="group">
+					<div class="btn-group" role="group">
+				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Fichier
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+				      <a id="newFile" class="dropdown-item" href="#">Nouveau</a>
+				      <a id="newModelFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
+							<div class="dropdown-divider"></div>
+							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
+							<a id="saveFile" class="write-file dropdown-item" href="#">Enregistrer...</a>
+							<div class="dropdown-divider"></div>
+							<a id="importFile" class="read-file dropdown-item" href="#">Importer...</a>
+							<a id="exportFilePDF" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
+							<a id="exportFileHTML" class="write-file dropdown-item" href="#">Exporter au format HTML...</a>
+				    </div>
+				  </div>
+
+					<div class="btn-group" role="group">
+				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Edition
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+							<a id="cutItem" class="dropdown-item" href="#">Couper</a>
+				      <a id="copyItem" class="dropdown-item" href="#">Copier</a>
+							<a id="pasteItem" class="dropdown-item" href="#">Coller</a>
+				    </div>
+				  </div>
+
+					<div class="btn-group" role="group">
+				    <button id="btnResources" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Resources
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+				      <a class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>
+				      <a class="dropdown-item" href="#">Exporter un dictonnaire...</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item read-file" href="#">Importer un lexique...</a>
+							<a class="dropdown-item" href="#">Exporter un lexique...</a>
+				    </div>
+				  </div>
+
 				</div>
-				<div id="resource-menu" class="dropdown main-menu">
-					<button class="btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ressource</button>
-					<div class="dropdown-menu" aria-labelledby= "dropdownMenuButton">
-						<a class="dropdown-item" href="#">Action</a>
-						<a class="dropdown-item" href="#">Another action</a>
-						<a class="dropdown-item" href="#">Something else here</a>
-					</div>
-				</div>
+
+				<!-- hidden input for file dialog -->
+				<input type="file" id="openFileInput" style="display:none;">
 				<!-- fin main-menubar -->
 			</div>
-			<!--           			T O O L B A R -->
+
+
+			<!--           							T O O L B A R -->
 			<div id="toolbar">
 				<div id="toolbarlist">
 
@@ -87,7 +120,7 @@
 						<div  id="color-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
-						<div id="tool-limit">|</div>
+						<div id="tool-limit-color" class="tool-limit">|</div>
 					</div>
 
 					<div id="title">
@@ -102,6 +135,16 @@
 						</div>
 					</div>
 
+					<div id="bullet">
+						<div id="bullet-caption" class="caption">puce</div>
+						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
+						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
+						<div  id="bullet-cursor" class="tool-cursor">
+							<img src="arrow-u-black.png" />
+						</div>
+						<div id="tool-limit-bullet" class="tool-limit">|</div>
+					</div>
+
 					<div id="frame">
 						<div id="frame-caption" class="caption">cadre</div>
 						<div class="tool-frame-bullet frame-true"><img src="frameTrue.png" /></div>
@@ -111,11 +154,11 @@
 						</div>
 					</div>
 
-					<div id="bullet">
-						<div id="bullet-caption" class="caption">puce</div>
-						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
-						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
-						<div  id="bullet-cursor" class="tool-cursor">
+					<div id="picture">
+						<div id="picture-caption" class="caption">image</div>
+						<div class="tool-frame-bullet picture-true"><img src="pictureTrue.png" /></div>
+						<div class="tool-frame-bullet picture-false"><img src="titleNone.png" /></div>
+						<div  id="picture-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
 					</div>
@@ -125,8 +168,9 @@
 
 
 				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
-				<div class="arrows arrow-l">  <!-- scroll toolbar -->
-					<img id="img-l" src="arrow-l-white.png">
+
+				<div class="arrows arrow-l"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
+					<img id="img-arrow-l" src="carat-l-white.png">
 				</div>
 
 				<span id="analyze" class="simples-span" >
@@ -135,18 +179,40 @@
 					</button>
 				</span>
 
-				<div class="arrows arrow-r">  <!-- scroll toolbar -->
-					<img id="img-r" src="arrow-r-white.png">
+				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
+					<img id="img-arrow-r" src="carat-r-white.png">
 				</div>
 
 			</div>
-
+			<!--															E D I T O R  -->
 			<div class="hbox">
 				<div id="content">
 					<div id="page-container">
 						<div id="page">
 							<!-- Create the editor container -->
-							<div id="editor"></div>
+							<div id="editor">
+
+								<!-- Block command box -->
+								<div id="blockCmd">
+									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
+										<img src="plus-black.png">
+									</div>
+									<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
+										<img src="delete-black.png">
+									</div>
+									<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
+										<img src="plus-black.png">
+									</div>
+									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
+										<img src="carat-d-black.png">
+									</div>
+									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
+										<img src="carat-u-black.png">
+									</div>
+
+								</div>
+
+							</div>
 						</div>
 					</div>
 				</div>
@@ -163,7 +229,7 @@
 						</div>
 					</div>
 					<div class="score">90</div>
-  				<p>Résultats de l'analyze :</p>
+  				<!-- <p>Résultats de l'analyze :</p> -->
 					<div id="analysis-content"></div>
 					<button class="collapsible">Règles prioritaires</button>
 					<div class="collapsible-content">
@@ -178,10 +244,6 @@
 	  				<p>Résultats de l'analyze</p>
 					</div>
 				</div>
-				<!--div id="analysis-container">
-					<h1>90</h1>
-					<p>Hello World</p>
-				</div-->
 			</div>
 	</div>
 </div>
@@ -191,27 +253,27 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Choisir une image</h5>
+        <h3 class="modal-title">Choisir une image</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Chemin du fichier image:</label>
-            <input id="imgFromDisk" type="file" class="form-control" id="recipient-name">
+          <div class="input-group mb-3">
+        <!--    <input id="imgFromDisk" type="file" > -->
+						<div class="custom-file">
+							<input id="imgFromDisk" type="file" class="custom-file-input">
+							<label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
+						</div>
+
           </div>
           <div class="form-group">
-            <label for="message-text" class="col-form-label">Message:</label>
-            <textarea class="form-control" id="message-text"></textarea>
+            <label for="message-text" class="col-form-label">Entrer un URL:</label>
+            <input type="url" class="form-control" id="image-url"></textarea>
           </div>
-        </form>
       </div>
       <div class="modal-footer">
-
-        <button type="button" class=" btn-primary">coucou</button>
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+				<button type="button" class="btn btn-dark" data-dismiss="modal">OK</button>
       </div>
     </div>
   </div>

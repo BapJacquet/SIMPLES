@@ -18,6 +18,16 @@ class Utils {
     return Math.round(x * (72.0 / 96.0));
   }
 
+  static pixelToCm (px) {
+    return (px * 25.4) / 96;
+  }
+
+  static getRelativeOffset (element) {
+    let elem = $(element);
+    let eOffset = elem.offset();
+    return {left: eOffset.left - elem.parent().offset().left, top: eOffset.top - elem.parent().offset().top};
+  }
+
   /**
    * Return whether or not the given variable has a value.
    * @param {Object} x - The object.

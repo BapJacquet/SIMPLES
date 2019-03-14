@@ -4,6 +4,7 @@
 /* global XMLHttpRequest */
 /* global XDomainRequest */
 /* global fetch */
+/* global editor */
 /* =======================================================================
    VARIABLES
    ======================================================================= */
@@ -56,8 +57,19 @@ function dispatchAnalysisStatusChanged (moduleName, status) {
    ======================================================================= */
 
 /**
+ * Analyzes all the content of the editor.
+ */
+function analyzeAllEditorContent () {
+  let array = [];
+  for (let i = 0; i < editor.blockCount; i++) {
+    array.push(editor.getRawTextContent(i));
+  }
+  analyzeText(array.join('\n'));
+}
+
+/**
  * Begins the analysis of the given text.
- * @param {string} text - Multiline string to analyse.
+ * @param {string} text - Text to analyze.
  */
 function analyzeText (text) {
   dispatchProgressChanged(0);
@@ -205,12 +217,13 @@ function convertPos (pos, targetFormat) {
  * Create a CORS request.
  * @param {string} method - Either GET or POST.
  * @param {string} url - The url of the request.
- * @return - Either a XMLHttpRequest.
+ * @param {boolean} async - (optional) Whether the request is async or not.
+ * @return - Either a XMLHttpRequest or an XDomainRequest or null.
  */
-function createCORSRequest (method, url) {
+function createCORSRequest (method, url, async = true) {
   var xhr = new XMLHttpRequest();
   if ('withCredentials' in xhr) {
-    xhr.open(method, url, true);
+    xhr.open(method, url, async);
   } else if (typeof XDomainRequest !== 'undefined') {
     xhr = new XDomainRequest();
     xhr.open(method, url);

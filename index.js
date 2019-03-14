@@ -5,6 +5,43 @@
 /////////////////////////////////////////////// F U N C T I O N S
 ////////////////////////////////////////////////////////////////////
 
+//*************************************************** connection
+function connection () {
+
+  if ( !localStorage.userName ) askUserName();
+  else {
+    var userName;
+    if ( localStorage.userName ) userName = localStorage.userName;
+    else userName = '';
+    $.ajax({
+      url: 'connection_count.php',
+      type:'post',
+      data: { 'identifier': sessionStorage.identifier,
+              'userName': userName,
+              'userAgent': window.navigator.userAgent.substr(12),
+              'drumyVersion': drumyVersion,
+              'language': window.navigator.language,
+              'platform': window.navigator.platform,
+              'innerWidth': window.innerWidth,
+              'innerHeight': window.innerHeight,
+              'outerHeight':window.outerHeight
+      },
+      complete: function(xhr, result) {
+        // alert('complete');
+        if (result != 'success') {
+          localStorage.userName = '';
+          modalAlert ( 'Network failure. Close app and try again.', 'Drumy error!' );
+        }
+        else {
+          sessionStorage.connectionIndex = xhr.responseText;
+          initLevels();
+        }
+      }
+    });
+  }
+}
+
+
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
     var file = new Blob([data], {type: type});
@@ -516,6 +553,7 @@ $("#pasteItem").on("click", function() {
 // cacher #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
+    $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
 // editor-block   ENTER
@@ -625,18 +663,8 @@ $("#pasteItem").on("click", function() {
     var blockHeight = $("#blc-" + String(activeBlocId)).height();
     var commandHeight = $("#blockCmd").height();
     var upHeight = (blockHeight + commandHeight) /2;
-    /*
-    $("#blockCmd").animate({"top": top - upHeight + interBloc /2 + newBlc}, 300, function () {
-      editor.insertBlockBefore( activeBlocId, "", true);
-      setTimeout( function () {
-        triggerPseudoMouseenter(0);
-      }, 15);
-
-    });
-    */
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
-    //  triggerPseudoMouseenter(0);
     }, 15);
   });
 
@@ -647,7 +675,6 @@ $("#pasteItem").on("click", function() {
     $("#blc-" + String(activeBlocId)).slideUp(300);
 
     setTimeout( function () {
-      //$("#blc-" + String(activeBlocId)).show();
       editor.removeBlockAt(activeBlocId, activeBlocId -1);
       triggerPseudoMouseenter(-1);
     }, 310);
@@ -659,10 +686,7 @@ $("#pasteItem").on("click", function() {
     var top = $("#blockCmd").position().top;
     var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
 
-    //$("#blc-" + String(activeBlocId + 1)).slideUp(300);
-
     $("#blockCmd").animate({"top": downHeight + top + interBloc}, 310, function () {
-      //$("#blc-" + String(activeBlocId + 1)).show();
       editor.moveBlockDown( activeBlocId);
       triggerPseudoMouseenter(1);
     });
@@ -674,10 +698,7 @@ $("#pasteItem").on("click", function() {
     var top = $("#blockCmd").position().top;
     var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
 
-    //$("#blc-" + String(activeBlocId - 1)).slideUp(300);
-
     $("#blockCmd").animate({"top": top - upHeight - interBloc}, 310, function () {
-      //$("#blc-" + String(activeBlocId - 1)).show();
       editor.moveBlockUp( activeBlocId);
       triggerPseudoMouseenter(-1);
     });
@@ -790,3 +811,13 @@ var lexique3Progress = document.getElementById('lexique3-progress');
 //refreshPageScale();
 
 // slider.oninput = refreshPageScale;
+
+// new connection
+$(window).on("load", function() {
+	var version = navigator.platform + ' ' + navigator.userAgent;
+	$.ajax({
+		url: 'connection_count.php',
+		type:'post',
+		data: {'version':version}
+	});
+});

@@ -1,5 +1,5 @@
 <?php
-require_once("inc/connectMySqlW.php");
+require_once("connectMySQL.php");
 $base=connect();
 //
 $date = date('Y-m-d');

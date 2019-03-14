@@ -681,9 +681,17 @@ class Editor {
    * @param {string} selector - ID of the block.
    * @param {string} src - Path of the image source.
    */
-  setImage (selector, src) {
+  async setImage (selector, src) {
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     console.log(src);
+    if (src.match(/^https?:\/\//)) {
+      try {
+        src = './proxy.php?url=' + src + '&mode=native';
+      } catch (error) {
+        console.log(error);
+      }
+      console.log(src);
+    }
     var img = new Image();
     img.crossOrigin = 'Anonymous';
     img.onload = function () {

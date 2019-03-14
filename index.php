@@ -191,7 +191,6 @@
 						<div id="page">
 							<!-- Create the editor container -->
 							<div id="editor">
-
 								<!-- Block command box -->
 								<div id="blockCmd">
 									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
@@ -209,9 +208,7 @@
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="carat-u-black.png">
 									</div>
-
 								</div>
-
 							</div>
 						</div>
 					</div>

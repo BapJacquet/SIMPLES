@@ -248,6 +248,7 @@ function activeTool(tool, value) {
 function triggerPseudoMouseenter( decal ) {
   $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
   $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+  $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
@@ -503,8 +504,8 @@ $("#pasteItem").on("click", function() {
     'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
   });
 
-  //////////////////////////////////////////////////////////
-  ////////////////////////////////////////////// B L O C K S
+  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////// B L O C K S
 
 /*
   $("#editor").on("blockcreated", function (ev) {
@@ -519,9 +520,9 @@ $("#pasteItem").on("click", function() {
 
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    activeBlocId = Number(this.id.split("-")[1]);
+    // activeBlocId = Number(this.id.split("-")[1]);
 
-  // hover in block text
+  // hover  block text
     $(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
 
   // enable .block-move-up
@@ -547,8 +548,9 @@ $("#pasteItem").on("click", function() {
     }
   });
 
-//  .editor-block + #blockCmd   ENTER
-  $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
+//  .editor-block   ENTER bis ( pour pavé )
+  $("#editor").on("mouseenter", ".editor-block", function (ev) {
+    //$("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
 
     var offset = $(this).offset();
     var left = $("#page").offset().left + 15;
@@ -556,16 +558,16 @@ $("#pasteItem").on("click", function() {
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#editor").find("#blockCmd").height();
-    offset.top = top + ((height - commandHeight) /2);
+    top = top + ((height - commandHeight) /2 + 4);
+    offset.top = top;
 
-    $("#blockCmd").offset(offset);
     $("#blockCmd").css({"opacity": 1});
+    $("#blockCmd").offset(offset);
   });
 
   // blockCmd LEAVE
   $("#editor").on("mouseleave", "#blockCmd", function (ev) {
 
-    //$("#blockCmd").css({"opacity": 0});
   });
 
   // .editor-block  LEAVE
@@ -573,20 +575,29 @@ $("#pasteItem").on("click", function() {
 
     $(this).trigger("mouseenter");
     // hover out block text
-    //$(ev.target).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
-    $("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
+    //$("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
-  // update #blockCmd
+  // update #blockCmd from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
     $(this).trigger("mouseenter");
   });
 
 
   // blockCmd move
-  /*$("#editor").on("mousemove", function (ev) {
-    console.log("coucou");
-  });*/
+  $("#page").on("mousemove", function (ev) {
+    var mouseY = ev.pageY;
+    $(".editor-block").each( function (index) {
+
+      var blockTop = $(this).offset().top;
+      var blockHeight = $(this).height();
+      if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
+        activeBlocId = Number($(this).attr("id").split("-")[1]);
+        triggerPseudoMouseenter(0);
+      }
+
+    });
+  });
 
 /////////////////////////////////////  B L O C K   C O M M A N D S
 
@@ -614,7 +625,7 @@ $("#pasteItem").on("click", function() {
     var blockHeight = $("#blc-" + String(activeBlocId)).height();
     var commandHeight = $("#blockCmd").height();
     var upHeight = (blockHeight + commandHeight) /2;
-
+    /*
     $("#blockCmd").animate({"top": top - upHeight + interBloc /2 + newBlc}, 300, function () {
       editor.insertBlockBefore( activeBlocId, "", true);
       setTimeout( function () {
@@ -622,18 +633,24 @@ $("#pasteItem").on("click", function() {
       }, 15);
 
     });
+    */
+    editor.insertBlockBefore( activeBlocId, "", true);
+    setTimeout( function () {
+    //  triggerPseudoMouseenter(0);
+    }, 15);
   });
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
+    if ( $(".editor-block").length == 1 ) return;
 
     $("#blc-" + String(activeBlocId)).slideUp(300);
 
     setTimeout( function () {
-      $("#blc-" + String(activeBlocId)).show();
-      editor.removeBlockAt( activeBlocId, activeBlocId - 1);
+      //$("#blc-" + String(activeBlocId)).show();
+      editor.removeBlockAt(activeBlocId, activeBlocId -1);
       triggerPseudoMouseenter(-1);
-    }, 300);
+    }, 310);
   });
 
 //  moveBlockDown
@@ -642,10 +659,10 @@ $("#pasteItem").on("click", function() {
     var top = $("#blockCmd").position().top;
     var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
 
-    $("#blc-" + String(activeBlocId + 1)).slideUp(300);
+    //$("#blc-" + String(activeBlocId + 1)).slideUp(300);
 
-    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
-      $("#blc-" + String(activeBlocId + 1)).show();
+    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 310, function () {
+      //$("#blc-" + String(activeBlocId + 1)).show();
       editor.moveBlockDown( activeBlocId);
       triggerPseudoMouseenter(1);
     });
@@ -657,10 +674,10 @@ $("#pasteItem").on("click", function() {
     var top = $("#blockCmd").position().top;
     var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
 
-    $("#blc-" + String(activeBlocId - 1)).slideUp(300);
+    //$("#blc-" + String(activeBlocId - 1)).slideUp(300);
 
-    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
-      $("#blc-" + String(activeBlocId - 1)).show();
+    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 310, function () {
+      //$("#blc-" + String(activeBlocId - 1)).show();
       editor.moveBlockUp( activeBlocId);
       triggerPseudoMouseenter(-1);
     });

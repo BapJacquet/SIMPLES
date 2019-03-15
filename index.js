@@ -5,6 +5,43 @@
 /////////////////////////////////////////////// F U N C T I O N S
 ////////////////////////////////////////////////////////////////////
 
+//*************************************************** connection
+function connection () {
+
+  if ( !localStorage.userName ) askUserName();
+  else {
+    var userName;
+    if ( localStorage.userName ) userName = localStorage.userName;
+    else userName = '';
+    $.ajax({
+      url: 'connection_count.php',
+      type:'post',
+      data: { 'identifier': sessionStorage.identifier,
+              'userName': userName,
+              'userAgent': window.navigator.userAgent.substr(12),
+              'drumyVersion': drumyVersion,
+              'language': window.navigator.language,
+              'platform': window.navigator.platform,
+              'innerWidth': window.innerWidth,
+              'innerHeight': window.innerHeight,
+              'outerHeight':window.outerHeight
+      },
+      complete: function(xhr, result) {
+        // alert('complete');
+        if (result != 'success') {
+          localStorage.userName = '';
+          modalAlert ( 'Network failure. Close app and try again.', 'Drumy error!' );
+        }
+        else {
+          sessionStorage.connectionIndex = xhr.responseText;
+          initLevels();
+        }
+      }
+    });
+  }
+}
+
+
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
     var file = new Blob([data], {type: type});
@@ -249,6 +286,7 @@ function activeTool(tool, value) {
 function triggerPseudoMouseenter( decal ) {
   $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
   $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+  $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
@@ -504,8 +542,8 @@ $("#pasteItem").on("click", function() {
     'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
   });
 
-  //////////////////////////////////////////////////////////
-  ////////////////////////////////////////////// B L O C K S
+  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////// B L O C K S
 
 /*
   $("#editor").on("blockcreated", function (ev) {
@@ -516,13 +554,14 @@ $("#pasteItem").on("click", function() {
 // cacher #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
+    $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    activeBlocId = Number(this.id.split("-")[1]);
+    // activeBlocId = Number(this.id.split("-")[1]);
 
-  // hover in block text
+  // hover  block text
     $(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
 
   // enable .block-move-up
@@ -548,8 +587,9 @@ $("#pasteItem").on("click", function() {
     }
   });
 
-//  .editor-block + #blockCmd   ENTER
-  $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
+//  .editor-block   ENTER bis ( pour pavé )
+  $("#editor").on("mouseenter", ".editor-block", function (ev) {
+    //$("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
 
     var offset = $(this).offset();
     var left = $("#page").offset().left + 15;
@@ -557,16 +597,16 @@ $("#pasteItem").on("click", function() {
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#editor").find("#blockCmd").height();
-    offset.top = top + ((height - commandHeight) /2);
+    top = top + ((height - commandHeight) /2 + 4);
+    offset.top = top;
 
-    $("#blockCmd").offset(offset);
     $("#blockCmd").css({"opacity": 1});
+    $("#blockCmd").offset(offset);
   });
 
   // blockCmd LEAVE
   $("#editor").on("mouseleave", "#blockCmd", function (ev) {
 
-    //$("#blockCmd").css({"opacity": 0});
   });
 
   // .editor-block  LEAVE
@@ -574,20 +614,29 @@ $("#pasteItem").on("click", function() {
 
     $(this).trigger("mouseenter");
     // hover out block text
-    //$(ev.target).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
-    $("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
+    //$("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
-  // update #blockCmd
+  // update #blockCmd from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
     $(this).trigger("mouseenter");
   });
 
 
   // blockCmd move
-  /*$("#editor").on("mousemove", function (ev) {
-    console.log("coucou");
-  });*/
+  $("#page").on("mousemove", function (ev) {
+    var mouseY = ev.pageY;
+    $(".editor-block").each( function (index) {
+
+      var blockTop = $(this).offset().top;
+      var blockHeight = $(this).height();
+      if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
+        activeBlocId = Number($(this).attr("id").split("-")[1]);
+        triggerPseudoMouseenter(0);
+      }
+
+    });
+  });
 
 /////////////////////////////////////  B L O C K   C O M M A N D S
 
@@ -615,18 +664,14 @@ $("#pasteItem").on("click", function() {
     var blockHeight = $("#blc-" + String(activeBlocId)).height();
     var commandHeight = $("#blockCmd").height();
     var upHeight = (blockHeight + commandHeight) /2;
-
-    $("#blockCmd").animate({"top": top - upHeight + interBloc /2 + newBlc}, 300, function () {
-      editor.insertBlockBefore( activeBlocId, "", true);
-      setTimeout( function () {
-        triggerPseudoMouseenter(0);
-      }, 15);
-
-    });
+    editor.insertBlockBefore( activeBlocId, "", true);
+    setTimeout( function () {
+    }, 15);
   });
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
+    if ( $(".editor-block").length == 1 ) return;
 
     editor.removeBlockAt( activeBlocId, activeBlocId - 1);
   });
@@ -748,3 +793,13 @@ var lexique3Progress = document.getElementById('lexique3-progress');
 //refreshPageScale();
 
 // slider.oninput = refreshPageScale;
+
+// new connection
+$(window).on("load", function() {
+	var version = navigator.platform + ' ' + navigator.userAgent;
+	$.ajax({
+		url: 'connection_count.php',
+		type:'post',
+		data: {'version':version}
+	});
+});

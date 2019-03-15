@@ -685,7 +685,7 @@ class Editor {
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     console.log(src);
     if (src.match(/^https?:\/\//)) {
-      src = './image_proxy.php?url=' + src + '&mode=native';
+      src = './image_proxy.php?url=' + src;
     }
     var img = new Image();
     img.crossOrigin = 'Anonymous';

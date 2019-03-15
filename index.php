@@ -208,6 +208,9 @@
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="carat-u-black.png">
 									</div>
+									<div class="block-number">
+										<span>1</span>
+									</div>
 								</div>
 							</div>
 						</div>

@@ -686,7 +686,7 @@ class Editor {
     console.log(src);
     if (src.match(/^https?:\/\//)) {
       try {
-        src = './proxy.php?url=' + src + '&mode=native';
+        src = './image_proxy.php?url=' + src + '&mode=native';
       } catch (error) {
         console.log(error);
       }

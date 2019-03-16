@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////
 
 //*************************************************** connection
-function connection () {
+function connection () {  // à mettre à jour
 
   if ( !localStorage.userName ) askUserName();
   else {
@@ -19,18 +19,15 @@ function connection () {
       data: { 'identifier': sessionStorage.identifier,
               'userName': userName,
               'userAgent': window.navigator.userAgent.substr(12),
-              'drumyVersion': drumyVersion,
+              'simplesVersion': "version number",
               'language': window.navigator.language,
               'platform': window.navigator.platform,
-              'innerWidth': window.innerWidth,
-              'innerHeight': window.innerHeight,
-              'outerHeight':window.outerHeight
       },
       complete: function(xhr, result) {
         // alert('complete');
         if (result != 'success') {
           localStorage.userName = '';
-          modalAlert ( 'Network failure. Close app and try again.', 'Drumy error!' );
+          modalAlert ( 'Network failure. Close app and try again.', ' error!' );
         }
         else {
           sessionStorage.connectionIndex = xhr.responseText;
@@ -40,7 +37,6 @@ function connection () {
     });
   }
 }
-
 
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
@@ -289,6 +285,15 @@ function triggerPseudoMouseenter( decal ) {
   $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
+
+// confirm dialog
+function confirmDialog(title, body, action) {
+  $("#confirmDialog .modal-title").text(title);
+  $("#confirmDialog .modal-body p").text(body);
+  $("#confirmDialog").attr("data-action", action);
+  $("#confirmDialog").modal("show");
+}
+
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
 //*********************************************************************
@@ -366,7 +371,6 @@ $("#imgFromDisk").on("change", function (e) {
   reader.onload = function(e) {
     $("#imageClickModal .btn-dark").trigger("click");
     var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-    // editor.setImage(globalImageId, e.target.result);
     editor.setImage(imageId, e.target.result);
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
@@ -377,6 +381,7 @@ $("#imageClickModal").on('hidden.bs.modal', function (ev) {
   var url = $("#imageClickModal").find("#image-url").val();
   // send url to editor
   if ( url ) editor.setImage(imageId, url);
+  triggerPseudoMouseenter(0);
 });
 
 //  ***************************  image drag & drop  ************
@@ -409,6 +414,9 @@ $("#editor").on('dragover', ".editor-image", function(e) {
     reader.onload = function(e2) {
         var imageSrc = e2.target.result;
         editor.setImage(imageId, imageSrc);
+        setTimeout(function() {
+          triggerPseudoMouseenter(0);
+        }, 15);
     };
     reader.readAsDataURL(file); // start reading the file data.
 });
@@ -423,12 +431,13 @@ $(".main-menu, .hcollapsible").on("focus", function () {
 $("#editor").on("blur", ".editor-text", function () {
   lastBlockBlur = $(this).attr("id");
 });
+
 //////////////////////////////////////////
 // new file
 $("#newFile").on("click", function () {
-  editor.clear();
+  confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
 });
-
+//////////////////////////////////////////
 // read text files
 $(".read-file").on("click", function () {
   globalMenuItem = $(this).attr("id");
@@ -437,22 +446,19 @@ $(".read-file").on("click", function () {
 
 $("#openFileInput").on("change", readFile);
 
-// write text file
+//////////////////////////////////////////
+// write file
 $(".write-file").on("click", function () {
-  if ( $(this).attr("id") == "exportFilePDF" ) onPDFClick();
-/*
   if ( $(this).attr("id") == "exportFilePDF" ) {
-    var docu = editor.toPDF();
-    writeFile( docu, "mon fichier.pdf", "text/plain");
+    onPDFClick();
   }
-*/
   else if ( $(this).attr("id") == "exportFileHTML" )  {
-    var docu = editor.toHTML();
-    writeFile( docu, "mon fichier.txt", "text/plain");
+    writeFile( editor.toHTML(), "mon fichier.txt", "text/plain");
   }
   else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 
+//////////////////////////////////////////
 // edit menu
 $("#cutItem").on("click", function() {
   document.execCommand("cut");
@@ -545,21 +551,15 @@ $("#pasteItem").on("click", function() {
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
 
-/*
-  $("#editor").on("blockcreated", function (ev) {
-    console.log("Nouveau bloc: " + ev.detail.blockid);
-  });
-*/
-
 // cacher #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
     $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
+//////////////////////////////////////////
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    // activeBlocId = Number(this.id.split("-")[1]);
 
   // hover  block text
     $(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
@@ -585,76 +585,63 @@ $("#pasteItem").on("click", function() {
     else {
       $("#blockCmd").find(".block-delete").css({"opacity": 1, "pointer-events": "initial"});
     }
-  });
 
-//  .editor-block   ENTER bis ( pour pavé )
-  $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    //$("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
-
+    //  palette move
+    console.log("palette move: " + (activeBlocId + 1));
     var offset = $(this).offset();
     var left = $("#page").offset().left + 15;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#editor").find("#blockCmd").height();
-    top = top + ((height - commandHeight) /2 + 4);
+    var decal = 0;
+    if ( $("#blc-" + String(activeBlocId)).hasClass("frame") ) decal = 5;
+    top = top + ((height - commandHeight) /2 + decal);
     offset.top = top;
 
     $("#blockCmd").css({"opacity": 1});
     $("#blockCmd").offset(offset);
   });
 
+  //////////////////////////////////////////
   // blockCmd LEAVE
   $("#editor").on("mouseleave", "#blockCmd", function (ev) {
-
+    triggerPseudoMouseenter(0);
   });
 
+  //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-
     $(this).trigger("mouseenter");
-    // hover out block text
-    //$("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
+  //////////////////////////////////////////
   // update #blockCmd from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
     $(this).trigger("mouseenter");
   });
 
-
-  // blockCmd move
+  ///////////////////////////////
+  //  update palette activeBlocId
   $("#page").on("mousemove", function (ev) {
     var mouseY = ev.pageY;
-    $(".editor-block").each( function (index) {
+    var target = ev.target;
 
+    $(".editor-block").each( function (index) {
       var blockTop = $(this).offset().top;
       var blockHeight = $(this).height();
       if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
-        activeBlocId = Number($(this).attr("id").split("-")[1]);
-        triggerPseudoMouseenter(0);
-      }
+        if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
 
+          activeBlocId = Number($(this).attr("id").split("-")[1]);
+          $("#blockCmd").find("span").text(activeBlocId + 1);
+          triggerPseudoMouseenter(0);
+        }
+      }
     });
   });
 
 /////////////////////////////////////  B L O C K   C O M M A N D S
-
-// insertBlockAfter
-  $("#blockCmd .block-new-down").on("click", function (ev) {
-    var interBloc = 14;
-    var top = $("#blockCmd").position().top;
-    var blockHeight = $("#blc-" + String(activeBlocId)).height();
-    var commandHeight = $("#blockCmd").height();
-    var downHeight = (blockHeight + commandHeight) /2;
-
-    $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
-      editor.insertBlockAfter( activeBlocId, "", true);
-      setTimeout( function () {
-        triggerPseudoMouseenter(1);
-      }, 15);
-    });
-  });
 
 //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
@@ -666,24 +653,85 @@ $("#pasteItem").on("click", function() {
     var upHeight = (blockHeight + commandHeight) /2;
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
+      triggerPseudoMouseenter(0);
     }, 15);
   });
+
+  // insertBlockAfter
+    $("#blockCmd .block-new-down").on("click", function (ev) {
+      var interBloc = 14;
+      var top = $("#blockCmd").position().top;
+      var blockHeight = $("#blc-" + String(activeBlocId)).height();
+      var commandHeight = $("#blockCmd").height();
+      var downHeight = (blockHeight + commandHeight) /2;
+/*
+      $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
+        editor.insertBlockAfter( activeBlocId, "", true);
+        setTimeout( function () {
+          triggerPseudoMouseenter(1);  // 1
+        }, 15);
+      });
+*/
+      editor.insertBlockAfter( activeBlocId, "", true);
+      setTimeout( function () {
+        activeBlocId++;
+        $("#blockCmd").find("span").text(activeBlocId + 1);
+        triggerPseudoMouseenter(0);
+      }, 15);
+    });
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
     if ( $(".editor-block").length == 1 ) return;
 
-    editor.removeBlockAt( activeBlocId, activeBlocId - 1);
+    $("#blc-" + String(activeBlocId)).slideUp(300);
+
+    setTimeout( function () {
+      editor.removeBlockAt(activeBlocId, activeBlocId);
+    }, 310);
+
+    if ( $("#blc-" + String(activeBlocId)).next().length == 0 ) {
+      setTimeout( function () {
+        triggerPseudoMouseenter(-1);
+        $("#blockCmd").find("span").text(activeBlocId);
+      }, 330);
+    }
   });
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
-    editor.moveBlockDown( activeBlocId);
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
+
+    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
+      editor.moveBlockDown( activeBlocId);
+    });
+
+    setTimeout( function () {
+      activeBlocId++;
+      $("#blockCmd").find("span").text(activeBlocId + 1);
+      triggerPseudoMouseenter(0);
+    }, 330);
+
   });
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
-    editor.moveBlockUp( activeBlocId);
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
+
+    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
+      editor.moveBlockUp( activeBlocId);
+    });
+
+    setTimeout( function () {
+      activeBlocId--;
+      $("#blockCmd").find("span").text(activeBlocId + 1);
+      triggerPseudoMouseenter(0);
+    }, 330);
+
   });
 
   // resize
@@ -693,7 +741,7 @@ $("#pasteItem").on("click", function() {
 
 
 
-  // -----------------------------------    BLOQUAGES DIVERS
+  // -----------------------------------    BLOQUAGES
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -706,8 +754,6 @@ $("#pasteItem").on("click", function() {
     return false;
   } );
 
-  //screen.lockOrientation('portrait');
-
   $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
 
   $( window ).on("resize orientationchange", function() {
@@ -716,19 +762,21 @@ $("#pasteItem").on("click", function() {
     return false;
   });
 
-
-
-
-  //$("body").css({"margin-left":"3%", "margin-right":"3%"});
-  //$("table").css({"margin-left":"auto", "margin-right":"auto", "min-width":900, "max-width":900});
-  //$("#page").height(1100).width(800);
-  //$("td").css({"border":0});
-  //$("#td-test").css({"text-align":"center"});
-
+  ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
   });
 
+  // confirm dialog result
+  $("#confirmDialog .ok").on("click", function () {
+    var action = $("#confirmDialog").attr("data-action");
+    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
+      editor.clear();
+    }
+  });
+
+
+//  affichage de la page
   $('body').css({"visibility":"visible"});
 
 }); // ******************************************************  F I N   R E A D Y

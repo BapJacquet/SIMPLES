@@ -42,7 +42,7 @@
 
 #blockCmd {
   position: absolute;
-  opacity: 0;
+  opacity: 1;
   width: 80px;
   height: 110px;
   border-radius: 20px;
@@ -57,9 +57,8 @@
   border-radius: 25px;
 }
 
-#blockCmd div:hover {
+#blockCmd div[data-toggle]:hover {
   cursor: pointer;
-  background-color: #bfb; /* #ddd; */
 }
 
 #blockCmd img {
@@ -76,14 +75,41 @@
 }
 
 #blockCmd .block-move-down:hover {
-  display: block;
+  background-color: #bfb;
 }
 
 #blockCmd .block-move-up {
-  top: -149px;
+  top: -150px;
+  left: 40px;
+}
+
+#blockCmd .block-move-up:hover {
+  background-color: #bfb;
+}
+
+#blockCmd .block-delete {
+  top: -1px;
   left: 40px;
 }
 
 #blockCmd .block-delete:hover {
   background-color: #fbb;
+}
+
+#blockCmd .block-new-down:hover {
+  background-color: #bfb;
+}
+
+#blockCmd .block-new-up:hover {
+  background-color: #bfb;
+}
+
+#blockCmd .block-number {
+  top: -146px;
+  left: 11px;
+  font-weight: 900;
+  font-size: 20px;
+  color: #4aa;
+  user-select: none;
+  pointer-events: none;
 }

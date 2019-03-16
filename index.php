@@ -43,7 +43,7 @@
 				      Fichier
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-				      <a id="newFile" class="dropdown-item" href="#">Nouveau</a>
+				      <a id="newFile" class="dropdown-item" href="#">Nouveau...</a>
 				      <a id="newModelFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
 							<div class="dropdown-divider"></div>
 							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
@@ -183,7 +183,8 @@
 					<img id="img-arrow-r" src="carat-r-white.png">
 				</div>
 
-			</div>
+			</div>  <!-- fin toolbar -->
+
 			<!--															E D I T O R  -->
 			<div class="hbox">
 				<div id="content">
@@ -207,6 +208,9 @@
 									</div>
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="carat-u-black.png">
+									</div>
+									<div class="block-number">
+										<span>1</span>
 									</div>
 								</div>
 							</div>
@@ -241,12 +245,12 @@
 	  				<p>Résultats de l'analyze</p>
 					</div>
 				</div>
-			</div>
+			</div>  <!-- end editor -->
 	</div>
 </div>
-
+<!--                         			 D I A L O G S  -->
 <!-- image dialog -->
-<div class="modal fade" id="imageClickModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -262,7 +266,6 @@
 							<input id="imgFromDisk" type="file" class="custom-file-input">
 							<label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
 						</div>
-
           </div>
           <div class="form-group">
             <label for="message-text" class="col-form-label">Entrer un URL:</label>
@@ -276,6 +279,23 @@
   </div>
 </div>  <!-- end image dialog -->
 
+<!--  confirm dialog -->
+<div id="confirmDialog" data-action="" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+      </div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="cancel btn btn-secondary" data-dismiss="modal">Annuler</button>
+				<button type="button" class="ok btn btn-primary" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>  <!-- end confirm dialog -->
 
 	<!-- Initialize Simples Editor -->
 	<script type="text/javascript" src="editor.js"></script>

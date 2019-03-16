@@ -683,17 +683,18 @@ $("#pasteItem").on("click", function() {
   $("#blockCmd .block-delete").on("click", function (ev) {
     if ( $(".editor-block").length == 1 ) return;
 
-    $("#blc-" + String(activeBlocId)).slideUp(300);
+    $("#blc-" + String(activeBlocId)).slideUp(200);
 
     setTimeout( function () {
       editor.removeBlockAt(activeBlocId, activeBlocId);
-    }, 310);
+    }, 220);
 
     if ( $("#blc-" + String(activeBlocId)).next().length == 0 ) {
       setTimeout( function () {
-        triggerPseudoMouseenter(-1);
-        $("#blockCmd").find("span").text(activeBlocId);
-      }, 330);
+        activeBlocId--;
+        $("#blockCmd").find("span").text(activeBlocId + 1);
+        triggerPseudoMouseenter(0);
+      }, 240);
     }
   });
 

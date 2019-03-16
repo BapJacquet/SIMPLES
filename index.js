@@ -168,8 +168,9 @@ function onVerifyClick(){
  * Create a PDF from the page.
  */
 function onPDFClick(){
-  let doc = editor.toPDF();
-  doc.save('Mon fichier.pdf');
+  editor.toPDF().then( function (doc) {
+    doc.save('Mon fichier.pdf');
+  });
 }
 
 // ******************************************** T O O L B A R

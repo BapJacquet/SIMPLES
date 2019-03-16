@@ -681,11 +681,14 @@ class Editor {
    * @param {string} selector - ID of the block.
    * @param {string} src - Path of the image source.
    */
-  setImage (selector, src) {
+  async setImage (selector, src) {
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
-
+    console.log(src);
+    if (src.match(/^https?:\/\//)) {
+      src = './image_proxy.php?url=' + src;
+    }
     var img = new Image();
-    img.setAttribute('crossOrigin', 'anonymous');
+    img.crossOrigin = 'Anonymous';
     img.onload = function () {
       var canvas = $(selector).get(0);
       canvas.width = img.naturalWidth;
@@ -789,7 +792,7 @@ class Editor {
    * Turn the content of the editor into a PDF document.
    * @return {jsPDF} The generated PDF document.
    */
-  toPDF () {
+  async toPDF () {
     let doc = new jsPDF();
 
     let totalWidth = 210; // 210 mm, 21 cm
@@ -803,13 +806,23 @@ class Editor {
         doc = doc.addPage();
         currentYOffset = margin;
       }
-      doc.fromHTML($('#txt-' + i).get(0),
+      /*doc.fromHTML($('#txt-' + i).get(0),
         margin,
         currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
         {
           'width': Utils.pixelToCm($('#txt-' + i).width()),
           'height': Utils.pixelToCm($('#txt-' + i).height())
         }
+      );*/
+
+      doc.addImage((await html2canvas($('#txt-' + i).get(0))).toDataURL(), 'JPEG',
+        totalWidth - margin - Utils.pixelToCm($('#txt-' + i).outerWidth()),
+        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
+        Utils.pixelToCm($('#txt-' + i).width()),
+        Utils.pixelToCm($('#txt-' + i).height()),
+        '',
+        'NONE',
+        0
       );
 
       doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',

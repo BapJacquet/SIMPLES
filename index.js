@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////
 
 //*************************************************** connection
-function connection () {
+function connection () {  // à mettre à jour
 
   if ( !localStorage.userName ) askUserName();
   else {
@@ -19,18 +19,15 @@ function connection () {
       data: { 'identifier': sessionStorage.identifier,
               'userName': userName,
               'userAgent': window.navigator.userAgent.substr(12),
-              'drumyVersion': drumyVersion,
+              'simplesVersion': "version number",
               'language': window.navigator.language,
               'platform': window.navigator.platform,
-              'innerWidth': window.innerWidth,
-              'innerHeight': window.innerHeight,
-              'outerHeight':window.outerHeight
       },
       complete: function(xhr, result) {
         // alert('complete');
         if (result != 'success') {
           localStorage.userName = '';
-          modalAlert ( 'Network failure. Close app and try again.', 'Drumy error!' );
+          modalAlert ( 'Network failure. Close app and try again.', ' error!' );
         }
         else {
           sessionStorage.connectionIndex = xhr.responseText;
@@ -40,7 +37,6 @@ function connection () {
     });
   }
 }
-
 
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
@@ -288,6 +284,15 @@ function triggerPseudoMouseenter( decal ) {
   $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
+
+// confirm dialog
+function confirmDialog(title, body, action) {
+  $("#confirmDialog .modal-title").text(title);
+  $("#confirmDialog .modal-body p").text(body);
+  $("#confirmDialog").attr("data-action", action);
+  $("#confirmDialog").modal("show");
+}
+
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
 //*********************************************************************
@@ -425,12 +430,13 @@ $(".main-menu, .hcollapsible").on("focus", function () {
 $("#editor").on("blur", ".editor-text", function () {
   lastBlockBlur = $(this).attr("id");
 });
+
 //////////////////////////////////////////
 // new file
 $("#newFile").on("click", function () {
-  editor.clear();
+  confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
 });
-
+//////////////////////////////////////////
 // read text files
 $(".read-file").on("click", function () {
   globalMenuItem = $(this).attr("id");
@@ -439,22 +445,19 @@ $(".read-file").on("click", function () {
 
 $("#openFileInput").on("change", readFile);
 
-// write text file
+//////////////////////////////////////////
+// write file
 $(".write-file").on("click", function () {
-  if ( $(this).attr("id") == "exportFilePDF" ) onPDFClick();
-/*
   if ( $(this).attr("id") == "exportFilePDF" ) {
-    var docu = editor.toPDF();
-    writeFile( docu, "mon fichier.pdf", "text/plain");
+    onPDFClick();
   }
-*/
   else if ( $(this).attr("id") == "exportFileHTML" )  {
-    var docu = editor.toHTML();
-    writeFile( docu, "mon fichier.txt", "text/plain");
+    writeFile( editor.toHTML(), "mon fichier.txt", "text/plain");
   }
   else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 
+//////////////////////////////////////////
 // edit menu
 $("#cutItem").on("click", function() {
   document.execCommand("cut");
@@ -595,8 +598,6 @@ $("#pasteItem").on("click", function() {
     top = top + ((height - commandHeight) /2 + decal);
     offset.top = top;
 
-    //$("#blockCmd").find("span").text(activeBlocId + 1);
-
     $("#blockCmd").css({"opacity": 1});
     $("#blockCmd").offset(offset);
   });
@@ -610,10 +611,7 @@ $("#pasteItem").on("click", function() {
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-
     $(this).trigger("mouseenter");
-    // hover out block text
-    //$("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
   //////////////////////////////////////////
@@ -742,7 +740,7 @@ $("#pasteItem").on("click", function() {
 
 
 
-  // -----------------------------------    BLOQUAGES DIVERS
+  // -----------------------------------    BLOQUAGES
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -763,10 +761,21 @@ $("#pasteItem").on("click", function() {
     return false;
   });
 
+  ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
   });
 
+  // confirm dialog result
+  $("#confirmDialog .ok").on("click", function () {
+    var action = $("#confirmDialog").attr("data-action");
+    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
+      editor.clear();
+    }
+  });
+
+
+//  affichage de la page
   $('body').css({"visibility":"visible"});
 
 }); // ******************************************************  F I N   R E A D Y

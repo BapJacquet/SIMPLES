@@ -5,39 +5,6 @@
 /////////////////////////////////////////////// F U N C T I O N S
 ////////////////////////////////////////////////////////////////////
 
-//*************************************************** connection
-function connection () {  // à mettre à jour
-
-  if ( !localStorage.userName ) askUserName();
-  else {
-    var userName;
-    if ( localStorage.userName ) userName = localStorage.userName;
-    else userName = '';
-    $.ajax({
-      url: 'connection_count.php',
-      type:'post',
-      data: { 'identifier': sessionStorage.identifier,
-              'userName': userName,
-              'userAgent': window.navigator.userAgent.substr(12),
-              'simplesVersion': "version number",
-              'language': window.navigator.language,
-              'platform': window.navigator.platform,
-      },
-      complete: function(xhr, result) {
-        // alert('complete');
-        if (result != 'success') {
-          localStorage.userName = '';
-          modalAlert ( 'Network failure. Close app and try again.', ' error!' );
-        }
-        else {
-          sessionStorage.connectionIndex = xhr.responseText;
-          initLevels();
-        }
-      }
-    });
-  }
-}
-
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
     var file = new Blob([data], {type: type});
@@ -216,8 +183,7 @@ function moveCursor(tool, val, anim) {
     var position = CURSOR_DATA[newTool];
 
   /*  if ( anim ) */
-    $(cursor).animate({"left": position}, 300);
-  //  $(cursor).css({"left": position});
+    $(cursor).animate({"left": position}, 150);
   }
 }
 
@@ -235,7 +201,8 @@ function sendtoEditor(tool, val) {
       case 'black':
       v = "#000000"; break;
     }
-  } else {
+  }
+  else {
     switch (val) {
       case 'true':
         v = true; break;
@@ -243,6 +210,7 @@ function sendtoEditor(tool, val) {
         v = false; break;
     }
   }
+
   let dataObj = {};
   dataObj[tool] = v;
   editor.setFormatAtSelection(dataObj);
@@ -293,6 +261,50 @@ function confirmDialog(title, body, action) {
   $("#confirmDialog").attr("data-action", action);
   $("#confirmDialog").modal("show");
 }
+
+//*************************************************** connection
+function connection () {  // à mettre à jour
+
+  if ( !localStorage.userName ) askUserName();
+  else {
+    var userName;
+    if ( localStorage.userName ) userName = localStorage.userName;
+    else userName = '';
+    $.ajax({
+      url: 'connection_count.php',
+      type:'post',
+      data: { 'identifier': sessionStorage.identifier,
+              'userName': userName,
+              'userAgent': window.navigator.userAgent.substr(12),
+              'simplesVersion': "version number",
+              'language': window.navigator.language,
+              'platform': window.navigator.platform,
+              'innerWidth': window.innerWidth,
+              'innerHeight': window.innerHeight,
+              'outerHeight':window.outerHeight
+},
+      complete: function(xhr, result) {
+        // alert('complete');
+        if (result != 'success') {
+          localStorage.userName = '';
+          modalAlert ( 'Network failure. Close app and try again.', ' error!' );
+        }
+        else {
+          sessionStorage.connectionIndex = xhr.responseText;
+          initLevels();
+        }
+      }
+    });
+  }
+}
+
+//*************************************************** askUserName
+  function askUserName () {
+    $('#modal-user-name').modal('show');
+    $("#user-name").val('');
+  }
+
+
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
@@ -740,7 +752,42 @@ $("#pasteItem").on("click", function() {
     triggerPseudoMouseenter(0);
   });
 
+  ///////////////////////////////////////////////////////
+  //////                              U S E R    N A M E
 
+
+//  user name
+  $('#modal-user-name').on( 'hidden.bs.modal', function (e) {
+    var trimedName = $.trim($("#user-name").val());
+    if ( !trimedName ) trimedName = 'Anonymous';
+		if ( trimedName.match(/^[a-zA-Z](\w|_|-)+$/) ) {
+      localStorage.userName = trimedName;
+      connection();
+      initLevels();
+      modalAlert('Hello ' + trimedName + '!', '');
+    }
+    else askUserName();
+  });
+
+  $('#modal-user-name').on('shown.bs.modal', function (e) {
+    $('#user-name').focus();
+    //$('#user-name').val('Anonymous');
+    //$('#user-name').select();
+  });
+
+
+  ////////////////////////////////////   DIVERS
+  $(function () { // enable tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
+  // confirm dialog result
+  $("#confirmDialog .ok").on("click", function () {
+    var action = $("#confirmDialog").attr("data-action");
+    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
+      editor.clear();
+    }
+  });
 
   // -----------------------------------    BLOQUAGES
   document.addEventListener('backbutton', function(event) {
@@ -763,22 +810,12 @@ $("#pasteItem").on("click", function() {
     return false;
   });
 
-  ////////////////////////////////////   DIVERS
-  $(function () { // enable tooltips
-    $('[data-toggle="tooltip"]').tooltip();
-  });
+  //  page display
+  setTimeout(function () {
+    $("#blc-0").trigger("mouseenter");
+    $('body').css({"visibility":"visible"});
+  }, 50);
 
-  // confirm dialog result
-  $("#confirmDialog .ok").on("click", function () {
-    var action = $("#confirmDialog").attr("data-action");
-    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
-      editor.clear();
-    }
-  });
-
-
-//  affichage de la page
-  $('body').css({"visibility":"visible"});
 
 }); // ******************************************************  F I N   R E A D Y
 //  ****************************************************************************

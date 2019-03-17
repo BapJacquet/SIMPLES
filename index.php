@@ -297,6 +297,29 @@
   </div>
 </div>  <!-- end confirm dialog -->
 
+<!-- ************************************************* modal userName  -->
+<div id="modal-user-name" class="modal fade">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Welcome!</h4>
+      </div>
+      <div class="modal-body">
+        <label>Please enter a user name:</label>
+        <input id="user-name" type="text" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+      </div>
+    </div><!-- modal-content -->
+  </div><!-- modal-dialog -->
+</div><!-- modal-user-name -->
+
+
+
 	<!-- Initialize Simples Editor -->
 	<script type="text/javascript" src="editor.js"></script>
 	<script type="text/javascript" src="analyzer.js"></script>

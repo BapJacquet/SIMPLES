@@ -5,39 +5,6 @@
 /////////////////////////////////////////////// F U N C T I O N S
 ////////////////////////////////////////////////////////////////////
 
-//*************************************************** connection
-function connection () {  // à mettre à jour
-
-  if ( !localStorage.userName ) askUserName();
-  else {
-    var userName;
-    if ( localStorage.userName ) userName = localStorage.userName;
-    else userName = '';
-    $.ajax({
-      url: 'connection_count.php',
-      type:'post',
-      data: { 'identifier': sessionStorage.identifier,
-              'userName': userName,
-              'userAgent': window.navigator.userAgent.substr(12),
-              'simplesVersion': "version number",
-              'language': window.navigator.language,
-              'platform': window.navigator.platform,
-      },
-      complete: function(xhr, result) {
-        // alert('complete');
-        if (result != 'success') {
-          localStorage.userName = '';
-          modalAlert ( 'Network failure. Close app and try again.', ' error!' );
-        }
-        else {
-          sessionStorage.connectionIndex = xhr.responseText;
-          initLevels();
-        }
-      }
-    });
-  }
-}
-
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
     var file = new Blob([data], {type: type});
@@ -216,8 +183,7 @@ function moveCursor(tool, val, anim) {
     var position = CURSOR_DATA[newTool];
 
   /*  if ( anim ) */
-    $(cursor).animate({"left": position}, 300);
-  //  $(cursor).css({"left": position});
+    $(cursor).animate({"left": position}, 150);
   }
 }
 
@@ -235,7 +201,8 @@ function sendtoEditor(tool, val) {
       case 'black':
       v = "#000000"; break;
     }
-  } else {
+  }
+  else {
     switch (val) {
       case 'true':
         v = true; break;
@@ -243,6 +210,7 @@ function sendtoEditor(tool, val) {
         v = false; break;
     }
   }
+
   let dataObj = {};
   dataObj[tool] = v;
   editor.setFormatAtSelection(dataObj);
@@ -293,6 +261,14 @@ function confirmDialog(title, body, action) {
   $("#confirmDialog").attr("data-action", action);
   $("#confirmDialog").modal("show");
 }
+
+//*************************************************** askUserName
+  function askUserName () {
+    $('#modal-user-name').modal('show');
+    $("#user-name").val('');
+  }
+
+
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
@@ -741,28 +717,6 @@ $("#pasteItem").on("click", function() {
   });
 
 
-
-  // -----------------------------------    BLOQUAGES
-  document.addEventListener('backbutton', function(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  }, false);
-
-  $( document ).on('dblclick', function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  } );
-
-  $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
-
-  $( window ).on("resize orientationchange", function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  });
-
   ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
@@ -776,12 +730,27 @@ $("#pasteItem").on("click", function() {
     }
   });
 
+  // -----------------------------------    BLOQUAGES
+  document.addEventListener('backbutton', function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  }, false);
 
-//  affichage de la page
-  $('body').css({"visibility":"visible"});
+  $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
+
+  //  page display
+  setTimeout(function () {
+    $("#blc-0").trigger("mouseenter");
+    $('body').css({"visibility":"visible"});
+  }, 300);
+
 
 }); // ******************************************************  F I N   R E A D Y
 //  ****************************************************************************
+
+// user
+if ( localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
 
 const editor = new Editor('#editor');
 
@@ -844,6 +813,7 @@ var lexique3Progress = document.getElementById('lexique3-progress');
 // slider.oninput = refreshPageScale;
 
 // new connection
+/*
 $(window).on("load", function() {
 	var version = navigator.platform + ' ' + navigator.userAgent;
 	$.ajax({
@@ -852,3 +822,4 @@ $(window).on("load", function() {
 		data: {'version':version}
 	});
 });
+*/

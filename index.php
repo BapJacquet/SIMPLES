@@ -25,10 +25,6 @@
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <body style="visibility:hidden;">
-<!--
-	<div style=" z-index: 100; position: fixed; top: 50px; left: 20px;">graisse   taille</div>
--->
-
 	<div>
 		<div class="box">
 			<div id="header">
@@ -36,7 +32,6 @@
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
-
 				<div class="btn-group" role="group">
 					<div class="btn-group" role="group">
 				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -54,7 +49,6 @@
 							<a id="exportFileHTML" class="write-file dropdown-item" href="#">Exporter au format HTML...</a>
 				    </div>
 				  </div>
-
 					<div class="btn-group" role="group">
 				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				      Edition
@@ -65,7 +59,6 @@
 							<a id="pasteItem" class="dropdown-item" href="#">Coller</a>
 				    </div>
 				  </div>
-
 					<div class="btn-group" role="group">
 				    <button id="btnResources" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				      Resources
@@ -78,7 +71,6 @@
 							<a class="dropdown-item" href="#">Exporter un lexique...</a>
 				    </div>
 				  </div>
-
 				</div>
 
 				<!-- hidden input for file dialog -->
@@ -284,10 +276,10 @@
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
+        <h5 class="modal-title"></h5>
       </div>
       <div class="modal-body">
-        <p>Modal body text goes here.</p>
+        <p></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="cancel btn btn-secondary" data-dismiss="modal">Annuler</button>
@@ -296,6 +288,8 @@
     </div>
   </div>
 </div>  <!-- end confirm dialog -->
+
+
 
 	<!-- Initialize Simples Editor -->
 	<script type="text/javascript" src="editor.js"></script>

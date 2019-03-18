@@ -262,42 +262,6 @@ function confirmDialog(title, body, action) {
   $("#confirmDialog").modal("show");
 }
 
-//*************************************************** connection
-function connection () {  // à mettre à jour
-
-  if ( !localStorage.userName ) askUserName();
-  else {
-    var userName;
-    if ( localStorage.userName ) userName = localStorage.userName;
-    else userName = '';
-    $.ajax({
-      url: 'connection_count.php',
-      type:'post',
-      data: { 'identifier': sessionStorage.identifier,
-              'userName': userName,
-              'userAgent': window.navigator.userAgent.substr(12),
-              'simplesVersion': "version number",
-              'language': window.navigator.language,
-              'platform': window.navigator.platform,
-              'innerWidth': window.innerWidth,
-              'innerHeight': window.innerHeight,
-              'outerHeight':window.outerHeight
-},
-      complete: function(xhr, result) {
-        // alert('complete');
-        if (result != 'success') {
-          localStorage.userName = '';
-          modalAlert ( 'Network failure. Close app and try again.', ' error!' );
-        }
-        else {
-          sessionStorage.connectionIndex = xhr.responseText;
-          initLevels();
-        }
-      }
-    });
-  }
-}
-
 //*************************************************** askUserName
   function askUserName () {
     $('#modal-user-name').modal('show');
@@ -752,29 +716,6 @@ $("#pasteItem").on("click", function() {
     triggerPseudoMouseenter(0);
   });
 
-  ///////////////////////////////////////////////////////
-  //////                              U S E R    N A M E
-
-
-//  user name
-  $('#modal-user-name').on( 'hidden.bs.modal', function (e) {
-    var trimedName = $.trim($("#user-name").val());
-    if ( !trimedName ) trimedName = 'Anonymous';
-		if ( trimedName.match(/^[a-zA-Z](\w|_|-)+$/) ) {
-      localStorage.userName = trimedName;
-      connection();
-      initLevels();
-      modalAlert('Hello ' + trimedName + '!', '');
-    }
-    else askUserName();
-  });
-
-  $('#modal-user-name').on('shown.bs.modal', function (e) {
-    $('#user-name').focus();
-    //$('#user-name').val('Anonymous');
-    //$('#user-name').select();
-  });
-
 
   ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips
@@ -796,29 +737,20 @@ $("#pasteItem").on("click", function() {
     return false;
   }, false);
 
-  $( document ).on('dblclick', function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  } );
-
   $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
-
-  $( window ).on("resize orientationchange", function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  });
 
   //  page display
   setTimeout(function () {
     $("#blc-0").trigger("mouseenter");
     $('body').css({"visibility":"visible"});
-  }, 50);
+  }, 300);
 
 
 }); // ******************************************************  F I N   R E A D Y
 //  ****************************************************************************
+
+// user
+if ( localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
 
 const editor = new Editor('#editor');
 
@@ -881,6 +813,7 @@ var lexique3Progress = document.getElementById('lexique3-progress');
 // slider.oninput = refreshPageScale;
 
 // new connection
+/*
 $(window).on("load", function() {
 	var version = navigator.platform + ' ' + navigator.userAgent;
 	$.ajax({
@@ -889,3 +822,4 @@ $(window).on("load", function() {
 		data: {'version':version}
 	});
 });
+*/

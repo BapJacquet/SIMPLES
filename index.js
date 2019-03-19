@@ -712,9 +712,12 @@ $("#pasteItem").on("click", function() {
   });
 
   // resize
-  $( window ).on("resize", function (event) {  // stop rubberband scroll
+  $( window ).on("resize", function () {
     triggerPseudoMouseenter(0);
   });
+
+  // window focus
+  window.onfocus = function () { triggerPseudoMouseenter(0); };
 
 
   ////////////////////////////////////   DIVERS
@@ -797,7 +800,7 @@ var mousedownID = -1;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
-var activeBlocId = 0;
+var activeBlocId = 0; // id bloc actif
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

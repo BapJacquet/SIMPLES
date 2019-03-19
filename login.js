@@ -1,40 +1,4 @@
 
-//*************************************************** connection
-
-function connection () {  // à mettre à jour
-
-  if ( !localStorage.userName ) askUserName();
-  else {
-    var userName;
-    if ( localStorage.userName ) userName = localStorage.userName;
-    else userName = '';
-    $.ajax({
-      url: 'connection_count.php',
-      type:'post',
-      data: { 'identifier': sessionStorage.identifier,
-              'userName': userName,
-              'userAgent': window.navigator.userAgent.substr(12),
-              'simplesVersion': "version number",
-              'language': window.navigator.language,
-              'platform': window.navigator.platform,
-              'innerWidth': window.innerWidth,
-              'innerHeight': window.innerHeight,
-              'outerHeight':window.outerHeight
-},
-      complete: function(xhr, result) {
-        // alert('complete');
-        if (result != 'success') {
-          localStorage.userName = '';
-          modalAlert ( 'Network failure. Close app and try again.', ' error!' );
-        }
-        else {
-          sessionStorage.connectionIndex = xhr.responseText;
-          //initLevels();
-        }
-      }
-    });
-  }
-}
 
 //***************************************************** modalAlert
 function modalAlert ( message, titre , message2) {
@@ -54,7 +18,7 @@ function askUserName () {
 // ********************************************************** R E A D Y
 $(document).ready(function () {
 
-//  user name
+////  connection
 $('#modal-user-name').on( 'hidden.bs.modal', function (e) {
   var version = navigator.platform + ' ' + navigator.userAgent;
   $.ajax({
@@ -82,32 +46,21 @@ $('#modal-user-name').on( 'hidden.bs.modal', function (e) {
       }
     }
   });
-
-  /*
-  var trimedName = $.trim($("#user-name").val());
-  if ( !trimedName ) trimedName = 'Anonymous';
-  if ( trimedName.match(/^[a-zA-Z](\w|_|-)+$/) ) {
-    localStorage.userName = trimedName;
-//    connection();
-//    initLevels();
-    modalAlert('Hello ' + trimedName + '!', '');
-  }
-  else askUserName();
-  */
-
 });
+
 ////
 $('#modal-user-name').on('shown.bs.modal', function () {
   $("#user-name").val('');
   $('#user-name').focus();
 });
+
 ////
 $("#modal-user-name .ok").on("click", function () {
   var id = $("#user-name").text();
   console.log(id);
 });
 
-////
-askUserName ();
-
 }); // ******************************************************  F I N   R E A D Y
+
+if ( localStorage.user != "ok" ) askUserName ();
+else window.location = "http://sioux.univ-paris8.fr/simples/index.php";

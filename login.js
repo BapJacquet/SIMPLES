@@ -22,7 +22,7 @@ $(document).ready(function () {
 $('#modal-user-name').on( 'hidden.bs.modal', function (e) {
   var version = navigator.platform + ' ' + navigator.userAgent;
   $.ajax({
-    url: 'connection_count.php',
+    url: 'connection.php',
     type:'post',
     data: { 'version': version,
             'user': $("#user-name").val()},
@@ -62,5 +62,5 @@ $("#modal-user-name .ok").on("click", function () {
 
 }); // ******************************************************  F I N   R E A D Y
 
-if ( localStorage.user != "ok" ) askUserName ();
+if ( localStorage.user == undefined || localStorage.user != "ok" ) askUserName();
 else window.location = "http://sioux.univ-paris8.fr/simples/index.php";

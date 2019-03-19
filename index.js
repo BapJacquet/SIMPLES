@@ -753,7 +753,9 @@ $("#pasteItem").on("click", function() {
 //  ****************************************************************************
 
 // user
-if ( localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
+
+if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
+
 
 const editor = new Editor('#editor');
 
@@ -816,13 +818,11 @@ var lexique3Progress = document.getElementById('lexique3-progress');
 // slider.oninput = refreshPageScale;
 
 // new connection
-/*
 $(window).on("load", function() {
 	var version = navigator.platform + ' ' + navigator.userAgent;
 	$.ajax({
 		url: 'connection_count.php',
 		type:'post',
-		data: {'version':version}
+		data: {'version':version, 'user':localStorage.user}
 	});
 });
-*/

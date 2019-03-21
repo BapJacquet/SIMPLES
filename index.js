@@ -242,6 +242,8 @@ function setFormatAtToolbar(format) {
       color = 'custom';
   }
 
+  $(".color-custom").css("color", format.color);
+
   activeTool("color", color);
   activeTool("bold", format.bold);
   activeTool("size", format.size);

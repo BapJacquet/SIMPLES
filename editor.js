@@ -65,7 +65,7 @@ class Editor {
     $(this.id).on('click', '.editor-block', event => {
       if ($(event.target).hasClass('.editor-block')) $('#' + event.target.id.replace('blc', 'txt')).focus();
     });
-//    $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
     $(this.id).on('click', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
@@ -84,7 +84,7 @@ class Editor {
     this.lastBlock = id;
     this.lastSelection = this.getSelection();
     console.log(this.lastSelection);
-  //  this.updateFormat();
+    this.updateFormat();
   }
   /**
    * Handle special keys in editor blocks.

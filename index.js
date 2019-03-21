@@ -236,6 +236,8 @@ function setFormatAtToolbar(format) {
       color = 'blue'; break;
     case "#000000":
       color = 'black'; break;
+    case "ambiguous":
+      color = "ambiguous"; break;
     default:
       color = 'custom';
   }

@@ -168,7 +168,8 @@ function toolClick(e, toolTag) {
   var val = toolVal.split("-")[1];
   activeTools[tool] = val;
   moveCursor(tool, val, true);
-  sendtoEditor(tool, val);
+  if ( !(tool == "color" && val == "custom") ) sendtoEditor(tool, val);
+
 }
 
 //                                             move tool cursor
@@ -187,6 +188,7 @@ function moveCursor(tool, val, anim) {
   }
 }
 
+/////////////////////////////////////////////////////////////////
 //                                    send toolbar data to editor
 function sendtoEditor(tool, val) {
   var v = val;
@@ -213,11 +215,12 @@ function sendtoEditor(tool, val) {
     }
   }
 
-  let dataObj = {};
+  dataObj = {};
   dataObj[tool] = v;
   editor.setFormatAtSelection(dataObj);
 }
 
+/////////////////////////////////////////////////////////////////
 //                                    toolbar update from editor
 function setFormatAtToolbar(format) {
   var items = format.listitem;
@@ -484,7 +487,7 @@ $("#pasteItem").on("click", function() {
     }, 15);
 
   } );
-
+//                                    C O L O R P I C K E R
 //  colorpicker   $(".color-custom").spectrum("show")
   $(".color-custom").spectrum({
     chooseText: "choisir",
@@ -494,6 +497,7 @@ $("#pasteItem").on("click", function() {
     showInitial: true,
     showPalette: true,
     showSelectionPalette: true,
+    palette: [],
     maxSelectionSize: 10,
     preferredFormat: "hex",
     localStorageKey: "spectrum.demo",
@@ -509,17 +513,11 @@ $("#pasteItem").on("click", function() {
     },
     hide: function(tinycolor) {
       $(".color-custom").css("color", tinycolor);
+      sendtoEditor("color", tinycolor);
     },
     change: function() {
 
-    },
-    palette: [
-        ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
-        "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
-        ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
-        "rgb(0, 255, 255)"],
-        ["rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"]]
-
+    }
   });
 
 //  toolbar scroll
@@ -775,7 +773,15 @@ $("#pasteItem").on("click", function() {
     }
   });
 
-  // -----------------------------------    BLOQUAGES
+  //  ----------------------------------- on ready before page display
+  setTimeout(function () {
+    $("#blc-0").trigger("mouseenter");
+    $('body').css({"visibility":"visible"});
+
+    //$("#txt-0").trigger("click");
+  }, 300);
+
+  // -----------------------------------    prevent stuff
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -783,15 +789,6 @@ $("#pasteItem").on("click", function() {
   }, false);
 
   $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
-
-
-  //  ----------------------------------- init page display
-  setTimeout(function () {
-    $('body').css({"visibility":"visible"});
-    $("#blc-0").trigger("mouseenter");
-    //$("#txt-0").trigger("click");
-  }, 300);
-
 
 }); // ******************************************************  F I N   R E A D Y
 //  ****************************************************************************

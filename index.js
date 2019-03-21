@@ -193,13 +193,15 @@ function sendtoEditor(tool, val) {
   if ( tool == "color" ) {
     switch( val ) {
       case 'red':
-      v = "#ff0000"; break;
+        v = "#ff0000"; break;
       case 'green':
-      v = "#3bff11"; break;
+        v = "#3bff11"; break;
       case 'blue':
-      v = "#0000ff"; break;
+        v = "#0000ff"; break;
       case 'black':
-      v = "#000000"; break;
+        v = "#000000"; break;
+      case 'custom':
+        v = $(".color-custom").css("color");
     }
   }
   else {
@@ -220,16 +222,19 @@ function sendtoEditor(tool, val) {
 function setFormatAtToolbar(format) {
   var items = format.listitem;
   var color = format.color;
+  console.log("couleur from ed: " + color);
 
   switch( color ) {
     case "#ff0000":
-    color = 'red'; break;
+      color = 'red'; break;
     case "#3bff11":
-    color = 'green'; break;
+      color = 'green'; break;
     case "#0000ff":
-    color = 'blue'; break;
+      color = 'blue'; break;
     case "#000000":
-    color = 'black'; break;
+      color = 'black'; break;
+    default:
+      color = 'custom';
   }
 
   activeTool("color", color);
@@ -243,7 +248,7 @@ function setFormatAtToolbar(format) {
 
 // update cursor & activeTools
 function activeTool(tool, value) {
-  activeTools.tool = value;
+  activeTools[tool] = value;
   moveCursor(tool, value, false);
 }
 
@@ -480,6 +485,43 @@ $("#pasteItem").on("click", function() {
 
   } );
 
+//  colorpicker   $(".color-custom").spectrum("show")
+  $(".color-custom").spectrum({
+    chooseText: "choisir",
+    cancelText: "annuler",
+    color: "#ECC",
+    showInput: false,
+    showInitial: true,
+    showPalette: true,
+    showSelectionPalette: true,
+    maxSelectionSize: 10,
+    preferredFormat: "hex",
+    localStorageKey: "spectrum.demo",
+    clickoutFiresChange: true,
+    move: function (color) {
+
+    },
+    show: function () {
+
+    },
+    beforeShow: function () {
+
+    },
+    hide: function(tinycolor) {
+      $(".color-custom").css("color", tinycolor);
+    },
+    change: function() {
+
+    },
+    palette: [
+        ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
+        "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
+        ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+        "rgb(0, 255, 255)"],
+        ["rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"]]
+
+  });
+
 //  toolbar scroll
 
   $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
@@ -512,7 +554,7 @@ $("#pasteItem").on("click", function() {
   } );
 
   // toolbar init
-  initToolbar();
+  //initToolbar();
 
   $("#conted").on("mouseup", function(e) {
     console.log(window.getSelection().toString());
@@ -563,7 +605,7 @@ $("#pasteItem").on("click", function() {
     }
 
     //  palette move
-    console.log("palette move: " + (activeBlocId + 1));
+    // console.log("palette move: " + (activeBlocId + 1));
     var offset = $(this).offset();
     var left = $("#page").offset().left + 15;
     offset.left = left;
@@ -742,10 +784,12 @@ $("#pasteItem").on("click", function() {
 
   $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
 
-  //  page display
+
+  //  ----------------------------------- init page display
   setTimeout(function () {
-    $("#blc-0").trigger("mouseenter");
     $('body').css({"visibility":"visible"});
+    $("#blc-0").trigger("mouseenter");
+    //$("#txt-0").trigger("click");
   }, 300);
 
 
@@ -811,6 +855,8 @@ var analysisContent = document.getElementById('analysis-content');
 var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
+
+initToolbar();
 
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();

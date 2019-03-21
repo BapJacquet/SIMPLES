@@ -18,6 +18,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+	<!-- colorpicker  -->
+	<script src='spectrum.js'></script>
+	<link rel='stylesheet' href='spectrum.css' />
 
   <link rel="stylesheet" type="text/css" href="main.css"/>
 	<link rel="stylesheet" type="text/css" href="editor.css"/>
@@ -75,6 +78,8 @@
 
 				<!-- hidden input for file dialog -->
 				<input type="file" id="openFileInput" style="display:none;">
+				<!-- hidden input for file colorpicker
+				<input type="text" id="openColorInput" style="display:none;"> -->
 				<!-- fin main-menubar -->
 			</div>
 

@@ -287,6 +287,15 @@ button span {
 
 /*                      toolbar  */
 
+#toolBarScrollBar {
+  height: 15px;
+/*  z-index: 1000; */
+}
+
+#toolBarScrollBar:hover {
+  cursor: ew-resize;
+}
+
 #toolbar {
   height: 72px; /* 76 */
   background-color: #eee;
@@ -295,7 +304,6 @@ button span {
 
 #toolbarlist {
   position: relative;
-  left: 0;
   -webkit-user-select: none;
   user-select: none;
   white-space: nowrap; /* anti wrapping */
@@ -535,19 +543,19 @@ button span {
 }
 
 #title-caption {
-  left: 82px;
+  left: 72px;
 }
 
 #bullet-caption {
-  left: 65px;
+  left: 48px;
 }
 
 #frame-caption {
-  left: 65px;
+  left: 52px;
 }
 
 #picture-caption {
-  left: 68px;
+  left: 55px;
 }
 
 .tool-cursor {
@@ -605,7 +613,7 @@ button span {
   user-select: none;
   float: right;
   position: relative;
-  top: -68px; /* -68 */
+  top: -84px; /* -68 */
   right: 0;
   z-index: 600;
 }
@@ -618,8 +626,8 @@ button span {
   padding-top: 16px;
   padding-bottom: 16px;
   cursor: pointer;
-  width: 84px;
-  height: 71px; /* 65 */
+  width: 100px;
+  height: 100px; /* 71 */
   background-color: #2ea35f;
 }
 

@@ -158,20 +158,29 @@ function initToolbar() {                 // tool cursor initial values
   activeTool("bullet", BULLET_INIT);
   activeTool("frame", FRAME_INIT);
   activeTool("picture", PICTURE_INIT);
-}
 
+
+}
+////////////
 //                                            click on toolbar
 function toolClick(e, toolTag) {
   var classes = $(toolTag).get(0).classList.value;
   var toolVal = classes.split(" ")[1];
   var tool = toolVal.split("-")[0];
   var val = toolVal.split("-")[1];
+  if ( $(toolTag).hasClass("check") ) {
+    if ( tool != "title" ) val = !Boolean(activeTools[tool]);
+    else if ( activeTools[tool] != "none" && activeTools[tool] == val ) val = "none";
+  }
+  var anim = true;
+  if ( activeTools[tool] == "none") anim = false;
+
   activeTools[tool] = val;
-  moveCursor(tool, val, true);
+  moveCursor(tool, val, anim);
   if ( !(tool == "color" && val == "custom") ) sendtoEditor(tool, val);
 
 }
-
+/////////////
 //                                             move tool cursor
 function moveCursor(tool, val, anim) {
   var cursor = "#" + tool + "-cursor";
@@ -179,12 +188,27 @@ function moveCursor(tool, val, anim) {
     $(cursor).css("visibility", "hidden");
   }
   else {
-    $(cursor).css("visibility", "visible");
-    var newTool = tool + "-" + val;
-    var position = CURSOR_DATA[newTool];
+    if ( tool != "bold" && ( !Boolean(activeTools[tool]) || activeTools[tool] == "none") ) {
+      $(cursor).css("visibility", "hidden");
+    }
+    else {
+      if ( $("." + tool + "-" + String(val)).hasClass("check") ) {
+        if ( Boolean(activeTools[tool]) || activeTools[tool] != "none" ) {
+          $(cursor).css("visibility", "visible");
+        }
+        else {
+          $(cursor).css("visibility", "hidden");
+        }
+      }
+      else {
+        $(cursor).css("visibility", "visible");
+      }
 
-  /*  if ( anim ) */
-    $(cursor).animate({"left": position}, 150);
+      var newTool = tool + "-" + val;
+      var position = CURSOR_DATA[newTool];
+      if ( anim ) $(cursor).animate({"left": position}, 150);
+      else $(cursor).css({"left": position});
+    }
   }
 }
 
@@ -244,9 +268,9 @@ function setFormatAtToolbar(format) {
 
   $(".color-custom").css("color", format.color);
 
-  activeTool("color", color);
   activeTool("bold", format.bold);
   activeTool("size", format.size);
+  activeTool("color", color);
   activeTool("title", format.title);
   activeTool("bullet", format.bullet);
   activeTool("frame", format.frame);
@@ -524,19 +548,53 @@ $("#pasteItem").on("click", function() {
     }
   });
 
-//  toolbar scroll
+/**
+ *  toolbar scrollbar
+ */
+ $("#toolBarScrollBar").on("click", function (ev) {
+   console.log("click left: " + ev.clientX);
+ });
+  $("#toolBarScrollBar").on("mousedown", function (ev) {
+    mouseIsDown = true;
+    dragMouseX0 = ev.clientX;
+    console.log("down left: " + ev.clientX);
+  });
+  $("*").on("mousemove", function (ev) {
+    if ( !mouseIsDown ) return;
+    var offset = $("#toolbarlist").offset();
+    var dragMouse = ev.clientX - dragMouseX0;
+    dragMouseX0 = ev.clientX;
+    if ( offset.left > TOOLBAR_DRAG_RANGE ) $("#toolbarlist").css({"left": TOOLBAR_DRAG_RANGE});
+    else if ( offset.left < -TOOLBAR_DRAG_RANGE ) $("#toolbarlist").css({"left": -TOOLBAR_DRAG_RANGE});
+    else $("#toolbarlist").css({"left": offset.left + dragMouse});
+  });
+  $("*").on("mouseup", function (ev) {
+    mouseIsDown = false;
+    console.log("up");
+  });
+  /*
+  $(document).on("wheel", function (ev) {
+    if ( !ev.shiftKey ) return;
+    //var a = ev.originalEvent.deltaX;
+    if ( ev.originalEvent.wheelDelta > 0 ) $(".arrow-l").trigger("mousedown");
+    else $(".arrow-r").trigger("mousedown");
+  });
+  */
 
-  $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
+/**
+ * toolbar scroll button
+ */
+  $(".arrow-l, .arrow-r").on("touchstart mousedown", function(e) {
   //  $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
     if( mousedownID == -1 )  //anti loops!
       mousedownID = setInterval(function() {
         var offset = $("#toolbarlist").offset();
         var decal = 0;
-        if ( $(e.target).hasClass("arrow-l") ) {
-          if ( offset.left < 500 ) decal = 8;
+        if ( $(e.target).hasClass("arrow-r") ) {
+          if ( offset.left < TOOLBAR_DRAG_RANGE ) decal = 8;
         }
         else {
-          if ( offset.left > -500 ) decal = -8;
+          if ( offset.left > -TOOLBAR_DRAG_RANGE ) decal = -8;
         }
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25);
@@ -819,31 +877,32 @@ const CURSOR_DATA = {
     "color-green": "-93px",
     "color-custom":"-67px",
 
-    "title-h1": "-168px",
-    "title-h2": "-142px",
-    "title-h3": "-117px",
-    "title-h4":"-94px",
-    "title-none":"-70px",
+    "title-h1": "-132px",
+    "title-h2": "-107px",
+    "title-h3": "-81px",
+    "title-h4":"-58px",
 
-    "bullet-true": "-50px",
-    "bullet-false": "-7px",
-    "frame-true": "-50px",
-    "frame-false": "-7px",
+    "bullet-true": "-16px",
 
-    "picture-true": "-50px",
-    "picture-false": "-7px",
+    "frame-true": "-16px",
+
+    "picture-true": "-17px",
+
 };
 
-const BOLD_INIT = "false";
+const BOLD_INIT = false;
 const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
-const BULLET_INIT = "false";
-const FRAME_INIT = "false";
-const PICTURE_INIT = "true";
+const BULLET_INIT = false;
+const FRAME_INIT = false;
+const PICTURE_INIT = true;
+const TOOLBAR_DRAG_RANGE = 500;
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;
+var mouseIsDown = false;
+var dragMouseX;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc

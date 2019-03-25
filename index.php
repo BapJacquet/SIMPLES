@@ -126,7 +126,6 @@
 						<div class="tool title-h2 check">T</div>
 						<div class="tool title-h3 check">T</div>
 						<div class="tool title-h4 check">T</div>
-						<!--<div class="tool title-none check"><img src="titleNone.png"></div>-->
 						<div  id="title-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
@@ -135,7 +134,6 @@
 					<div id="bullet">
 						<div id="bullet-caption" class="caption">puce</div>
 						<div class="tool-frame-bullet bullet-true check"><img src="bulletTrue.png" /></div>
-					<!--	<div class="tool-frame-bullet bullet-false check"><img src="titleNone.png" /></div>-->
 						<div  id="bullet-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
@@ -145,7 +143,6 @@
 					<div id="frame">
 						<div id="frame-caption" class="caption">cadre</div>
 						<div class="tool-frame-bullet frame-true check"><img src="frameTrue.png" /></div>
-						<!--<div class="tool-frame-bullet frame-false check"><img src="titleNone.png" /></div>-->
 						<div  id="frame-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
@@ -154,7 +151,6 @@
 					<div id="picture">
 						<div id="picture-caption" class="caption">image</div>
 						<div class="tool-frame-bullet picture-true check"><img src="pictureTrue.png" /></div>
-						<!--<div class="tool-frame-bullet picture-false check"><img src="titleNone.png" /></div>-->
 						<div  id="picture-cursor" class="tool-cursor">
 							<img src="arrow-u-black.png" />
 						</div>
@@ -181,6 +177,8 @@
 
 			</div>  <!-- fin toolbar -->
 
+			<!-- double div to avoid 'à méditer pour Seb' -->
+			<div><div id="toolbarBottomMask"></div></div>
 			<div><div id="toolbarScrollBar"></div></div>
 
 			<!--															E D I T O R  -->

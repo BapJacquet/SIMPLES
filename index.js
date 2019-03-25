@@ -498,6 +498,13 @@ $("#pasteItem").on("click", function() {
   } );
 */
 
+$("#toolbarBottomMask").hover( function () {
+  event.stopPropagation();
+  event.preventDefault();
+  return false;
+});
+
+
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
 /*

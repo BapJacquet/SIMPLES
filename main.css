@@ -291,6 +291,14 @@ button span {
 
 /*                      toolbar  */
 
+#toolbarBottomMask {
+  z-index: 500;
+  position: absolute;
+  top: 93px;
+  height: 10px;
+  width: 100%;
+}
+
 #toolbarScrollBar {
   height: 13px;
   border-bottom: 1px solid #ccc;

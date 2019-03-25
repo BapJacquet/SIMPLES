@@ -160,7 +160,6 @@
 						</div>
 					</div>
 
-					<div></div>
 				</div>  <!-- fin toolbarlist -->
 
 
@@ -182,7 +181,7 @@
 
 			</div>  <!-- fin toolbar -->
 
-			<div id="toolBarScrollBar"></div>
+			<div><div id="toolbarScrollBar"></div></div>
 
 			<!--															E D I T O R  -->
 			<div class="hbox">

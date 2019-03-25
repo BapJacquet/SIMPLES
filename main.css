@@ -78,7 +78,8 @@ hr {
 }
 
 .collapsible-content {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   padding: 0 18px;
   display: none;
@@ -93,7 +94,8 @@ hr {
 }
 
 .hcollapsible {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   background-color: #6c757d;
   color: white;
@@ -114,7 +116,8 @@ hr {
 }
 
 .hcollapsible-content {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   padding: 0 18px;
   flex: 0, 0, 300px;
@@ -263,7 +266,8 @@ button span {
 /* main menu  */
 
 #main-menubar {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   margin-left: 20px;
   margin-top: 2px;
@@ -287,13 +291,9 @@ button span {
 
 /*                      toolbar  */
 
-#toolBarScrollBar {
-  height: 15px;
-/*  z-index: 1000; */
-}
-
-#toolBarScrollBar:hover {
-  cursor: ew-resize;
+#toolbarScrollBar {
+  height: 13px;
+  border-bottom: 1px solid #ccc;
 }
 
 #toolbar {
@@ -304,7 +304,8 @@ button span {
 
 #toolbarlist {
   position: relative;
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   white-space: nowrap; /* anti wrapping */
 }
@@ -560,7 +561,7 @@ button span {
 
 .tool-cursor {
   position: absolute;
-  top: +14px;
+  top: +17px; /* +14px; */
   z-index: 80;
 }
 
@@ -568,16 +569,17 @@ button span {
 
 /*     scroll toolbar */
 .arrows {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   pointer-events: initial;
-  display: inline-block;
+  display: none; /* inline-block; */
   position: relative;
   top: -64px;
   cursor: pointer;
-  background-color: #ddd; /* #6c757d; */
-  width: 24px; /* 24px; */
-  height: 57px;  /* 65px; */
+  background-color: #ddd;
+  width: 24px;
+  height: 57px;
   z-index: 500;
 }
 
@@ -609,7 +611,8 @@ button span {
 
 /*      simples span     */
 .simples-span {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   float: right;
   position: relative;

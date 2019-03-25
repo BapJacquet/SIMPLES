@@ -344,6 +344,7 @@ $(document).ready(function () {
     $('.hbox').css("margin", "0px");
     $('.box').css("overflow", "hidden");
   });
+
 // à méditer pour Baptiste
   $(".hcollapsible, .collapsible").on("click", function(e) {
     $(this).blur();
@@ -548,42 +549,59 @@ $("#pasteItem").on("click", function() {
     }
   });
 
-/**
- *  toolbar scrollbar
- */
- $("#toolBarScrollBar").on("click", function (ev) {
-   console.log("click left: " + ev.clientX);
+ /**
+  * toolbarScrollBar hover
+  */
+ $("#toolbarScrollBar").hover( function () {
+   if ( TOOLBAR_WIDTH > $(body).width() ) {
+     $("#toolbarScrollBar").css("cursor", "ew-resize");
+   }
+ }, function () {
+   $("#toolbarScrollBar").css("cursor", "default");
+ } );
+
+ /**
+  * toolbar scrollbar
+  */
+ $("#toolbarScrollBar").on("click", function (ev) {
+   //console.log("click left: " + ev.clientX);
  });
-  $("#toolBarScrollBar").on("mousedown", function (ev) {
-    mouseIsDown = true;
+
+  $("#toolbarScrollBar").on("mousedown", function (ev) {
+    dragIsOn = true;
     dragMouseX0 = ev.clientX;
-    console.log("down left: " + ev.clientX);
   });
+
   $("*").on("mousemove", function (ev) {
-    if ( !mouseIsDown ) return;
+    if ( !dragIsOn ) return;
+    var trueWidth = $(body).width();
     var offset = $("#toolbarlist").offset();
     var dragMouse = ev.clientX - dragMouseX0;
     dragMouseX0 = ev.clientX;
-    if ( offset.left > TOOLBAR_DRAG_RANGE ) $("#toolbarlist").css({"left": TOOLBAR_DRAG_RANGE});
-    else if ( offset.left < -TOOLBAR_DRAG_RANGE ) $("#toolbarlist").css({"left": -TOOLBAR_DRAG_RANGE});
-    else $("#toolbarlist").css({"left": offset.left + dragMouse});
+    if ( TOOLBAR_WIDTH > trueWidth ) {
+      if ( offset.left >= 0  &&  dragMouse > 0)
+          $("#toolbarlist").css({"left": 0});
+      else if ( offset.left <= trueWidth - TOOLBAR_WIDTH  &&  dragMouse < 0)
+          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH});
+      else $("#toolbarlist").css({"left": offset.left + dragMouse});
+    }
   });
+
   $("*").on("mouseup", function (ev) {
-    mouseIsDown = false;
-    console.log("up");
+    dragIsOn = false;
   });
-  /*
+
+   /* wheel  ** UNUSED **
   $(document).on("wheel", function (ev) {
     if ( !ev.shiftKey ) return;
-    //var a = ev.originalEvent.deltaX;
-    if ( ev.originalEvent.wheelDelta > 0 ) $(".arrow-l").trigger("mousedown");
+    if ( ev.originalEvent.wheelDeltaX > 0 ) $(".arrow-l").trigger("mousedown");
     else $(".arrow-r").trigger("mousedown");
   });
   */
 
-/**
- * toolbar scroll button
- */
+/*
+ * toolbar scroll button ** UNUSED **
+
   $(".arrow-l, .arrow-r").on("touchstart mousedown", function(e) {
   //  $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
     if( mousedownID == -1 )  //anti loops!
@@ -599,7 +617,8 @@ $("#pasteItem").on("click", function() {
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25);
   });
-
+  */
+/*
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
   // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
     if( mousedownID != -1 ) {  // stop if exists
@@ -607,6 +626,7 @@ $("#pasteItem").on("click", function() {
       mousedownID=-1;
     }
   });
+  */
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
@@ -617,8 +637,8 @@ $("#pasteItem").on("click", function() {
   //initToolbar();
 
   $("#conted").on("mouseup", function(e) {
-    console.log(window.getSelection().toString());
-    console.log(window.getSelection().getRangeAt(0).toString());
+    //console.log(window.getSelection().toString());
+    //console.log(window.getSelection().getRangeAt(0).toString());
   } );
 
   // ouverture port 9000
@@ -816,10 +836,14 @@ $("#pasteItem").on("click", function() {
   // resize
   $( window ).on("resize", function () {
     triggerPseudoMouseenter(0);
+    if ( TOOLBAR_WIDTH < $(body).width() )
+        $("#toolbarlist").css({"left": ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL});
   });
 
   // window focus
-  window.onfocus = function () { triggerPseudoMouseenter(0); };
+  window.onfocus = function () {
+    triggerPseudoMouseenter(0);
+  };
 
 
   ////////////////////////////////////   DIVERS
@@ -839,8 +863,9 @@ $("#pasteItem").on("click", function() {
   setTimeout(function () {
     $("#blc-0").trigger("mouseenter");
     $('body').css({"visibility":"visible"});
+    if ( TOOLBAR_WIDTH < $(body).width() )
+        $("#toolbarlist").css({"left": ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL});
 
-    //$("#txt-0").trigger("click");
   }, 300);
 
   // -----------------------------------    prevent stuff
@@ -897,11 +922,12 @@ const TITLE_INIT = "none";
 const BULLET_INIT = false;
 const FRAME_INIT = false;
 const PICTURE_INIT = true;
-const TOOLBAR_DRAG_RANGE = 500;
+const TOOLBAR_WIDTH = 844;
+const TOOLBAR_DECAL = 33;
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;
-var mouseIsDown = false;
+var dragIsOn = false;
 var dragMouseX;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte

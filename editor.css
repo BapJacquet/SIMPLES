@@ -47,6 +47,9 @@
   height: 110px;
   border-radius: 20px;
   background-color: #eee;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  user-select: none;
 }
 
 #blockCmd div {
@@ -63,7 +66,6 @@
 
 #blockCmd img {
   position: relative;
-  user-select: none;
   pointer-events: none;
   left: 10px;
   top: 2px;
@@ -79,7 +81,7 @@
 }
 
 #blockCmd .block-move-up {
-  top: -150px;
+  top: -149px;
   left: 40px;
 }
 
@@ -88,7 +90,7 @@
 }
 
 #blockCmd .block-delete {
-  top: -1px;
+  top: 0;
   left: 40px;
 }
 
@@ -110,6 +112,8 @@
   font-weight: 900;
   font-size: 20px;
   color: #4aa;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   pointer-events: none;
 }

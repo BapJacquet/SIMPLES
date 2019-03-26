@@ -46,7 +46,8 @@
   width: 80px;
   height: 110px;
   border-radius: 20px;
-  background-color: #eee;
+  background-color: #f0f0f0; /* #eee; */
+  /* border: 2px solid #eee; */
   -webkit-user-select: none; /* Safari 3.1+ */
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;

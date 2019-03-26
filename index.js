@@ -490,13 +490,13 @@ $("#pasteItem").on("click", function() {
 //                                   T O O L B A R   E V E N T S
 
 // jquery tool hover
-/*
+
   $(".tool, .tool-frame-bullet").mouseenter( function () {
     $(this).css({"top":"-5px", "cursor": "pointer"});
   } ).mouseleave( function () {
     $(this).css({"top":"0", "cursor": "default"});
   } );
-*/
+
 
 $("#toolbarBottomMask").hover( function () {
   event.stopPropagation();
@@ -507,15 +507,15 @@ $("#toolbarBottomMask").hover( function () {
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-/*
+
     $(this).animate({"top": "-16px"}, 200,
       function () {
-        $(this).animate({"top": "0px"}, 100,
+        $(this).animate({"top": 0}, 100,
           function () { $(this).blur();
         });
       }
     );
-*/
+
     toolClick(e, this);
     $(this).trigger("mouseleave");
     setTimeout( function () {
@@ -534,10 +534,10 @@ $("#toolbarBottomMask").hover( function () {
     showPalette: true,
     showSelectionPalette: true,
     palette: [],
-    maxSelectionSize: 10,
+    maxSelectionSize: 6,
     preferredFormat: "hex",
-    localStorageKey: "spectrum.demo",
-    clickoutFiresChange: true,
+    localStorageKey: "spectrum",
+    clickoutFiresChange: false,
     move: function (color) {
 
     },
@@ -692,7 +692,6 @@ $("#toolbarBottomMask").hover( function () {
     }
 
     //  palette move
-    // console.log("palette move: " + (activeBlocId + 1));
     var offset = $(this).offset();
     var left = $("#page").offset().left + 15;
     offset.left = left;
@@ -706,6 +705,7 @@ $("#toolbarBottomMask").hover( function () {
 
     $("#blockCmd").css({"opacity": 1});
     $("#blockCmd").offset(offset);
+    //$("#blockCmd").animate({"top": offset.top, "left": offset.left}, 100);
   });
 
   //////////////////////////////////////////
@@ -737,7 +737,6 @@ $("#toolbarBottomMask").hover( function () {
       var blockHeight = $(this).height();
       if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
         if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
-
           activeBlocId = Number($(this).attr("id").split("-")[1]);
           $("#blockCmd").find("span").text(activeBlocId + 1);
           triggerPseudoMouseenter(0);

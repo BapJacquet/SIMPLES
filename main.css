@@ -294,8 +294,8 @@ button span {
 #toolbarBottomMask {
   z-index: 500;
   position: absolute;
-  top: 93px;
-  height: 10px;
+  top: 82px;
+  height: 22px;
   width: 100%;
 }
 
@@ -306,7 +306,7 @@ button span {
 
 #toolbar {
   height: 72px; /* 76 */
-  background-color: #eee;
+  background-color: #f0f0f0; /* #eee; */
   color: white;
 }
 
@@ -646,7 +646,7 @@ button span {
   background-color: #37b25c;
 }
 
-/* rebonds sur .tool */
+/* rebonds sur .tool
 .tool:hover,
 .tool-frame-bullet:hover {
   top: -6px;
@@ -654,6 +654,7 @@ button span {
   transition: top 0.15s;
   cursor: pointer;
 }
+*/
 
 /*  divers */
 #lexique3-connection {

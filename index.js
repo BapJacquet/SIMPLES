@@ -221,7 +221,7 @@ function sendtoEditor(tool, val) {
       case 'red':
         v = "#ff0000"; break;
       case 'green':
-        v = "#3bff11"; break;
+        v = COLOR_GREEN; break;
       case 'blue':
         v = "#0000ff"; break;
       case 'black':
@@ -254,7 +254,7 @@ function setFormatAtToolbar(format) {
   switch( color ) {
     case "#ff0000":
       color = 'red'; break;
-    case "#3bff11":
+    case COLOR_GREEN:
       color = 'green'; break;
     case "#0000ff":
       color = 'blue'; break;
@@ -421,8 +421,16 @@ $("#editor").on('dragover', ".editor-image", function(e) {
     var imageId = "#" + e.target.id;
     var ev = e.originalEvent;
     var file = ev.dataTransfer.files[0];
-    if ( !file ) return;
-    if ( (!file.type.match(/image.*/)) ) return;
+    if ( !file || !file.type.match(/image.*/) ) {
+      // url
+      var url = ev.dataTransfer.getData('text/uri-list');
+      editor.setImage(imageId, url);
+      setTimeout(function() {
+        triggerPseudoMouseenter(0);
+      }, 15);
+      return;
+    }
+    // file
     var reader = new FileReader();
     reader.onload = function(e2) {
         var imageSrc = e2.target.result;
@@ -490,20 +498,17 @@ $("#pasteItem").on("click", function() {
 //                                   T O O L B A R   E V E N T S
 
 // jquery tool hover
-
   $(".tool, .tool-frame-bullet").mouseenter( function () {
     $(this).css({"top":"-5px", "cursor": "pointer"});
   } ).mouseleave( function () {
     $(this).css({"top":"0", "cursor": "default"});
   } );
 
-
 $("#toolbarBottomMask").hover( function () {
   event.stopPropagation();
   event.preventDefault();
   return false;
 });
-
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
@@ -523,6 +528,7 @@ $("#toolbarBottomMask").hover( function () {
     }, 15);
 
   } );
+
 //                                    C O L O R P I C K E R
 //  colorpicker   $(".color-custom").spectrum("show")
   $(".color-custom").spectrum({
@@ -570,10 +576,6 @@ $("#toolbarBottomMask").hover( function () {
  /**
   * toolbar scrollbar
   */
- $("#toolbarScrollBar").on("click", function (ev) {
-   //console.log("click left: " + ev.clientX);
- });
-
   $("#toolbarScrollBar").on("mousedown", function (ev) {
     dragIsOn = true;
     dragMouseX0 = ev.clientX;
@@ -842,13 +844,18 @@ $("#toolbarBottomMask").hover( function () {
   // resize
   $( window ).on("resize", function () {
     triggerPseudoMouseenter(0);
-    if ( TOOLBAR_WIDTH < $(body).width() )
-        $("#toolbarlist").css({"left": ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL});
+    if ( TOOLBAR_WIDTH < $(body).width() ) {
+      $("#toolbarlist").css({"left": ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL});
+      $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
+    }
+    else $("#toolbarScrollBar").css({"background-color": "white"});
   });
 
   // window focus
   window.onfocus = function () {
     triggerPseudoMouseenter(0);
+    $( window ).trigger("resize");
+
   };
 
 
@@ -865,14 +872,23 @@ $("#toolbarBottomMask").hover( function () {
     }
   });
 
-  //  ----------------------------------- on ready before page display
+  // before page display
   setTimeout(function () {
     $("#blc-0").trigger("mouseenter");
+    $( window ).trigger("resize");
     $('body').css({"visibility":"visible"});
-    if ( TOOLBAR_WIDTH < $(body).width() )
-        $("#toolbarlist").css({"left": ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL});
-
   }, 300);
+
+  // new connection
+  $(window).on("load", function() {
+  	var version = navigator.platform + ' ' + navigator.userAgent;
+  	$.ajax({
+  		url: 'connection_count.php',
+  		type:'post',
+  		data: {'version':version, 'user':localStorage.user}
+  	});
+  });
+
 
   // -----------------------------------    prevent stuff
   document.addEventListener('backbutton', function(event) {
@@ -928,8 +944,10 @@ const TITLE_INIT = "none";
 const BULLET_INIT = false;
 const FRAME_INIT = false;
 const PICTURE_INIT = true;
-const TOOLBAR_WIDTH = 844;
-const TOOLBAR_DECAL = 33;
+const TOOLBAR_WIDTH = 840; /* 844; */
+const TOOLBAR_DECAL = 0; /* 22 */
+const TOOL_BACK_COLOR = "#f0f0f0";
+const COLOR_GREEN = "#2ea35f";
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;
@@ -954,13 +972,3 @@ initToolbar();
 //refreshPageScale();
 
 // slider.oninput = refreshPageScale;
-
-// new connection
-$(window).on("load", function() {
-	var version = navigator.platform + ' ' + navigator.userAgent;
-	$.ajax({
-		url: 'connection_count.php',
-		type:'post',
-		data: {'version':version, 'user':localStorage.user}
-	});
-});

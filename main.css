@@ -89,7 +89,7 @@ hr {
 }
 
 .hcollapsible:hover {
-  color: #2ea35f;
+  color: #2ea35f; /* COLOR_GREEN */
   background-color: #eee !important;
 }
 
@@ -189,7 +189,7 @@ button span {
 }
 
 #page-container {
-  background: #ddd;
+  background: #f0f0f0; /* TOOL_BACK_COLOR */
   flex-grow: 1;
 
   /* -webkit-transition-duration: 0.4s;
@@ -256,7 +256,7 @@ button span {
   flex-flow: row;
   height: 100%;
   width: 100%;
-  background-color: #ddd;
+  background-color: #f0f0f0; /* TOOL_BACK_COLOR */
 }
 
 /*  ------------------  S E B   ------------------ */
@@ -276,7 +276,7 @@ button span {
 }
 
 .main-menu { /* menu button */
-  color: #2ea35f;
+  color: #2ea35f; /* COLOR_GREEN */
   background-color: white;
   border: none;
 }
@@ -301,12 +301,12 @@ button span {
 
 #toolbarScrollBar {
   height: 13px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #ccc; /*#2ea35f;  COLOR_GREEN */
 }
 
 #toolbar {
   height: 72px; /* 76 */
-  background-color: #f0f0f0; /* #eee; */
+  background-color: #f0f0f0; /* TOOL_BACK_COLOR */
   color: white;
 }
 
@@ -316,9 +316,10 @@ button span {
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   white-space: nowrap; /* anti wrapping */
+  padding-left: 20px; 
 }
 
-#toolbarlist div { /* #bold  .tool etc. */
+#toolbarlist div { /* #bold .tool etc. */
   display: inline-block;
   position: relative;
   font-family: sans-serif;
@@ -414,7 +415,7 @@ button span {
 .color-green {
   font-weight: 200;
   font-size: 38px;
-  color: #3bff11;
+  color: #2ea35f; /* COLOR_GREEN */
   left: -30px;
 }
 
@@ -624,7 +625,7 @@ button span {
   user-select: none;
   float: right;
   position: relative;
-  top: -84px; /* -68 */
+  top: -84px; /* -84 */
   right: 0;
   z-index: 600;
 }
@@ -638,8 +639,8 @@ button span {
   padding-bottom: 16px;
   cursor: pointer;
   width: 100px;
-  height: 100px; /* 71 */
-  background-color: #2ea35f;
+  height: 100px; /* 100 */
+  background-color: #2ea35f; /* COLOR_GREEN */
 }
 
 .simples-button:hover {

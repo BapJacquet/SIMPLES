@@ -65,7 +65,7 @@
 					<div class="btn-group" role="group">
 				    <button id="btnResources" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				      Resources
-				    </button>
+				    </button> 
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
 				      <a class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>
 				      <a class="dropdown-item" href="#">Exporter un dictonnaire...</a>

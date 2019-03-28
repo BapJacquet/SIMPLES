@@ -31,7 +31,7 @@
 	<div>
 		<div class="box">
 			<div id="header">
-				<!-- <img src="SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
+				<!-- <img src="img/SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
@@ -65,7 +65,7 @@
 					<div class="btn-group" role="group">
 				    <button id="btnResources" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				      Resources
-				    </button> 
+				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
 				      <a class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>
 				      <a class="dropdown-item" href="#">Exporter un dictonnaire...</a>
@@ -93,7 +93,7 @@
 						<div class="tool bold-false">a</div>
 						<div class="tool bold-true">a</div>
 						<div  id="bold-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
@@ -103,7 +103,7 @@
 						<div class="tool size-s2">a</div>
 						<div class="tool size-s3">a</div>
 						<div  id="size-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
@@ -115,7 +115,7 @@
 						<div class="tool color-green">a</div>
 						<div class="tool color-custom">?</div>
 						<div  id="color-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 						<div id="tool-limit-color" class="tool-limit">|</div>
 					</div>
@@ -127,32 +127,32 @@
 						<div class="tool title-h3 check">T</div>
 						<div class="tool title-h4 check">T</div>
 						<div  id="title-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
 					<div id="bullet">
 						<div id="bullet-caption" class="caption">puce</div>
-						<div class="tool-frame-bullet bullet-true check"><img src="bulletTrue.png" /></div>
+						<div class="tool-frame-bullet bullet-true check"><img src="img/bulletTrue.png" /></div>
 						<div  id="bullet-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 						<div id="tool-limit-bullet" class="tool-limit">|</div>
 					</div>
 
 					<div id="frame">
 						<div id="frame-caption" class="caption">cadre</div>
-						<div class="tool-frame-bullet frame-true check"><img src="frameTrue.png" /></div>
+						<div class="tool-frame-bullet frame-true check"><img src="img/frameTrue.png" /></div>
 						<div  id="frame-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
 					<div id="picture">
 						<div id="picture-caption" class="caption">image</div>
-						<div class="tool-frame-bullet picture-true check"><img src="pictureTrue.png" /></div>
+						<div class="tool-frame-bullet picture-true check"><img src="img/pictureTrue.png" /></div>
 						<div  id="picture-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
@@ -162,17 +162,17 @@
 				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
 
 				<div class="arrows arrow-l"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
-					<img id="img-arrow-l" src="carat-l-white.png">
+					<img id="img-arrow-l" src="img/carat-l-white.png">
 				</div>
 
 				<span id="analyze" class="simples-span" >
 					<button id="verify-button" type="button" class="simples-button  btn-info">
-						<img src="SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
+						<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
 					</button>
 				</span>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
-					<img id="img-arrow-r" src="carat-r-white.png">
+					<img id="img-arrow-r" src="img/carat-r-white.png">
 				</div>
 
 			</div>  <!-- fin toolbar -->
@@ -191,19 +191,19 @@
 								<!-- Block command box -->
 								<div id="blockCmd">
 									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
-										<img src="plus-black.png">
+										<img src="img/plus-black.png">
 									</div>
 									<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
-										<img src="delete-black.png">
+										<img src="img/delete-black.png">
 									</div>
 									<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
-										<img src="plus-black.png">
+										<img src="img/plus-black.png">
 									</div>
 									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
-										<img src="carat-d-black.png">
+										<img src="img/carat-d-black.png">
 									</div>
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
-										<img src="carat-u-black.png">
+										<img src="img/carat-u-black.png">
 									</div>
 									<div class="block-number">
 										<span>1</span>

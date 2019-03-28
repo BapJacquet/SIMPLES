@@ -316,7 +316,7 @@ button span {
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   white-space: nowrap; /* anti wrapping */
-  padding-left: 20px; 
+  padding-left: 20px;
 }
 
 #toolbarlist div { /* #bold .tool etc. */

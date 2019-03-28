@@ -263,10 +263,12 @@ function setFormatAtToolbar(format) {
     case "ambiguous":
       color = "ambiguous"; break;
     default:
-      color = 'custom';
+      color = "custom";
   }
 
-  $(".color-custom").css("color", format.color);
+  if ( color == "custom" ) {
+    $(".color-custom").css("color", format.color);
+  }
 
   activeTool("bold", format.bold);
   activeTool("size", format.size);
@@ -428,18 +430,19 @@ $("#editor").on('dragover', ".editor-image", function(e) {
       setTimeout(function() {
         triggerPseudoMouseenter(0);
       }, 15);
-      return;
     }
-    // file
-    var reader = new FileReader();
-    reader.onload = function(e2) {
-        var imageSrc = e2.target.result;
-        editor.setImage(imageId, imageSrc);
-        setTimeout(function() {
-          triggerPseudoMouseenter(0);
-        }, 15);
-    };
-    reader.readAsDataURL(file); // start reading the file data.
+    else {
+      // file
+      var reader = new FileReader();
+      reader.onload = function(e2) {
+          var imageSrc = e2.target.result;
+          editor.setImage(imageId, imageSrc);
+          setTimeout(function() {
+            triggerPseudoMouseenter(0);
+          }, 15);
+      };
+    reader.readAsDataURL(file); // reading the file data.
+  }
 });
 
 ////////////////////////////////////////////////////////////
@@ -861,7 +864,7 @@ $("#toolbarBottomMask").hover( function () {
 
   ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({delay: {"show": 500, "hide": 100}});
   });
 
   // confirm dialog result

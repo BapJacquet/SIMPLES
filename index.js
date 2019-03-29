@@ -331,9 +331,9 @@ $(document).ready(function () {
       onVerifyClick();
   } );
 
-// à méditer pour Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
+// Après méditations de Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
   $(window).on("load resize", function() {
-    let grid = $(".box");
+    /*let grid = $(".box");
     let h = window.innerHeight;
     let remaining = h;
     for(let i = 0; i < grid.get(0).childNodes.length; i++){
@@ -342,8 +342,15 @@ $(document).ready(function () {
         remaining -= $(n).outerHeight();
       }
     }
-    $('.hbox').css("max-height", remaining + "px");
-    $('.hbox').css("margin", "0px");
+    */
+    var remaining = window.innerHeight;
+    $(".box").children().each( function () {
+      if (this.classList && !this.classList.contains('hbox')){
+        remaining -= $(this).outerHeight();
+      }
+    });
+    $('.hbox').css({"max-height": remaining + "px", "margin": "0px"});
+    //$('.hbox').css("margin", "0px");
     $('.box').css("overflow", "hidden");
   });
 
@@ -844,8 +851,8 @@ $("#toolbarBottomMask").hover( function () {
 
   });
 
-  // resize
-  $( window ).on("resize", function () {
+  // resize & focus
+  $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
     if ( TOOLBAR_WIDTH < $(body).width() ) {
       $("#toolbarlist").css({"left": ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL});
@@ -853,14 +860,6 @@ $("#toolbarBottomMask").hover( function () {
     }
     else $("#toolbarScrollBar").css({"background-color": "white"});
   });
-
-  // window focus
-  window.onfocus = function () {
-    triggerPseudoMouseenter(0);
-    $( window ).trigger("resize");
-
-  };
-
 
   ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips

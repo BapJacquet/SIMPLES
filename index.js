@@ -572,7 +572,15 @@ $("#toolbarBottomMask").hover( function () {
     }
   });
 
- /**
+  /**
+   * toolbar scrollbar
+   */
+   $("#toolbarScrollBar").on("mousedown", function (ev) {
+     dragIsOn = true;
+     dragMouseX0 = ev.clientX;
+   });
+
+  /**
   * toolbarScrollBar hover
   */
  $("#toolbarScrollBar").hover( function () {
@@ -582,14 +590,6 @@ $("#toolbarBottomMask").hover( function () {
  }, function () {
    $("#toolbarScrollBar").css("cursor", "default");
  } );
-
- /**
-  * toolbar scrollbar
-  */
-  $("#toolbarScrollBar").on("mousedown", function (ev) {
-    dragIsOn = true;
-    dragMouseX0 = ev.clientX;
-  });
 
   $("*").on("mousemove", function (ev) {
     if ( !dragIsOn ) return;
@@ -854,11 +854,14 @@ $("#toolbarBottomMask").hover( function () {
   // resize & focus
   $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
+    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL;
+    $("#toolbarlist").css({"left": move});
     if ( TOOLBAR_WIDTH < $(body).width() ) {
-      $("#toolbarlist").css({"left": ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL});
       $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
     }
-    else $("#toolbarScrollBar").css({"background-color": "white"});
+    else {
+      $("#toolbarScrollBar").css({"background-color": "white"});
+    }
   });
 
   ////////////////////////////////////   DIVERS

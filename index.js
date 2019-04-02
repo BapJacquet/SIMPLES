@@ -866,7 +866,7 @@ $("#toolbarBottomMask").hover( function () {
 
   ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips
-    $('[data-toggle="tooltip"]').tooltip({delay: {"show": 500, "hide": 100}});
+    $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
   });
 
   // confirm dialog result

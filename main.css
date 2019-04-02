@@ -183,7 +183,6 @@ button span {
   height: 297mm;
   background: #fff;
   margin: auto;
-  border-style: round;
   border-radius: 3px;
   padding: 1in;
 }
@@ -272,13 +271,13 @@ button span {
   margin-left: 20px;
   margin-top: 2px;
   height: 36px;
-  font-size: 18px;
 }
 
 .main-menu { /* menu button */
   color: #2ea35f; /* COLOR_GREEN */
   background-color: white;
   border: none;
+  font-size: 20px;
 }
 
 .main-menu:hover {
@@ -537,7 +536,7 @@ button span {
   z-index: 100;
   font-weight: 400;
   font-size: 18px;
-  color: #888;
+  color: #666;
 }
 
 #bold-caption {

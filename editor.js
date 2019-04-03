@@ -816,7 +816,7 @@ class Editor {
       );*/
 
       doc.addImage((await html2canvas($('#txt-' + i).get(0))).toDataURL(), 'JPEG',
-        totalWidth - margin - Utils.pixelToCm($('#txt-' + i).outerWidth()),
+        margin + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).left),
         currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
         Utils.pixelToCm($('#txt-' + i).width()),
         Utils.pixelToCm($('#txt-' + i).height()),

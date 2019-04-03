@@ -95,13 +95,6 @@ class Editor {
     let caller = event.target;
     let id = parseInt(caller.id.substring(4));
     switch (event.key) {
-      case 's':
-        if (event.ctrlKey) {
-          event.stopPropagation();
-          event.preventDefault();
-          this.save();
-        }
-        break;
       case 'l':
         if (event.ctrlKey) {
           event.stopPropagation();

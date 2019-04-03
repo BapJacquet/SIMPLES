@@ -158,19 +158,29 @@ function initToolbar() {                 // tool cursor initial values
   activeTool("bullet", BULLET_INIT);
   activeTool("frame", FRAME_INIT);
   activeTool("picture", PICTURE_INIT);
-}
 
+
+}
+////////////
 //                                            click on toolbar
 function toolClick(e, toolTag) {
   var classes = $(toolTag).get(0).classList.value;
   var toolVal = classes.split(" ")[1];
   var tool = toolVal.split("-")[0];
   var val = toolVal.split("-")[1];
-  activeTools[tool] = val;
-  moveCursor(tool, val, true);
-  sendtoEditor(tool, val);
-}
+  if ( $(toolTag).hasClass("check") ) {
+    if ( tool != "title" ) val = !Boolean(activeTools[tool]);
+    else if ( activeTools[tool] != "none" && activeTools[tool] == val ) val = "none";
+  }
+  var anim = true;
+  if ( activeTools[tool] == "none") anim = false;
 
+  activeTools[tool] = val;
+  moveCursor(tool, val, anim);
+  if ( !(tool == "color" && val == "custom") ) sendtoEditor(tool, val);
+
+}
+/////////////
 //                                             move tool cursor
 function moveCursor(tool, val, anim) {
   var cursor = "#" + tool + "-cursor";
@@ -178,31 +188,49 @@ function moveCursor(tool, val, anim) {
     $(cursor).css("visibility", "hidden");
   }
   else {
-    $(cursor).css("visibility", "visible");
-    var newTool = tool + "-" + val;
-    var position = CURSOR_DATA[newTool];
+    if ( tool != "bold" && ( !Boolean(activeTools[tool]) || activeTools[tool] == "none") ) {
+      $(cursor).css("visibility", "hidden");
+    }
+    else {
+      if ( $("." + tool + "-" + String(val)).hasClass("check") ) {
+        if ( Boolean(activeTools[tool]) || activeTools[tool] != "none" ) {
+          $(cursor).css("visibility", "visible");
+        }
+        else {
+          $(cursor).css("visibility", "hidden");
+        }
+      }
+      else {
+        $(cursor).css("visibility", "visible");
+      }
 
-  /*  if ( anim ) */
-    $(cursor).animate({"left": position}, 300);
-  //  $(cursor).css({"left": position});
+      var newTool = tool + "-" + val;
+      var position = CURSOR_DATA[newTool];
+      if ( anim ) $(cursor).animate({"left": position}, 150);
+      else $(cursor).css({"left": position});
+    }
   }
 }
 
+/////////////////////////////////////////////////////////////////
 //                                    send toolbar data to editor
 function sendtoEditor(tool, val) {
   var v = val;
   if ( tool == "color" ) {
     switch( val ) {
       case 'red':
-      v = "#ff0000"; break;
+        v = "#ff0000"; break;
       case 'green':
-      v = "#3bff11"; break;
+        v = COLOR_GREEN; break;
       case 'blue':
-      v = "#0000ff"; break;
+        v = "#0000ff"; break;
       case 'black':
-      v = "#000000"; break;
+        v = "#000000"; break;
+      case 'custom':
+        v = $(".color-custom").css("color");
     }
-  } else {
+  }
+  else {
     switch (val) {
       case 'true':
         v = true; break;
@@ -210,30 +238,41 @@ function sendtoEditor(tool, val) {
         v = false; break;
     }
   }
-  let dataObj = {};
+
+  dataObj = {};
   dataObj[tool] = v;
   editor.setFormatAtSelection(dataObj);
 }
 
+/////////////////////////////////////////////////////////////////
 //                                    toolbar update from editor
 function setFormatAtToolbar(format) {
   var items = format.listitem;
   var color = format.color;
+  console.log("couleur from ed: " + color);
 
   switch( color ) {
     case "#ff0000":
-    color = 'red'; break;
-    case "#3bff11":
-    color = 'green'; break;
+      color = 'red'; break;
+    case COLOR_GREEN:
+      color = 'green'; break;
     case "#0000ff":
-    color = 'blue'; break;
+      color = 'blue'; break;
     case "#000000":
-    color = 'black'; break;
+      color = 'black'; break;
+    case "ambiguous":
+      color = "ambiguous"; break;
+    default:
+      color = "custom";
   }
 
-  activeTool("color", color);
+  if ( color == "custom" ) {
+    $(".color-custom").css("color", format.color);
+  }
+
   activeTool("bold", format.bold);
   activeTool("size", format.size);
+  activeTool("color", color);
   activeTool("title", format.title);
   activeTool("bullet", format.bullet);
   activeTool("frame", format.frame);
@@ -242,14 +281,32 @@ function setFormatAtToolbar(format) {
 
 // update cursor & activeTools
 function activeTool(tool, value) {
-  activeTools.tool = value;
+  activeTools[tool] = value;
   moveCursor(tool, value, false);
 }
 
 function triggerPseudoMouseenter( decal ) {
   $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
   $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+  $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
+
+
+// confirm dialog
+function confirmDialog(title, body, action) {
+  $("#confirmDialog .modal-title").text(title);
+  $("#confirmDialog .modal-body p").text(body);
+  $("#confirmDialog").attr("data-action", action);
+  $("#confirmDialog").modal("show");
+}
+
+//*************************************************** askUserName
+  function askUserName () {
+    $('#modal-user-name').modal('show');
+    $("#user-name").val('');
+  }
+
+
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
@@ -274,9 +331,9 @@ $(document).ready(function () {
       onVerifyClick();
   } );
 
-// à méditer pour Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
+// Après méditations de Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
   $(window).on("load resize", function() {
-    let grid = $(".box");
+    /*let grid = $(".box");
     let h = window.innerHeight;
     let remaining = h;
     for(let i = 0; i < grid.get(0).childNodes.length; i++){
@@ -285,10 +342,18 @@ $(document).ready(function () {
         remaining -= $(n).outerHeight();
       }
     }
-    $('.hbox').css("max-height", remaining + "px");
-    $('.hbox').css("margin", "0px");
+    */
+    var remaining = window.innerHeight;
+    $(".box").children().each( function () {
+      if (this.classList && !this.classList.contains('hbox')){
+        remaining -= $(this).outerHeight();
+      }
+    });
+    $('.hbox').css({"max-height": remaining + "px", "margin": "0px"});
+    //$('.hbox').css("margin", "0px");
     $('.box').css("overflow", "hidden");
   });
+
 // à méditer pour Baptiste
   $(".hcollapsible, .collapsible").on("click", function(e) {
     $(this).blur();
@@ -328,7 +393,6 @@ $("#imgFromDisk").on("change", function (e) {
   reader.onload = function(e) {
     $("#imageClickModal .btn-dark").trigger("click");
     var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-    // editor.setImage(globalImageId, e.target.result);
     editor.setImage(imageId, e.target.result);
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
@@ -339,6 +403,7 @@ $("#imageClickModal").on('hidden.bs.modal', function (ev) {
   var url = $("#imageClickModal").find("#image-url").val();
   // send url to editor
   if ( url ) editor.setImage(imageId, url);
+  triggerPseudoMouseenter(0);
 });
 
 //  ***************************  image drag & drop  ************
@@ -365,14 +430,26 @@ $("#editor").on('dragover', ".editor-image", function(e) {
     var imageId = "#" + e.target.id;
     var ev = e.originalEvent;
     var file = ev.dataTransfer.files[0];
-    if ( !file ) return;
-    if ( (!file.type.match(/image.*/)) ) return;
-    var reader = new FileReader();
-    reader.onload = function(e2) {
-        var imageSrc = e2.target.result;
-        editor.setImage(imageId, imageSrc);
-    };
-    reader.readAsDataURL(file); // start reading the file data.
+    if ( !file || !file.type.match(/image.*/) ) {
+      // url
+      var url = ev.dataTransfer.getData('text/uri-list');
+      editor.setImage(imageId, url);
+      setTimeout(function() {
+        triggerPseudoMouseenter(0);
+      }, 15);
+    }
+    else {
+      // file
+      var reader = new FileReader();
+      reader.onload = function(e2) {
+          var imageSrc = e2.target.result;
+          editor.setImage(imageId, imageSrc);
+          setTimeout(function() {
+            triggerPseudoMouseenter(0);
+          }, 15);
+      };
+    reader.readAsDataURL(file); // reading the file data.
+  }
 });
 
 ////////////////////////////////////////////////////////////
@@ -385,12 +462,13 @@ $(".main-menu, .hcollapsible").on("focus", function () {
 $("#editor").on("blur", ".editor-text", function () {
   lastBlockBlur = $(this).attr("id");
 });
+
 //////////////////////////////////////////
 // new file
 $("#newFile").on("click", function () {
-  editor.clear();
+  confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
 });
-
+//////////////////////////////////////////
 // read text files
 $(".read-file").on("click", function () {
   globalMenuItem = $(this).attr("id");
@@ -399,22 +477,19 @@ $(".read-file").on("click", function () {
 
 $("#openFileInput").on("change", readFile);
 
-// write text file
+//////////////////////////////////////////
+// write file
 $(".write-file").on("click", function () {
-  if ( $(this).attr("id") == "exportFilePDF" ) onPDFClick();
-/*
   if ( $(this).attr("id") == "exportFilePDF" ) {
-    var docu = editor.toPDF();
-    writeFile( docu, "mon fichier.pdf", "text/plain");
+    onPDFClick();
   }
-*/
   else if ( $(this).attr("id") == "exportFileHTML" )  {
-    var docu = editor.toHTML();
-    writeFile( docu, "mon fichier.txt", "text/plain");
+    writeFile( editor.toHTML(), "mon fichier.txt", "text/plain");
   }
   else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 
+//////////////////////////////////////////
 // edit menu
 $("#cutItem").on("click", function() {
   document.execCommand("cut");
@@ -433,25 +508,29 @@ $("#pasteItem").on("click", function() {
 //                                   T O O L B A R   E V E N T S
 
 // jquery tool hover
-/*
   $(".tool, .tool-frame-bullet").mouseenter( function () {
     $(this).css({"top":"-5px", "cursor": "pointer"});
   } ).mouseleave( function () {
     $(this).css({"top":"0", "cursor": "default"});
   } );
-*/
+
+$("#toolbarBottomMask").hover( function () {
+  event.stopPropagation();
+  event.preventDefault();
+  return false;
+});
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-/*
+
     $(this).animate({"top": "-16px"}, 200,
       function () {
-        $(this).animate({"top": "0px"}, 100,
+        $(this).animate({"top": 0}, 100,
           function () { $(this).blur();
         });
       }
     );
-*/
+
     toolClick(e, this);
     $(this).trigger("mouseleave");
     setTimeout( function () {
@@ -460,24 +539,105 @@ $("#pasteItem").on("click", function() {
 
   } );
 
-//  toolbar scroll
+//                                    C O L O R P I C K E R
+//  colorpicker   $(".color-custom").spectrum("show")
+  $(".color-custom").spectrum({
+    chooseText: "choisir",
+    cancelText: "annuler",
+    color: "#ECC",
+    showInput: false,
+    showInitial: true,
+    showPalette: true,
+    showSelectionPalette: true,
+    palette: [],
+    maxSelectionSize: 6,
+    preferredFormat: "hex",
+    localStorageKey: "spectrum",
+    clickoutFiresChange: false,
+    move: function (color) {
 
-  $(".arrow-l, .arrow-r").on(" touchstart mousedown ", function(e) {
+    },
+    show: function () {
+
+    },
+    beforeShow: function () {
+
+    },
+    hide: function(tinycolor) {
+      $(".color-custom").css("color", tinycolor);
+      sendtoEditor("color", tinycolor);
+    },
+    change: function() {
+
+    }
+  });
+
+  /**
+   * toolbar scrollbar
+   */
+   $("#toolbarScrollBar").on("mousedown", function (ev) {
+     dragIsOn = true;
+     dragMouseX0 = ev.clientX;
+   });
+
+  /**
+  * toolbarScrollBar hover
+  */
+ $("#toolbarScrollBar").hover( function () {
+   if ( TOOLBAR_WIDTH > $(body).width() ) {
+     $("#toolbarScrollBar").css("cursor", "ew-resize");
+   }
+ }, function () {
+   $("#toolbarScrollBar").css("cursor", "default");
+ } );
+
+  $("*").on("mousemove", function (ev) {
+    if ( !dragIsOn ) return;
+    var trueWidth = $(body).width();
+    var offset = $("#toolbarlist").offset();
+    var dragMouse = ev.clientX - dragMouseX0;
+    dragMouseX0 = ev.clientX;
+    if ( TOOLBAR_WIDTH > trueWidth ) {
+      if ( offset.left >= 0  &&  dragMouse > 0)
+          $("#toolbarlist").css({"left": 0});
+      else if ( offset.left <= trueWidth - TOOLBAR_WIDTH  &&  dragMouse < 0)
+          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH});
+      else $("#toolbarlist").css({"left": offset.left + dragMouse});
+    }
+  });
+
+  $("*").on("mouseup", function (ev) {
+    dragIsOn = false;
+  });
+
+   /* wheel  ** UNUSED **
+  $(document).on("wheel", function (ev) {
+    if ( !ev.shiftKey ) return;
+    if ( ev.originalEvent.wheelDeltaX > 0 ) $(".arrow-l").trigger("mousedown");
+    else $(".arrow-r").trigger("mousedown");
+  });
+  */
+
+/*
+ * toolbar scroll button ** UNUSED **
+
+  $(".arrow-l, .arrow-r").on("touchstart mousedown", function(e) {
   //  $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
     if( mousedownID == -1 )  //anti loops!
       mousedownID = setInterval(function() {
         var offset = $("#toolbarlist").offset();
         var decal = 0;
-        if ( $(e.target).hasClass("arrow-l") ) {
-          if ( offset.left < 500 ) decal = 8;
+        if ( $(e.target).hasClass("arrow-r") ) {
+          if ( offset.left < TOOLBAR_DRAG_RANGE ) decal = 8;
         }
         else {
-          if ( offset.left > -500 ) decal = -8;
+          if ( offset.left > -TOOLBAR_DRAG_RANGE ) decal = -8;
         }
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25);
   });
-
+  */
+/*
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
   // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
     if( mousedownID != -1 ) {  // stop if exists
@@ -485,6 +645,7 @@ $("#pasteItem").on("click", function() {
       mousedownID=-1;
     }
   });
+  */
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
@@ -492,11 +653,11 @@ $("#pasteItem").on("click", function() {
   } );
 
   // toolbar init
-  initToolbar();
+  //initToolbar();
 
   $("#conted").on("mouseup", function(e) {
-    console.log(window.getSelection().toString());
-    console.log(window.getSelection().getRangeAt(0).toString());
+    //console.log(window.getSelection().toString());
+    //console.log(window.getSelection().getRangeAt(0).toString());
   } );
 
   // ouverture port 9000
@@ -504,25 +665,20 @@ $("#pasteItem").on("click", function() {
     'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
   });
 
-  //////////////////////////////////////////////////////////
-  ////////////////////////////////////////////// B L O C K S
-
-/*
-  $("#editor").on("blockcreated", function (ev) {
-    console.log("Nouveau bloc: " + ev.detail.blockid);
-  });
-*/
+  ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////// B L O C K S
 
 // cacher #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
+    $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
+//////////////////////////////////////////
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    activeBlocId = Number(this.id.split("-")[1]);
 
-  // hover in block text
+  // hover  block text
     $(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
 
   // enable .block-move-up
@@ -546,66 +702,62 @@ $("#pasteItem").on("click", function() {
     else {
       $("#blockCmd").find(".block-delete").css({"opacity": 1, "pointer-events": "initial"});
     }
-  });
 
-//  .editor-block + #blockCmd   ENTER
-  $("#editor").on("mouseenter", ".editor-block, #blockCmd", function (ev) {
-
+    //  palette move
     var offset = $(this).offset();
     var left = $("#page").offset().left + 15;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#editor").find("#blockCmd").height();
-    offset.top = top + ((height - commandHeight) /2);
+    var decal = 0;
+    if ( $("#blc-" + String(activeBlocId)).hasClass("frame") ) decal = 5;
+    top = top + ((height - commandHeight) /2 + decal);
+    offset.top = top;
 
-    $("#blockCmd").offset(offset);
     $("#blockCmd").css({"opacity": 1});
+    $("#blockCmd").offset(offset);
+    //$("#blockCmd").animate({"top": offset.top, "left": offset.left}, 100);
   });
 
+  //////////////////////////////////////////
   // blockCmd LEAVE
   $("#editor").on("mouseleave", "#blockCmd", function (ev) {
-
-    //$("#blockCmd").css({"opacity": 0});
+    triggerPseudoMouseenter(0);
   });
 
+  //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-
     $(this).trigger("mouseenter");
-    // hover out block text
-    //$(ev.target).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
-    $("#txt-" + String(activeBlocId)).css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
-  // update #blockCmd
+  //////////////////////////////////////////
+  // update #blockCmd from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
     $(this).trigger("mouseenter");
   });
 
+  ///////////////////////////////
+  //  update palette activeBlocId
+  $("#page").on("mousemove", function (ev) {
+    var mouseY = ev.pageY;
+    var target = ev.target;
 
-  // blockCmd move
-  /*$("#editor").on("mousemove", function (ev) {
-    console.log("coucou");
-  });*/
-
-/////////////////////////////////////  B L O C K   C O M M A N D S
-
-// insertBlockAfter
-  $("#blockCmd .block-new-down").on("click", function (ev) {
-    var interBloc = 14;
-    var top = $("#blockCmd").position().top;
-    var blockHeight = $("#blc-" + String(activeBlocId)).height();
-    var commandHeight = $("#blockCmd").height();
-    var downHeight = (blockHeight + commandHeight) /2;
-
-    $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
-      editor.insertBlockAfter( activeBlocId, "", true);
-      setTimeout( function () {
-        triggerPseudoMouseenter(1);
-      }, 15);
+    $(".editor-block").each( function (index) {
+      var blockTop = $(this).offset().top;
+      var blockHeight = $(this).height();
+      if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
+        if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
+          activeBlocId = Number($(this).attr("id").split("-")[1]);
+          $("#blockCmd").find("span").text(activeBlocId + 1);
+          triggerPseudoMouseenter(0);
+        }
+      }
     });
   });
+
+/////////////////////////////////////  B L O C K   C O M M A N D S
 
 //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
@@ -615,79 +767,150 @@ $("#pasteItem").on("click", function() {
     var blockHeight = $("#blc-" + String(activeBlocId)).height();
     var commandHeight = $("#blockCmd").height();
     var upHeight = (blockHeight + commandHeight) /2;
+    editor.insertBlockBefore( activeBlocId, "", true);
+    setTimeout( function () {
+      triggerPseudoMouseenter(0);
+    }, 15);
+  });
 
-    $("#blockCmd").animate({"top": top - upHeight + interBloc /2 + newBlc}, 300, function () {
-      editor.insertBlockBefore( activeBlocId, "", true);
+  // insertBlockAfter
+    $("#blockCmd .block-new-down").on("click", function (ev) {
+      var interBloc = 14;
+      var top = $("#blockCmd").position().top;
+      var blockHeight = $("#blc-" + String(activeBlocId)).height();
+      var commandHeight = $("#blockCmd").height();
+      var downHeight = (blockHeight + commandHeight) /2;
+/*
+      $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
+        editor.insertBlockAfter( activeBlocId, "", true);
+        setTimeout( function () {
+          triggerPseudoMouseenter(1);  // 1
+        }, 15);
+      });
+*/
+      editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
+        activeBlocId++;
+        $("#blockCmd").find("span").text(activeBlocId + 1);
         triggerPseudoMouseenter(0);
       }, 15);
-
     });
-  });
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
+    if ( $(".editor-block").length == 1 ) return;
 
-    editor.removeBlockAt( activeBlocId, activeBlocId - 1);
+    $("#blc-" + String(activeBlocId)).slideUp(200);
+
+    setTimeout( function () {
+      editor.removeBlockAt(activeBlocId, activeBlocId);
+    }, 220);
+
+    if ( $("#blc-" + String(activeBlocId)).next().length == 0 ) {
+      setTimeout( function () {
+        activeBlocId--;
+        $("#blockCmd").find("span").text(activeBlocId + 1);
+        triggerPseudoMouseenter(0);
+      }, 240);
+    }
   });
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
-    editor.moveBlockDown( activeBlocId);
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
+
+    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
+      editor.moveBlockDown( activeBlocId);
+    });
+
+    setTimeout( function () {
+      activeBlocId++;
+      $("#blockCmd").find("span").text(activeBlocId + 1);
+      triggerPseudoMouseenter(0);
+    }, 330);
+
   });
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
-    editor.moveBlockUp( activeBlocId);
+    var interBloc = 14;
+    var top = $("#blockCmd").position().top;
+    var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
+
+    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
+      editor.moveBlockUp( activeBlocId);
+    });
+
+    setTimeout( function () {
+      activeBlocId--;
+      $("#blockCmd").find("span").text(activeBlocId + 1);
+      triggerPseudoMouseenter(0);
+    }, 330);
+
   });
 
-  // resize
-  $( window ).on("resize", function (event) {  // stop rubberband scroll
+  // resize & focus
+  $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
+    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL;
+    $("#toolbarlist").css({"left": move});
+    if ( TOOLBAR_WIDTH < $(body).width() ) {
+      $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
+    }
+    else {
+      $("#toolbarScrollBar").css({"background-color": "white"});
+    }
+  });
+
+  ////////////////////////////////////   DIVERS
+  $(function () { // enable tooltips
+    $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
+  });
+
+  // confirm dialog result
+  $("#confirmDialog .ok").on("click", function () {
+    var action = $("#confirmDialog").attr("data-action");
+    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
+      editor.clear();
+    }
+  });
+
+  // before page display
+  setTimeout(function () {
+    $("#blc-0").trigger("mouseenter");
+    $( window ).trigger("resize");
+    $('body').css({"visibility":"visible"});
+  }, 300);
+
+  // new connection
+  $(window).on("load", function() {
+  	var version = navigator.platform + ' ' + navigator.userAgent;
+  	$.ajax({
+  		url: 'connection_count.php',
+  		type:'post',
+  		data: {'version':version, 'user':localStorage.user}
+  	});
   });
 
 
-
-  // -----------------------------------    BLOQUAGES DIVERS
+  // -----------------------------------    prevent stuff
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
     return false;
   }, false);
 
-  $( document ).on('dblclick', function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  } );
-
-  //screen.lockOrientation('portrait');
-
   $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
-
-  $( window ).on("resize orientationchange", function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  });
-
-
-
-
-  //$("body").css({"margin-left":"3%", "margin-right":"3%"});
-  //$("table").css({"margin-left":"auto", "margin-right":"auto", "min-width":900, "max-width":900});
-  //$("#page").height(1100).width(800);
-  //$("td").css({"border":0});
-  //$("#td-test").css({"text-align":"center"});
-
-  $(function () { // enable tooltips
-    $('[data-toggle="tooltip"]').tooltip();
-  });
-
-  $('body').css({"visibility":"visible"});
 
 }); // ******************************************************  F I N   R E A D Y
 //  ****************************************************************************
+
+// user
+
+if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
+
 
 const editor = new Editor('#editor');
 
@@ -706,35 +929,39 @@ const CURSOR_DATA = {
     "color-green": "-93px",
     "color-custom":"-67px",
 
-    "title-h1": "-168px",
-    "title-h2": "-142px",
-    "title-h3": "-117px",
-    "title-h4":"-94px",
-    "title-none":"-70px",
+    "title-h1": "-132px",
+    "title-h2": "-107px",
+    "title-h3": "-81px",
+    "title-h4":"-58px",
 
-    "bullet-true": "-50px",
-    "bullet-false": "-7px",
-    "frame-true": "-50px",
-    "frame-false": "-7px",
+    "bullet-true": "-16px",
 
-    "picture-true": "-50px",
-    "picture-false": "-7px",
+    "frame-true": "-16px",
+
+    "picture-true": "-17px",
+
 };
 
-const BOLD_INIT = "false";
+const BOLD_INIT = false;
 const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
-const BULLET_INIT = "false";
-const FRAME_INIT = "false";
-const PICTURE_INIT = "true";
+const BULLET_INIT = false;
+const FRAME_INIT = false;
+const PICTURE_INIT = true;
+const TOOLBAR_WIDTH = 840; /* 844; */
+const TOOLBAR_DECAL = 0; /* 22 */
+const TOOL_BACK_COLOR = "#f0f0f0";
+const COLOR_GREEN = "#2ea35f";
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;
+var dragIsOn = false;
+var dragMouseX;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
-var activeBlocId = 0;
+var activeBlocId = 0; // id bloc actif
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');
@@ -743,6 +970,8 @@ var analysisContent = document.getElementById('analysis-content');
 var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
+
+initToolbar();
 
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();

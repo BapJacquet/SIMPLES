@@ -78,7 +78,8 @@ hr {
 }
 
 .collapsible-content {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   padding: 0 18px;
   display: none;
@@ -88,12 +89,13 @@ hr {
 }
 
 .hcollapsible:hover {
-  color: #2ea35f;
+  color: #2ea35f; /* COLOR_GREEN */
   background-color: #eee !important;
 }
 
 .hcollapsible {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   background-color: #6c757d;
   color: white;
@@ -114,7 +116,8 @@ hr {
 }
 
 .hcollapsible-content {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   padding: 0 18px;
   flex: 0, 0, 300px;
@@ -180,13 +183,12 @@ button span {
   height: 297mm;
   background: #fff;
   margin: auto;
-  border-style: round;
   border-radius: 3px;
   padding: 1in;
 }
 
 #page-container {
-  background: #ddd;
+  background: #f0f0f0; /* TOOL_BACK_COLOR */
   flex-grow: 1;
 
   /* -webkit-transition-duration: 0.4s;
@@ -253,7 +255,7 @@ button span {
   flex-flow: row;
   height: 100%;
   width: 100%;
-  background-color: #ddd;
+  background-color: #f0f0f0; /* TOOL_BACK_COLOR */
 }
 
 /*  ------------------  S E B   ------------------ */
@@ -263,18 +265,19 @@ button span {
 /* main menu  */
 
 #main-menubar {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   margin-left: 20px;
   margin-top: 2px;
   height: 36px;
-  font-size: 18px;
 }
 
 .main-menu { /* menu button */
-  color: #2ea35f;
+  color: #2ea35f; /* COLOR_GREEN */
   background-color: white;
   border: none;
+  font-size: 20px;
 }
 
 .main-menu:hover {
@@ -287,21 +290,35 @@ button span {
 
 /*                      toolbar  */
 
+#toolbarBottomMask {
+  z-index: 500;
+  position: absolute;
+  top: 82px;
+  height: 22px;
+  width: 100%;
+}
+
+#toolbarScrollBar {
+  height: 13px;
+  border-bottom: 1px solid #ccc; /*#2ea35f;  COLOR_GREEN */
+}
+
 #toolbar {
   height: 72px; /* 76 */
-  background-color: #eee;
+  background-color: #f0f0f0; /* TOOL_BACK_COLOR */
   color: white;
 }
 
 #toolbarlist {
   position: relative;
-  left: 0;
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   white-space: nowrap; /* anti wrapping */
+  padding-left: 20px;
 }
 
-#toolbarlist div { /* #bold  .tool etc. */
+#toolbarlist div { /* #bold .tool etc. */
   display: inline-block;
   position: relative;
   font-family: sans-serif;
@@ -397,7 +414,7 @@ button span {
 .color-green {
   font-weight: 200;
   font-size: 38px;
-  color: #3bff11;
+  color: #2ea35f; /* COLOR_GREEN */
   left: -30px;
 }
 
@@ -519,7 +536,7 @@ button span {
   z-index: 100;
   font-weight: 400;
   font-size: 18px;
-  color: #888;
+  color: #666;
 }
 
 #bold-caption {
@@ -535,24 +552,24 @@ button span {
 }
 
 #title-caption {
-  left: 82px;
+  left: 72px;
 }
 
 #bullet-caption {
-  left: 65px;
+  left: 48px;
 }
 
 #frame-caption {
-  left: 65px;
+  left: 52px;
 }
 
 #picture-caption {
-  left: 68px;
+  left: 55px;
 }
 
 .tool-cursor {
   position: absolute;
-  top: +14px;
+  top: +17px; /* +14px; */
   z-index: 80;
 }
 
@@ -560,16 +577,17 @@ button span {
 
 /*     scroll toolbar */
 .arrows {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   pointer-events: initial;
-  display: inline-block;
+  display: none; /* inline-block; */
   position: relative;
   top: -64px;
   cursor: pointer;
-  background-color: #ddd; /* #6c757d; */
-  width: 24px; /* 24px; */
-  height: 57px;  /* 65px; */
+  background-color: #ddd;
+  width: 24px;
+  height: 57px;
   z-index: 500;
 }
 
@@ -601,11 +619,12 @@ button span {
 
 /*      simples span     */
 .simples-span {
-  -webkit-user-select: none;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   float: right;
   position: relative;
-  top: -68px; /* -68 */
+  top: -84px; /* -84 */
   right: 0;
   z-index: 600;
 }
@@ -618,16 +637,16 @@ button span {
   padding-top: 16px;
   padding-bottom: 16px;
   cursor: pointer;
-  width: 84px;
-  height: 71px; /* 65 */
-  background-color: #2ea35f;
+  width: 100px;
+  height: 100px; /* 100 */
+  background-color: #2ea35f; /* COLOR_GREEN */
 }
 
 .simples-button:hover {
   background-color: #37b25c;
 }
 
-/* rebonds sur .tool */
+/* rebonds sur .tool
 .tool:hover,
 .tool-frame-bullet:hover {
   top: -6px;
@@ -635,6 +654,7 @@ button span {
   transition: top 0.15s;
   cursor: pointer;
 }
+*/
 
 /*  divers */
 #lexique3-connection {

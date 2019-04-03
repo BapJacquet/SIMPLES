@@ -18,6 +18,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+	<!-- colorpicker  -->
+	<script src='spectrum.js'></script>
+	<link rel='stylesheet' href='spectrum.css' />
 
   <link rel="stylesheet" type="text/css" href="main.css"/>
 	<link rel="stylesheet" type="text/css" href="editor.css"/>
@@ -28,7 +31,7 @@
 	<div>
 		<div class="box">
 			<div id="header">
-				<!-- <img src="SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
+				<!-- <img src="img/SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
@@ -75,6 +78,8 @@
 
 				<!-- hidden input for file dialog -->
 				<input type="file" id="openFileInput" style="display:none;">
+				<!-- hidden input for file colorpicker
+				<input type="text" id="openColorInput" style="display:none;"> -->
 				<!-- fin main-menubar -->
 			</div>
 
@@ -88,7 +93,7 @@
 						<div class="tool bold-false">a</div>
 						<div class="tool bold-true">a</div>
 						<div  id="bold-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
@@ -98,7 +103,7 @@
 						<div class="tool size-s2">a</div>
 						<div class="tool size-s3">a</div>
 						<div  id="size-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
@@ -110,72 +115,71 @@
 						<div class="tool color-green">a</div>
 						<div class="tool color-custom">?</div>
 						<div  id="color-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 						<div id="tool-limit-color" class="tool-limit">|</div>
 					</div>
 
 					<div id="title">
 						<div id="title-caption" class="caption">titre</div>
-						<div class="tool title-h1">T</div>
-						<div class="tool title-h2">T</div>
-						<div class="tool title-h3">T</div>
-						<div class="tool title-h4">T</div>
-						<div class="tool title-none"><img src="titleNone.png"></div>
+						<div class="tool title-h1 check">T</div>
+						<div class="tool title-h2 check">T</div>
+						<div class="tool title-h3 check">T</div>
+						<div class="tool title-h4 check">T</div>
 						<div  id="title-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
 					<div id="bullet">
 						<div id="bullet-caption" class="caption">puce</div>
-						<div class="tool-frame-bullet bullet-true"><img src="bulletTrue.png" /></div>
-						<div class="tool-frame-bullet bullet-false"><img src="titleNone.png" /></div>
+						<div class="tool-frame-bullet bullet-true check"><img src="img/bulletTrue.png" /></div>
 						<div  id="bullet-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 						<div id="tool-limit-bullet" class="tool-limit">|</div>
 					</div>
 
 					<div id="frame">
 						<div id="frame-caption" class="caption">cadre</div>
-						<div class="tool-frame-bullet frame-true"><img src="frameTrue.png" /></div>
-						<div class="tool-frame-bullet frame-false"><img src="titleNone.png" /></div>
+						<div class="tool-frame-bullet frame-true check"><img src="img/frameTrue.png" /></div>
 						<div  id="frame-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
 					<div id="picture">
 						<div id="picture-caption" class="caption">image</div>
-						<div class="tool-frame-bullet picture-true"><img src="pictureTrue.png" /></div>
-						<div class="tool-frame-bullet picture-false"><img src="titleNone.png" /></div>
+						<div class="tool-frame-bullet picture-true check"><img src="img/pictureTrue.png" /></div>
 						<div  id="picture-cursor" class="tool-cursor">
-							<img src="arrow-u-black.png" />
+							<img src="img/arrow-u-black.png" />
 						</div>
 					</div>
 
-					<div></div>
 				</div>  <!-- fin toolbarlist -->
 
 
 				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
 
 				<div class="arrows arrow-l"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
-					<img id="img-arrow-l" src="carat-l-white.png">
+					<img id="img-arrow-l" src="img/carat-l-white.png">
 				</div>
 
 				<span id="analyze" class="simples-span" >
 					<button id="verify-button" type="button" class="simples-button  btn-info">
-						<img src="SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
+						<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
 					</button>
 				</span>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
-					<img id="img-arrow-r" src="carat-r-white.png">
+					<img id="img-arrow-r" src="img/carat-r-white.png">
 				</div>
 
 			</div>  <!-- fin toolbar -->
+
+			<!-- double div to avoid 'à méditer pour Seb' -->
+			<div><div id="toolbarBottomMask"></div></div>
+			<div><div id="toolbarScrollBar"></div></div>
 
 			<!--															E D I T O R  -->
 			<div class="hbox">
@@ -187,19 +191,19 @@
 								<!-- Block command box -->
 								<div id="blockCmd">
 									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
-										<img src="plus-black.png">
+										<img src="img/plus-black.png">
 									</div>
 									<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
-										<img src="delete-black.png">
+										<img src="img/delete-black.png">
 									</div>
 									<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
-										<img src="plus-black.png">
+										<img src="img/plus-black.png">
 									</div>
 									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
-										<img src="carat-d-black.png">
+										<img src="img/carat-d-black.png">
 									</div>
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
-										<img src="carat-u-black.png">
+										<img src="img/carat-u-black.png">
 									</div>
 									<div class="block-number">
 										<span>1</span>

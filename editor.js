@@ -71,9 +71,9 @@ class Editor {
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
     $('body').on('mouseup', event => {
       if (this.capturedMouseDown) {
-        this.updateFormat();
+        setTimeout(() => this.updateFormat(), 1);
+        this.capturedMouseDown = false;
       }
-      this.capturedMouseDown = false;
     });
   }
 
@@ -169,7 +169,7 @@ class Editor {
         break;
     }
     // Update the format.
-    this.updateFormat();
+    setTimeout(() => this.updateFormat(), 1);
   }
 
   /**
@@ -201,7 +201,7 @@ class Editor {
         break;
     }
     // Update the format.
-    this.updateFormat();
+    setTimeout(() => this.updateFormat(), 1);
   }
 
   /**

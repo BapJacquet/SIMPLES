@@ -69,7 +69,7 @@ function displayAnalysisResults(event){
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-danger" role="alert">${complexWords.length} mots compliqués !</div>`);
     for(var i = 0; i < complexWords.length; i++){
       analysisContent.insertAdjacentHTML('beforeend',
-      `<input type='button' title='${frequencyToText(complexWords[i].frequency)}' class='btn btn-outline-danger btn-sm' type="button" value='${complexWords[i].text}'
+      `<input type='button' title='${frequencyToText(complexWords[i].frequency)}' class='btn btn-outline-danger btn-sm' type="button"  value='${complexWords[i].text}'
       onclick='editor.selectFirst("${complexWords[i].text}", true);' />`);
     }
   } else {

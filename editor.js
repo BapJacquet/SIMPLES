@@ -15,6 +15,7 @@ class Editor {
    */
   constructor (id) {
     this.id = id;
+    this.fileVersion = 0;
     this.format = null;
     this.addBlock('', false);
     this.lastBlock = 0;
@@ -765,6 +766,51 @@ class Editor {
       }
     }
     return null;
+  }
+
+  /**
+   * Save asynchronously the document into a JSON compatible format
+   * which can be reloaded using load().
+   * @return {JSONObject} A JSON object of the document.
+   */
+  async save () {
+    let object = {
+      meta: {
+        version: this.fileVersion
+      },
+      blocks: []
+    };
+
+    for (let i = 0; i < this.blockCount; i++) {
+      object.blocks.push({
+        type: 'default',
+        content: $('#txt-' + i)[0].innerHTML,
+        image: $('#img-' + i)[0].toDataURL()
+      });
+    }
+
+    return object;
+  }
+
+  /**
+   * Reload asynchronously a previous document from its JSON object
+   * obtained from save().
+   * @param {JSONObject} json - A JSON object of the document.
+   */
+  async load (json) {
+    if (json.meta.version > this.fileVersion) {
+      throw new Error('Data was generated with a more recent version of SIMPLES. It cannot be loaded.');
+    }
+
+    this.clear();
+
+    for (let i = 0; i < json.blocks.length; i++) {
+      if (i > 0) { // Clearing always leaves an empty block. No need to add it.
+        this.addBlock();
+      }
+      $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
+      this.setImage('#img-' + i, json.blocks[i].image);
+    }
   }
 
   /**

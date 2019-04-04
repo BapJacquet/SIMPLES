@@ -33,9 +33,9 @@ function readFile(ev) {
   var reader = new FileReader();
   reader.onload = function(ev2) {
     var text = ev2.target.result;
-    console.log("textFile: " + text);
+    //console.log("textFile: " + text);
     // ici envoyer à l'éditeur
-    // functionEdit(globalMenuItem, text);
+    editor.load(JSON.parse(text));
   };
   reader.readAsText(file); // readAsDataURL(file);
 }
@@ -471,8 +471,9 @@ $("#newFile").on("click", function () {
 //////////////////////////////////////////
 // read text files
 $(".read-file").on("click", function () {
-  globalMenuItem = $(this).attr("id");
-  $("#openFileInput").trigger("click");
+  //globalMenuItem = $(this).attr("id");
+  confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle ?", "loadFile");
+
 });
 
 $("#openFileInput").on("change", readFile);
@@ -484,24 +485,29 @@ $(".write-file").on("click", function () {
     onPDFClick();
   }
   else if ( $(this).attr("id") == "exportFileHTML" )  {
-    writeFile( editor.toHTML(), "mon fichier.txt", "text/plain");
+    writeFile(editor.toHTML(), "mon fichier.txt", "text/plain");
   }
-  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
+  else {
+    editor.save().then(function (val) {
+      writeFile(JSON.stringify(val), "mon fichier.txt", "text/plain");
+    });
+  }
+//  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 
 //////////////////////////////////////////
 // edit menu
 $("#cutItem").on("click", function() {
   document.execCommand("cut");
+  //editor.cut();
 });
 $("#copyItem").on("click", function() {
   document.execCommand("copy");
+  //editor.copy();
 });
 $("#pasteItem").on("click", function() {
-  setTimeout(function() {
-    $("#txt-" + String(activeBlocId)).focus();
-  }, 10);
   document.execCommand("paste");
+  //editor.paste();
 });
 
 ////////////////////////////////////////////////////////////////
@@ -869,11 +875,14 @@ $("#toolbarBottomMask").hover( function () {
     $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
   });
 
-  // confirm dialog result
+  // confirm dialog result ok
   $("#confirmDialog .ok").on("click", function () {
     var action = $("#confirmDialog").attr("data-action");
     if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
       editor.clear();
+    }
+    else if ( action.match(/loadFile/) ) {
+      $("#openFileInput").trigger("click");
     }
   });
 

@@ -69,11 +69,21 @@ function displayAnalysisResults(event){
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-danger" role="alert">${complexWords.length} mots compliqués !</div>`);
     for(var i = 0; i < complexWords.length; i++){
       analysisContent.insertAdjacentHTML('beforeend',
-      `<input type='button' title='${frequencyToText(complexWords[i].frequency)}' class='btn btn-outline-danger btn-sm' type="button"  value='${complexWords[i].text}'
+      `<input type='button' data-placement="bottom" data-trigger="hover" data-toggle="popover" title='${frequencyToText(complexWords[i].frequency)}' data-content="${description(frequencyToText(complexWords[i].frequency))}" class='btn btn-outline-danger btn-sm' type="button"  value='${complexWords[i].text}'
       onclick='editor.selectFirst("${complexWords[i].text}", true);' />`);
     }
+    $('[data-toggle="popover"]').popover();
   } else {
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-success" role="alert">Les mots semblent simples !</div>`);
+  }
+}
+
+function description (frequency) {
+  switch (frequency) {
+    case 'inconnu': return "Ce mot n'est pas présent dans notre base de donnée.";
+    case 'commun': return 'Ce mot est commun dans les livres ou dans les films.';
+    case 'rare': return 'Ce mot est rare dans les livres ou dans les films.';
+    case 'très rare': return 'Ce mot est très rare dans les livres ou dans les films.';
   }
 }
 

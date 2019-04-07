@@ -151,6 +151,10 @@ function initToolbar() {                 // tool cursor initial values
   $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
   $("#picture-cursor").css("left", CURSOR_DATA["picture-" + PICTURE_INIT]);
 
+  $("#toolbarlist").children().each( function (i, elem) {
+    $(elem).css("left", TOOLBAR_BLOCK_LEFT[elem.id]);
+  });
+
   activeTool("bold", BOLD_INIT);
   activeTool("size", SIZE_INIT);
   activeTool("color", COLOR_INIT);
@@ -158,8 +162,6 @@ function initToolbar() {                 // tool cursor initial values
   activeTool("bullet", BULLET_INIT);
   activeTool("frame", FRAME_INIT);
   activeTool("picture", PICTURE_INIT);
-
-
 }
 ////////////
 //                                            click on toolbar
@@ -211,7 +213,30 @@ function moveCursor(tool, val, anim) {
     }
   }
 }
+/*
+/////////////////////////////////////////////////////////////////
+//                                            hide toolbar block
+function hideToolbarBlock(blockId) {
+  // $("#color").animate({"opacity": "0"}, 150); $("#title").animate({"left": "-400"}, 150);
+  var left0 = TOOLBAR_BLOCK_LEFT[blockId];
+  var left, last;
+  $("#" + blockId).css("visibility", "hidden");
+  $("#" + blockId).find(".tool-cursor").css("visibility", "hidden");
+  last = $("#" + blockId).children().last();
+  var leftLimit = 0;
 
+  //if ( last.hasClass("tool-limit") ) {
+  //  leftLimit = last.css("left");
+  //  leftLimit = Number(/(.*)px$/.exec(leftLimit)[1]);
+  //}
+
+  $("#" + blockId).nextAll().each( function (i, elem) {
+    elemLeft = TOOLBAR_BLOCK_LEFT[elem.id];
+    if ( i == 0 ) left = elemLeft - left0 + leftLimit;
+    $(elem).animate({"left": elemLeft + left}, 500);
+  });
+}
+*/
 /////////////////////////////////////////////////////////////////
 //                                    send toolbar data to editor
 function sendtoEditor(tool, val) {
@@ -487,7 +512,7 @@ $(".write-file").on("click", function () {
   else if ( $(this).attr("id") == "exportFileHTML" )  {
     writeFile(editor.toHTML(), "mon fichier.txt", "text/plain");
   }
-  else {
+  else if ( $(this).attr("id") == "saveFile") {
     editor.save().then(function (val) {
       writeFile(JSON.stringify(val), "mon fichier.txt", "text/plain");
     });
@@ -642,7 +667,7 @@ $("#toolbarBottomMask").hover( function () {
         $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
       }, 25);
   });
-  */
+*/
 /*
   $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
   // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
@@ -651,15 +676,12 @@ $("#toolbarBottomMask").hover( function () {
       mousedownID=-1;
     }
   });
-  */
+*/
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
     setFormatAtToolbar(e.detail.format);
   } );
-
-  // toolbar init
-  //initToolbar();
 
   $("#conted").on("mouseup", function(e) {
     //console.log(window.getSelection().toString());
@@ -888,6 +910,7 @@ $("#toolbarBottomMask").hover( function () {
 
   // before page display
   setTimeout(function () {
+    initToolbar();
     $("#blc-0").trigger("mouseenter");
     $( window ).trigger("resize");
     $('body').css({"visibility":"visible"});
@@ -963,6 +986,8 @@ const TOOLBAR_DECAL = 0; /* 22 */
 const TOOL_BACK_COLOR = "#f0f0f0";
 const COLOR_GREEN = "#2ea35f";
 
+const TOOLBAR_BLOCK_LEFT = {"bold": 0, "size": -64, "color": -158, "title": -240, "bullet": -328, "frame": -355, "picture": -390};
+
 var activeTools = {}; // tools present state
 var mousedownID = -1;
 var dragIsOn = false;
@@ -980,7 +1005,7 @@ var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
 
-initToolbar();
+
 
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();

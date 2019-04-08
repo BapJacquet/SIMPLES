@@ -1,4 +1,4 @@
-/* eslint no-unused-vars: ["warn", { "varsIgnorePattern": "analyzeText" }] */
+/* eslint no-unused-vars: ["warn", { "varsIgnorePattern": "analyzeAllEditorContent" }] */
 /* global $ */
 /* global CustomEvent */
 /* global XMLHttpRequest */
@@ -15,41 +15,48 @@ var body = $('body').get(0);
    EVENTS
    ======================================================================= */
 
-// NEED TO RAISE AN EVENT WHEN PROGRESS IS CHANGED
-var progressChanged = new CustomEvent('progresschanged', {
-  detail: {
-    value: 0
-  },
-  bubbles: false,
-  cancelable: false
-});
+/**
+ * Raises an event when the progress of the analysis has changed.
+ * @param {Number} value - New value of the progress.
+ */
 function dispatchProgressChanged (value) {
-  progressChanged.detail.value = value;
-  body.dispatchEvent(progressChanged);
-}
-// NEED TO RAISE AN EVENT WHEN ANALYSIS IS COMPLETED
-var analysisCompleted = new CustomEvent('analysiscompleted', {
-  detail: {
-    complexWords: []
-  },
-  bubbles: false,
-  cancelable: false
-});
-function dispatchAnalysisCompleted (complexWords) {
-  analysisCompleted.detail.complexWords = complexWords;
-  body.dispatchEvent(analysisCompleted);
+  body.dispatchEvent(new CustomEvent('progresschanged', {
+    detail: {
+      value: value
+    },
+    bubbles: false,
+    cancelable: false
+  }));
 }
 
-// NEED TO RAISE AN EVENT WHEN ANALYSIS IS COMPLETED
-var analysisStatusChanged = new CustomEvent('analysisstatuschanged', {
-  detail: {},
-  bubbles: false,
-  cancelable: false
-});
+/**
+ * Raises an event when the analysis is completed.
+ * @param {WordArray} complexWords - List of the complex words in the text.
+ */
+function dispatchAnalysisCompleted (complexWords) {
+  body.dispatchEvent(new CustomEvent('analysiscompleted', {
+    detail: {
+      complexWords: complexWords
+    },
+    bubbles: false,
+    cancelable: false
+  }));
+}
+
+/**
+ * Raises an event when the status is changed.
+ * @param {string} moduleName - Name of the module which status changed.
+ * @param {string} status - The new status of the module.
+ */
 function dispatchAnalysisStatusChanged (moduleName, status) {
-  analysisStatusChanged.detail.module = moduleName;
-  analysisStatusChanged.detail.status = status;
-  body.dispatchEvent(analysisStatusChanged);
+  body.dispatchEvent(new CustomEvent('analysisstatuschanged', {
+    detail: {
+      module: moduleName,
+      status: status
+    },
+    bubbles: false,
+    cancelable: false
+  }));
 }
 
 /* =======================================================================
@@ -97,31 +104,42 @@ function analyzeText (text) {
           let s = obj.sentences[i];
           // Récupère le résultat pour chaque mot.
           for (let t = 0; t < s.tokens.length; t++) {
-            let word = {};
-            // Position de la première lettre
-            word.startOffset = s.tokens[t].characterOffsetBegin;
-            // Longueur
-            word.length = s.tokens[t].characterOffsetEnd - word.startOffset;
-            // Le mot
-            word.text = s.tokens[t].word;
-            // Sa fonction
-            word.pos = s.tokens[t].pos;
-            // Recherche plus d'informations dans le lexique si nécessaire.
-            if (needLexique3(word.pos)) {
-              // Autres informations
-              let data = await checkLexique3(word);
-              // Fréquence du mot
-              try {
-                word.frequency = Math.max(data.movies, data.books);
-                // Ajoute le mot à la liste des mots complexes si besoin.
-                switch (frequencyToText(word.frequency)) {
-                  case 'inconnu': case 'très rare': case 'rare': case 'commun':
-                    complexWords.push(word); break;
-                }
-              } catch (e) {
-                console.log('Erreur data: ' + data);
+            // Iterates through the list of complex words to check if it's already in there.
+            let alreadyChecked = false;
+            for (let w = 0; w < complexWords.length; w++) {
+              if (complexWords[w].text === s.tokens[t].word) {
+                alreadyChecked = true;
+                break;
               }
             }
+            if (!alreadyChecked) {
+              let word = {};
+              // Position de la première lettre
+              word.startOffset = s.tokens[t].characterOffsetBegin;
+              // Longueur
+              word.length = s.tokens[t].characterOffsetEnd - word.startOffset;
+              // Le mot
+              word.text = s.tokens[t].word;
+              // Sa fonction
+              word.pos = s.tokens[t].pos;
+              // Recherche plus d'informations dans le lexique si nécessaire.
+              if (needLexique3(word.pos)) {
+                // Autres informations
+                let data = await checkLexique3(word);
+                // Fréquence du mot
+                try {
+                  word.frequency = Math.max(data.movies, data.books);
+                  // Ajoute le mot à la liste des mots complexes si besoin.
+                  switch (frequencyToText(word.frequency)) {
+                    case 'inconnu': case 'très rare': case 'rare': case 'commun':
+                      complexWords.push(word); break;
+                  }
+                } catch (e) {
+                  console.log('Erreur data: ' + data);
+                }
+              }
+            }
+
             dispatchProgressChanged((++progress * 100) / totalTokens);
           }
         }

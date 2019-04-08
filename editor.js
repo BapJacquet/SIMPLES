@@ -78,6 +78,10 @@ class Editor {
     });
   }
 
+  /**
+   * Handles text blocks being blurred.
+   * @param {Event} event - Event to handle.
+   */
   onBlur (event) {
     let caller = event.target;
     let id = parseInt(caller.id.substring(4));
@@ -87,6 +91,7 @@ class Editor {
     console.log(this.lastSelection);
     this.updateFormat();
   }
+
   /**
    * Handle special keys in editor blocks.
    * @param {KeyboardEvent} event - Event to handle.
@@ -186,7 +191,7 @@ class Editor {
       case 13: // Line breaks
         let sel = this.getSelection();
         let range = sel.getRangeAt(0);
-        let previousNode = range.startContainer; 
+        let previousNode = range.startContainer;
         console.log(previousNode);
         if (!event.shiftKey && previousNode && previousNode.nodeName === 'DIV' && previousNode.childNodes[0].nodeName === 'BR' && previousNode.childNodes.length === 1) {
           previousNode.remove();

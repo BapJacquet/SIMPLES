@@ -55,4 +55,26 @@ class Animator {
       }
     }
   }
+
+  static moveVertical (element, distance, deviation = 0, duration = 1000, callback = null) {
+    duration = duration / 5;
+    let totalDuration = duration;
+    $(element).css('position', 'relative');
+    let top = parseInt($(element).css('top'), 10);
+    let left = parseInt($(element).css('left'), 10);
+    let targetTop = top + distance;
+    let midLeft = left + deviation;
+    let id = setInterval(frame, 5);
+    function frame () {
+      if (duration <= 0) {
+        clearInterval(id);
+        if (callback !== null) callback();
+      } else {
+        let interpolation = (totalDuration - duration) / totalDuration;
+        $(element).css('top', Utils.lerp(top, targetTop, interpolation));
+        $(element).css('left', Utils.lerp(left, midLeft, Math.sin(interpolation * Math.PI)));
+        duration--;
+      }
+    }
+  }
 }

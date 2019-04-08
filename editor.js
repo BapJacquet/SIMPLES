@@ -545,8 +545,8 @@ class Editor {
       let element = $('#blc-' + index)[0];
       let upElement = $('#blc-' + (index - amount))[0];
       let moveDistance = $(upElement).outerHeight();
-      Animator.move(element, {x: 0, y: -moveDistance}, duration);
-      Animator.move(upElement, {x: 0, y: moveDistance}, duration);
+      Animator.moveVertical(element, -moveDistance, 50, duration);
+      Animator.moveVertical(upElement, moveDistance, -50, duration);
       setTimeout(() => {
         $(element).css('top', 0);
         $(element).css('left', 0);
@@ -570,8 +570,8 @@ class Editor {
       let element = $('#blc-' + (index + amount))[0];
       let upElement = $('#blc-' + (index))[0];
       let moveDistance = $(upElement).outerHeight();
-      Animator.move(element, {x: 0, y: -moveDistance}, duration);
-      Animator.move(upElement, {x: 0, y: moveDistance}, duration);
+      Animator.moveVertical(element, -moveDistance, 50, duration);
+      Animator.moveVertical(upElement, moveDistance, -50, duration);
       setTimeout(() => {
         $(element).css('top', 0);
         $(element).css('left', 0);

@@ -28,6 +28,16 @@ class Utils {
     return {left: eOffset.left - elem.parent().offset().left, top: eOffset.top - elem.parent().offset().top};
   }
 
+  static clamp (value, min, max) {
+    return value > max ? max : (value < min ? min : value);
+  }
+
+  static lerp (startValue, endValue, interpolation) {
+    interpolation = Utils.clamp(interpolation, 0, 1);
+    let d = endValue - startValue;
+    return startValue + (d * interpolation);
+  }
+
   /**
    * Return whether or not the given variable has a value.
    * @param {Object} x - The object.

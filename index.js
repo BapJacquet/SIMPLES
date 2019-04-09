@@ -26,18 +26,14 @@ function writeFile(data, filename, type) {
 
 // lecture fichier texte et envoie à l'éditeur
 function readFile(ev) {
-  // <!-- test readFile  -->
-  // <input type="file" id="file-input" />
   var file = ev.target.files[0];
-  if ( !file || !( file.type.match(/text*/)) ) return;
+  if ( !file || !( file.name.match(/.smp$/)) ) return;
   var reader = new FileReader();
   reader.onload = function(ev2) {
     var text = ev2.target.result;
-    //console.log("textFile: " + text);
-    // ici envoyer à l'éditeur
     editor.load(JSON.parse(text));
   };
-  reader.readAsText(file); // readAsDataURL(file);
+  reader.readAsText(file); 
 }
 
 /**
@@ -508,7 +504,6 @@ $("#newFile").on("click", function () {
 $(".read-file").on("click", function () {
   //globalMenuItem = $(this).attr("id");
   confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle ?", "loadFile");
-
 });
 
 $("#openFileInput").on("change", readFile);
@@ -524,7 +519,7 @@ $(".write-file").on("click", function () {
   }
   else if ( $(this).attr("id") == "saveFile") {
     editor.save().then(function (val) {
-      writeFile(JSON.stringify(val), "mon fichier.txt", "text/plain");
+      writeFile(JSON.stringify(val), "mon fichier.smp", "text/plain");
     });
   }
 //  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
@@ -767,13 +762,13 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-    $(this).trigger("mouseenter");
+    triggerPseudoMouseenter(0);
   });
 
   //////////////////////////////////////////
   // update #blockCmd from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
-    $(this).trigger("mouseenter");
+    triggerPseudoMouseenter(0);
   });
 
   ///////////////////////////////
@@ -799,12 +794,6 @@ $("#toolbarBottomMask").hover( function () {
 
 //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
-    var interBloc = 14;
-    var newBlc = 100;
-    var top = $("#blockCmd").position().top;
-    var blockHeight = $("#blc-" + String(activeBlocId)).height();
-    var commandHeight = $("#blockCmd").height();
-    var upHeight = (blockHeight + commandHeight) /2;
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
       triggerPseudoMouseenter(0);
@@ -813,19 +802,6 @@ $("#toolbarBottomMask").hover( function () {
 
   // insertBlockAfter
     $("#blockCmd .block-new-down").on("click", function (ev) {
-      var interBloc = 14;
-      var top = $("#blockCmd").position().top;
-      var blockHeight = $("#blc-" + String(activeBlocId)).height();
-      var commandHeight = $("#blockCmd").height();
-      var downHeight = (blockHeight + commandHeight) /2;
-/*
-      $("#blockCmd").animate({"top": top + downHeight + interBloc}, 300, function () {
-        editor.insertBlockAfter( activeBlocId, "", true);
-        setTimeout( function () {
-          triggerPseudoMouseenter(1);  // 1
-        }, 15);
-      });
-*/
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
         activeBlocId++;
@@ -837,59 +813,33 @@ $("#toolbarBottomMask").hover( function () {
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
     editor.removeBlockAt(activeBlocId, activeBlocId);
-    /**if ( $(".editor-block").length == 1 ) return;
-
-    $("#blc-" + String(activeBlocId)).slideUp(200);
-
+    // wait for animation ending
     setTimeout( function () {
-      editor.removeBlockAt(activeBlocId, activeBlocId);
-    }, 220);
-
-    if ( $("#blc-" + String(activeBlocId)).next().length == 0 ) {
-      setTimeout( function () {
+      // palette update when removing last (but not only) block
+      if ( activeBlocId > 0 && $("#blc-" + String(activeBlocId)).next().length == 0 ) {
         activeBlocId--;
         $("#blockCmd").find("span").text(activeBlocId + 1);
-        triggerPseudoMouseenter(0);
-      }, 240);
-    }*/
+      }
+      triggerPseudoMouseenter(0);
+    }, 300);
   });
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
     editor.moveBlockDown(activeBlocId);
-    /*var interBloc = 14;
-    var top = $("#blockCmd").position().top;
-    var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
-
-    $("#blockCmd").animate({"top": downHeight + top + interBloc}, 300, function () {
-      editor.moveBlockDown( activeBlocId);
-    });
-
+    // wait for animation ending
     setTimeout( function () {
-      activeBlocId++;
-      $("#blockCmd").find("span").text(activeBlocId + 1);
       triggerPseudoMouseenter(0);
-    }, 330);*/
-
+    }, 300);
   });
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
     editor.moveBlockUp(activeBlocId);
-    /*var interBloc = 14;
-    var top = $("#blockCmd").position().top;
-    var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
-
-    $("#blockCmd").animate({"top": top - upHeight - interBloc}, 300, function () {
-      editor.moveBlockUp( activeBlocId);
-    });
-
+    // wait for animation ending
     setTimeout( function () {
-      activeBlocId--;
-      $("#blockCmd").find("span").text(activeBlocId + 1);
       triggerPseudoMouseenter(0);
-    }, 330);*/
-
+    }, 300);
   });
 
   // resize & focus
@@ -905,7 +855,6 @@ $("#toolbarBottomMask").hover( function () {
     }
   });
 
-  ////////////////////////////////////   DIVERS
   $(function () { // enable tooltips
     $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
   });
@@ -921,31 +870,47 @@ $("#toolbarBottomMask").hover( function () {
     }
   });
 
-  // before page display
+  // new connection
+  $(window).on("load", function() {
+    var version = navigator.platform + ' ' + navigator.userAgent;
+    $.ajax({
+      url: 'connection_count.php',
+      type:'post',
+      data: {'version':version, 'user':localStorage.user}
+    });
+  });
+
+/*
+// ---   prevent stuff
+  document.addEventListener('backbutton', function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+  }, true);
+
+  window.onbeforeunload = function() {
+    confirm("Quitter ?");
+    //return "Dude, are you sure you want to refresh? Think of the kittens!";
+    //confirmDialog("Quitter Simples", "Effacer la page actuelle ?", "coucou");
+  };
+
+  $(window).on('popstate', function (e) {
+      var state = e.originalEvent.state;
+      if (state !== null) {
+          //load content with ajax
+      }
+  });
+*/
+
+  ////////////////////////////////////////////
+  // before body display
   setTimeout(function () {
     initToolbar();
     $("#blc-0").trigger("mouseenter");
     $( window ).trigger("resize");
     $('body').css({"visibility":"visible"});
-  }, 300);
+  }, 200);
 
-  // new connection
-  $(window).on("load", function() {
-  	var version = navigator.platform + ' ' + navigator.userAgent;
-  	$.ajax({
-  		url: 'connection_count.php',
-  		type:'post',
-  		data: {'version':version, 'user':localStorage.user}
-  	});
-  });
-
-
-  // -----------------------------------    prevent stuff
-  document.addEventListener('backbutton', function(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  }, false);
 
   $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
 

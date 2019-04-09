@@ -31,8 +31,8 @@ sup a {
 hr {
   margin-left: 90px;
   height: 1px;
-  color: #000000;
-  background-color: #000000;
+  color: #000;
+  background-color: #000;
   border: none;
 }
 
@@ -64,7 +64,6 @@ hr {
 }
 
 .collapsible {
-  /*background-color: #777;*/
   background-color: rgb(108, 117, 125);
   color: white;
   cursor: pointer;
@@ -84,13 +83,11 @@ hr {
   padding: 0 18px;
   display: none;
   overflow: hidden;
-/*  width: 100%; */
   background-color: #fff;
 }
 
-.hcollapsible:hover {
-  color: #2ea35f; /* COLOR_GREEN */
-  background-color: #eee !important;
+.collapsible:hover {
+  background-color: #aaa;
 }
 
 .hcollapsible {
@@ -111,8 +108,9 @@ hr {
   letter-spacing: 1px;
 }
 
-.collapsible:hover {
-  background-color: #aaa;
+.hcollapsible:hover {
+  color: #2ea35f; /* COLOR_GREEN */
+  background-color: #eee !important;
 }
 
 .hcollapsible-content {
@@ -197,10 +195,6 @@ button span {
   padding-bottom: 20px;
 }
 
-#page-container:hover {
-  /* background: #eee; */
-}
-
 /*
 #analysis-container{
   margin: 10px 20px 10px 20px;
@@ -221,7 +215,6 @@ button span {
 
 #content {
   position: relative;
-  maafin: aut90;
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: auto;
@@ -237,7 +230,6 @@ button span {
   color: blue;
   box-shadow: 0 5px 5px 0 rgba(0,0,0,0.24), 0 5px 10px 0rgba(0,0,0,0.19);
 } */
-
 
 .box {
   position: absolute;
@@ -293,7 +285,7 @@ button span {
 #toolbarBottomMask {
   z-index: 500;
   position: absolute;
-  top: 82px;
+  top: 85px; /* 82 */
   height: 22px;
   width: 100%;
 }

@@ -1,6 +1,7 @@
 /* eslint no-unused-vars: ["warn", { "varsIgnorePattern": "Editor" }] */
 /* global $ */
 /* global Image */
+/* global Animator */
 /* global Utils */
 /* global CustomEvent */
 /* global jsPDF */
@@ -475,7 +476,7 @@ class Editor {
    * @param {int} id - ID of the block to remove.
    * @param {int} focusID - ID of the block that will get the focus.
    */
-  removeBlockAt (id, focusID) {
+  removeBlockAt (id, focusID = id + 1, duration = 250) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
     if (id === 0 && this.blockCount === 1) {
@@ -485,11 +486,14 @@ class Editor {
       $('#txt-0').focus();
     } else {
       // There will be at least one block remaining.
-      $('#blc-' + id).remove();
-      if (typeof (focusID) === 'number') {
-        $('#txt-' + focusID).focus();
-      }
-      this.refreshAllBlockID();
+      let element = $('#blc-' + id)[0];
+      Animator.collapse(element, duration, () => {
+        $(element).remove();
+        if (typeof (focusID) === 'number') {
+          $('#txt-' + focusID).focus();
+        }
+        this.refreshAllBlockID();
+      });
     }
   }
 
@@ -534,12 +538,23 @@ class Editor {
    * @param {int} index - ID of the block to move.
    * @param {int} amount - (Optional) amount to move the block by.
    */
-  moveBlockUp (index, amount = 1) {
+  moveBlockUp (index, amount = 1, duration = 250) {
     if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
 
     if (index - amount >= 0) {
-      $('#blc-' + index).insertBefore('#blc-' + (index - amount));
-      this.refreshAllBlockID();
+      let element = $('#blc-' + index)[0];
+      let upElement = $('#blc-' + (index - amount))[0];
+      let moveDistance = $(upElement).outerHeight();
+      Animator.moveVertical(element, -moveDistance, 50, duration);
+      Animator.moveVertical(upElement, moveDistance, -50, duration);
+      setTimeout(() => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(upElement).css('top', 0);
+        $(upElement).css('left', 0);
+        $(element).insertBefore($(upElement));
+        this.refreshAllBlockID();
+      }, duration * 1.1);
     }
   }
 
@@ -548,12 +563,23 @@ class Editor {
    * @param {int} index - ID of the block to move.
    * @param {int} amount - (Optional) amount to move the block by.
    */
-  moveBlockDown (index, amount = 1) {
+  moveBlockDown (index, amount = 1, duration = 250) {
     if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
 
     if (index + amount < this.blockCount) {
-      $('#blc-' + index).insertAfter('#blc-' + (index + amount));
-      this.refreshAllBlockID();
+      let element = $('#blc-' + (index + amount))[0];
+      let upElement = $('#blc-' + (index))[0];
+      let moveDistance = $(upElement).outerHeight();
+      Animator.moveVertical(element, -moveDistance, 50, duration);
+      Animator.moveVertical(upElement, moveDistance, -50, duration);
+      setTimeout(() => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(upElement).css('top', 0);
+        $(upElement).css('left', 0);
+        $(upElement).insertAfter($(element));
+        this.refreshAllBlockID();
+      }, duration * 1.1);
     }
   }
 

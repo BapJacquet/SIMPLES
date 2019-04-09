@@ -836,7 +836,8 @@ $("#toolbarBottomMask").hover( function () {
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
-    if ( $(".editor-block").length == 1 ) return;
+    editor.removeBlockAt(activeBlocId, activeBlocId);
+    /**if ( $(".editor-block").length == 1 ) return;
 
     $("#blc-" + String(activeBlocId)).slideUp(200);
 
@@ -850,12 +851,13 @@ $("#toolbarBottomMask").hover( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
         triggerPseudoMouseenter(0);
       }, 240);
-    }
+    }*/
   });
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
-    var interBloc = 14;
+    editor.moveBlockDown(activeBlocId);
+    /*var interBloc = 14;
     var top = $("#blockCmd").position().top;
     var downHeight = $("#blc-" + String(activeBlocId + 1)).height();
 
@@ -867,13 +869,14 @@ $("#toolbarBottomMask").hover( function () {
       activeBlocId++;
       $("#blockCmd").find("span").text(activeBlocId + 1);
       triggerPseudoMouseenter(0);
-    }, 330);
+    }, 330);*/
 
   });
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
-    var interBloc = 14;
+    editor.moveBlockUp(activeBlocId);
+    /*var interBloc = 14;
     var top = $("#blockCmd").position().top;
     var upHeight = $("#blc-" + String(activeBlocId - 1)).height();
 
@@ -885,7 +888,7 @@ $("#toolbarBottomMask").hover( function () {
       activeBlocId--;
       $("#blockCmd").find("span").text(activeBlocId + 1);
       triggerPseudoMouseenter(0);
-    }, 330);
+    }, 330);*/
 
   });
 

@@ -298,6 +298,7 @@
 	<!-- Initialize Simples Editor -->
 	<script type="text/javascript" src="editor.js"></script>
 	<script type="text/javascript" src="analyzer.js"></script>
+	<script type="text/javascript" src="animator.js"></script>
 	<script type="text/javascript" src="utils.js"></script>
 
 	<!-- jQuery ready -->

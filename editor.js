@@ -479,21 +479,23 @@ class Editor {
   removeBlockAt (id, focusID = id + 1, duration = 250) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
-    if (id === 0 && this.blockCount === 1) {
-      // There is only one block. Clear it instead of removing it.
-      $('#txt-0').empty();
-      this.setImage('#img-0', 'img/placeholder.png');
-      $('#txt-0').focus();
-    } else {
-      // There will be at least one block remaining.
-      let element = $('#blc-' + id)[0];
-      Animator.collapse(element, duration, () => {
-        $(element).remove();
+    if (this.dispatchBlockDestroyEvent(id)) {
+      if (id === 0 && this.blockCount === 1) {
+        // There is only one block. Clear it instead of removing it.
+        $('#txt-0').empty();
+        this.setImage('#img-0', 'img/placeholder.png');
+        $('#txt-0').focus();
+      } else {
+        // There will be at least one block remaining.
+        let element = $('#blc-' + id)[0];
         if (typeof (focusID) === 'number') {
           $('#txt-' + focusID).focus();
         }
-        this.refreshAllBlockID();
-      });
+        Animator.collapse(element, duration, () => {
+          $(element).remove();
+          this.refreshAllBlockID();
+        });
+      }
     }
   }
 
@@ -930,10 +932,31 @@ class Editor {
         imageid: 'img-' + id
       },
       bubbles: false,
-      cancelable: false
+      cancelable: true
     });
     console.log(e);
     $(this.id).get(0).dispatchEvent(e);
+  }
+
+  /**
+   * Send an event telling that a block has been destroyed.
+   * @param {int} id - The integer ID of the removed block.
+   * @return {boolean} Whether the event was cancelled or not.
+   */
+  dispatchBlockDestroyEvent (id) {
+    let e = new CustomEvent('blockdestroy', {
+      detail: {
+        intid: id,
+        blockid: 'blc-' + id,
+        textid: 'txt-' + id,
+        imageid: 'img-' + id
+      },
+      bubbles: false,
+      cancelable: true
+    });
+    console.log(e);
+    $(this.id).get(0).dispatchEvent(e);
+    return e.defaultPrevented;
   }
 
   /**

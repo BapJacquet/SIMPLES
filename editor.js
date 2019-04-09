@@ -494,6 +494,7 @@ class Editor {
         Animator.collapse(element, duration, () => {
           $(element).remove();
           this.refreshAllBlockID();
+          this.dispatchBlockDestroyedEvent(id);
         });
       }
     }
@@ -939,7 +940,7 @@ class Editor {
   }
 
   /**
-   * Send an event telling that a block has been destroyed.
+   * Send an event telling that a block is being destroyed.
    * @param {int} id - The integer ID of the removed block.
    * @return {boolean} Whether the event was cancelled or not.
    */
@@ -957,6 +958,25 @@ class Editor {
     console.log(e);
     $(this.id).get(0).dispatchEvent(e);
     return e.defaultPrevented;
+  }
+
+  /**
+   * Send an event telling that a block has been destroyed.
+   * @param {int} id - The integer ID of the removed block.
+   */
+  dispatchBlockDestroyedEvent (id) {
+    let e = new CustomEvent('blockdestroyed', {
+      detail: {
+        intid: id,
+        blockid: 'blc-' + id,
+        textid: 'txt-' + id,
+        imageid: 'img-' + id
+      },
+      bubbles: false,
+      cancelable: false
+    });
+    console.log(e);
+    $(this.id).get(0).dispatchEvent(e);
   }
 
   /**

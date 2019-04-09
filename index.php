@@ -77,7 +77,7 @@
 				</div>
 
 				<!-- hidden input for file dialog -->
-				<input type="file" id="openFileInput" style="display:none;">
+				<input type="file" accept=".smp" id="openFileInput" style="display:none;">
 				<!-- hidden input for file colorpicker
 				<input type="text" id="openColorInput" style="display:none;"> -->
 				<!-- fin main-menubar -->

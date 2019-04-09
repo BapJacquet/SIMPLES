@@ -26,18 +26,14 @@ function writeFile(data, filename, type) {
 
 // lecture fichier texte et envoie à l'éditeur
 function readFile(ev) {
-  // <!-- test readFile  -->
-  // <input type="file" id="file-input" />
   var file = ev.target.files[0];
-  if ( !file || !( file.type.match(/text*/)) ) return;
+  if ( !file || !( file.name.match(/.smp$/)) ) return;
   var reader = new FileReader();
   reader.onload = function(ev2) {
     var text = ev2.target.result;
-    //console.log("textFile: " + text);
-    // ici envoyer à l'éditeur
     editor.load(JSON.parse(text));
   };
-  reader.readAsText(file); // readAsDataURL(file);
+  reader.readAsText(file); 
 }
 
 /**
@@ -508,7 +504,6 @@ $("#newFile").on("click", function () {
 $(".read-file").on("click", function () {
   //globalMenuItem = $(this).attr("id");
   confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle ?", "loadFile");
-
 });
 
 $("#openFileInput").on("change", readFile);
@@ -524,7 +519,7 @@ $(".write-file").on("click", function () {
   }
   else if ( $(this).attr("id") == "saveFile") {
     editor.save().then(function (val) {
-      writeFile(JSON.stringify(val), "mon fichier.txt", "text/plain");
+      writeFile(JSON.stringify(val), "mon fichier.smp", "text/plain");
     });
   }
 //  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");

@@ -479,7 +479,7 @@ class Editor {
   removeBlockAt (id, focusID = id + 1, duration = 250) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
-    if (this.dispatchBlockDestroyEvent(id)) {
+    if (!this.dispatchBlockDestroyEvent(id).defaultPrevented) {
       if (id === 0 && this.blockCount === 1) {
         // There is only one block. Clear it instead of removing it.
         $('#txt-0').empty();
@@ -957,7 +957,7 @@ class Editor {
     });
     console.log(e);
     $(this.id).get(0).dispatchEvent(e);
-    return e.defaultPrevented;
+    return e;
   }
 
   /**

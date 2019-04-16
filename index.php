@@ -67,17 +67,17 @@
 				      Resources
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-				      <a class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>
-				      <a class="dropdown-item" href="#">Exporter un dictonnaire...</a>
+				      <a id="importDic" class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>
+				      <a id="exportDic" class="dropdown-item" href="#">Exporter un dictonnaire...</a>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item read-file" href="#">Importer un lexique...</a>
-							<a class="dropdown-item" href="#">Exporter un lexique...</a>
+							<a id="importLex" class="dropdown-item read-file" href="#">Importer un lexique...</a>
+							<a id="exportLex" class="dropdown-item" href="#">Exporter un lexique...</a>
 				    </div>
 				  </div>
 				</div>
 
 				<!-- hidden input for file dialog -->
-				<input type="file" accept=".smp" id="openFileInput" style="display:none;">
+				<input type="file" id="openFileInput" style="display:none;">
 				<!-- hidden input for file colorpicker
 				<input type="text" id="openColorInput" style="display:none;"> -->
 				<!-- fin main-menubar -->
@@ -257,7 +257,6 @@
       </div>
       <div class="modal-body">
           <div class="input-group mb-3">
-        <!--    <input id="imgFromDisk" type="file" > -->
 						<div class="custom-file">
 							<input id="imgFromDisk" type="file" class="custom-file-input">
 							<label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
@@ -292,6 +291,20 @@
     </div>
   </div>
 </div>  <!-- end confirm dialog -->
+
+<!-- alert -->
+<div id="simplesAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"></h5>
+      </div>
+      <div class="modal-footer">
+				<button type="button" class="ok btn btn-primary" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>  <!-- end alert -->
 
 
 

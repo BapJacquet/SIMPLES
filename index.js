@@ -33,7 +33,7 @@ function readFile(ev) {
     var text = ev2.target.result;
     editor.load(JSON.parse(text));
   };
-  reader.readAsText(file); 
+  reader.readAsText(file);
 }
 
 /**
@@ -322,22 +322,36 @@ function triggerPseudoMouseenter( decal ) {
   $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
+// page is empty
+function pageNotEmpty() {
+  if ( $("#editor").children().length > 2 ) return true;
+  if ( $("#txt-0").text() != "" ) return true;
+  if ( $("#img-0").attr("width") != "380" || $("#img-0").attr("height") != "380") return true;
+  return false;
+}
 
 // confirm dialog
 function confirmDialog(title, body, action) {
   $("#confirmDialog .modal-title").text(title);
   $("#confirmDialog .modal-body p").text(body);
   $("#confirmDialog").attr("data-action", action);
-  $("#confirmDialog").modal("show");
+  if ( action == "newFile" || action == "loadFile" ) {
+    if ( pageNotEmpty() ) $("#confirmDialog").modal("show");
+    else $("#confirmDialog .ok").trigger("click");
+  }
 }
 
-//*************************************************** askUserName
+// askUserName
   function askUserName () {
     $('#modal-user-name').modal('show');
     $("#user-name").val('');
   }
 
-
+// alert
+  function simplesAlert(title) {
+    $("#simplesAlert .modal-title").text(title);
+    $("#simplesAlert").modal("show");
+  }
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
@@ -404,6 +418,27 @@ $(document).ready(function () {
     }, 15);
 
   } );
+
+///////////////////////////////////////////////////
+// blockcreated from editor
+$("#editor").on("blockcreated", function (ev) {
+  activeBlocId = ev.detail.intid;
+  $("#blockCmd").find("span").text(activeBlocId + 1);
+  triggerPseudoMouseenter(0);
+});
+
+///////////////////////////////////////////////////
+// blockdestroyed from editor
+$("#editor").on("blockdestroyed", function (ev) {
+  var oldBlock = ev.detail.intid;
+  if ( oldBlock > 0 && $("#blc-" + String(oldBlock)).next().length == 0 ) {
+    // palette update when removing last (but not only) block
+    activeBlocId = oldBlock - 1;
+  }
+  else activeBlocId = oldBlock;
+  $("#blockCmd").find("span").text(activeBlocId + 1);
+  triggerPseudoMouseenter(0);
+});
 
 /********************  image click  ***************/
 
@@ -494,29 +529,40 @@ $("#editor").on("blur", ".editor-text", function () {
   lastBlockBlur = $(this).attr("id");
 });
 
-//////////////////////////////////////////
-// new file
+////////////////////////////////////////// file menu
+// Nouveau...
 $("#newFile").on("click", function () {
   confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
 });
+
 //////////////////////////////////////////
-// read text files
-$(".read-file").on("click", function () {
-  //globalMenuItem = $(this).attr("id");
+// Nouveau sur un modèle...
+$("#newModelFile").on("click", function () {
+  simplesAlert("En chantier!");
+  //  confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
+});
+//////////////////// readFile
+// Ouvrir...
+$("#openFile").on("click", function () {
   confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle ?", "loadFile");
 });
+// Importer...
+$("#importFile").on("click", function () {
+  simplesAlert("En chantier!");
+  //  confirmDialog("Importer un document", "Effacer la page actuelle ?", "loadFile");
+});
 
-$("#openFileInput").on("change", readFile);
-
-//////////////////////////////////////////
-// write file
+/////////////////////  write file
 $(".write-file").on("click", function () {
+  // Exporter au format PDF...
   if ( $(this).attr("id") == "exportFilePDF" ) {
     onPDFClick();
   }
+  // Exporter au format HTML...
   else if ( $(this).attr("id") == "exportFileHTML" )  {
     writeFile(editor.toHTML(), "mon fichier.txt", "text/plain");
   }
+  // Enregistrer...
   else if ( $(this).attr("id") == "saveFile") {
     editor.save().then(function (val) {
       writeFile(JSON.stringify(val), "mon fichier.smp", "text/plain");
@@ -525,8 +571,8 @@ $(".write-file").on("click", function () {
 //  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
 
-//////////////////////////////////////////
-// edit menu
+////////////////////////////////// edit menu
+
 $("#cutItem").on("click", function() {
   document.execCommand("cut");
   //editor.cut();
@@ -536,9 +582,37 @@ $("#copyItem").on("click", function() {
   //editor.copy();
 });
 $("#pasteItem").on("click", function() {
-  document.execCommand("paste");
+  simplesAlert("En chantier!");
+  //document.execCommand("paste");
   //editor.paste();
 });
+
+///////////////////////////////// Resources menu
+// Importer un dictionnaire...
+$("#importDic").on("click", function () {
+  simplesAlert("En chantier!");
+});
+
+// Exporter un dictonnaire...
+$("#exportDic").on("click", function () {
+  simplesAlert("En chantier!");
+});
+
+// Importer un lexique...
+$("#importLex").on("click", function () {
+  simplesAlert("En chantier!");
+});
+
+// Exporter un lexique...
+$("#exportLex").on("click", function () {
+  simplesAlert("En chantier!");
+});
+
+///////////
+// readFile input dialog
+$("#openFileInput").on("change", readFile);
+
+
 
 ////////////////////////////////////////////////////////////////
 //                                   T O O L B A R   E V E N T S
@@ -792,7 +866,8 @@ $("#toolbarBottomMask").hover( function () {
 
 /////////////////////////////////////  B L O C K   C O M M A N D S
 
-//  insertBlockBefore
+
+  //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
@@ -804,7 +879,6 @@ $("#toolbarBottomMask").hover( function () {
     $("#blockCmd .block-new-down").on("click", function (ev) {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
-        activeBlocId++;
         $("#blockCmd").find("span").text(activeBlocId + 1);
         triggerPseudoMouseenter(0);
       }, 15);
@@ -821,7 +895,7 @@ $("#toolbarBottomMask").hover( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
       }
       triggerPseudoMouseenter(0);
-    }, 300);
+    }, 15);
   });
 
 //  moveBlockDown
@@ -842,6 +916,7 @@ $("#toolbarBottomMask").hover( function () {
     }, 300);
   });
 
+/////////////////////////////////////////  D I V E R S
   // resize & focus
   $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
@@ -866,6 +941,7 @@ $("#toolbarBottomMask").hover( function () {
       editor.clear();
     }
     else if ( action.match(/loadFile/) ) {
+      $("#openFileInput").attr("accept", ".smp");
       $("#openFileInput").trigger("click");
     }
   });

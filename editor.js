@@ -271,6 +271,7 @@ class Editor {
     let h4 = this.hasReccursiveTag('H4', element);
     let h5 = this.hasReccursiveTag('H5', element);
     let color = this.getNodeFontColor(element) || '#000000';
+    let size = this.getNodeFontSize(element) || '14pt';
     let result = {};
     result.bold = bold;
     result.bullet = listitem;
@@ -287,6 +288,23 @@ class Editor {
    * @return {String} String representing the color in hexadecimal.
    */
   getNodeFontColor (element) {
+    if (element.nodeName === 'FONT') {
+      return element.color;
+    } else {
+      let e = this.findParentElementWithTag('FONT', element);
+      if (e !== null) {
+        return e.color;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the font size of the element as it is displayed to the user.
+   * @param {DOMElement} element - Element to check the color for.
+   * @return {String} String representing the color in hexadecimal.
+   */
+  getNodeFontSize (element) {
     if (element.nodeName === 'FONT') {
       return element.color;
     } else {
@@ -565,6 +583,7 @@ class Editor {
    * Move a block down by the given amount.
    * @param {int} index - ID of the block to move.
    * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
    */
   moveBlockDown (index, amount = 1, duration = 250) {
     if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);

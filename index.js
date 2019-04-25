@@ -7,21 +7,17 @@
 
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
-    var file = new Blob([data], {type: type});
-    if (window.navigator.msSaveOrOpenBlob) // IE10+
-        window.navigator.msSaveOrOpenBlob(file, filename);
-    else {
-        var a = document.createElement("a"),
-                url = URL.createObjectURL(file);
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 0);
-    }
+  var file = new Blob([data], {type: type});
+  var a = document.createElement("a");
+  var url = URL.createObjectURL(file);
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url); // free memory
+  }, 0);
 }
 
 // lecture fichier texte et envoie à l'éditeur
@@ -532,7 +528,8 @@ $("#editor").on("blur", ".editor-text", function () {
 ////////////////////////////////////////// file menu
 // Nouveau...
 $("#newFile").on("click", function () {
-  confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
+  //confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
+  window.open(document.URL, '_blank');
 });
 
 //////////////////////////////////////////
@@ -545,6 +542,8 @@ $("#newModelFile").on("click", function () {
 // Ouvrir...
 $("#openFile").on("click", function () {
   confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle ?", "loadFile");
+  //localStorage.setItem('simplesLoadFile', 'yes');
+  //window.open(document.URL, '_blank');
 });
 // Importer...
 $("#importFile").on("click", function () {
@@ -612,6 +611,11 @@ $("#exportLex").on("click", function () {
 // readFile input dialog
 $("#openFileInput").on("change", readFile);
 
+///////////////////////////////// Aide menu
+// Aide...
+$("#aideItem").on("click", function () {
+  simplesAlert("En chantier!");
+});
 
 
 ////////////////////////////////////////////////////////////////
@@ -956,8 +960,8 @@ $("#toolbarBottomMask").hover( function () {
     });
   });
 
-/*
 // ---   prevent stuff
+/*
   document.addEventListener('backbutton', function(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -965,9 +969,9 @@ $("#toolbarBottomMask").hover( function () {
   }, true);
 
   window.onbeforeunload = function() {
-    confirm("Quitter ?");
-    //return "Dude, are you sure you want to refresh? Think of the kittens!";
-    //confirmDialog("Quitter Simples", "Effacer la page actuelle ?", "coucou");
+    event.stopPropagation();
+    event.preventDefault();
+    return(confirm("Effacer la page actuelle ?"));
   };
 
   $(window).on('popstate', function (e) {
@@ -976,6 +980,25 @@ $("#toolbarBottomMask").hover( function () {
           //load content with ajax
       }
   });
+
+*/
+
+/*
+// firefox
+window.addEventListener("beforeunload", function( event ) {
+  var saved = true;
+  if ( saved ) event.preventDefault(); // no dialog
+  // else with dialog
+});
+*/
+
+/*
+// webkit
+window.addEventListener("beforeunload", function( event ) {
+  var notSaved = false;
+  if ( notSaved ) event.preventDefault(); // no dialog
+  else event.returnValue = "\o/"; // with dialog
+});
 */
 
   ////////////////////////////////////////////
@@ -986,17 +1009,20 @@ $("#toolbarBottomMask").hover( function () {
     $( window ).trigger("resize");
     $('body').css({"visibility":"visible"});
   }, 200);
-
-
-  $("body").css({"overflow-y": "hidden"}); // stop pull-down-to-refresh
+  /*
+    if ( localStorage.getItem('simplesLoadFile') == 'yes' ) {
+      localStorage.removeItem('simplesLoadFile');
+      console.log('effacer localStorage');
+      $("#openFileInput").attr("accept", ".smp");
+      $("#openFileInput").trigger("click");
+    }
+  */
 
 }); // ******************************************************  F I N   R E A D Y
 //  ****************************************************************************
 
 // user
-
 if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
-
 
 const editor = new Editor('#editor');
 

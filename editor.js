@@ -862,7 +862,9 @@ class Editor {
         this.addBlock();
       }
       $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
-      this.setImage('#img-' + i, json.blocks[i].image);
+      setTimeout(() => {
+        this.setImage('#img-' + i, json.blocks[i].image);
+      }, 250);
     }
   }
 

@@ -745,11 +745,15 @@ class Editor {
     img.crossOrigin = 'Anonymous';
     img.onload = function () {
       var canvas = $(selector).get(0);
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-
+      canvas.width = 100;
+      canvas.height = 100;
+      let scale = Math.max(img.naturalWidth / canvas.width, img.naturalHeight / canvas.height);
+      let width = img.naturalWidth / scale;
+      let height = img.naturalHeight / scale;
+      let offsetX = (canvas.width - width) / 2;
+      let offsetY = (canvas.height - height) / 2;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(this, 0, 0);
+      ctx.drawImage(this, offsetX, offsetY, width, height);
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));

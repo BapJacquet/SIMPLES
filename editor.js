@@ -169,6 +169,20 @@ class Editor {
           this.setFormatAtSelection({picture: !this.format.picture});
         }
         break;
+      case 'ArrowUp':
+        if (event.ctrlKey) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.moveBlockUp(id);
+        }
+        break;
+      case 'ArrowDown':
+        if (event.ctrlKey) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.moveBlockDown(id);
+        }
+        break;
       case 'Backspace':
         if (this.getRawTextContent(id).length === 0 && id !== 0) {
           this.removeBlockAt(id, id - 1);

@@ -201,7 +201,9 @@ class Editor {
           event.preventDefault();
           this.removeBlockAt(id, id - 1);
           let l = this.getBlockLength(id - 1);
-          this.select(id - 1, l);
+          if (l > 0) {
+            this.select(id - 1, l);
+          }
         }
         break;
     }
@@ -903,7 +905,6 @@ class Editor {
   cleanContent (blockIndex) {
     let jElement = $('#txt-' + blockIndex);
     jElement.find('span').contents().unwrap();
-    //jElement.find('br').remove();
     jElement.get(0).normalize();
     $(jElement.find('div div').get().reverse()).each(function () {
       $(this).insertAfter(($(this).parent()));

@@ -18,6 +18,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+	<!-- awesome -->
+	<script defer src="https://use.fontawesome.com/releases/v5.8.1/js/all.js" integrity="sha384-g5uSoOSBd7KkhAMlnQILrecXvzst9TdC09/VM+pjDTCM+1il8RHz5fKANTFFb+gQ" crossorigin="anonymous"></script>
 	<!-- colorpicker  -->
 	<script src='spectrum.js'></script>
 	<link rel='stylesheet' href='spectrum.css' />
@@ -41,7 +43,7 @@
 				      Fichier
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-				      <a id="newFile" class="dropdown-item" href="#">Nouveau...</a>
+							<a id="newFile" class="dropdown-item" href="#">Nouvelle page</a>
 				      <a id="newModelFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
 							<div class="dropdown-divider"></div>
 							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
@@ -53,7 +55,7 @@
 				    </div>
 				  </div>
 					<div class="btn-group" role="group">
-				    <button id="btnFichier" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    <button id="btnEdition" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				      Edition
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
@@ -74,6 +76,14 @@
 							<a id="exportLex" class="dropdown-item" href="#">Exporter un lexique...</a>
 				    </div>
 				  </div>
+					<div class="btn-group" role="group">
+				    <button id="btnAide" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      Aide
+				    </button>
+				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+							<a id="aideItem" class="dropdown-item" href="#">Aide...</a>
+				    </div>
+				  </div>
 				</div>
 
 				<!-- hidden input for file dialog -->
@@ -82,7 +92,6 @@
 				<input type="text" id="openColorInput" style="display:none;"> -->
 				<!-- fin main-menubar -->
 			</div>
-
 
 			<!--           							T O O L B A R -->
 			<div id="toolbar">
@@ -186,10 +195,9 @@
 				<div id="content">
 					<div id="page-container">
 						<div id="page">
-							<!-- Create the editor container -->
+							<!-- Editor container -->
 							<div id="editor">
-								<!-- Block command box -->
-								<div id="blockCmd">
+								<div id="blockCmd"><!-- Block command palette -->
 									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
 										<img src="img/plus-black.png">
 									</div>
@@ -205,10 +213,10 @@
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="img/carat-u-black.png">
 									</div>
-									<div class="block-number">
+									<div class="block-number" contenteditable="true">
 										<span>1</span>
 									</div>
-								</div>
+								</div><!-- Fin block command palette -->
 							</div>
 						</div>
 					</div>
@@ -298,6 +306,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"></h5>
+				<span style="font-size: 36px;">
+					 <i class="fas fa-hammer"></i>
+				</span>
       </div>
       <div class="modal-footer">
 				<button type="button" class="ok btn btn-primary" data-dismiss="modal">Ok</button>

@@ -65,9 +65,21 @@ class Editor {
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
     // $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
-      if ($(event.target).hasClass('.editor-block')) $('#' + event.target.id.replace('blc', 'txt')).focus();
+      if ($(event.target).hasClass('editor-block')) {
+        event.stopPropagation();
+        event.preventDefault();
+        $(event.target).children('.editor-text').focus();
+        console.log("Focusing " + $(event.target).children('.editor-text').id);
+      }
     });
     $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('focus', '.editor-block', event => {
+      if ($(event.target).hasClass('editor-block')) {
+        event.stopPropagation();
+        event.preventDefault();
+        $(event.target).children('.editor-text').focus();
+      }
+    });
     $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
     $(this.id).on('click', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
@@ -191,6 +203,77 @@ class Editor {
     }
     // Update the format.
     setTimeout(() => this.updateFormat(), 1);
+    setTimeout(() => this.processAllSpaces(id), 1);
+  }
+
+  processAllSpaces (id) {
+    let text = this.getRawTextContent(id);
+    let i = -1;
+    while (++i < text.length - 1) {
+      if (['\xa0', ' '].includes(text[i])) {
+        let start = i;
+        while (--start >= 0) {
+          if (['\xa0', ' '].includes(text[start])) {
+            start++;
+            break;
+          }
+        }
+        let end = i;
+        while (++end < text.length) {
+          if (['\xa0', ' '].includes(text[end])) {
+            break;
+          }
+        }
+        let context = {previous: text.substring(start, i), next: text.substring(i + 1, end)};
+        let ideal = this.getRelevantSpace(context);
+        this.setTextAt(id, i, 1, ideal);
+      }
+    }
+  }
+
+  /**
+   * Get the type of space relevant given the context.
+   * @param {Object} context - The context of the space.
+   * @return {string} The space character relevant.
+   */
+  getRelevantSpace (context) {
+    if (['le', 'ne', 'la', 'de', 'du', 'se', 'les', 'pour', 'à', 'et', 'un', 'une'].includes(context.next.toLowerCase())) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, '.')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, '?')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, '!')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, ',')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, ';')) {
+      return ' ';
+    } else {
+      return '\xa0';
+    }
+  }
+
+  /**
+   * Decide whether the space inserted should be breaking or non-breaking.
+   * @param {Number} id - Id of the block.
+   * @param {Number} index - Index of the space character to insert in the block.
+   */
+  processSpace (id, index) {
+    let text = this.getRawTextContent(id);
+    let i = index;
+    let pWord = '';
+    while (--i >= 0) {
+      if (text[i] === ' ') break;
+      pWord += text[i];
+    }
+    let allowBreaking = true;
+    allowBreaking = !['le', 'ne', 'la', 'de', 'se', 'les', 'pour'].includes(pWord);
+    if (allowBreaking) {
+      document.execCommand('insertText', false, ' ');
+    } else {
+      document.execCommand('insertText', false, '\xa0');
+    }
   }
 
   /**
@@ -588,6 +671,7 @@ class Editor {
         $(upElement).css('top', 0);
         $(upElement).css('left', 0);
         $(element).insertBefore($(upElement));
+        $(element).children('.editor-text').focus();
         this.refreshAllBlockID();
       }, duration * 1.1);
     }
@@ -614,6 +698,7 @@ class Editor {
         $(upElement).css('top', 0);
         $(upElement).css('left', 0);
         $(upElement).insertAfter($(element));
+        $(upElement).children('.editor-text').focus();
         this.refreshAllBlockID();
       }, duration * 1.1);
     }
@@ -776,6 +861,38 @@ class Editor {
   }
 
   /**
+   * Set the text at the given index.
+   * @param {Number} blockIndex - Index of the block where the change happens.
+   * @param {Number} startIndex - Index of the character where the change happens.
+   * @param {Number} length - Length of the text to replace.
+   * @param {String} text - Text to insert.
+   */
+  setTextAt (blockIndex, startIndex, length, text) {
+    let sel = this.getSelection();
+    let range = sel.getRangeAt(0);
+    let element = range.startContainer;
+    let offset = range.startOffset;
+    let endElement = range.endContainer;
+    let endOffset = range.endOffset;
+    this.select(blockIndex, startIndex, length, text);
+    document.execCommand('insertText', false, text);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    sel.getRangeAt(0).setStart(element, offset);
+    sel.getRangeAt(0).setEnd(endElement, endOffset);
+  }
+
+  moveCaretForward (amount = 1) {
+    let sel = this.getSelection();
+    let range = sel.getRangeAt(0);
+    if (range.startOffset + 1 >= range.startContainer.length) {
+      range.setStart(this.getNextNode(range.startContainer, false), 0);
+    } else {
+      range.setStart(range.startContainer, range.startOffset + 1);
+    }
+  }
+
+  /**
    * Sets the selection in the editor.
    * @param {int} blockIndex - Index of the block.
    * @param {int} startIndex - Start index of the selection.
@@ -837,6 +954,31 @@ class Editor {
       }
     }
     return null;
+  }
+
+  /**
+   * Get the index of the character in the element at the given offset.
+   * @param {DOMElement} element - Element.
+   * @param {Number} offset - Offset of the character in the given element.
+   * @return {Number} - Index of the character in the given block.
+   */
+  getIndexFromElementAndOffset (element, offset) {
+    let current = $(element);
+    while (!current.hasClass('editor-text')) {
+      current = current.parent();
+    }
+    let root = current.get(0);
+    let nodes = this.getNodesInElement(root);
+    let index = 0;
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].nodeType === 3) {
+        if (nodes[i] === element) {
+          return index + offset;
+        } else {
+          index += nodes[i].length;
+        }
+      }
+    }
   }
 
   /**

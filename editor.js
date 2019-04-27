@@ -196,14 +196,19 @@ class Editor {
         }
         break;
       case 'Backspace':
-        if (this.getRawTextContent(id).length === 0 && id !== 0) {
+        if (this.getBlockLength(id) === 0 && id !== 0 && $('#txt-' + id).children().length === 0) {
+          event.stopPropagation();
+          event.preventDefault();
           this.removeBlockAt(id, id - 1);
+          let l = this.getBlockLength(id - 1);
+          this.select(id - 1, l);
         }
         break;
     }
     // Update the format.
     setTimeout(() => this.updateFormat(), 1);
     setTimeout(() => this.processAllSpaces(id), 1);
+    setTimeout(() => this.cleanContent(id), 2);
   }
 
   processAllSpaces (id) {
@@ -732,6 +737,15 @@ class Editor {
   }
 
   /**
+   * Get the length of the text content of the block with the given id.
+   * @param {Number} id - ID of the block.
+   * @return {Number} The number of characters in this block.
+   */
+  getBlockLength (id) {
+    return this.getRawTextContent(id).length;
+  }
+
+  /**
    * Get a HTML string to initialize a block.
    * @param {int} id - ID of the new block.
    * @param {string} text - Text the new block should be initialized with.
@@ -883,6 +897,23 @@ class Editor {
   }
 
   /**
+   * Clean the HTML content of the block with the given id.
+   * @param {Number} blockIndex - Id of the block to clean.
+   */
+  cleanContent (blockIndex) {
+    let jElement = $('#txt-' + blockIndex);
+    jElement.find('span').contents().unwrap();
+    //jElement.find('br').remove();
+    jElement.get(0).normalize();
+    $(jElement.find('div div').get().reverse()).each(function () {
+      $(this).insertAfter(($(this).parent()));
+    });
+    jElement.find('div').each(function () {
+      if ($(this).is(':empty')) $(this).remove();
+    });
+  }
+
+  /**
    * Move the caret forward by one.
    */
   moveCaretForward () {
@@ -938,10 +969,10 @@ class Editor {
   }
 
   /**
-   * Get the node and the offset at the given index.
+   * Get the element and the offset at the given index.
    * @param {int} blockIndex - Index of the block to look into.
    * @param {int} index - Index of the character.
-   * @return {Object} Corresponding node and offset.
+   * @return {Object} Corresponding element and offset.
    */
   getBlockElementAndOffsetAtIndex (blockIndex, index) {
     let root = $('#txt-' + blockIndex).get(0);
@@ -949,7 +980,7 @@ class Editor {
     let nodes = this.getNodesInElement(root);
     for (let i = 0; i < nodes.length; i++) {
       if (nodes[i].nodeType === 3) {
-        if (remainingChars < nodes[i].length) {
+        if (remainingChars <= nodes[i].length) {
           return {element: nodes[i], offset: remainingChars};
         } else {
           remainingChars -= nodes[i].length;

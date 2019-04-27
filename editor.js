@@ -882,7 +882,10 @@ class Editor {
     sel.getRangeAt(0).setEnd(endElement, endOffset);
   }
 
-  moveCaretForward (amount = 1) {
+  /**
+   * Move the caret forward by one.
+   */
+  moveCaretForward () {
     let sel = this.getSelection();
     let range = sel.getRangeAt(0);
     if (range.startOffset + 1 >= range.startContainer.length) {

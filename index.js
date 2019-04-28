@@ -314,8 +314,8 @@ function activeTool(tool, value) {
 
 function triggerPseudoMouseenter( decal ) {
   $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
-  $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
-  $("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
+  //$(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+  //$("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
 // page is empty
@@ -782,7 +782,7 @@ $("#toolbarBottomMask").hover( function () {
 // cacher #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
-    $(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+    //$(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
   });
 
 //////////////////////////////////////////
@@ -790,7 +790,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
 
   // hover  block text
-    $(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
+    //$(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
 
   // enable .block-move-up
     if ( activeBlocId == 0 ) {

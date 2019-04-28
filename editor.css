@@ -23,11 +23,13 @@
 }
 
 .editor-block {
-  margin-top: 2px; /* 5 */
-  margin-bottom: 2px; /* 0 */
+  margin-top: 1em; /* 5 */
+  margin-bottom: 1em; /* 0 */
+  cursor: text;
 }
 
 .editor-text {
+  border: none;
   margin: 10px 1em 10px 1em;
   min-height: 22px;
   margin-top: 2px; /* 5 */

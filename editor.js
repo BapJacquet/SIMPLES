@@ -65,9 +65,21 @@ class Editor {
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
     // $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
-      if ($(event.target).hasClass('.editor-block')) $('#' + event.target.id.replace('blc', 'txt')).focus();
+      if ($(event.target).hasClass('editor-block')) {
+        event.stopPropagation();
+        event.preventDefault();
+        $(event.target).children('.editor-text').focus();
+        console.log("Focusing " + $(event.target).children('.editor-text').id);
+      }
     });
     $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('focus', '.editor-block', event => {
+      if ($(event.target).hasClass('editor-block')) {
+        event.stopPropagation();
+        event.preventDefault();
+        $(event.target).children('.editor-text').focus();
+      }
+    });
     $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
     $(this.id).on('click', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
@@ -169,14 +181,106 @@ class Editor {
           this.setFormatAtSelection({picture: !this.format.picture});
         }
         break;
+      case 'ArrowUp':
+        if (event.ctrlKey) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.moveBlockUp(id);
+        }
+        break;
+      case 'ArrowDown':
+        if (event.ctrlKey) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.moveBlockDown(id);
+        }
+        break;
       case 'Backspace':
-        if (this.getRawTextContent(id).length === 0 && id !== 0) {
+        if (this.getBlockLength(id) === 0 && id !== 0 && $('#txt-' + id).children().length === 0) {
+          event.stopPropagation();
+          event.preventDefault();
           this.removeBlockAt(id, id - 1);
+          let l = this.getBlockLength(id - 1);
+          if (l > 0) {
+            this.select(id - 1, l);
+          }
         }
         break;
     }
     // Update the format.
     setTimeout(() => this.updateFormat(), 1);
+    setTimeout(() => this.processAllSpaces(id), 1);
+    setTimeout(() => this.cleanContent(id), 2);
+  }
+
+  processAllSpaces (id) {
+    let text = this.getRawTextContent(id);
+    let i = -1;
+    while (++i < text.length - 1) {
+      if (['\xa0', ' '].includes(text[i])) {
+        let start = i;
+        while (--start >= 0) {
+          if (['\xa0', ' '].includes(text[start])) {
+            start++;
+            break;
+          }
+        }
+        let end = i;
+        while (++end < text.length) {
+          if (['\xa0', ' '].includes(text[end])) {
+            break;
+          }
+        }
+        let context = {previous: text.substring(start, i), next: text.substring(i + 1, end)};
+        let ideal = this.getRelevantSpace(context);
+        this.setTextAt(id, i, 1, ideal);
+      }
+    }
+  }
+
+  /**
+   * Get the type of space relevant given the context.
+   * @param {Object} context - The context of the space.
+   * @return {string} The space character relevant.
+   */
+  getRelevantSpace (context) {
+    if (['le', 'ne', 'la', 'de', 'du', 'se', 'les', 'pour', 'à', 'et', 'un', 'une'].includes(context.next.toLowerCase())) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, '.')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, '?')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, '!')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, ',')) {
+      return ' ';
+    } else if (Utils.stringEndsWith(context.previous, ';')) {
+      return ' ';
+    } else {
+      return '\xa0';
+    }
+  }
+
+  /**
+   * Decide whether the space inserted should be breaking or non-breaking.
+   * @param {Number} id - Id of the block.
+   * @param {Number} index - Index of the space character to insert in the block.
+   */
+  processSpace (id, index) {
+    let text = this.getRawTextContent(id);
+    let i = index;
+    let pWord = '';
+    while (--i >= 0) {
+      if (text[i] === ' ') break;
+      pWord += text[i];
+    }
+    let allowBreaking = true;
+    allowBreaking = !['le', 'ne', 'la', 'de', 'se', 'les', 'pour'].includes(pWord);
+    if (allowBreaking) {
+      document.execCommand('insertText', false, ' ');
+    } else {
+      document.execCommand('insertText', false, '\xa0');
+    }
   }
 
   /**
@@ -271,6 +375,7 @@ class Editor {
     let h4 = this.hasReccursiveTag('H4', element);
     let h5 = this.hasReccursiveTag('H5', element);
     let color = this.getNodeFontColor(element) || '#000000';
+    let size = this.getNodeFontSize(element) || '14pt';
     let result = {};
     result.bold = bold;
     result.bullet = listitem;
@@ -287,6 +392,23 @@ class Editor {
    * @return {String} String representing the color in hexadecimal.
    */
   getNodeFontColor (element) {
+    if (element.nodeName === 'FONT') {
+      return element.color;
+    } else {
+      let e = this.findParentElementWithTag('FONT', element);
+      if (e !== null) {
+        return e.color;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the font size of the element as it is displayed to the user.
+   * @param {DOMElement} element - Element to check the color for.
+   * @return {String} String representing the color in hexadecimal.
+   */
+  getNodeFontSize (element) {
     if (element.nodeName === 'FONT') {
       return element.color;
     } else {
@@ -556,6 +678,7 @@ class Editor {
         $(upElement).css('top', 0);
         $(upElement).css('left', 0);
         $(element).insertBefore($(upElement));
+        $(element).children('.editor-text').focus();
         this.refreshAllBlockID();
       }, duration * 1.1);
     }
@@ -565,6 +688,7 @@ class Editor {
    * Move a block down by the given amount.
    * @param {int} index - ID of the block to move.
    * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
    */
   moveBlockDown (index, amount = 1, duration = 250) {
     if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
@@ -581,6 +705,7 @@ class Editor {
         $(upElement).css('top', 0);
         $(upElement).css('left', 0);
         $(upElement).insertAfter($(element));
+        $(upElement).children('.editor-text').focus();
         this.refreshAllBlockID();
       }, duration * 1.1);
     }
@@ -611,6 +736,15 @@ class Editor {
 
     let element = $('#txt-' + id).get(0);
     return element.textContent;
+  }
+
+  /**
+   * Get the length of the text content of the block with the given id.
+   * @param {Number} id - ID of the block.
+   * @return {Number} The number of characters in this block.
+   */
+  getBlockLength (id) {
+    return this.getRawTextContent(id).length;
   }
 
   /**
@@ -726,16 +860,71 @@ class Editor {
     img.crossOrigin = 'Anonymous';
     img.onload = function () {
       var canvas = $(selector).get(0);
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-
+      canvas.width = 100;
+      canvas.height = 100;
+      let scale = Math.max(img.naturalWidth / canvas.width, img.naturalHeight / canvas.height);
+      let width = img.naturalWidth / scale;
+      let height = img.naturalHeight / scale;
+      let offsetX = (canvas.width - width) / 2;
+      let offsetY = (canvas.height - height) / 2;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(this, 0, 0);
+      ctx.drawImage(this, offsetX, offsetY, width, height);
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
     };
     img.src = src;
+  }
+
+  /**
+   * Set the text at the given index.
+   * @param {Number} blockIndex - Index of the block where the change happens.
+   * @param {Number} startIndex - Index of the character where the change happens.
+   * @param {Number} length - Length of the text to replace.
+   * @param {String} text - Text to insert.
+   */
+  setTextAt (blockIndex, startIndex, length, text) {
+    let sel = this.getSelection();
+    let range = sel.getRangeAt(0);
+    let element = range.startContainer;
+    let offset = range.startOffset;
+    let endElement = range.endContainer;
+    let endOffset = range.endOffset;
+    this.select(blockIndex, startIndex, length, text);
+    document.execCommand('insertText', false, text);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    sel.getRangeAt(0).setStart(element, offset);
+    sel.getRangeAt(0).setEnd(endElement, endOffset);
+  }
+
+  /**
+   * Clean the HTML content of the block with the given id.
+   * @param {Number} blockIndex - Id of the block to clean.
+   */
+  cleanContent (blockIndex) {
+    let jElement = $('#txt-' + blockIndex);
+    jElement.find('span').contents().unwrap();
+    jElement.get(0).normalize();
+    $(jElement.find('div div').get().reverse()).each(function () {
+      $(this).insertAfter(($(this).parent()));
+    });
+    jElement.find('div').each(function () {
+      if ($(this).is(':empty')) $(this).remove();
+    });
+  }
+
+  /**
+   * Move the caret forward by one.
+   */
+  moveCaretForward () {
+    let sel = this.getSelection();
+    let range = sel.getRangeAt(0);
+    if (range.startOffset + 1 >= range.startContainer.length) {
+      range.setStart(this.getNextNode(range.startContainer, false), 0);
+    } else {
+      range.setStart(range.startContainer, range.startOffset + 1);
+    }
   }
 
   /**
@@ -781,10 +970,10 @@ class Editor {
   }
 
   /**
-   * Get the node and the offset at the given index.
+   * Get the element and the offset at the given index.
    * @param {int} blockIndex - Index of the block to look into.
    * @param {int} index - Index of the character.
-   * @return {Object} Corresponding node and offset.
+   * @return {Object} Corresponding element and offset.
    */
   getBlockElementAndOffsetAtIndex (blockIndex, index) {
     let root = $('#txt-' + blockIndex).get(0);
@@ -792,7 +981,7 @@ class Editor {
     let nodes = this.getNodesInElement(root);
     for (let i = 0; i < nodes.length; i++) {
       if (nodes[i].nodeType === 3) {
-        if (remainingChars < nodes[i].length) {
+        if (remainingChars <= nodes[i].length) {
           return {element: nodes[i], offset: remainingChars};
         } else {
           remainingChars -= nodes[i].length;
@@ -800,6 +989,31 @@ class Editor {
       }
     }
     return null;
+  }
+
+  /**
+   * Get the index of the character in the element at the given offset.
+   * @param {DOMElement} element - Element.
+   * @param {Number} offset - Offset of the character in the given element.
+   * @return {Number} - Index of the character in the given block.
+   */
+  getIndexFromElementAndOffset (element, offset) {
+    let current = $(element);
+    while (!current.hasClass('editor-text')) {
+      current = current.parent();
+    }
+    let root = current.get(0);
+    let nodes = this.getNodesInElement(root);
+    let index = 0;
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].nodeType === 3) {
+        if (nodes[i] === element) {
+          return index + offset;
+        } else {
+          index += nodes[i].length;
+        }
+      }
+    }
   }
 
   /**
@@ -843,7 +1057,9 @@ class Editor {
         this.addBlock();
       }
       $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
-      this.setImage('#img-' + i, json.blocks[i].image);
+      setTimeout(() => {
+        this.setImage('#img-' + i, json.blocks[i].image);
+      }, 250);
     }
   }
 

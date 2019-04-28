@@ -41,9 +41,19 @@ class Utils {
   /**
    * Return whether or not the given variable has a value.
    * @param {Object} x - The object.
-   * @return {boolean} - true if the object is either null or undefined, false otherwise.
+   * @return {boolean} true if the object is either null or undefined, false otherwise.
    */
   static isNullOrUndefined (x) {
     return (typeof (x) !== 'undefined' && x != null);
+  }
+
+  /**
+   * Return whether or not the given string ends with the given suffix.
+   * @param {String} string - The string to check.
+   * @param {String} suffix - the suffix to test for.
+   * @return {boolean} true if the string ends with the given suffix, false otherwise.
+   */
+  static stringEndsWith (string, suffix) {
+    return string.indexOf(suffix, this.length - suffix.length) !== -1;
   }
 }

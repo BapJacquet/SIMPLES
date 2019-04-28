@@ -178,7 +178,7 @@ button span {
 
 #page {
   width: 210mm;
-  height: 297mm;
+  min-height: 297mm;
   background: #fff;
   margin: auto;
   border-radius: 3px;

@@ -16,7 +16,7 @@ class Editor {
    */
   constructor (id) {
     this.id = id;
-    this.fileVersion = 0;
+    this.fileVersion = 1;
     this.format = null;
     this.addBlock('', false);
     this.lastBlock = 0;
@@ -350,6 +350,10 @@ class Editor {
     }
   }
 
+  getBlockFormat (blockIndex) {
+    return this.getFormatForNode($('#txt-' + blockIndex).get(0));
+  }
+
   /**
    * Get an object representing the format at the current selection.
    * @return {Format} The current format at the selection.
@@ -380,8 +384,9 @@ class Editor {
     result.bold = bold;
     result.bullet = listitem;
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
-    result.frame = $('#blc-' + this.activeBlockId).hasClass('frame');
-    result.picture = $('#img-' + this.activeBlockId).is(':visible');
+    let id = this.getBlockIndexFromElement(element);
+    result.frame = $('#blc-' + id).hasClass('frame');
+    result.picture = $('#img-' + id).is(':visible');
     result.color = color;
     return result;
   }
@@ -992,6 +997,22 @@ class Editor {
   }
 
   /**
+   * Get the index of block containing the element.
+   * @param {DOMElement} element - Element.
+   * @return {Number} - Index of the character in the given block.
+   */
+  getBlockIndexFromElement (element) {
+    let current = $(element);
+    while (!current.hasClass('editor-text')) {
+      current = current.parent();
+      if (current.length === 0) {
+        throw new Error('Element is not within a block!');
+      }
+    }
+    return Number(current[0].id.substring(4));
+  }
+
+  /**
    * Get the index of the character in the element at the given offset.
    * @param {DOMElement} element - Element.
    * @param {Number} offset - Offset of the character in the given element.
@@ -1001,6 +1022,9 @@ class Editor {
     let current = $(element);
     while (!current.hasClass('editor-text')) {
       current = current.parent();
+      if (current.length === 0) {
+        throw new Error('Element is not within a block!');
+      }
     }
     let root = current.get(0);
     let nodes = this.getNodesInElement(root);
@@ -1028,12 +1052,17 @@ class Editor {
       },
       blocks: []
     };
-
     for (let i = 0; i < this.blockCount; i++) {
+      let format = this.getBlockFormat(i);
       object.blocks.push({
         type: 'default',
         content: $('#txt-' + i)[0].innerHTML,
-        image: $('#img-' + i)[0].toDataURL()
+        image: $('#img-' + i)[0].toDataURL(),
+        options: {
+          leftPicture: false,
+          rightPicture: format.picture,
+          frame: format.frame
+        }
       });
     }
 
@@ -1059,6 +1088,10 @@ class Editor {
       $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
       setTimeout(() => {
         this.setImage('#img-' + i, json.blocks[i].image);
+        if (json.meta.version >= 1) {
+          if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
+          if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+        }
       }, 250);
     }
   }

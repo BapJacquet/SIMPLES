@@ -44,7 +44,7 @@ class Utils {
    * @return {boolean} true if the object is either null or undefined, false otherwise.
    */
   static isNullOrUndefined (x) {
-    return (typeof (x) !== 'undefined' && x != null);
+    return (x == null || typeof (x) === 'undefined');
   }
 
   /**

@@ -4,7 +4,7 @@
 	<title>SIMPLES infos</title>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+	<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -17,9 +17,9 @@
 </head>
 <body style="margin-left:3%;margin-right:3%">
 <br />
-<div><img src="LUTINLOGO.jpg" width="180px" /></div>
+<div><img src="img/LUTINLOGO.jpg" width="180px" /></div>
 <h4 style="color: gray">Le FALC c'est simple</h4>
-<h4	style="color: gray">&nbsp;avec&nbsp;&nbsp;&nbsp;<img src="SimpLES_black.png" width="160px"></h4>
+<h4	style="color: gray">&nbsp;avec&nbsp;&nbsp;&nbsp;<img src="img/SimpLES_black.png" width="160px"></h4>
 <form role="form" action="read_q_access.php">
 <!-- <br />
 <button type="submit" class="btn btn-success"> Téléchager les questionnaires</button>

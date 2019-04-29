@@ -30,9 +30,10 @@ class Animator {
   }
 
   /**
-   * Collapses an element.
+   * Move an element by a given offset.
    * @param {DOMElement} element - The element to collapse.
-   * @param {Number} duration - How long the collapse should last.
+   * @param {Object} params - Object containing the x and y offset.
+   * @param {Number} duration - How long the animation should last.
    * @param {Function} callback - Callback function.
    */
   static move (element, params, duration = 1000, callback = null) {
@@ -56,13 +57,21 @@ class Animator {
     }
   }
 
-  static moveVertical (element, distance, deviation = 0, duration = 1000, callback = null) {
+  /**
+   * Move an element vertically by a given offset, with a deviation during the animation.
+   * @param {DOMElement} element - The element to collapse.
+   * @param {Number} offset - y offset to move the element by.
+   * @param {Number} deviation - x offset to displace the element during the animation.
+   * @param {Number} duration - How long the animation should last.
+   * @param {Function} callback - Callback function.
+   */
+  static moveVertical (element, offset, deviation = 0, duration = 1000, callback = null) {
     duration = duration / 5;
     let totalDuration = duration;
     $(element).css('position', 'relative');
     let top = parseInt($(element).css('top'), 10);
     let left = parseInt($(element).css('left'), 10);
-    let targetTop = top + distance;
+    let targetTop = top + offset;
     let midLeft = left + deviation;
     let id = setInterval(frame, 5);
     function frame () {

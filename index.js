@@ -324,13 +324,16 @@ function pageEmpty() {
   else return true;
 }
 
-// confirm dialog
+// confirm dialog show or trigger
 function confirmDialog(title, body, action) {
   $("#confirmDialog .modal-title").text(title);
   $("#confirmDialog .modal-body p").text(body);
   $("#confirmDialog").attr("data-action", action);
   if ( action == "newFile" || action == "loadFile" ) {
-    if ( !pageEmpty() ) $("#confirmDialog").modal("show");
+    //if ( !pageEmpty() ) $("#confirmDialog").modal("show");
+    if ( !pageEmpty() ) {
+      if ( confirm(body) ) $("#confirmDialog .ok").trigger("click");
+    }
     else $("#confirmDialog .ok").trigger("click");
   }
 }

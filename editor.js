@@ -1103,9 +1103,28 @@ class Editor {
   /**
    * Save asynchronously the document into a JSON compatible format
    * which can be reloaded using load().
-   * @return {JSONObject} A JSON object of the document.
+   * @return {JSONObject} A JSON object of the document within a promise.
+   * @deprecated
    */
   async save () {
+    return this.saveSync();
+  }
+
+  /**
+   * Save asynchronously the document into a JSON compatible format
+   * which can be reloaded using load().
+   * @return {JSONObject} A JSON object of the document within a promise.
+   */
+  async saveAsync () {
+    return this.saveSync();
+  }
+
+  /**
+   * Save synchronously the document into a JSON compatible format
+   * which can be reloaded using load().
+   * @return {JSONObject} A JSON object of the document.
+   */
+  saveSync () {
     let object = {
       meta: {
         version: this.fileVersion

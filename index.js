@@ -992,20 +992,19 @@ $("#toolbarBottomMask").hover( function () {
 */
 
   // backstop
-  $(window).on("beforeunload", function( event ) {
+  window.addEventListener("beforeunload", function( event ) {
     var saved;
-    editor.save().then(function (val) {
-      if ( pageEmpty() ) saved = true;
-      else if ( previousDocContent == JSON.stringify(val) ) saved = true;
-      else saved = false;
+    var val = editor.saveSync();
+    if ( pageEmpty() ) saved = true;
+    else if ( previousDocContent == JSON.stringify(val) ) saved = true;
+    else saved = false;
 
-      // without dialog
-      if ( saved ) event.preventDefault();
-      // with dialog
-      else if ( !navigator.userAgent.match(/Firefox/) ) {
-        event.returnValue = "\o/";
-      }
-    });
+    // without dialog
+    if ( saved ) event.preventDefault();
+    // with dialog
+    else if ( !navigator.userAgent.match(/Firefox/) ) {
+      event.returnValue = "\o/";
+    }
   });
 
   ////////////////////////////////////////////

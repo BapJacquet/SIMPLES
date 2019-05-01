@@ -28,6 +28,9 @@ function readFile(ev) {
   reader.onload = function(ev2) {
     previousDocContent = ev2.target.result;
     editor.load(JSON.parse(previousDocContent));
+    setTimeout( function () {
+      triggerPseudoMouseenter(0); // palette position
+    }, 150);
   };
   reader.readAsText(file);
 }
@@ -529,7 +532,7 @@ $("#editor").on("blur", ".editor-text", function () {
 ////////////////////////////////////////// file menu
 // Nouveau...
 $("#newFile").on("click", function () {
-  confirmDialog("Nouveau document", "La page actuelle sera effacée", "newFile");
+  confirmDialog("Nouveau document", "Effacer la page actuelle", "newFile");
   // window.open(document.URL, '_blank');
 });
 
@@ -537,19 +540,19 @@ $("#newFile").on("click", function () {
 // Nouveau sur un modèle...
 $("#newModelFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Nouveau document", "La page actuelle sera effacée", "newFile");
+  //  confirmDialog("Nouveau document", "Effacer la page actuelle", "newFile");
 });
 //////////////////// readFile
 // Ouvrir...
 $("#openFile").on("click", function () {
-  confirmDialog("Ouvrir un document sauvegardé", "La page actuelle sera effacée", "loadFile");
+  confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle", "loadFile");
   //localStorage.setItem('simplesLoadFile', 'yes');
   //window.open(document.URL, '_blank');
 });
 // Importer...
 $("#importFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Importer un document", "La page actuelle sera effacée", "loadFile");
+  //  confirmDialog("Importer un document", "Effacer la page actuelle", "loadFile");
 });
 
 /////////////////////  write file
@@ -902,7 +905,7 @@ $("#toolbarBottomMask").hover( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
       }
       triggerPseudoMouseenter(0);
-    }, 15);
+    }, 150);
   });
 
 //  moveBlockDown
@@ -941,13 +944,16 @@ $("#toolbarBottomMask").hover( function () {
     $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
   });
 
-  // confirm dialog result ok
+  // confirm dialog with ok result
   $("#confirmDialog .ok").on("click", function () {
     var action = $("#confirmDialog").attr("data-action");
-    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
+    if ( action == "newFile" ) { // Fichier/Nouveau
       editor.clear();
+      setTimeout( function () {
+        $("#blc-0").trigger("mouseenter"); // palette position
+      }, 15);
     }
-    else if ( action.match(/loadFile/) ) {
+    else if ( action == "loadFile" ) { // Fichier/Ouvrir...
       $("#openFileInput").attr("accept", ".smp");
       $("#openFileInput").trigger("click");
     }
@@ -974,7 +980,7 @@ $("#toolbarBottomMask").hover( function () {
   window.onbeforeunload = function() {
     event.stopPropagation();
     event.preventDefault();
-    return(confirm("La page actuelle sera effacée"));
+    return(confirm("Effacer la page actuelle"));
   };
 
   $(window).on('popstate', function (e) {
@@ -985,26 +991,22 @@ $("#toolbarBottomMask").hover( function () {
   });
 */
 
-
-  window.addEventListener("beforeunload", function( event ) {
+  // backstop
+  $(window).on("beforeunload", function( event ) {
     var saved;
     editor.save().then(function (val) {
       if ( pageEmpty() ) saved = true;
       else if ( previousDocContent == JSON.stringify(val) ) saved = true;
       else saved = false;
-      if ( window.navigator.userAgent.match(/Firefox/) ) {
-        // firefox
-        if ( saved ) event.preventDefault(); // no dialog
-        // else with dialog
-      }
-      else {
-        // webkit
-        if ( saved ) event.preventDefault(); // no dialog
-        else event.returnValue = "\o/"; // with dialog
+
+      // without dialog
+      if ( saved ) event.preventDefault();
+      // with dialog
+      else if ( !navigator.userAgent.match(/Firefox/) ) {
+        event.returnValue = "\o/";
       }
     });
   });
-
 
   ////////////////////////////////////////////
   // before body display

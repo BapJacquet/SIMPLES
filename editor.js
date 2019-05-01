@@ -21,7 +21,6 @@ class Editor {
     this.addBlock('', false);
     this.lastBlock = 0;
     this.lastSelection = null;
-
     this.registerEvents();
   }
 
@@ -31,6 +30,14 @@ class Editor {
    */
   get blockCount () {
     return $('.editor-block').length;
+  }
+
+  /**
+   * Get the words before which there can be line breaks.
+   * @return {Array} Array of strings.
+   */
+  get breakKeywords () {
+    return ['le', 'ne', 'la', 'de', 'du', 'dans', 'se', 'les', 'pour', 'à', 'et', 'un', 'une', 'en', 'est', 'sont', 'es', 'êtes', 'sommes', 'avec'];
   }
 
   /**
@@ -85,6 +92,11 @@ class Editor {
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
     $('body').on('mouseup', event => {
       if (this.capturedMouseDown) {
+        var sel = this.getSelection();
+        var range = sel.getRangeAt(0);
+        let r = this.getBlockIndexFromElement(range.startContainer);
+        let o = this.getIndexFromElementAndOffset(range.startContainer, range.startOffset);
+        console.log({blockIndex: r, index: o});
         setTimeout(() => this.updateFormat(), 1);
         this.capturedMouseDown = false;
       }
@@ -209,10 +221,21 @@ class Editor {
     }
     // Update the format.
     setTimeout(() => this.updateFormat(), 1);
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowRight':
+      case 'ArrowUp':
+      case 'ArrowDown':
+        if (!event.ctrlKey) return;
+    }
     setTimeout(() => this.processAllSpaces(id), 1);
     setTimeout(() => this.cleanContent(id), 2);
   }
 
+  /**
+   * Process all the spaces and replace them with the relevant equivalent.
+   * @param {Number} id - Index of the block to process.
+   */
   processAllSpaces (id) {
     let text = this.getRawTextContent(id);
     let i = -1;
@@ -220,14 +243,14 @@ class Editor {
       if (['\xa0', ' '].includes(text[i])) {
         let start = i;
         while (--start >= 0) {
-          if (['\xa0', ' '].includes(text[start])) {
+          if (['\xa0', ' ', '\n'].includes(text[start])) {
             start++;
             break;
           }
         }
         let end = i;
         while (++end < text.length) {
-          if (['\xa0', ' '].includes(text[end])) {
+          if (['\xa0', ' ', '\n'].includes(text[end])) {
             break;
           }
         }
@@ -244,18 +267,22 @@ class Editor {
    * @return {string} The space character relevant.
    */
   getRelevantSpace (context) {
-    if (['le', 'ne', 'la', 'de', 'du', 'se', 'les', 'pour', 'à', 'et', 'un', 'une'].includes(context.next.toLowerCase())) {
-      return ' ';
+    if (this.breakKeywords.includes(context.next.toLowerCase())) {
+      if (this.breakKeywords.includes(context.previous.toLowerCase())) {
+        return '\xa0';
+      } else {
+        return ' ';
+      }
     } else if (Utils.stringEndsWith(context.previous, '.')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, '?')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, '!')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, ',')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, ';')) {
-      return ' ';
+      return '\n';
     } else {
       return '\xa0';
     }
@@ -387,6 +414,7 @@ class Editor {
     let id = this.getBlockIndexFromElement(element);
     result.frame = $('#blc-' + id).hasClass('frame');
     result.picture = $('#img-' + id).is(':visible');
+    result.size = size;
     result.color = color;
     return result;
   }
@@ -414,14 +442,14 @@ class Editor {
    * @return {String} String representing the color in hexadecimal.
    */
   getNodeFontSize (element) {
-    if (element.nodeName === 'FONT') {
+    /*if (element.nodeName === 'FONT') {
       return element.color;
     } else {
       let e = this.findParentElementWithTag('FONT', element);
       if (e !== null) {
         return e.color;
       }
-    }
+    }*/
     return null;
   }
 
@@ -740,7 +768,20 @@ class Editor {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
     let element = $('#txt-' + id).get(0);
-    return element.textContent;
+    let result = '';
+    if (element.childNodes.length > 0) {
+      result = element.childNodes[0].textContent;
+      for (let i = 1; i < element.childNodes.length; i++) {
+        if (element.childNodes[i].tagName === 'DIV') {
+          result += '\n' + element.childNodes[i].textContent;
+        } else {
+          result += element.childNodes[i].textContent;
+        }
+      }
+    } else {
+      result = element.textContent;
+    }
+    return result;
   }
 
   /**
@@ -895,12 +936,31 @@ class Editor {
     let offset = range.startOffset;
     let endElement = range.endContainer;
     let endOffset = range.endOffset;
-    this.select(blockIndex, startIndex, length, text);
+    let selBlock = this.getBlockIndexFromElement(element);
+    let selStartIndex = 0;
+    let selEndIndex = 0;
+    let wasInBlock = selBlock === blockIndex;
+    if (wasInBlock) {
+      selStartIndex = this.getIndexFromElementAndOffset(element, offset);
+      selEndIndex = this.getIndexFromElementAndOffset(endElement, endOffset);
+    }
+    this.select(blockIndex, startIndex, length);
     document.execCommand('insertText', false, text);
     sel.removeAllRanges();
-    sel.addRange(range);
-    sel.getRangeAt(0).setStart(element, offset);
-    sel.getRangeAt(0).setEnd(endElement, endOffset);
+    if (wasInBlock) {
+      if (selStartIndex > startIndex + length) {
+        selStartIndex += text.length - length;
+      }
+      if (selEndIndex > startIndex + length) {
+        selEndIndex += text.length - length;
+      }
+      console.log({block: selBlock, selStartIndex: selStartIndex, selEndIndex: selEndIndex, startIndex: startIndex, textLength: text.length, length: length});
+      this.select(selBlock, selStartIndex, selEndIndex - selStartIndex);
+    } else {
+      sel.addRange(range);
+      sel.getRangeAt(0).setStart(element, offset);
+      sel.getRangeAt(0).setEnd(endElement, endOffset);
+    }
   }
 
   /**
@@ -989,7 +1049,7 @@ class Editor {
         if (remainingChars <= nodes[i].length) {
           return {element: nodes[i], offset: remainingChars};
         } else {
-          remainingChars -= nodes[i].length;
+          remainingChars -= nodes[i].length + 1;
         }
       }
     }
@@ -999,14 +1059,14 @@ class Editor {
   /**
    * Get the index of block containing the element.
    * @param {DOMElement} element - Element.
-   * @return {Number} - Index of the character in the given block.
+   * @return {Number} - Index of the block containing the element, or -1.
    */
   getBlockIndexFromElement (element) {
     let current = $(element);
     while (!current.hasClass('editor-text')) {
       current = current.parent();
       if (current.length === 0) {
-        throw new Error('Element is not within a block!');
+        return -1;
       }
     }
     return Number(current[0].id.substring(4));
@@ -1034,7 +1094,7 @@ class Editor {
         if (nodes[i] === element) {
           return index + offset;
         } else {
-          index += nodes[i].length;
+          index += nodes[i].length + 1;
         }
       }
     }
@@ -1131,10 +1191,12 @@ class Editor {
     let currentYOffset = margin;
 
     for (let i = 0; i < this.blockCount; i++) {
+      let blockFormat = this.getBlockFormat(i);
       if (currentYOffset + Utils.pixelToCm($('#blc-' + i).outerHeight()) > pageHeight - margin) {
         doc = doc.addPage();
         currentYOffset = margin;
       }
+      let txt = $('#txt-' + i).get(0);
       /*doc.fromHTML($('#txt-' + i).get(0),
         margin,
         currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
@@ -1144,25 +1206,47 @@ class Editor {
         }
       );*/
 
-      doc.addImage((await html2canvas($('#txt-' + i).get(0))).toDataURL(), 'JPEG',
-        margin + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).left),
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
-        Utils.pixelToCm($('#txt-' + i).width()),
-        Utils.pixelToCm($('#txt-' + i).height()),
-        '',
-        'NONE',
-        0
-      );
+      /*let nodes = this.getNodesInElement(txt);
 
-      doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
-        totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
-        Utils.pixelToCm($('#img-' + i).width()),
-        Utils.pixelToCm($('#img-' + i).height()),
+      for (let n = 0; n < nodes.length; n++) {
+        if (nodes[n].nodeType === 3) {
+          let format = this.getFormatForNode(nodes[n]);
+          doc.setFontSize(Utils.pixelToPoint(parseFloat(format.size)));
+          if (format.bold) {
+            doc.setFontType('bold');
+          } else {
+            doc.setFontType('normal');
+          }
+          doc.text(nodes[n].textContent,
+            margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).left),
+            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).top));
+        }
+      }*/
+      let txtWidth = Utils.pixelToCm($(txt).width());
+      let txtHeight = Utils.pixelToCm($(txt).height());
+      //$(this.id)[0].style.transform = 'scale(3)';
+      doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
+        margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
+        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
+        txtWidth,
+        txtHeight,
         '',
         'NONE',
         0
       );
+      //$(this.id)[0].style.transform = 'scale(1)';
+
+      if (blockFormat.picture) {
+        doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
+          totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
+          currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
+          Utils.pixelToCm($('#img-' + i).width()),
+          Utils.pixelToCm($('#img-' + i).height()),
+          '',
+          'NONE',
+          0
+        );
+      }
 
       currentYOffset += Utils.pixelToCm($('#blc-' + i).outerHeight());
     }

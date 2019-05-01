@@ -22,10 +22,10 @@ class Utils {
     return (px * 25.4) / 96;
   }
 
-  static getRelativeOffset (element) {
+  static getRelativeOffset (element, relativeTo = $(element).parent().get(0)) {
     let elem = $(element);
     let eOffset = elem.offset();
-    return {left: eOffset.left - elem.parent().offset().left, top: eOffset.top - elem.parent().offset().top};
+    return {left: eOffset.left - $(relativeTo).offset().left, top: eOffset.top - $(relativeTo).offset().top};
   }
 
   static clamp (value, min, max) {

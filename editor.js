@@ -1136,7 +1136,10 @@ class Editor {
    */
   async load (json) {
     if (json.meta.version > this.fileVersion) {
-      throw new Error('Data was generated with a more recent version of SIMPLES. It cannot be loaded.');
+      alert('Le fichier a été généré avec une version plus récente de LIREC.\nIl ne peut pas être chargé.\n\nVersion du fichier : ' +
+        json.meta.version + '\nVersion actuelle : ' + this.fileVersion
+      );
+      throw new Error('Data was generated with a more recent version of LIREC. It cannot be loaded.');
     }
 
     this.clear();

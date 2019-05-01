@@ -20,14 +20,14 @@ function writeFile(data, filename, type) {
   }, 0);
 }
 
-// lecture fichier texte et envoie à l'éditeur
+// lecture fichier .smp et envoie à l'éditeur
 function readFile(ev) {
   var file = ev.target.files[0];
   if ( !file || !( file.name.match(/.smp$/)) ) return;
   var reader = new FileReader();
   reader.onload = function(ev2) {
-    var text = ev2.target.result;
-    editor.load(JSON.parse(text));
+    previousDocContent = ev2.target.result;
+    editor.load(JSON.parse(previousDocContent));
   };
   reader.readAsText(file);
 }
@@ -319,20 +319,21 @@ function triggerPseudoMouseenter( decal ) {
 }
 
 // page is empty
-function pageNotEmpty() {
-  if ( $("#editor").children().length > 2 ) return true;
-  if ( $("#txt-0").text() != "" ) return true;
-  if ( $("#img-0").attr("width") != "380" || $("#img-0").attr("height") != "380") return true;
-  return false;
+function pageEmpty() {
+  if ( $("#editor").children().length > 2 || $("#txt-0").text() != "" ) return false;
+  else return true;
 }
 
-// confirm dialog
+// confirm dialog show or trigger
 function confirmDialog(title, body, action) {
   $("#confirmDialog .modal-title").text(title);
   $("#confirmDialog .modal-body p").text(body);
   $("#confirmDialog").attr("data-action", action);
   if ( action == "newFile" || action == "loadFile" ) {
-    if ( pageNotEmpty() ) $("#confirmDialog").modal("show");
+    //if ( !pageEmpty() ) $("#confirmDialog").modal("show");
+    if ( !pageEmpty() ) {
+      if ( confirm(body) ) $("#confirmDialog .ok").trigger("click");
+    }
     else $("#confirmDialog .ok").trigger("click");
   }
 }
@@ -528,27 +529,27 @@ $("#editor").on("blur", ".editor-text", function () {
 ////////////////////////////////////////// file menu
 // Nouveau...
 $("#newFile").on("click", function () {
-  //confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
-  window.open(document.URL, '_blank');
+  confirmDialog("Nouveau document", "La page actuelle sera effacée", "newFile");
+  // window.open(document.URL, '_blank');
 });
 
 //////////////////////////////////////////
 // Nouveau sur un modèle...
 $("#newModelFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
+  //  confirmDialog("Nouveau document", "La page actuelle sera effacée", "newFile");
 });
 //////////////////// readFile
 // Ouvrir...
 $("#openFile").on("click", function () {
-  confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle ?", "loadFile");
+  confirmDialog("Ouvrir un document sauvegardé", "La page actuelle sera effacée", "loadFile");
   //localStorage.setItem('simplesLoadFile', 'yes');
   //window.open(document.URL, '_blank');
 });
 // Importer...
 $("#importFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Importer un document", "Effacer la page actuelle ?", "loadFile");
+  //  confirmDialog("Importer un document", "La page actuelle sera effacée", "loadFile");
 });
 
 /////////////////////  write file
@@ -564,7 +565,9 @@ $(".write-file").on("click", function () {
   // Enregistrer...
   else if ( $(this).attr("id") == "saveFile") {
     editor.save().then(function (val) {
-      writeFile(JSON.stringify(val), "mon fichier.smp", "text/plain");
+      let jsonContent = JSON.stringify(val);
+      writeFile(jsonContent, "mon fichier.smp", "text/plain");
+      previousDocContent = jsonContent;
     });
   }
 //  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
@@ -971,7 +974,7 @@ $("#toolbarBottomMask").hover( function () {
   window.onbeforeunload = function() {
     event.stopPropagation();
     event.preventDefault();
-    return(confirm("Effacer la page actuelle ?"));
+    return(confirm("La page actuelle sera effacée"));
   };
 
   $(window).on('popstate', function (e) {
@@ -980,26 +983,28 @@ $("#toolbarBottomMask").hover( function () {
           //load content with ajax
       }
   });
-
 */
 
-/*
-// firefox
-window.addEventListener("beforeunload", function( event ) {
-  var saved = true;
-  if ( saved ) event.preventDefault(); // no dialog
-  // else with dialog
-});
-*/
 
-/*
-// webkit
-window.addEventListener("beforeunload", function( event ) {
-  var notSaved = false;
-  if ( notSaved ) event.preventDefault(); // no dialog
-  else event.returnValue = "\o/"; // with dialog
-});
-*/
+  window.addEventListener("beforeunload", function( event ) {
+    var saved;
+    editor.save().then(function (val) {
+      if ( pageEmpty() ) saved = true;
+      else if ( previousDocContent == JSON.stringify(val) ) saved = true;
+      else saved = false;
+      if ( window.navigator.userAgent.match(/Firefox/) ) {
+        // firefox
+        if ( saved ) event.preventDefault(); // no dialog
+        // else with dialog
+      }
+      else {
+        // webkit
+        if ( saved ) event.preventDefault(); // no dialog
+        else event.returnValue = "\o/"; // with dialog
+      }
+    });
+  });
+
 
   ////////////////////////////////////////////
   // before body display
@@ -1076,6 +1081,8 @@ var dragMouseX;
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
 var activeBlocId = 0; // id bloc actif
+
+var previousDocContent = ""; // empty, saved or loaded file content
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

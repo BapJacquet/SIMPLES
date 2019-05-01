@@ -43,7 +43,7 @@
 				      Fichier
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-							<a id="newFile" class="dropdown-item" href="#">Nouvelle page</a>
+							<a id="newFile" class="dropdown-item" href="#">Nouveau</a>
 				      <a id="newModelFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
 							<div class="dropdown-divider"></div>
 							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>

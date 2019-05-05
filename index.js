@@ -28,6 +28,7 @@ function readFile(ev) {
   reader.onload = function(ev2) {
     previousDocContent = ev2.target.result;
     editor.load(JSON.parse(previousDocContent));
+    $("#openFileInput").val(""); // force value to be seen as new
     setTimeout( function () {
       triggerPseudoMouseenter(0); // palette position
     }, 150);

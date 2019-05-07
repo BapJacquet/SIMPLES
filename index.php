@@ -176,7 +176,8 @@
 
 				<span id="analyze" class="simples-span" >
 					<button id="verify-button" type="button" class="simples-button  btn-info">
-						<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
+						<!--<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />-->
+						<img src="img/lirec.png" alt="SIMPLES Logo"  height="74" />
 					</button>
 				</span>
 

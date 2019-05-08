@@ -112,7 +112,9 @@ class Editor {
     let id = parseInt(caller.id.substring(4));
     console.log(id + ' has lost focus.');
     this.lastBlock = id;
-    this.lastSelection = this.getSelection();
+    let sel = this.getSelection();
+    let range = sel.getRangeAt(0);
+    this.lastSelection = {startContainer: range.startContainer, startOffset: range.startOffset, endContainer: range.endContainer, endOffset: range.endOffset};
     console.log(this.lastSelection);
     this.updateFormat();
   }
@@ -230,6 +232,26 @@ class Editor {
     }
     setTimeout(() => this.processAllSpaces(id), 1);
     setTimeout(() => this.cleanContent(id), 2);
+  }
+
+  /**
+   * Restore the selection to what it was last.
+   */
+  restoreSelection () {
+    let sel = this.getSelection();
+    let oldRange = sel.getRangeAt(0);
+    if (this.getBlockIndexFromElement(oldRange.startContainer) === -1) {
+      // The selection is not already in a block, so restore the last one.
+      let range = document.createRange();
+      if (this.lastSelection != null) {
+        range.setStart(this.lastSelection.startContainer, this.lastSelection.startOffset);
+        range.setEnd(this.lastSelection.endContainer, this.lastSelection.endOffset);
+      }
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } else {
+      $(oldRange.startContainer).focus();
+    }
   }
 
   /**
@@ -353,6 +375,38 @@ class Editor {
     } else { /* IE */
       return getSelection();
     }
+  }
+
+  /**
+   * Cut the current selection to the clipboard.
+   */
+  async cut () {
+    this.restoreSelection();
+    document.execCommand('cut');
+  }
+
+  /**
+   * Cut the current selection to the clipboard.
+   */
+  async copy () {
+    this.restoreSelection();
+    document.execCommand('copy');
+  }
+
+  /**
+   * Cut the current selection to the clipboard.
+   */
+  async paste () {
+    this.restoreSelection();
+    let data;
+    if (navigator.clipboard) {
+      data = await navigator.clipboard.readText();
+    } else if (window.clipboardData) {
+      data = window.clipboardData.getData('Text');
+    } else {
+      alert("Cette fonction n'est pas disponible dans votre navigateur.\nUtilisez Ctrl+V.");
+    }
+    document.execCommand('insertText', false, data);
   }
 
   /**

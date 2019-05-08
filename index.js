@@ -576,17 +576,17 @@ $(".write-file").on("click", function () {
 ////////////////////////////////// edit menu
 
 $("#cutItem").on("click", function() {
-  document.execCommand("cut");
-  //editor.cut();
+  //document.execCommand("cut");
+  editor.cut();
 });
 $("#copyItem").on("click", function() {
-  document.execCommand("copy");
-  //editor.copy();
+  //document.execCommand("copy");
+  editor.copy();
 });
 $("#pasteItem").on("click", function() {
-  simplesAlert("En chantier!");
+  //simplesAlert("En chantier!");
   //document.execCommand("paste");
-  //editor.paste();
+  editor.paste();
 });
 
 ///////////////////////////////// Resources menu

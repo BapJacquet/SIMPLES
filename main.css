@@ -637,6 +637,10 @@ button span {
   overflow-x: auto;
 }
 
+.web-img:hover {
+  border: 1px solid gray;
+}
+
 .custom-file-input ~ .custom-file-label::after {
   visibility: hidden;
 }

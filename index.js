@@ -467,7 +467,9 @@ function displayWebImages(jsonImages) {
 $("#editor").on("click", ".editor-image", function(ev) {
   $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
   $("#imageClickModal").find("#image-url").val("");
-  //displayWebImages(getImagesSuggestions(activeBlocId));
+  getImagesSuggestions(activeBlocId).then(function (result) {
+    displayWebImages(result);
+  });
   $("#imageClickModal").modal();
 });
 
@@ -504,7 +506,9 @@ $("#imageClickModal").on("hide.bs.modal", function (ev) {
     }
     else {
       ev.preventDefault();
-      //displayWebImages(getImagesForKeyword(urlOrKeyword));
+      getImagesForKeyword(urlOrKeyword).then(function (result) {
+        displayWebImages(result);
+      });
     }
   }
 });
@@ -514,6 +518,7 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
+  $("#imageClickModal").find("#image-url").val(null);
   $("#imageClickModal .close").trigger("click");
 });
 

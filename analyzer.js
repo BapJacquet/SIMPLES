@@ -250,3 +250,22 @@ function createCORSRequest (method, url, async = true) {
   }
   return xhr;
 }
+
+async function getImagesSuggestions (blockIndex) {
+  let words = editor.getSignificantWords(blockIndex);
+  let search = '';
+  for (let i = 0; i < words.length; i++) {
+    search += words[i] + ' ';
+  }
+  return getImagesForKeyword(search);
+}
+
+async function getImagesForKeyword (keyword) {
+  let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
+  let json = await response.json();
+  let result = {arasaac: [], sclera: []};
+  for (let i = 0; i < json.length; i++) {
+    result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
+  }
+  return result;
+}

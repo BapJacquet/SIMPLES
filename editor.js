@@ -1034,6 +1034,21 @@ class Editor {
   }
 
   /**
+   * Get a list of words that seem to be significant within the given block.
+   * @param {Number} blockIndex - Id of the block to check.
+   * @return {Array} Array of words.
+   */
+  getSignificantWords (blockIndex) {
+    let jElement = $('#txt-' + blockIndex);
+    let bold = jElement.find('b');
+    let result = [];
+    for (let i = 0; i < bold.length; i++) {
+      result.push(bold[i].textContent);
+    }
+    return result;
+  }
+
+  /**
    * Move the caret forward by one.
    */
   moveCaretForward () {

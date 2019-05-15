@@ -444,17 +444,17 @@ $("#editor").on("blockdestroyed", function (ev) {
 /********************  image click  ***************/
 
 // display web images in the image modal dialog
-function displayWebImages(jsonImages) {
+function displayWebImages(imgDefaultURLs) {
   /* jsonImages syntax
   { arassaac: ["img1","img2","img3"]
   sclera: ["img1","img2","img3"] }
   */
-  var imgDefaultURLs = JSON.parse(jsonImages);
+  //var imgDefaultURLs = JSON.parse(jsonImages);
   const IMG_SIZE = '" class="web-img" width="120px" height="120px">';
 
-  var arassaac = imgDefaultURLs.arassaac;
-  for (let i = 0; i < arrassaac.length; i++) {
-    let imgTag = '<img src="' + arrassaac[i] + IMG_SIZE;
+  var arasaac = imgDefaultURLs.arasaac;
+  for (let i = 0; i < arasaac.length; i++) {
+    let imgTag = '<img src="' + arasaac[i] + IMG_SIZE;
     $("#imageClickModal").find(".arassaac").append(imgTag);
   }
   var sclera = imgDefaultURLs.sclera;
@@ -468,7 +468,9 @@ function displayWebImages(jsonImages) {
 $("#editor").on("click", ".editor-image", function(ev) {
   $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
   $("#imageClickModal").find("#image-url").val("");
-  //displayWebImages(getImagesSuggestions(activeBlocId));
+  getImagesSuggestions(activeBlocId).then(function (result) {
+    displayWebImages(result);
+  });
   $("#imageClickModal").modal();
 });
 
@@ -505,7 +507,9 @@ $("#imageClickModal").on("hide.bs.modal", function (ev) {
     }
     else {
       ev.preventDefault();
-      //displayWebImages(getImagesForKeyword(urlOrKeyword));
+      getImagesForKeyword(urlOrKeyword).then(function (result) {
+        displayWebImages(result);
+      });
     }
   }
 });

@@ -519,6 +519,7 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
+  $("#imageClickModal").find("#image-url").val(null);
   $("#imageClickModal .close").trigger("click");
 });
 

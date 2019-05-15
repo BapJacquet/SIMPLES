@@ -450,16 +450,15 @@ function displayWebImages(jsonImages) {
   sclera: ["img1","img2","img3"] }
   */
   var imgDefaultURLs = JSON.parse(jsonImages);
-  const IMG_SIZE = '" class="web-img" width="120px" height="120px">';
 
   var arassaac = imgDefaultURLs.arassaac;
   for (let i = 0; i < arrassaac.length; i++) {
-    let imgTag = '<img src="' + arrassaac[i] + IMG_SIZE;
+    let imgTag = '<img src="' + arrassaac[i] + '" class="web-img">';
     $("#imageClickModal").find(".arassaac").append(imgTag);
   }
   var sclera = imgDefaultURLs.sclera;
   for (let i = 0; i < sclera.length; i++) {
-    let imgTag = '<img src="' + sclera[i] + IMG_SIZE;
+    let imgTag = '<img src="' + sclera[i] + '" class="web-img">';
     $("#imageClickModal").find(".sclera").append(imgTag);
   }
 }
@@ -611,7 +610,7 @@ $(".write-file").on("click", function () {
   }
   // Enregistrer...
   else if ( $(this).attr("id") == "saveFile") {
-    editor.save().then(function (val) {
+    editor.saveAsync().then(function (val) {
       let jsonContent = JSON.stringify(val);
       writeFile(jsonContent, "mon fichier.smp", "text/plain");
       previousDocContent = jsonContent;
@@ -1038,17 +1037,19 @@ $("#toolbarBottomMask").hover( function () {
   // close tab backstop
   window.addEventListener("beforeunload", function( event ) {
     var saved;
-    var val = editor.saveSync();
-    if ( pageEmpty() ) saved = true;
-    else if ( previousDocContent == JSON.stringify(val) ) saved = true;
-    else saved = false;
+    //var val = editor.saveSync();
+    editor.saveAsync().then(function (val) {
+      if ( pageEmpty() ) saved = true;
+      else if ( previousDocContent == JSON.stringify(val) ) saved = true;
+      else saved = false;
 
-    // without dialog
-    if ( saved ) event.preventDefault();
-    // with dialog
-    else if ( !navigator.userAgent.match(/Firefox/) ) {
-      event.returnValue = "\o/";
-    }
+      // without dialog
+      if ( saved ) event.preventDefault();
+      // with dialog
+      else if ( !navigator.userAgent.match(/Firefox/) ) {
+        event.returnValue = "\o/";
+      }
+    });
   });
 
   ////////////////////////////////////////////

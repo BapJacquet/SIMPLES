@@ -637,8 +637,14 @@ button span {
   overflow-x: auto;
 }
 
+.web-img {
+  border: 2px solid #fff;
+  width: 120px;
+  height: 120px;
+}
+
 .web-img:hover {
-  border: 1px solid gray;
+  border: 2px solid #bbb;
 }
 
 .custom-file-input ~ .custom-file-label::after {

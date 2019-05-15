@@ -276,20 +276,20 @@
 				<!-- modal-images -->
 				<label class="col-form-label"><strong>Arassaac</strong></label>
 				<div class="modal-images arassaac d-flex align-content-stretch flex-nowrap">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img">
 				</div>
 				<br>
 
 				<label class="col-form-label"><strong>Sclera</strong></label>
 				<div class="modal-images sclera d-flex align-content-stretch flex-nowrap">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img">
 				</div>
 				<br>
 				<div class="form-group">

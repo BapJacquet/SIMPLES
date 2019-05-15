@@ -28,6 +28,10 @@ function readFile(ev) {
   reader.onload = function(ev2) {
     previousDocContent = ev2.target.result;
     editor.load(JSON.parse(previousDocContent));
+    $("#openFileInput").val(""); // force value to be seen as new
+    setTimeout( function () {
+      triggerPseudoMouseenter(0); // palette position
+    }, 150);
   };
   reader.readAsText(file);
 }
@@ -439,13 +443,41 @@ $("#editor").on("blockdestroyed", function (ev) {
 
 /********************  image click  ***************/
 
+// display web images in the image modal dialog
+function displayWebImages(jsonImages) {
+  /* jsonImages syntax
+  { arassaac: ["img1","img2","img3"]
+  sclera: ["img1","img2","img3"] }
+  */
+  var imgDefaultURLs = JSON.parse(jsonImages);
+  const IMG_SIZE = '" class="web-img" width="120px" height="120px">';
+
+  var arassaac = imgDefaultURLs.arassaac;
+  for (let i = 0; i < arrassaac.length; i++) {
+    let imgTag = '<img src="' + arrassaac[i] + IMG_SIZE;
+    $("#imageClickModal").find(".arassaac").append(imgTag);
+  }
+  var sclera = imgDefaultURLs.sclera;
+  for (let i = 0; i < sclera.length; i++) {
+    let imgTag = '<img src="' + sclera[i] + IMG_SIZE;
+    $("#imageClickModal").find(".sclera").append(imgTag);
+  }
+}
+
+// image dialog opening from editor block
 $("#editor").on("click", ".editor-image", function(ev) {
   $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
   $("#imageClickModal").find("#image-url").val("");
+  //displayWebImages(getImagesSuggestions(activeBlocId));
   $("#imageClickModal").modal();
 });
 
-// bouton dans dialog modal
+// trigger input file tag in image dialog
+$("#imgButtonFromDisk").on("click", function () {
+  $("#imgFromDisk").trigger("click");
+});
+
+// input file tag in image dialog: Read file from disk, send to editor
 $("#imgFromDisk").on("change", function (e) {
   var file = e.target.files[0];
   if ( !file || (!file.type.match(/image.*/)) ) {
@@ -454,19 +486,36 @@ $("#imgFromDisk").on("change", function (e) {
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    $("#imageClickModal .btn-dark").trigger("click");
+    $("#imageClickModal #modalClose").trigger("click");
     var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
+    $("#imgFromDisk").val(""); // force value to be seen as new
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
 });
 
-$("#imageClickModal").on('hidden.bs.modal', function (ev) {
+// send image url OR keyword to editor
+$("#imageClickModal").on("hide.bs.modal", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-  var url = $("#imageClickModal").find("#image-url").val();
-  // send url to editor
-  if ( url ) editor.setImage(imageId, url);
-  triggerPseudoMouseenter(0);
+  var urlOrKeyword = $("#imageClickModal").find("#image-url").val();
+  if ( urlOrKeyword ) {
+    if ( urlOrKeyword.match(/^https?:\/\//) ) {
+      editor.setImage(imageId, urlOrKeyword);
+      triggerPseudoMouseenter(0);
+    }
+    else {
+      ev.preventDefault();
+      //displayWebImages(getImagesForKeyword(urlOrKeyword));
+    }
+  }
+});
+
+// send web image to editor
+$("#imageClickModal").on("click", ".web-img", function (ev) {
+  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  var url = $(ev.target).attr("src");
+  editor.setImage(imageId, url);
+  $("#imageClickModal .close").trigger("click");
 });
 
 //  ***************************  image drag & drop  ************
@@ -477,8 +526,7 @@ $(document).on('drop dragover', function(e){
     return false;
 });
 
-//$("#editor").find(".editor-image").on('dragover', function(e) {
-$("#editor").on('dragover', ".editor-image", function(e) {
+$("#editor").on("dragover", ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
     var ev = e.originalEvent;
@@ -486,8 +534,7 @@ $("#editor").on('dragover', ".editor-image", function(e) {
 });
 
 // Get file data on drop
-//$("#editor").find(".editor-image").on('drop',  function(e) {
-  $("#editor").on('drop', ".editor-image", function(e) {
+  $("#editor").on("drop", ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
     var imageId = "#" + e.target.id;
@@ -529,7 +576,7 @@ $("#editor").on("blur", ".editor-text", function () {
 ////////////////////////////////////////// file menu
 // Nouveau...
 $("#newFile").on("click", function () {
-  confirmDialog("Nouveau document", "La page actuelle sera effacée", "newFile");
+  confirmDialog("Nouveau document", "Effacer la page actuelle", "newFile");
   // window.open(document.URL, '_blank');
 });
 
@@ -537,19 +584,19 @@ $("#newFile").on("click", function () {
 // Nouveau sur un modèle...
 $("#newModelFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Nouveau document", "La page actuelle sera effacée", "newFile");
+  //  confirmDialog("Nouveau document", "Effacer la page actuelle", "newFile");
 });
 //////////////////// readFile
 // Ouvrir...
 $("#openFile").on("click", function () {
-  confirmDialog("Ouvrir un document sauvegardé", "La page actuelle sera effacée", "loadFile");
+  confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle", "loadFile");
   //localStorage.setItem('simplesLoadFile', 'yes');
   //window.open(document.URL, '_blank');
 });
 // Importer...
 $("#importFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Importer un document", "La page actuelle sera effacée", "loadFile");
+  //  confirmDialog("Importer un document", "Effacer la page actuelle", "loadFile");
 });
 
 /////////////////////  write file
@@ -782,7 +829,7 @@ $("#toolbarBottomMask").hover( function () {
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
 
-// cacher #blockCmd
+// hide #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
     //$(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
@@ -902,7 +949,7 @@ $("#toolbarBottomMask").hover( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
       }
       triggerPseudoMouseenter(0);
-    }, 15);
+    }, 150);
   });
 
 //  moveBlockDown
@@ -941,13 +988,16 @@ $("#toolbarBottomMask").hover( function () {
     $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
   });
 
-  // confirm dialog result ok
+  // confirm dialog with ok result
   $("#confirmDialog .ok").on("click", function () {
     var action = $("#confirmDialog").attr("data-action");
-    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
+    if ( action == "newFile" ) { // Fichier/Nouveau
       editor.clear();
+      setTimeout( function () {
+        $("#blc-0").trigger("mouseenter"); // palette position
+      }, 15);
     }
-    else if ( action.match(/loadFile/) ) {
+    else if ( action == "loadFile" ) { // Fichier/Ouvrir...
       $("#openFileInput").attr("accept", ".smp");
       $("#openFileInput").trigger("click");
     }
@@ -974,7 +1024,7 @@ $("#toolbarBottomMask").hover( function () {
   window.onbeforeunload = function() {
     event.stopPropagation();
     event.preventDefault();
-    return(confirm("La page actuelle sera effacée"));
+    return(confirm("Effacer la page actuelle"));
   };
 
   $(window).on('popstate', function (e) {
@@ -985,26 +1035,21 @@ $("#toolbarBottomMask").hover( function () {
   });
 */
 
-
+  // close tab backstop
   window.addEventListener("beforeunload", function( event ) {
     var saved;
-    editor.save().then(function (val) {
-      if ( pageEmpty() ) saved = true;
-      else if ( previousDocContent == JSON.stringify(val) ) saved = true;
-      else saved = false;
-      if ( window.navigator.userAgent.match(/Firefox/) ) {
-        // firefox
-        if ( saved ) event.preventDefault(); // no dialog
-        // else with dialog
-      }
-      else {
-        // webkit
-        if ( saved ) event.preventDefault(); // no dialog
-        else event.returnValue = "\o/"; // with dialog
-      }
-    });
-  });
+    var val = editor.saveSync();
+    if ( pageEmpty() ) saved = true;
+    else if ( previousDocContent == JSON.stringify(val) ) saved = true;
+    else saved = false;
 
+    // without dialog
+    if ( saved ) event.preventDefault();
+    // with dialog
+    else if ( !navigator.userAgent.match(/Firefox/) ) {
+      event.returnValue = "\o/";
+    }
+  });
 
   ////////////////////////////////////////////
   // before body display
@@ -1030,6 +1075,7 @@ $("#toolbarBottomMask").hover( function () {
 if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
 
 const editor = new Editor('#editor');
+//const analyzer = new Analyzer('#analyzer');
 
 const CURSOR_DATA = {
 

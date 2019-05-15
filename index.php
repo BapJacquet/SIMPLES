@@ -176,7 +176,8 @@
 
 				<span id="analyze" class="simples-span" >
 					<button id="verify-button" type="button" class="simples-button  btn-info">
-						<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
+						<!--<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />-->
+						<img src="img/lirec-black.png" alt="SIMPLES Logo"  height="74" />
 					</button>
 				</span>
 
@@ -255,28 +256,49 @@
 <!--                         			 D I A L O G S  -->
 <!-- image dialog -->
 <div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Choisir une image</h3>
+        <h2 class="modal-title">Choisir une image</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <div class="input-group mb-3">
-						<div class="custom-file">
-							<input id="imgFromDisk" type="file" class="custom-file-input">
-							<label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
-						</div>
-          </div>
-          <div class="form-group">
-            <label for="message-text" class="col-form-label">Entrer un URL:</label>
-            <input type="url" class="form-control" id="image-url"></textarea>
-          </div>
+				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary btn-block">Choisir un fichier sur l'ordinateur</button>
+				<br>
+        <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
+					<div class="custom-file">
+						<input id="imgFromDisk" type="file" class="custom-file-input btn btn-info">
+						<label class="custom-file-label" for="inputGroupFile01"></label>
+					</div>
+        </div>
+				<!-- modal-images -->
+				<label class="col-form-label"><strong>Arassaac</strong></label>
+				<div class="modal-images arassaac d-flex align-content-stretch flex-nowrap">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
+				</div>
+				<br>
+
+				<label class="col-form-label"><strong>Sclera</strong></label>
+				<div class="modal-images sclera d-flex align-content-stretch flex-nowrap">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
+					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
+				</div>
+				<br>
+				<div class="form-group">
+					<label for="message-text" class="col-form-label">Entrer une URL ou un mot clef:</label>
+					<input type="url" class="form-control" id="image-url"></textarea>
+				</div>
       </div>
       <div class="modal-footer">
-				<button type="button" class="btn btn-dark" data-dismiss="modal">OK</button>
+				<button id="modalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Valider</button>
       </div>
     </div>
   </div>

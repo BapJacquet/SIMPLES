@@ -285,14 +285,22 @@
 				<div class="modal-images sclera flex-nowrap">
 				</div>
 				<br>
-				<div class="form-group">
+				<label class="col-form-label">Entrer une URL ou un mot clef:</label>
+				<div class="input-group mb-3">
+  				<input  id="image-url" type="text" class="form-control">
+  				<div class="input-group-append">
+    				<button id="modalClose" type="button" class="btn btn-secondary">Valider</button>
+  				</div>
+				</div>
+
+				<!--<div class="form-group">
 					<label for="message-text" class="col-form-label">Entrer une URL ou un mot clef:</label>
 					<input type="url" class="form-control" id="image-url"></input>
-				</div>
+				</div>-->
       </div>
-      <div class="modal-footer">
+      <!--<div class="modal-footer">
 				<button id="modalClose" type="button" class="btn btn-secondary">Valider</button>
-      </div>
+      </div>-->
     </div>
   </div>
 </div>  <!-- end image dialog -->

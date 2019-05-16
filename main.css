@@ -635,11 +635,13 @@ button span {
 /* images dialog */
 .modal-images {
   overflow-x: auto;
+  white-space: nowrap;
 }
 
 .web-img {
   border: 2px solid #fff;
-  width: 120px;
+
+  /* width: 120px; */
   height: 120px;
 }
 

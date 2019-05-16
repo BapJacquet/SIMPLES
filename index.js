@@ -441,27 +441,30 @@ $("#editor").on("blockdestroyed", function (ev) {
   triggerPseudoMouseenter(0);
 });
 
-/********************  image click  ***************/
+/*****************************  image modal dialog  ***************/
 
 // display web images in the image modal dialog
-function displayWebImages(jsonImages) {
-  /* jsonImages syntax
+function displayWebImages(imgURLs) {
+  /* imgURLs syntax:
   { arassaac: ["img1","img2","img3"]
   sclera: ["img1","img2","img3"] }
   */
-  var imgDefaultURLs = JSON.parse(jsonImages);
+  $("#imageClickModal").find(".modal-images").html(""); // clear images
 
-  var arassaac = imgDefaultURLs.arassaac;
-  for (let i = 0; i < arrassaac.length; i++) {
-    let imgTag = '<img src="' + arrassaac[i] + '" class="web-img">';
-    $("#imageClickModal").find(".arassaac").append(imgTag);
+  var arasaac = imgURLs.arasaac;
+  for (let i = 0; i < arasaac.length; i++) {
+    let imgTag = '<img src="' + arasaac[i] + '" class="web-img">';
+    $("#imageClickModal").find(".arasaac").append(imgTag);
   }
-  var sclera = imgDefaultURLs.sclera;
+
+  var sclera = imgURLs.sclera;
   for (let i = 0; i < sclera.length; i++) {
     let imgTag = '<img src="' + sclera[i] + '" class="web-img">';
     $("#imageClickModal").find(".sclera").append(imgTag);
   }
-}
+
+  $("#imageClickModal").modal("show");
+}  // end displayWebImages
 
 // image dialog opening from editor block
 $("#editor").on("click", ".editor-image", function(ev) {
@@ -487,7 +490,7 @@ $("#imgFromDisk").on("change", function (e) {
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    $("#imageClickModal #modalClose").trigger("click");
+    $("#imageClickModal .close").trigger("click");
     var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
     $("#imgFromDisk").val(""); // force value to be seen as new
@@ -496,21 +499,23 @@ $("#imgFromDisk").on("change", function (e) {
 });
 
 // send image url OR keyword to editor
-$("#imageClickModal").on("hide.bs.modal", function (ev) {
+//$("#imageClickModal").on("hide.bs.modal", function (ev) {
+$("#imageClickModal").find("#modalClose").on("click", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var urlOrKeyword = $("#imageClickModal").find("#image-url").val();
   if ( urlOrKeyword ) {
     if ( urlOrKeyword.match(/^https?:\/\//) ) {
+      $("#imageClickModal").modal('hide');
       editor.setImage(imageId, urlOrKeyword);
       triggerPseudoMouseenter(0);
     }
     else {
-      ev.preventDefault();
       getImagesForKeyword(urlOrKeyword).then(function (result) {
         displayWebImages(result);
       });
     }
   }
+  else $("#imageClickModal").modal('hide');
 });
 
 // send web image to editor

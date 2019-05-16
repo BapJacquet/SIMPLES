@@ -274,31 +274,24 @@
 					</div>
         </div>
 				<!-- modal-images -->
-				<label class="col-form-label"><strong>Arassaac</strong></label>
-				<div class="modal-images arassaac d-flex align-content-stretch flex-nowrap">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img">
+				<label class="col-form-label"><strong>Arasaac</strong></label>
+				<!--<div class="modal-images arasaac d-flex align-content-stretch flex-nowrap">-->
+				<div class="modal-images arasaac  flex-nowrap">
 				</div>
 				<br>
-
 				<label class="col-form-label"><strong>Sclera</strong></label>
-				<div class="modal-images sclera d-flex align-content-stretch flex-nowrap">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img">
+				<!--<div class="modal-images sclera d-flex align-content-stretch flex-nowrap">
+				</div>-->
+				<div class="modal-images sclera flex-nowrap">
 				</div>
 				<br>
 				<div class="form-group">
 					<label for="message-text" class="col-form-label">Entrer une URL ou un mot clef:</label>
-					<input type="url" class="form-control" id="image-url"></textarea>
+					<input type="url" class="form-control" id="image-url"></input>
 				</div>
       </div>
       <div class="modal-footer">
-				<button id="modalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Valider</button>
+				<button id="modalClose" type="button" class="btn btn-secondary">Valider</button>
       </div>
     </div>
   </div>

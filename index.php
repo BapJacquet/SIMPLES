@@ -273,34 +273,22 @@
 						<label class="custom-file-label" for="inputGroupFile01"></label>
 					</div>
         </div>
+				<label class="col-form-label">Entrer une URL ou des mots-clés:</label>
+				<div class="input-group mb-3">
+					<input  id="image-url" type="text" class="form-control">
+					<div class="input-group-append">
+						<button id="modalClose" type="button" class="btn btn-secondary">Chercher</button>
+					</div>
+				</div>
 				<!-- modal-images -->
-				<label class="col-form-label"><strong>Arasaac</strong></label>
-				<!--<div class="modal-images arasaac d-flex align-content-stretch flex-nowrap">-->
+				<label class="col-form-label arasaac-lab"><strong>Arasaac</strong></label>
 				<div class="modal-images arasaac  flex-nowrap">
 				</div>
 				<br>
-				<label class="col-form-label"><strong>Sclera</strong></label>
-				<!--<div class="modal-images sclera d-flex align-content-stretch flex-nowrap">
-				</div>-->
+				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
 				<div class="modal-images sclera flex-nowrap">
 				</div>
-				<br>
-				<label class="col-form-label">Entrer une URL ou un mot clef:</label>
-				<div class="input-group mb-3">
-  				<input  id="image-url" type="text" class="form-control">
-  				<div class="input-group-append">
-    				<button id="modalClose" type="button" class="btn btn-secondary">Valider</button>
-  				</div>
-				</div>
-
-				<!--<div class="form-group">
-					<label for="message-text" class="col-form-label">Entrer une URL ou un mot clef:</label>
-					<input type="url" class="form-control" id="image-url"></input>
-				</div>-->
       </div>
-      <!--<div class="modal-footer">
-				<button id="modalClose" type="button" class="btn btn-secondary">Valider</button>
-      </div>-->
     </div>
   </div>
 </div>  <!-- end image dialog -->

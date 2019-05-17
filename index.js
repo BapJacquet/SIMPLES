@@ -334,11 +334,15 @@ function confirmDialog(title, body, action) {
   $("#confirmDialog .modal-body p").text(body);
   $("#confirmDialog").attr("data-action", action);
   if ( action == "newFile" || action == "loadFile" ) {
-    //if ( !pageEmpty() ) $("#confirmDialog").modal("show");
-    if ( !pageEmpty() ) {
-      if ( confirm(body) ) $("#confirmDialog .ok").trigger("click");
-    }
-    else $("#confirmDialog .ok").trigger("click");
+    var saved;
+    editor.saveAsync().then(function (val) {
+      if ( pageEmpty() ) saved = true;
+      else if ( previousDocContent == JSON.stringify(val) ) saved = true;
+      else saved = false;
+
+      if ( saved ) $("#confirmDialog .ok").trigger("click");
+      else if ( confirm(body) ) $("#confirmDialog .ok").trigger("click");
+    });
   }
 }
 
@@ -421,7 +425,7 @@ $(document).ready(function () {
   } );
 
 ///////////////////////////////////////////////////
-// blockcreated from editor
+//                         blockcreated from editor
 $("#editor").on("blockcreated", function (ev) {
   activeBlocId = ev.detail.intid;
   $("#blockCmd").find("span").text(activeBlocId + 1);
@@ -429,7 +433,7 @@ $("#editor").on("blockcreated", function (ev) {
 });
 
 ///////////////////////////////////////////////////
-// blockdestroyed from editor
+//                      blockdestroyed from editor
 $("#editor").on("blockdestroyed", function (ev) {
   var oldBlock = ev.detail.intid;
   if ( oldBlock > 0 && $("#blc-" + String(oldBlock)).next().length == 0 ) {
@@ -441,35 +445,44 @@ $("#editor").on("blockdestroyed", function (ev) {
   triggerPseudoMouseenter(0);
 });
 
-/*****************************  image modal dialog  ***************/
+////////////////////////////////////////////////////
+//                               image modal dialog
 
 // display web images in the image modal dialog
 function displayWebImages(imgURLs) {
   /* imgURLs syntax:
-  { arassaac: ["img1","img2","img3"]
-  sclera: ["img1","img2","img3"] }
+  { arassaac: ["img1","img2"]
+  sclera: ["img1","img2","img3"]
+  serchText: ["mot1 mot2"]}
   */
   $("#imageClickModal").find(".modal-images").html(""); // clear images
+  $("#imageClickModal").find("#image-url").val(imgURLs.searchText); // keywords
 
   var arasaac = imgURLs.arasaac;
-  for (let i = 0; i < arasaac.length; i++) {
-    let imgTag = '<img src="' + arasaac[i] + '" class="web-img">';
-    $("#imageClickModal").find(".arasaac").append(imgTag);
+  if ( arasaac.length ) {
+    for (let i = 0; i < arasaac.length; i++) {
+      let imgTag = '<img src="' + arasaac[i] + '" class="web-img">';
+      $("#imageClickModal").find(".arasaac").append(imgTag);
+    }
+    $("#imageClickModal").find(".arasaac-lab").css("display", "inline-block");
   }
+  else $("#imageClickModal").find(".arasaac-lab").css("display", "none");
 
   var sclera = imgURLs.sclera;
-  for (let i = 0; i < sclera.length; i++) {
-    let imgTag = '<img src="' + sclera[i] + '" class="web-img">';
-    $("#imageClickModal").find(".sclera").append(imgTag);
+  if ( sclera.length ) {
+    for (let i = 0; i < sclera.length; i++) {
+      let imgTag = '<img src="' + sclera[i] + '" class="web-img">';
+      $("#imageClickModal").find(".sclera").append(imgTag);
+    }
+    $("#imageClickModal").find(".sclera-lab").css("display", "inline-block");
   }
-
-  $("#imageClickModal").modal("show");
+  else $("#imageClickModal").find(".sclera-lab").css("display", "none");
 }  // end displayWebImages
 
 // image dialog opening from editor block
 $("#editor").on("click", ".editor-image", function(ev) {
   $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
-  $("#imageClickModal").find("#image-url").val("");
+  $("#imageClickModal").find("#image-url").val(null);
   getImagesSuggestions(activeBlocId).then(function (result) {
     displayWebImages(result);
   });
@@ -499,7 +512,6 @@ $("#imgFromDisk").on("change", function (e) {
 });
 
 // send image url OR keyword to editor
-//$("#imageClickModal").on("hide.bs.modal", function (ev) {
 $("#imageClickModal").find("#modalClose").on("click", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var urlOrKeyword = $("#imageClickModal").find("#image-url").val();
@@ -515,7 +527,16 @@ $("#imageClickModal").find("#modalClose").on("click", function (ev) {
       });
     }
   }
-  else $("#imageClickModal").modal('hide');
+  // else $("#imageClickModal").modal('hide');
+});
+
+// trigger #modalClose from Keyboard
+$("#imageClickModal").find("#image-url").on("keyup", function(ev) {
+  if (ev.keyCode === 13) {
+    ev.preventDefault();
+    $("#imageClickModal").find("#modalClose").trigger("click");
+    $(this).blur();
+  }
 });
 
 // send web image to editor
@@ -1022,45 +1043,24 @@ $("#toolbarBottomMask").hover( function () {
     });
   });
 
-// ---   prevent stuff
-/*
-  document.addEventListener('backbutton', function(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  }, true);
-
-  window.onbeforeunload = function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return(confirm("Effacer la page actuelle"));
-  };
-
-  $(window).on('popstate', function (e) {
-      var state = e.originalEvent.state;
-      if (state !== null) {
-          //load content with ajax
-      }
-  });
-*/
-
-  // close tab backstop
-  window.addEventListener("beforeunload", function( event ) {
+  /////////////////////////////////
+  //// close tab backstop function
+  function backstop (event) {
     var saved;
-    //var val = editor.saveSync();
     editor.saveAsync().then(function (val) {
       if ( pageEmpty() ) saved = true;
       else if ( previousDocContent == JSON.stringify(val) ) saved = true;
       else saved = false;
 
-      // without dialog
-      if ( saved ) event.preventDefault();
-      // with dialog
-      else if ( !navigator.userAgent.match(/Firefox/) ) {
-        event.returnValue = "\o/";
-      }
+      if ( saved ) event.preventDefault(); // without dialog
+      else if ( !navigator.userAgent.match(/Firefox/) )
+                event.returnValue = "\o/"; // with dialog firefox
+      else; // with dialog webkit
     });
-  });
+  }
+
+  //// close tab backstop event
+  window.addEventListener("beforeunload", backstop);
 
   ////////////////////////////////////////////
   // before body display
@@ -1086,7 +1086,6 @@ $("#toolbarBottomMask").hover( function () {
 if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
 
 const editor = new Editor('#editor');
-//const analyzer = new Analyzer('#analyzer');
 
 const CURSOR_DATA = {
 

@@ -640,9 +640,7 @@ button span {
 
 .web-img {
   border: 2px solid #fff;
-
-  /* width: 120px; */
-  height: 120px;
+  width: 100px;
 }
 
 .web-img:hover {

@@ -261,11 +261,13 @@ async function getImagesSuggestions (blockIndex) {
 }
 
 async function getImagesForKeyword (keyword) {
-  let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
-  let json = await response.json();
-  let result = {arasaac: [], sclera: []};
-  for (let i = 0; i < json.length; i++) {
-    result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
+  let result = {arasaac: [], sclera: [], searchText: keyword};
+  if ( keyword ) {
+    let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
+    let json = await response.json();
+    for (let i = 0; i < json.length; i++) {
+      result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
+    }
   }
   return result;
 }

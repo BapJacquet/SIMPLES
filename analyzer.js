@@ -264,6 +264,7 @@ async function getImagesForKeyword (keyword) {
   let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
   let json = await response.json();
   let result = {arasaac: [], sclera: []};
+  result.searchText = keyword;
   for (let i = 0; i < json.length; i++) {
     result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
   }

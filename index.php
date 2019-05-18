@@ -30,11 +30,13 @@
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <body style="visibility:hidden;">
+	<!-- loaderB32.gif -->
+	<div class="loader" style="display:none"><img src="img/loaderB32.gif" /></div>
 	<div>
 		<div class="box">
-			<div id="header">
-				<!-- <img src="img/SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
-			</div>
+			<!--<div id="header">
+				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
+			</div>-->
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
@@ -214,7 +216,7 @@
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="img/carat-u-black.png">
 									</div>
-									<div class="block-number" contenteditable="true">
+									<div class="block-number" contenteditable="false">
 										<span>1</span>
 									</div>
 								</div><!-- Fin block command palette -->
@@ -273,7 +275,7 @@
 						<label class="custom-file-label" for="inputGroupFile01"></label>
 					</div>
         </div>
-				<label class="col-form-label">Entrer une URL ou des mots-clés:</label>
+				<label class="col-form-label">Entrer une URL ou des mots-clés</label>
 				<div class="input-group mb-3">
 					<input  id="image-url" type="text" class="form-control">
 					<div class="input-group-append">

@@ -448,6 +448,7 @@ $("#editor").on("blockdestroyed", function (ev) {
 ////////////////////////////////////////////////////
 //                               image modal dialog
 
+//----------------------------------
 // display web images in the image modal dialog
 function displayWebImages(imgURLs) {
   /* imgURLs syntax:
@@ -478,15 +479,18 @@ function displayWebImages(imgURLs) {
   }
   else $("#imageClickModal").find(".sclera-lab").css("display", "none");
 }  // end displayWebImages
+//------------------------
 
 // image dialog opening from editor block
 $("#editor").on("click", ".editor-image", function(ev) {
+  $(".loader").show();
   $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
   $("#imageClickModal").find("#image-url").val(null);
   getImagesSuggestions(activeBlocId).then(function (result) {
     displayWebImages(result);
+    $("#imageClickModal").modal();
+    $(".loader").hide();
   });
-  $("#imageClickModal").modal();
 });
 
 // trigger input file tag in image dialog
@@ -544,6 +548,7 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
+  $(".loader").show();
   $("#imageClickModal").find("#image-url").val(null);
   $("#imageClickModal .close").trigger("click");
 });
@@ -1122,6 +1127,7 @@ const TITLE_INIT = "none";
 const BULLET_INIT = false;
 const FRAME_INIT = false;
 const PICTURE_INIT = true;
+
 const TOOLBAR_WIDTH = 840; /* 844; */
 const TOOLBAR_DECAL = 0; /* 22 */
 const TOOL_BACK_COLOR = "#f0f0f0";

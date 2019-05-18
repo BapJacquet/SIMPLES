@@ -656,6 +656,16 @@ button span {
   display: none;
 }
 
+/* loaderB32 */
+.loader {
+  position: fixed;
+  z-index: 100;
+  top: 50%;
+  left: 50%;
+  margin-top: -16px;
+  margin-left: -16px;
+}
+
 /*             ...suite #content
 	background:
 		af Shadow cov90s

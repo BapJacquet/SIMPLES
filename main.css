@@ -635,10 +635,16 @@ button span {
 /* images dialog */
 .modal-images {
   overflow-x: auto;
+  white-space: nowrap;
+}
+
+.web-img {
+  border: 2px solid #fff;
+  width: 100px;
 }
 
 .web-img:hover {
-  border: 1px solid gray;
+  border: 2px solid #bbb;
 }
 
 .custom-file-input ~ .custom-file-label::after {
@@ -648,6 +654,16 @@ button span {
 /*  divers */
 #lexique3-connection {
   display: none;
+}
+
+/* loaderB32 */
+.loader {
+  position: fixed;
+  z-index: 100;
+  top: 50%;
+  left: 50%;
+  margin-top: -16px;
+  margin-left: -16px;
 }
 
 /*             ...suite #content

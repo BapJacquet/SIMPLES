@@ -972,6 +972,7 @@ class Editor {
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      $(".loader").hide();
     };
     img.src = src;
   }

@@ -30,11 +30,13 @@
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <body style="visibility:hidden;">
+	<!-- loaderB32.gif -->
+	<div class="loader" style="display:none"><img src="img/loaderB32.gif" /></div>
 	<div>
 		<div class="box">
-			<div id="header">
-				<!-- <img src="img/SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
-			</div>
+			<!--<div id="header">
+				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
+			</div>-->
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
@@ -214,7 +216,7 @@
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="img/carat-u-black.png">
 									</div>
-									<div class="block-number" contenteditable="true">
+									<div class="block-number" contenteditable="false">
 										<span>1</span>
 									</div>
 								</div><!-- Fin block command palette -->
@@ -273,32 +275,21 @@
 						<label class="custom-file-label" for="inputGroupFile01"></label>
 					</div>
         </div>
+				<label class="col-form-label">Entrer une URL ou des mots-clés</label>
+				<div class="input-group mb-3">
+					<input  id="image-url" type="text" class="form-control">
+					<div class="input-group-append">
+						<button id="modalClose" type="button" class="btn btn-secondary">Chercher</button>
+					</div>
+				</div>
 				<!-- modal-images -->
-				<label class="col-form-label"><strong>Arassaac</strong></label>
-				<div class="modal-images arassaac d-flex align-content-stretch flex-nowrap">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
+				<label class="col-form-label arasaac-lab"><strong>Arasaac</strong></label>
+				<div class="modal-images arasaac  flex-nowrap">
 				</div>
 				<br>
-
-				<label class="col-form-label"><strong>Sclera</strong></label>
-				<div class="modal-images sclera d-flex align-content-stretch flex-nowrap">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-past_hair-FDD700_500.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_300.png" class="web-img" width="100px" height="100px">
-					<img src="https://static.arasaac.org/pictograms/2349/2349_action-future_hair-020100_skin-A65C17_500.png" class="web-img" width="100px" height="100px">
+				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
+				<div class="modal-images sclera flex-nowrap">
 				</div>
-				<br>
-				<div class="form-group">
-					<label for="message-text" class="col-form-label">Entrer une URL ou un mot clef:</label>
-					<input type="url" class="form-control" id="image-url"></textarea>
-				</div>
-      </div>
-      <div class="modal-footer">
-				<button id="modalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Valider</button>
       </div>
     </div>
   </div>

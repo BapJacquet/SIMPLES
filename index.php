@@ -230,7 +230,7 @@
 					<div class="alert alert-light" role="alert" id="lexique3-connection">
 						<div>Lexique3 : </div>
 						<div class="progress">
-							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0"
+							<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
 							aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
 								0%
 							</div>
@@ -279,7 +279,7 @@
 				<div class="input-group mb-3">
 					<input  id="image-url" type="text" class="form-control">
 					<div class="input-group-append">
-						<button id="modalClose" type="button" class="btn btn-secondary">Chercher</button>
+						<button id="modalFind" type="button" class="btn btn-secondary">Chercher</button>
 					</div>
 				</div>
 				<!-- modal-images -->

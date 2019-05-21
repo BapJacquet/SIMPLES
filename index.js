@@ -516,7 +516,7 @@ $("#imgFromDisk").on("change", function (e) {
 });
 
 // send image url OR keyword to editor
-$("#imageClickModal").find("#modalClose").on("click", function (ev) {
+$("#imageClickModal").find("#modalFind").on("click", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   var urlOrKeyword = $("#imageClickModal").find("#image-url").val();
   if ( urlOrKeyword ) {
@@ -526,19 +526,20 @@ $("#imageClickModal").find("#modalClose").on("click", function (ev) {
       triggerPseudoMouseenter(0);
     }
     else {
+      $(".loader").show();
       getImagesForKeyword(urlOrKeyword).then(function (result) {
         displayWebImages(result);
+        $(".loader").hide();
       });
     }
   }
-  // else $("#imageClickModal").modal('hide');
 });
 
-// trigger #modalClose from Keyboard
+// trigger #modalFind from Keyboard
 $("#imageClickModal").find("#image-url").on("keyup", function(ev) {
   if (ev.keyCode === 13) {
     ev.preventDefault();
-    $("#imageClickModal").find("#modalClose").trigger("click");
+    $("#imageClickModal").find("#modalFind").trigger("click");
     $(this).blur();
   }
 });

@@ -959,7 +959,7 @@ class Editor {
     }
     var img = new Image();
     img.crossOrigin = 'Anonymous';
-    img.onload = function () {
+    img.onload = () => {
       var canvas = $(selector).get(0);
       canvas.width = 100;
       canvas.height = 100;
@@ -969,7 +969,7 @@ class Editor {
       let offsetX = (canvas.width - width) / 2;
       let offsetY = (canvas.height - height) / 2;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(this, offsetX, offsetY, width, height);
+      ctx.drawImage(img, offsetX, offsetY, width, height);
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));

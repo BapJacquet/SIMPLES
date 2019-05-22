@@ -16,12 +16,11 @@ class Editor {
    */
   constructor (id) {
     this.id = id;
-    this.fileVersion = 0;
+    this.fileVersion = 1;
     this.format = null;
     this.addBlock('', false);
     this.lastBlock = 0;
     this.lastSelection = null;
-
     this.registerEvents();
   }
 
@@ -31,6 +30,14 @@ class Editor {
    */
   get blockCount () {
     return $('.editor-block').length;
+  }
+
+  /**
+   * Get the words before which there can be line breaks.
+   * @return {Array} Array of strings.
+   */
+  get breakKeywords () {
+    return ['le', 'ne', 'la', 'de', 'du', 'dans', 'se', 'les', 'pour', 'à', 'et', 'un', 'une', 'en', 'est', 'sont', 'es', 'êtes', 'sommes', 'avec'];
   }
 
   /**
@@ -85,6 +92,11 @@ class Editor {
     $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
     $('body').on('mouseup', event => {
       if (this.capturedMouseDown) {
+        var sel = this.getSelection();
+        var range = sel.getRangeAt(0);
+        let r = this.getBlockIndexFromElement(range.startContainer);
+        let o = this.getIndexFromElementAndOffset(range.startContainer, range.startOffset);
+        console.log({blockIndex: r, index: o});
         setTimeout(() => this.updateFormat(), 1);
         this.capturedMouseDown = false;
       }
@@ -100,7 +112,9 @@ class Editor {
     let id = parseInt(caller.id.substring(4));
     console.log(id + ' has lost focus.');
     this.lastBlock = id;
-    this.lastSelection = this.getSelection();
+    let sel = this.getSelection();
+    let range = sel.getRangeAt(0);
+    this.lastSelection = {startContainer: range.startContainer, startOffset: range.startOffset, endContainer: range.endContainer, endOffset: range.endOffset};
     console.log(this.lastSelection);
     this.updateFormat();
   }
@@ -209,25 +223,57 @@ class Editor {
     }
     // Update the format.
     setTimeout(() => this.updateFormat(), 1);
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowRight':
+      case 'ArrowUp':
+      case 'ArrowDown':
+        if (!event.ctrlKey) return;
+    }
     setTimeout(() => this.processAllSpaces(id), 1);
     setTimeout(() => this.cleanContent(id), 2);
   }
 
+  /**
+   * Restore the selection to what it was last.
+   */
+  restoreSelection () {
+    let sel = this.getSelection();
+    let oldRange = sel.getRangeAt(0);
+    if (this.getBlockIndexFromElement(oldRange.startContainer) === -1) {
+      // The selection is not already in a block, so restore the last one.
+      let range = document.createRange();
+      if (this.lastSelection != null) {
+        range.setStart(this.lastSelection.startContainer, this.lastSelection.startOffset);
+        range.setEnd(this.lastSelection.endContainer, this.lastSelection.endOffset);
+      }
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } else {
+      $(oldRange.startContainer).focus();
+    }
+  }
+
+  /**
+   * Process all the spaces and replace them with the relevant equivalent.
+   * @param {Number} id - Index of the block to process.
+   */
   processAllSpaces (id) {
+    return; // Disabling.
     let text = this.getRawTextContent(id);
     let i = -1;
     while (++i < text.length - 1) {
       if (['\xa0', ' '].includes(text[i])) {
         let start = i;
         while (--start >= 0) {
-          if (['\xa0', ' '].includes(text[start])) {
+          if (['\xa0', ' ', '\n'].includes(text[start])) {
             start++;
             break;
           }
         }
         let end = i;
         while (++end < text.length) {
-          if (['\xa0', ' '].includes(text[end])) {
+          if (['\xa0', ' ', '\n'].includes(text[end])) {
             break;
           }
         }
@@ -244,18 +290,22 @@ class Editor {
    * @return {string} The space character relevant.
    */
   getRelevantSpace (context) {
-    if (['le', 'ne', 'la', 'de', 'du', 'se', 'les', 'pour', 'à', 'et', 'un', 'une'].includes(context.next.toLowerCase())) {
-      return ' ';
+    if (this.breakKeywords.includes(context.next.toLowerCase())) {
+      if (this.breakKeywords.includes(context.previous.toLowerCase())) {
+        return '\xa0';
+      } else {
+        return ' ';
+      }
     } else if (Utils.stringEndsWith(context.previous, '.')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, '?')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, '!')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, ',')) {
-      return ' ';
+      return '\n';
     } else if (Utils.stringEndsWith(context.previous, ';')) {
-      return ' ';
+      return '\n';
     } else {
       return '\xa0';
     }
@@ -329,6 +379,38 @@ class Editor {
   }
 
   /**
+   * Cut the current selection to the clipboard.
+   */
+  async cut () {
+    this.restoreSelection();
+    document.execCommand('cut');
+  }
+
+  /**
+   * Cut the current selection to the clipboard.
+   */
+  async copy () {
+    this.restoreSelection();
+    document.execCommand('copy');
+  }
+
+  /**
+   * Cut the current selection to the clipboard.
+   */
+  async paste () {
+    this.restoreSelection();
+    let data;
+    if (navigator.clipboard) {
+      data = await navigator.clipboard.readText();
+    } else if (window.clipboardData) {
+      data = window.clipboardData.getData('Text');
+    } else {
+      alert("Cette fonction n'est pas disponible dans votre navigateur.\nUtilisez Ctrl+V.");
+    }
+    document.execCommand('insertText', false, data);
+  }
+
+  /**
    * Update the cached format from the current selection.
    */
   updateFormat () {
@@ -348,6 +430,10 @@ class Editor {
         this.dispatchCurrentFormatChanged(this.format);
       }
     }
+  }
+
+  getBlockFormat (blockIndex) {
+    return this.getFormatForNode($('#txt-' + blockIndex).get(0));
   }
 
   /**
@@ -380,8 +466,10 @@ class Editor {
     result.bold = bold;
     result.bullet = listitem;
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
-    result.frame = $('#blc-' + this.activeBlockId).hasClass('frame');
-    result.picture = $('#img-' + this.activeBlockId).is(':visible');
+    let id = this.getBlockIndexFromElement(element);
+    result.frame = $('#blc-' + id).hasClass('frame');
+    result.picture = $('#img-' + id).is(':visible');
+    result.size = size;
     result.color = color;
     return result;
   }
@@ -409,14 +497,14 @@ class Editor {
    * @return {String} String representing the color in hexadecimal.
    */
   getNodeFontSize (element) {
-    if (element.nodeName === 'FONT') {
+    /*if (element.nodeName === 'FONT') {
       return element.color;
     } else {
       let e = this.findParentElementWithTag('FONT', element);
       if (e !== null) {
         return e.color;
       }
-    }
+    }*/
     return null;
   }
 
@@ -735,7 +823,20 @@ class Editor {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
     let element = $('#txt-' + id).get(0);
-    return element.textContent;
+    let result = '';
+    if (element.childNodes.length > 0) {
+      result = element.childNodes[0].textContent;
+      for (let i = 1; i < element.childNodes.length; i++) {
+        if (element.childNodes[i].tagName === 'DIV') {
+          result += '\n' + element.childNodes[i].textContent;
+        } else {
+          result += element.childNodes[i].textContent;
+        }
+      }
+    } else {
+      result = element.textContent;
+    }
+    return result;
   }
 
   /**
@@ -858,7 +959,7 @@ class Editor {
     }
     var img = new Image();
     img.crossOrigin = 'Anonymous';
-    img.onload = function () {
+    img.onload = () => {
       var canvas = $(selector).get(0);
       canvas.width = 100;
       canvas.height = 100;
@@ -868,10 +969,12 @@ class Editor {
       let offsetX = (canvas.width - width) / 2;
       let offsetY = (canvas.height - height) / 2;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(this, offsetX, offsetY, width, height);
+      ctx.drawImage(img, offsetX, offsetY, width, height);
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      this.dispatchImageLoaded(Number(selector.substring(5)));
+      $(".loader").hide();
     };
     img.src = src;
   }
@@ -890,12 +993,31 @@ class Editor {
     let offset = range.startOffset;
     let endElement = range.endContainer;
     let endOffset = range.endOffset;
-    this.select(blockIndex, startIndex, length, text);
+    let selBlock = this.getBlockIndexFromElement(element);
+    let selStartIndex = 0;
+    let selEndIndex = 0;
+    let wasInBlock = selBlock === blockIndex;
+    if (wasInBlock) {
+      selStartIndex = this.getIndexFromElementAndOffset(element, offset);
+      selEndIndex = this.getIndexFromElementAndOffset(endElement, endOffset);
+    }
+    this.select(blockIndex, startIndex, length);
     document.execCommand('insertText', false, text);
     sel.removeAllRanges();
-    sel.addRange(range);
-    sel.getRangeAt(0).setStart(element, offset);
-    sel.getRangeAt(0).setEnd(endElement, endOffset);
+    if (wasInBlock) {
+      if (selStartIndex > startIndex + length) {
+        selStartIndex += text.length - length;
+      }
+      if (selEndIndex > startIndex + length) {
+        selEndIndex += text.length - length;
+      }
+      console.log({block: selBlock, selStartIndex: selStartIndex, selEndIndex: selEndIndex, startIndex: startIndex, textLength: text.length, length: length});
+      this.select(selBlock, selStartIndex, selEndIndex - selStartIndex);
+    } else {
+      sel.addRange(range);
+      sel.getRangeAt(0).setStart(element, offset);
+      sel.getRangeAt(0).setEnd(endElement, endOffset);
+    }
   }
 
   /**
@@ -912,6 +1034,21 @@ class Editor {
     jElement.find('div').each(function () {
       if ($(this).is(':empty')) $(this).remove();
     });
+  }
+
+  /**
+   * Get a list of words that seem to be significant within the given block.
+   * @param {Number} blockIndex - Id of the block to check.
+   * @return {Array} Array of words.
+   */
+  getSignificantWords (blockIndex) {
+    let jElement = $('#txt-' + blockIndex);
+    let bold = jElement.find('b');
+    let result = [];
+    for (let i = 0; i < bold.length; i++) {
+      result.push(bold[i].textContent);
+    }
+    return result;
   }
 
   /**
@@ -984,11 +1121,27 @@ class Editor {
         if (remainingChars <= nodes[i].length) {
           return {element: nodes[i], offset: remainingChars};
         } else {
-          remainingChars -= nodes[i].length;
+          remainingChars -= nodes[i].length + 1;
         }
       }
     }
     return null;
+  }
+
+  /**
+   * Get the index of block containing the element.
+   * @param {DOMElement} element - Element.
+   * @return {Number} - Index of the block containing the element, or -1.
+   */
+  getBlockIndexFromElement (element) {
+    let current = $(element);
+    while (!current.hasClass('editor-text')) {
+      current = current.parent();
+      if (current.length === 0) {
+        return -1;
+      }
+    }
+    return Number(current[0].id.substring(4));
   }
 
   /**
@@ -1001,6 +1154,9 @@ class Editor {
     let current = $(element);
     while (!current.hasClass('editor-text')) {
       current = current.parent();
+      if (current.length === 0) {
+        throw new Error('Element is not within a block!');
+      }
     }
     let root = current.get(0);
     let nodes = this.getNodesInElement(root);
@@ -1010,7 +1166,7 @@ class Editor {
         if (nodes[i] === element) {
           return index + offset;
         } else {
-          index += nodes[i].length;
+          index += nodes[i].length + 1;
         }
       }
     }
@@ -1019,21 +1175,45 @@ class Editor {
   /**
    * Save asynchronously the document into a JSON compatible format
    * which can be reloaded using load().
-   * @return {JSONObject} A JSON object of the document.
+   * @return {JSONObject} A JSON object of the document within a promise.
+   * @deprecated
    */
   async save () {
+    return this.saveSync();
+  }
+
+  /**
+   * Save asynchronously the document into a JSON compatible format
+   * which can be reloaded using load().
+   * @return {JSONObject} A JSON object of the document within a promise.
+   */
+  async saveAsync () {
+    return this.saveSync();
+  }
+
+  /**
+   * Save synchronously the document into a JSON compatible format
+   * which can be reloaded using load().
+   * @return {JSONObject} A JSON object of the document.
+   */
+  saveSync () {
     let object = {
       meta: {
         version: this.fileVersion
       },
       blocks: []
     };
-
     for (let i = 0; i < this.blockCount; i++) {
+      let format = this.getBlockFormat(i);
       object.blocks.push({
         type: 'default',
         content: $('#txt-' + i)[0].innerHTML,
-        image: $('#img-' + i)[0].toDataURL()
+        image: $('#img-' + i)[0].toDataURL(),
+        options: {
+          leftPicture: false,
+          rightPicture: format.picture,
+          frame: format.frame
+        }
       });
     }
 
@@ -1047,7 +1227,10 @@ class Editor {
    */
   async load (json) {
     if (json.meta.version > this.fileVersion) {
-      throw new Error('Data was generated with a more recent version of SIMPLES. It cannot be loaded.');
+      alert('Le fichier a été sauvegardé\navec une version plus récente de LIREC.\nIl ne peut pas être chargé.\n\nVersion du fichier : ' +
+        json.meta.version + '\nVersion actuelle : ' + this.fileVersion
+      );
+      throw new Error('Data was generated with a more recent version of LIREC. It cannot be loaded.');
     }
 
     this.clear();
@@ -1059,6 +1242,10 @@ class Editor {
       $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
       setTimeout(() => {
         this.setImage('#img-' + i, json.blocks[i].image);
+        if (json.meta.version >= 1) {
+          if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
+          if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+        }
       }, 250);
     }
   }
@@ -1098,10 +1285,12 @@ class Editor {
     let currentYOffset = margin;
 
     for (let i = 0; i < this.blockCount; i++) {
+      let blockFormat = this.getBlockFormat(i);
       if (currentYOffset + Utils.pixelToCm($('#blc-' + i).outerHeight()) > pageHeight - margin) {
         doc = doc.addPage();
         currentYOffset = margin;
       }
+      let txt = $('#txt-' + i).get(0);
       /*doc.fromHTML($('#txt-' + i).get(0),
         margin,
         currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
@@ -1111,25 +1300,47 @@ class Editor {
         }
       );*/
 
-      doc.addImage((await html2canvas($('#txt-' + i).get(0))).toDataURL(), 'JPEG',
-        margin + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).left),
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
-        Utils.pixelToCm($('#txt-' + i).width()),
-        Utils.pixelToCm($('#txt-' + i).height()),
-        '',
-        'NONE',
-        0
-      );
+      /*let nodes = this.getNodesInElement(txt);
 
-      doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
-        totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
-        Utils.pixelToCm($('#img-' + i).width()),
-        Utils.pixelToCm($('#img-' + i).height()),
+      for (let n = 0; n < nodes.length; n++) {
+        if (nodes[n].nodeType === 3) {
+          let format = this.getFormatForNode(nodes[n]);
+          doc.setFontSize(Utils.pixelToPoint(parseFloat(format.size)));
+          if (format.bold) {
+            doc.setFontType('bold');
+          } else {
+            doc.setFontType('normal');
+          }
+          doc.text(nodes[n].textContent,
+            margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).left),
+            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).top));
+        }
+      }*/
+      let txtWidth = Utils.pixelToCm($(txt).width());
+      let txtHeight = Utils.pixelToCm($(txt).height());
+      //$(this.id)[0].style.transform = 'scale(3)';
+      doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
+        margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
+        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
+        txtWidth,
+        txtHeight,
         '',
         'NONE',
         0
       );
+      //$(this.id)[0].style.transform = 'scale(1)';
+
+      if (blockFormat.picture) {
+        doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
+          totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
+          currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
+          Utils.pixelToCm($('#img-' + i).width()),
+          Utils.pixelToCm($('#img-' + i).height()),
+          '',
+          'NONE',
+          0
+        );
+      }
 
       currentYOffset += Utils.pixelToCm($('#blc-' + i).outerHeight());
     }
@@ -1205,6 +1416,25 @@ class Editor {
     let e = new CustomEvent('currentformatchanged', {
       detail: {
         format: format
+      },
+      bubbles: false,
+      cancelable: false
+    });
+    console.log(e);
+    $(this.id).get(0).dispatchEvent(e);
+  }
+
+  /**
+   * Send an event telling that an image is ready to be displayed.
+   * @param {string} id - id of the image.
+   */
+  dispatchImageLoaded (id) {
+    let e = new CustomEvent('imageloaded', {
+      detail: {
+        intid: id,
+        blockid: 'blc-' + id,
+        textid: 'txt-' + id,
+        imageid: 'img-' + id
       },
       bubbles: false,
       cancelable: false

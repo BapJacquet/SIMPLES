@@ -20,14 +20,18 @@ function writeFile(data, filename, type) {
   }, 0);
 }
 
-// lecture fichier texte et envoie à l'éditeur
+// lecture fichier .smp et envoie à l'éditeur
 function readFile(ev) {
   var file = ev.target.files[0];
   if ( !file || !( file.name.match(/.smp$/)) ) return;
   var reader = new FileReader();
   reader.onload = function(ev2) {
-    var text = ev2.target.result;
-    editor.load(JSON.parse(text));
+    previousDocContent = ev2.target.result;
+    editor.load(JSON.parse(previousDocContent));
+    $("#openFileInput").val(""); // force value to be seen as new
+    setTimeout( function () {
+      triggerPseudoMouseenter(0); // palette position
+    }, 150);
   };
   reader.readAsText(file);
 }
@@ -319,21 +323,26 @@ function triggerPseudoMouseenter( decal ) {
 }
 
 // page is empty
-function pageNotEmpty() {
-  if ( $("#editor").children().length > 2 ) return true;
-  if ( $("#txt-0").text() != "" ) return true;
-  if ( $("#img-0").attr("width") != "380" || $("#img-0").attr("height") != "380") return true;
-  return false;
+function pageEmpty() {
+  if ( $("#editor").children().length > 2 || $("#txt-0").text() != "" ) return false;
+  else return true;
 }
 
-// confirm dialog
+// confirm dialog show or trigger
 function confirmDialog(title, body, action) {
   $("#confirmDialog .modal-title").text(title);
   $("#confirmDialog .modal-body p").text(body);
   $("#confirmDialog").attr("data-action", action);
   if ( action == "newFile" || action == "loadFile" ) {
-    if ( pageNotEmpty() ) $("#confirmDialog").modal("show");
-    else $("#confirmDialog .ok").trigger("click");
+    var saved;
+    editor.saveAsync().then(function (val) {
+      if ( pageEmpty() ) saved = true;
+      else if ( previousDocContent == JSON.stringify(val) ) saved = true;
+      else saved = false;
+
+      if ( saved ) $("#confirmDialog .ok").trigger("click");
+      else if ( confirm(body) ) $("#confirmDialog .ok").trigger("click");
+    });
   }
 }
 
@@ -416,7 +425,7 @@ $(document).ready(function () {
   } );
 
 ///////////////////////////////////////////////////
-// blockcreated from editor
+//                         blockcreated from editor
 $("#editor").on("blockcreated", function (ev) {
   activeBlocId = ev.detail.intid;
   $("#blockCmd").find("span").text(activeBlocId + 1);
@@ -424,7 +433,7 @@ $("#editor").on("blockcreated", function (ev) {
 });
 
 ///////////////////////////////////////////////////
-// blockdestroyed from editor
+//                      blockdestroyed from editor
 $("#editor").on("blockdestroyed", function (ev) {
   var oldBlock = ev.detail.intid;
   if ( oldBlock > 0 && $("#blc-" + String(oldBlock)).next().length == 0 ) {
@@ -436,15 +445,60 @@ $("#editor").on("blockdestroyed", function (ev) {
   triggerPseudoMouseenter(0);
 });
 
-/********************  image click  ***************/
+////////////////////////////////////////////////////
+//                               image modal dialog
 
+//----------------------------------
+// display web images in the image modal dialog
+function displayWebImages(imgURLs) {
+  /* imgURLs syntax:
+  { arassaac: ["img1","img2"]
+  sclera: ["img1","img2","img3"]
+  serchText: ["mot1 mot2"]}
+  */
+  $("#imageClickModal").find(".modal-images").html(""); // clear images
+  $("#imageClickModal").find("#image-url").val(imgURLs.searchText); // keywords
+
+  var arasaac = imgURLs.arasaac;
+  if ( arasaac.length ) {
+    for (let i = 0; i < arasaac.length; i++) {
+      let imgTag = '<img src="' + arasaac[i] + '" class="web-img">';
+      $("#imageClickModal").find(".arasaac").append(imgTag);
+    }
+    $("#imageClickModal").find(".arasaac-lab").css("display", "inline-block");
+  }
+  else $("#imageClickModal").find(".arasaac-lab").css("display", "none");
+
+  var sclera = imgURLs.sclera;
+  if ( sclera.length ) {
+    for (let i = 0; i < sclera.length; i++) {
+      let imgTag = '<img src="' + sclera[i] + '" class="web-img">';
+      $("#imageClickModal").find(".sclera").append(imgTag);
+    }
+    $("#imageClickModal").find(".sclera-lab").css("display", "inline-block");
+  }
+  else $("#imageClickModal").find(".sclera-lab").css("display", "none");
+}  // end displayWebImages
+//------------------------
+
+// image dialog opening from editor block
 $("#editor").on("click", ".editor-image", function(ev) {
+  $(".loader").show();
   $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
-  $("#imageClickModal").find("#image-url").val("");
-  $("#imageClickModal").modal();
+  $("#imageClickModal").find("#image-url").val(null);
+  getImagesSuggestions(activeBlocId).then(function (result) {
+    displayWebImages(result);
+    $("#imageClickModal").modal();
+    $(".loader").hide();
+  });
 });
 
-// bouton dans dialog modal
+// trigger input file tag in image dialog
+$("#imgButtonFromDisk").on("click", function () {
+  $("#imgFromDisk").trigger("click");
+});
+
+// input file tag in image dialog: Read file from disk, send to editor
 $("#imgFromDisk").on("change", function (e) {
   var file = e.target.files[0];
   if ( !file || (!file.type.match(/image.*/)) ) {
@@ -453,19 +507,51 @@ $("#imgFromDisk").on("change", function (e) {
   }
   var reader = new FileReader();
   reader.onload = function(e) {
-    $("#imageClickModal .btn-dark").trigger("click");
+    $("#imageClickModal .close").trigger("click");
     var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
+    $("#imgFromDisk").val(""); // force value to be seen as new
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
 });
 
-$("#imageClickModal").on('hidden.bs.modal', function (ev) {
+// send image url OR keyword to editor
+$("#imageClickModal").find("#modalFind").on("click", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-  var url = $("#imageClickModal").find("#image-url").val();
-  // send url to editor
-  if ( url ) editor.setImage(imageId, url);
-  triggerPseudoMouseenter(0);
+  var urlOrKeyword = $("#imageClickModal").find("#image-url").val();
+  if ( urlOrKeyword ) {
+    if ( urlOrKeyword.match(/^https?:\/\//) ) {
+      $("#imageClickModal").modal('hide');
+      editor.setImage(imageId, urlOrKeyword);
+      triggerPseudoMouseenter(0);
+    }
+    else {
+      $(".loader").show();
+      getImagesForKeyword(urlOrKeyword).then(function (result) {
+        displayWebImages(result);
+        $(".loader").hide();
+      });
+    }
+  }
+});
+
+// trigger #modalFind from Keyboard
+$("#imageClickModal").find("#image-url").on("keyup", function(ev) {
+  if (ev.keyCode === 13) {
+    ev.preventDefault();
+    $("#imageClickModal").find("#modalFind").trigger("click");
+    $(this).blur();
+  }
+});
+
+// send web image to editor
+$("#imageClickModal").on("click", ".web-img", function (ev) {
+  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  var url = $(ev.target).attr("src");
+  editor.setImage(imageId, url);
+  $(".loader").show();
+  $("#imageClickModal").find("#image-url").val(null);
+  $("#imageClickModal .close").trigger("click");
 });
 
 //  ***************************  image drag & drop  ************
@@ -476,8 +562,7 @@ $(document).on('drop dragover', function(e){
     return false;
 });
 
-//$("#editor").find(".editor-image").on('dragover', function(e) {
-$("#editor").on('dragover', ".editor-image", function(e) {
+$("#editor").on("dragover", ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
     var ev = e.originalEvent;
@@ -485,8 +570,7 @@ $("#editor").on('dragover', ".editor-image", function(e) {
 });
 
 // Get file data on drop
-//$("#editor").find(".editor-image").on('drop',  function(e) {
-  $("#editor").on('drop', ".editor-image", function(e) {
+  $("#editor").on("drop", ".editor-image", function(e) {
     e.stopPropagation();
     e.preventDefault();
     var imageId = "#" + e.target.id;
@@ -528,27 +612,27 @@ $("#editor").on("blur", ".editor-text", function () {
 ////////////////////////////////////////// file menu
 // Nouveau...
 $("#newFile").on("click", function () {
-  //confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
-  window.open(document.URL, '_blank');
+  confirmDialog("Nouveau document", "Effacer la page actuelle", "newFile");
+  // window.open(document.URL, '_blank');
 });
 
 //////////////////////////////////////////
 // Nouveau sur un modèle...
 $("#newModelFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Nouveau document", "Effacer la page actuelle ?", "newFile");
+  //  confirmDialog("Nouveau document", "Effacer la page actuelle", "newFile");
 });
 //////////////////// readFile
 // Ouvrir...
 $("#openFile").on("click", function () {
-  confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle ?", "loadFile");
+  confirmDialog("Ouvrir un document sauvegardé", "Effacer la page actuelle", "loadFile");
   //localStorage.setItem('simplesLoadFile', 'yes');
   //window.open(document.URL, '_blank');
 });
 // Importer...
 $("#importFile").on("click", function () {
   simplesAlert("En chantier!");
-  //  confirmDialog("Importer un document", "Effacer la page actuelle ?", "loadFile");
+  //  confirmDialog("Importer un document", "Effacer la page actuelle", "loadFile");
 });
 
 /////////////////////  write file
@@ -563,8 +647,10 @@ $(".write-file").on("click", function () {
   }
   // Enregistrer...
   else if ( $(this).attr("id") == "saveFile") {
-    editor.save().then(function (val) {
-      writeFile(JSON.stringify(val), "mon fichier.smp", "text/plain");
+    editor.saveAsync().then(function (val) {
+      let jsonContent = JSON.stringify(val);
+      writeFile(jsonContent, "mon fichier.smp", "text/plain");
+      previousDocContent = jsonContent;
     });
   }
 //  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
@@ -573,17 +659,17 @@ $(".write-file").on("click", function () {
 ////////////////////////////////// edit menu
 
 $("#cutItem").on("click", function() {
-  document.execCommand("cut");
-  //editor.cut();
+  //document.execCommand("cut");
+  editor.cut();
 });
 $("#copyItem").on("click", function() {
-  document.execCommand("copy");
-  //editor.copy();
+  //document.execCommand("copy");
+  editor.copy();
 });
 $("#pasteItem").on("click", function() {
-  simplesAlert("En chantier!");
+  //simplesAlert("En chantier!");
   //document.execCommand("paste");
-  //editor.paste();
+  editor.paste();
 });
 
 ///////////////////////////////// Resources menu
@@ -779,7 +865,7 @@ $("#toolbarBottomMask").hover( function () {
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
 
-// cacher #blockCmd
+// hide #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
     //$(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
@@ -899,7 +985,7 @@ $("#toolbarBottomMask").hover( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
       }
       triggerPseudoMouseenter(0);
-    }, 15);
+    }, 150);
   });
 
 //  moveBlockDown
@@ -938,13 +1024,16 @@ $("#toolbarBottomMask").hover( function () {
     $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
   });
 
-  // confirm dialog result ok
+  // confirm dialog with ok result
   $("#confirmDialog .ok").on("click", function () {
     var action = $("#confirmDialog").attr("data-action");
-    if ( action.match(/newFile/) ) { // (action == newFile) marche pas!
+    if ( action == "newFile" ) { // Fichier/Nouveau
       editor.clear();
+      setTimeout( function () {
+        $("#blc-0").trigger("mouseenter"); // palette position
+      }, 15);
     }
-    else if ( action.match(/loadFile/) ) {
+    else if ( action == "loadFile" ) { // Fichier/Ouvrir...
       $("#openFileInput").attr("accept", ".smp");
       $("#openFileInput").trigger("click");
     }
@@ -960,46 +1049,24 @@ $("#toolbarBottomMask").hover( function () {
     });
   });
 
-// ---   prevent stuff
-/*
-  document.addEventListener('backbutton', function(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    return false;
-  }, true);
+  /////////////////////////////////
+  //// close tab backstop function
+  function backstop (event) {
+    var saved;
+    editor.saveAsync().then(function (val) {
+      if ( pageEmpty() ) saved = true;
+      else if ( previousDocContent == JSON.stringify(val) ) saved = true;
+      else saved = false;
 
-  window.onbeforeunload = function() {
-    event.stopPropagation();
-    event.preventDefault();
-    return(confirm("Effacer la page actuelle ?"));
-  };
+      if ( saved ) event.preventDefault(); // without dialog
+      else if ( !navigator.userAgent.match(/Firefox/) )
+                event.returnValue = "\o/"; // with dialog firefox
+      else; // with dialog webkit
+    });
+  }
 
-  $(window).on('popstate', function (e) {
-      var state = e.originalEvent.state;
-      if (state !== null) {
-          //load content with ajax
-      }
-  });
-
-*/
-
-/*
-// firefox
-window.addEventListener("beforeunload", function( event ) {
-  var saved = true;
-  if ( saved ) event.preventDefault(); // no dialog
-  // else with dialog
-});
-*/
-
-/*
-// webkit
-window.addEventListener("beforeunload", function( event ) {
-  var notSaved = false;
-  if ( notSaved ) event.preventDefault(); // no dialog
-  else event.returnValue = "\o/"; // with dialog
-});
-*/
+  //// close tab backstop event
+  window.addEventListener("beforeunload", backstop);
 
   ////////////////////////////////////////////
   // before body display
@@ -1061,6 +1128,7 @@ const TITLE_INIT = "none";
 const BULLET_INIT = false;
 const FRAME_INIT = false;
 const PICTURE_INIT = true;
+
 const TOOLBAR_WIDTH = 840; /* 844; */
 const TOOLBAR_DECAL = 0; /* 22 */
 const TOOL_BACK_COLOR = "#f0f0f0";
@@ -1076,6 +1144,8 @@ var dragMouseX;
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc
 var activeBlocId = 0; // id bloc actif
+
+var previousDocContent = ""; // empty, saved or loaded file content
 
 var slider = document.getElementById('zoom-range');
 var page = document.getElementById('page');

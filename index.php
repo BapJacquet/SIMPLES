@@ -30,11 +30,13 @@
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <body style="visibility:hidden;">
+	<!-- loaderB32.gif -->
+	<div class="loader" style="display:none"><img src="img/loaderB32.gif" /></div>
 	<div>
 		<div class="box">
-			<div id="header">
-				<!-- <img src="img/SimpLES_black.png" id="logo" alt="SIMPLES Logo" height="49" /> -->
-			</div>
+			<!--<div id="header">
+				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
+			</div>-->
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
@@ -43,7 +45,7 @@
 				      Fichier
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-							<a id="newFile" class="dropdown-item" href="#">Nouvelle page</a>
+							<a id="newFile" class="dropdown-item" href="#">Nouveau</a>
 				      <a id="newModelFile" class="dropdown-item" href="#">Nouveau sur un modèle...</a>
 							<div class="dropdown-divider"></div>
 							<a id="openFile" class="read-file dropdown-item" href="#">Ouvrir...</a>
@@ -176,7 +178,8 @@
 
 				<span id="analyze" class="simples-span" >
 					<button id="verify-button" type="button" class="simples-button  btn-info">
-						<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />
+						<!--<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />-->
+						<img src="img/lirec-black.png" alt="SIMPLES Logo"  height="74" />
 					</button>
 				</span>
 
@@ -213,7 +216,7 @@
 									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
 										<img src="img/carat-u-black.png">
 									</div>
-									<div class="block-number" contenteditable="true">
+									<div class="block-number" contenteditable="false">
 										<span>1</span>
 									</div>
 								</div><!-- Fin block command palette -->
@@ -227,7 +230,7 @@
 					<div class="alert alert-light" role="alert" id="lexique3-connection">
 						<div>Lexique3 : </div>
 						<div class="progress">
-							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0"
+							<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
 							aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
 								0%
 							</div>
@@ -255,28 +258,38 @@
 <!--                         			 D I A L O G S  -->
 <!-- image dialog -->
 <div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Choisir une image</h3>
+        <h2 class="modal-title">Choisir une image</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <div class="input-group mb-3">
-						<div class="custom-file">
-							<input id="imgFromDisk" type="file" class="custom-file-input">
-							<label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
-						</div>
-          </div>
-          <div class="form-group">
-            <label for="message-text" class="col-form-label">Entrer un URL:</label>
-            <input type="url" class="form-control" id="image-url"></textarea>
-          </div>
-      </div>
-      <div class="modal-footer">
-				<button type="button" class="btn btn-dark" data-dismiss="modal">OK</button>
+				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary btn-block">Choisir un fichier sur l'ordinateur</button>
+				<br>
+        <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
+					<div class="custom-file">
+						<input id="imgFromDisk" type="file" class="custom-file-input btn btn-info">
+						<label class="custom-file-label" for="inputGroupFile01"></label>
+					</div>
+        </div>
+				<label class="col-form-label">Entrer une URL ou des mots-clés</label>
+				<div class="input-group mb-3">
+					<input  id="image-url" type="text" class="form-control">
+					<div class="input-group-append">
+						<button id="modalFind" type="button" class="btn btn-secondary">Chercher</button>
+					</div>
+				</div>
+				<!-- modal-images -->
+				<label class="col-form-label arasaac-lab"><strong>Arasaac</strong></label>
+				<div class="modal-images arasaac  flex-nowrap">
+				</div>
+				<br>
+				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
+				<div class="modal-images sclera flex-nowrap">
+				</div>
       </div>
     </div>
   </div>

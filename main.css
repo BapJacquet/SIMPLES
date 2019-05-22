@@ -659,7 +659,7 @@ button span {
 /* loaderB32 */
 .loader {
   position: fixed;
-  z-index: 100;
+  z-index: 1100;
   top: 50%;
   left: 50%;
   margin-top: -16px;

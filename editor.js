@@ -259,6 +259,7 @@ class Editor {
    * @param {Number} id - Index of the block to process.
    */
   processAllSpaces (id) {
+    return; // Disabling.
     let text = this.getRawTextContent(id);
     let i = -1;
     while (++i < text.length - 1) {
@@ -958,7 +959,7 @@ class Editor {
     }
     var img = new Image();
     img.crossOrigin = 'Anonymous';
-    img.onload = function () {
+    img.onload = () => {
       var canvas = $(selector).get(0);
       canvas.width = 100;
       canvas.height = 100;
@@ -968,10 +969,11 @@ class Editor {
       let offsetX = (canvas.width - width) / 2;
       let offsetY = (canvas.height - height) / 2;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(this, offsetX, offsetY, width, height);
+      ctx.drawImage(img, offsetX, offsetY, width, height);
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      this.dispatchImageLoaded(Number(selector.substring(5)));
       $(".loader").hide();
     };
     img.src = src;
@@ -1414,6 +1416,25 @@ class Editor {
     let e = new CustomEvent('currentformatchanged', {
       detail: {
         format: format
+      },
+      bubbles: false,
+      cancelable: false
+    });
+    console.log(e);
+    $(this.id).get(0).dispatchEvent(e);
+  }
+
+  /**
+   * Send an event telling that an image is ready to be displayed.
+   * @param {string} id - id of the image.
+   */
+  dispatchImageLoaded (id) {
+    let e = new CustomEvent('imageloaded', {
+      detail: {
+        intid: id,
+        blockid: 'blc-' + id,
+        textid: 'txt-' + id,
+        imageid: 'img-' + id
       },
       bubbles: false,
       cancelable: false

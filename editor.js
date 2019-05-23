@@ -974,7 +974,6 @@ class Editor {
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
       this.dispatchImageLoaded(Number(selector.substring(5)));
-      $(".loader").hide();
     };
     img.src = src;
   }

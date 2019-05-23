@@ -358,6 +358,7 @@ function confirmDialog(title, body, action) {
     $("#simplesAlert").modal("show");
   }
 
+
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
 //*********************************************************************
@@ -554,6 +555,11 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   $("#imageClickModal .close").trigger("click");
 });
 
+// hide gif loader
+$("#editor").on("imageloaded", function () {
+  $(".loader").hide();
+});
+
 //  ***************************  image drag & drop  ************
 
 // prevention du drop n'importe ou
@@ -700,7 +706,8 @@ $("#openFileInput").on("change", readFile);
 ///////////////////////////////// Aide menu
 // Aide...
 $("#aideItem").on("click", function () {
-  simplesAlert("En chantier!");
+  $("#helpAlert").modal("show");
+
 });
 
 

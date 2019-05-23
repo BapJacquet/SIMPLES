@@ -258,7 +258,7 @@
 <!--                         			 D I A L O G S  -->
 <!-- image dialog -->
 <div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title">Choisir une image</h3>
@@ -313,7 +313,7 @@
   </div>
 </div>  <!-- end confirm dialog -->
 
-<!-- alert -->
+<!-- simple alert -->
 <div id="simplesAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
@@ -324,13 +324,20 @@
 				</span>
       </div>
       <div class="modal-footer">
-				<button type="button" class="ok btn btn-primary" data-dismiss="modal">Ok</button>
+				<button type="button" class="ok btn btn-secondary" data-dismiss="modal">Ok</button>
       </div>
     </div>
   </div>
-</div>  <!-- end alert -->
+</div>  <!-- end simple alert -->
 
-
+<!-- help alert -->
+<div id="helpAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog .modal-xl" role="document">
+    <div class="modal-content">
+			<iframe src="help.htm"></iframe>
+    </div>
+  </div>
+</div>  <!-- end help alert -->
 
 	<!-- Initialize Simples Editor -->
 	<script type="text/javascript" src="editor.js"></script>

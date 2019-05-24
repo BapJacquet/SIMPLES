@@ -38,6 +38,7 @@
 				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
 			</div>-->
 			<!-- 												M E N U B A R -->
+			<img id="logoLirec" src="img/lirec-black.png" alt="SIMPLES Logo" />
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
 					<div class="btn-group" role="group">
@@ -98,7 +99,6 @@
 			<!--           							T O O L B A R -->
 			<div id="toolbar">
 				<div id="toolbarlist">
-
 					<div id="bold">
 						<div id="bold-caption" class="caption">gras</div>
 						<div class="tool bold-false">a</div>
@@ -177,9 +177,9 @@
 				</div>
 
 				<span id="analyze" class="simples-span" >
-					<button id="verify-button" type="button" class="simples-button  btn-info">
-						<!--<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />-->
-						<img src="img/lirec-black.png" alt="SIMPLES Logo"  height="74" />
+					<button id="verify-button" type="button" class="simples-button">
+						<!--<img src="img/lirec-black.png" alt="SIMPLES Logo"  height="74" />-->
+						Analyser
 					</button>
 				</span>
 

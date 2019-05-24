@@ -1019,11 +1019,13 @@ $("#toolbarBottomMask").hover( function () {
     triggerPseudoMouseenter(0);
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL;
     $("#toolbarlist").css({"left": move});
-    if ( TOOLBAR_WIDTH < $(body).width() ) {
+    if ( TOOLBAR_WIDTH < $(body).width() - 35) {
       $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
+      $("#logoLirec").css("visibility","visible");
     }
     else {
       $("#toolbarScrollBar").css({"background-color": "white"});
+      $("#logoLirec").css("visibility","hidden");
     }
   });
 

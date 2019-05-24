@@ -288,8 +288,8 @@ button span {
   position: fixed;
   z-index: 1000;
   height: 74px;
-  top: 8px; /* 43px; */
-  left: 6px;
+  top: 9px; /* 43px; */
+  left: 8px;
 }
 
 #toolbarBottomMask {

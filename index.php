@@ -38,7 +38,7 @@
 				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
 			</div>-->
 			<!-- 												M E N U B A R -->
-			<img id="logoLirec" src="img/lirec-black.png" alt="SIMPLES Logo" />
+			<img id="logoLirec" src="img/lirec-black86.png" alt="SIMPLES Logo" />
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
 					<div class="btn-group" role="group">
@@ -177,10 +177,7 @@
 				</div>
 
 				<span id="analyze" class="simples-span" >
-					<button id="verify-button" type="button" class="simples-button">
-						<!--<img src="img/lirec-black.png" alt="SIMPLES Logo"  height="74" />-->
-						Analyser
-					</button>
+					<button id="verify-button" type="button" class="simples-button">Analyser</button>
 				</span>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->

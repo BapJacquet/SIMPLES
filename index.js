@@ -1019,14 +1019,19 @@ $("#toolbarBottomMask").hover( function () {
     triggerPseudoMouseenter(0);
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL;
     $("#toolbarlist").css({"left": move});
-    if ( TOOLBAR_WIDTH < $(body).width() - 35) {
+    if ( TOOLBAR_WIDTH < $(body).width() ) {
       $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
-      $("#logoLirec").css("visibility","visible");
     }
     else {
       $("#toolbarScrollBar").css({"background-color": "white"});
+    }
+    if ( TOOLBAR_WIDTH < $(body).width() - LOGO_DECAL) {
+      $("#logoLirec").css("visibility","visible");
+    }
+    else {
       $("#logoLirec").css("visibility","hidden");
     }
+
   });
 
   $(function () { // enable tooltips
@@ -1140,6 +1145,7 @@ const PICTURE_INIT = true;
 
 const TOOLBAR_WIDTH = 840; /* 844; */
 const TOOLBAR_DECAL = 0; /* 22 */
+const LOGO_DECAL = 65;
 const TOOL_BACK_COLOR = "#f0f0f0";
 const COLOR_GREEN = "#2ea35f";
 

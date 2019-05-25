@@ -264,7 +264,7 @@ button span {
   margin-top: 2px;
   height: 36px;
   position: relative;
-  left: 70px;
+  left: 80px;
 }
 
 .main-menu { /* menu button */
@@ -287,15 +287,16 @@ button span {
 #logoLirec {
   position: fixed;
   z-index: 1000;
-  height: 74px;
-  top: 9px; /* 43px; */
-  left: 8px;
+  height: 86px;
+  width: 92px;
+  left: -1px;
+  top: 5px; /* 38px; */
 }
 
 #toolbarBottomMask {
   z-index: 500;
   position: absolute;
-  top: 85px; /* 82 */
+  top: 85px;
   height: 22px;
   width: 100%;
 }
@@ -633,7 +634,7 @@ button span {
   /* padding-top: 12px;  16px;
   padding-bottom: 12px;  */
   cursor: pointer;
-  width: 96px;  /* 100 */
+  width: 92px;  /* 96 */
   height: 84px; /* 100 */
   /* background-color: #2ea35f; /* COLOR_GREEN
   background-color: #fff;*/
@@ -644,6 +645,7 @@ button span {
 .simples-button:hover {
   /* background-color: #37b25c; */
   border-color: #2ea35f;
+  background-color: white;
 }
 
 /* images dialog */
@@ -676,8 +678,8 @@ button span {
   z-index: 1100;
   top: 50%;
   left: 50%;
-  margin-top: -16px;
-  margin-left: -16px;
+  margin-top: -50px;
+  margin-left: -50px;
 }
 
 /*             ...suite #content

@@ -291,6 +291,7 @@ button span {
   width: 92px;
   left: -1px;
   top: 5px; /* 38px; */
+  transform: rotate(-20deg);
 }
 
 #toolbarBottomMask {
@@ -628,7 +629,7 @@ button span {
 /*     Simples! button */
 .simples-button {
   position: relative;
-  top: 9px; /* -4px; */
+  top: 9px; /* 9px; */
   border-width: 3px;
   border-color: #444;
   /* padding-top: 12px;  16px;

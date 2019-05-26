@@ -38,7 +38,7 @@
 				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
 			</div>-->
 			<!-- 												M E N U B A R -->
-			<img id="logoLirec" src="img/lirec-black86.png" alt="SIMPLES Logo" />
+			<img id="logoLirec" src="img/lirec-black74.png" alt="SIMPLES Logo" />
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
 					<div class="btn-group" role="group">

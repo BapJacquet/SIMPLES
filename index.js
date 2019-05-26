@@ -417,7 +417,7 @@ $(document).ready(function () {
           $(".hcollapsible div").text("Masquer\xA0l'analyse");
     else  $(".hcollapsible div").text("Montrer\xA0l'analyse");
 
-    $(".hcollapsible").css("background-color", "#6c757d");
+    // $(".hcollapsible").css("background-color", "#6c757d");
 
     setTimeout( function () {
       triggerPseudoMouseenter(0);

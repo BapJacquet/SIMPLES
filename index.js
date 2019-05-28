@@ -358,6 +358,7 @@ function confirmDialog(title, body, action) {
     $("#simplesAlert").modal("show");
   }
 
+
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
 //*********************************************************************
@@ -416,7 +417,7 @@ $(document).ready(function () {
           $(".hcollapsible div").text("Masquer\xA0l'analyse");
     else  $(".hcollapsible div").text("Montrer\xA0l'analyse");
 
-    $(".hcollapsible").css("background-color", "#6c757d");
+    // $(".hcollapsible").css("background-color", "#6c757d");
 
     setTimeout( function () {
       triggerPseudoMouseenter(0);
@@ -552,6 +553,11 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   $(".loader").show();
   $("#imageClickModal").find("#image-url").val(null);
   $("#imageClickModal .close").trigger("click");
+});
+
+// hide gif loader
+$("#editor").on("imageloaded", function () {
+  $(".loader").hide();
 });
 
 //  ***************************  image drag & drop  ************
@@ -700,7 +706,8 @@ $("#openFileInput").on("change", readFile);
 ///////////////////////////////// Aide menu
 // Aide...
 $("#aideItem").on("click", function () {
-  simplesAlert("En chantier!");
+  $("#helpAlert").modal("show");
+
 });
 
 
@@ -1018,6 +1025,13 @@ $("#toolbarBottomMask").hover( function () {
     else {
       $("#toolbarScrollBar").css({"background-color": "white"});
     }
+    if ( TOOLBAR_WIDTH < $(body).width() - LOGO_DECAL) {
+      $("#logoLirec").css("visibility","visible");
+    }
+    else {
+      $("#logoLirec").css("visibility","hidden");
+    }
+
   });
 
   $(function () { // enable tooltips
@@ -1131,6 +1145,7 @@ const PICTURE_INIT = true;
 
 const TOOLBAR_WIDTH = 840; /* 844; */
 const TOOLBAR_DECAL = 0; /* 22 */
+const LOGO_DECAL = 65;
 const TOOL_BACK_COLOR = "#f0f0f0";
 const COLOR_GREEN = "#2ea35f";
 

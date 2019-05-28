@@ -34,11 +34,10 @@
 	<div class="loader" style="display:none"><img src="img/loaderB32.gif" /></div>
 	<div>
 		<div class="box">
-			<!--<div id="header">
-				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
-			</div>-->
+			<div id="header">
+			<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
+			</div>
 			<!-- 												M E N U B A R -->
-			<img id="logoLirec" src="img/lirec-black74.png" alt="SIMPLES Logo" />
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
 					<div class="btn-group" role="group">

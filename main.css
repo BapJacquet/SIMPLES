@@ -38,14 +38,11 @@ hr {
 
 .rotate {
   transform: rotate(-90deg);
-  /* Safari */
-  -webkit-transform: rotate(-90deg);
-  /* Firefox */
-  -moz-transform: rotate(-90deg);
-  /* IE */
-  -ms-transform: rotate(-90deg);
-  /* Opera */
-  -o-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg); /* Safari */
+  -moz-transform: rotate(-90deg);   /* Firefox */
+  -ms-transform: rotate(-90deg); /* IE */
+  -o-transform: rotate(-90deg); /* Opera */
+
   /* Internet Explorer */
   filter: progid:dximagetransform.microsoft.basicimage(rotation=3);
   position: relative;
@@ -282,7 +279,6 @@ button span {
 
 #logoLirec {
   position: fixed;
-  z-index: 1000;
   height: 82px;
   width: 82px;
   left: -1px;

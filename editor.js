@@ -79,6 +79,14 @@ class Editor {
         console.log("Focusing " + $(event.target).children('.editor-text').id);
       }
     });
+    $(this.id).on('click', '.editor-image-container', event => {
+      if ($(event.target).hasClass('editor-image-container')) {
+        event.stopPropagation();
+        event.preventDefault();
+        $(event.target).children('.editor-text').focus();
+        console.log("Focusing " + $(event.target).children('.editor-text').id);
+      }
+    });
     $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
     $(this.id).on('focus', '.editor-block', event => {
       if ($(event.target).hasClass('editor-block')) {
@@ -729,6 +737,23 @@ class Editor {
   }
 
   /**
+   * Insert an image block just below the block with the given index.
+   * @param {int} index - ID of the block that the new block should follow.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  insertImageBlockAfter (index, focus) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
+    $('#blc-' + index).after(this.newImageBlockString(index + 1));
+    this.refreshAllBlockID();
+    if (focus) {
+      $('#txt-' + (index + 1) + '-1').focus();
+    }
+    this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(index + 1);
+  }
+
+  /**
    * Insert a block just above the block with the given index.
    * @param {int} index - ID of the block that the new block should precede.
    * @param {string} text - Text the new block should be initialized with.
@@ -743,6 +768,23 @@ class Editor {
       $('#txt-' + (index)).focus();
     }
     this.setImage('#img-' + (index), 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(index);
+  }
+
+  /**
+   * Insert an image block just above the block with the given index.
+   * @param {int} index - ID of the block that the new block should precede.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  insertImageBlockBefore (index, focus) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
+    $('#blc-' + index).before(this.newImageBlockString(index));
+    this.refreshAllBlockID();
+    if (focus) {
+      $('#txt-' + (index) + '-1').focus();
+    }
+    this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -815,6 +857,45 @@ class Editor {
   }
 
   /**
+   * Add an image block at the end of the editor.
+   */
+  addImageBlock () {
+    let id = this.blockCount;
+    $(this.id).append(this.newImageBlockString(id));
+    this.setImage('#img-' + id + '-1', 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(id);
+  }
+
+  /**
+   * Add an image within the image block with the given id.
+   * @param {int} id - The id of the block.
+   */
+  addImageInBlock (id) {
+    if (!$('#blc-' + id).hasClass('media')) {
+      let lastImg = this.getImageCountInBlock(id);
+      let selector = '#img-' + id + '-' + lastImg;
+      $(selector).parent().after(this.newImageInImageBlockString(id, lastImg + 1));
+      setTimeout(() => {
+        this.setImage('#img-' + id + '-' + (lastImg + 1), 'img/placeholder.png');
+        $('#txt-' + id + '-' + (lastImg + 1)).focus();
+      }, 1);
+    } else {
+      throw new Error('Can only add images within image blocks.');
+    }
+  }
+
+  /**
+   * Get the number of images within a block.
+   */
+  getImageCountInBlock (id) {
+    if ($('#blc-' + id).hasClass('media')) {
+      return 1;
+    } else {
+      return $('#blc-' + id).children('.row').children('.col').length;
+    }
+  }
+
+  /**
    * Get the text content of the block with the given id.
    * @param {int} id - ID of the block to extract text from.
    * @return {string} The extracted text.
@@ -861,6 +942,32 @@ class Editor {
              `</div>` +
              `<canvas id="img-${id}" class="editor-image align-self-center mr-3 hoverable" style="width:100px"/>` +
            `</div>`;
+  }
+
+  /**
+   * Get a HTML string to initialize an Image Block.
+   * @param {int} id - ID of the new block.
+   * @return {string} HTML string of the new block.
+   */
+  newImageBlockString (id) {
+    return `<div id="blc-${id}" class="editor-block mx-auto" style="font-size:14pt;">` +
+              `<div class="row">` +
+                this.newImageInImageBlockString(id, 1) +
+              `</div>` +
+          `</div>`;
+  }
+
+  /**
+   * Get a HTML string to initialize an Image for an Image Block.
+   * @param {int} id - Id of the block.
+   * @param {int} imgID - Id of the image within the block.
+   * @return {string} HTML string of the new image container.
+   */
+  newImageInImageBlockString (id, imgID) {
+    return `<div class="col editor-image-container">` +
+      `<canvas id="img-${id}-${imgID}" class="editor-image align-self-center hoverable px-auto"/>` +
+      `<div id="txt-${id}-${imgID}" class="editor-text align-self-center" contenteditable="true"></div>` +
+    `</div>`;
   }
 
   /**

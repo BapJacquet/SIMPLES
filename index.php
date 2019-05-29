@@ -2,7 +2,7 @@
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html charset=utf-8" />
-	<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0">
 	<title>SimpLEs</title>
 
   <!-- === HTML to PDF ===-->
@@ -34,11 +34,10 @@
 	<div class="loader" style="display:none"><img src="img/loaderB32.gif" /></div>
 	<div>
 		<div class="box">
-			<!--<div id="header">
-				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
-			</div>-->
+			<div id="header">
+			<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
+			</div>
 			<!-- 												M E N U B A R -->
-			<img id="logoLirec" src="img/lirec-black74.png" alt="SIMPLES Logo" />
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
 					<div class="btn-group" role="group">

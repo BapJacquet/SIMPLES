@@ -87,7 +87,7 @@ hr {
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   background-color: #dbdbdb;
-  color: #2ea35f; /* COLOR_GREEN */
+  color: #009940; /* COLOR_GREEN */
   cursor: pointer;
   padding-top: 80px;
   padding-right: 2px;
@@ -97,6 +97,7 @@ hr {
   border-color: #ececec;
   border-width: 2px;
   font-size: 15px;
+  font-weight: 400;
   letter-spacing: 1px;
 }
 
@@ -261,7 +262,7 @@ button span {
 }
 
 .main-menu { /* menu button */
-  color: #2ea35f; /* COLOR_GREEN */
+  color: #009940; /* COLOR_GREEN */
   background-color: white;
   border: none;
   font-size: 20px;
@@ -407,7 +408,7 @@ button span {
 .color-green {
   font-weight: 200;
   font-size: 38px;
-  color: #2ea35f; /* COLOR_GREEN */
+  color: #009940; /* COLOR_GREEN */
   left: -30px;
 }
 
@@ -629,16 +630,17 @@ button span {
   cursor: pointer;
   width: 110px;  /* 96 */
   height: 84px; /* 100 */
-  /* background-color: #2ea35f; /* COLOR_GREEN
+  /* background-color: #009940; /* COLOR_GREEN
   background-color: #fff;*/
   background-color: #f0f0f0; /* TOOL_BACK_COLOR */
-  color: #2ea35f;
+  color: #009940;
   font-size: 22px;
+  font-weight: 400;
 }
 
 .simples-button:hover {
   /* background-color: #37b25c; */
-  border-color: #2ea35f;
+  border-color: #009940;
   background-color: white;
 }
 

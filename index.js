@@ -1147,7 +1147,7 @@ const TOOLBAR_WIDTH = 840; /* 844; */
 const TOOLBAR_DECAL = 0; /* 22 */
 const LOGO_DECAL = 65;
 const TOOL_BACK_COLOR = "#f0f0f0";
-const COLOR_GREEN = "#2ea35f";
+const COLOR_GREEN = "009940"; // "#2ea35f";
 
 const TOOLBAR_BLOCK_LEFT = {"bold": 0, "size": -64, "color": -158, "title": -240, "bullet": -328, "frame": -355, "picture": -390};
 

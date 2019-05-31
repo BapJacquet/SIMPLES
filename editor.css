@@ -75,6 +75,12 @@
   top: 2px;
 }
 
+#blockCmd .block-new2-down img,
+#blockCmd .block-new2-up img {
+  left: 4px;
+  top: 5px;
+}
+
 #blockCmd .block-move-down {
   top: -37px;
   left: 40px;
@@ -102,11 +108,22 @@
   background-color: #fbb;
 }
 
-#blockCmd .block-new-down:hover {
-  background-color: #bfb;
+#blockCmd .block-new2-up {
+  display: none;
+  top: -222px;
+  left: -31px;
 }
 
-#blockCmd .block-new-up:hover {
+#blockCmd .block-new2-down {
+  display: none;
+  top: -148px;
+  left: -31px;
+}
+
+#blockCmd .block-new-down:hover,
+#blockCmd .block-new2-down:hover,
+#blockCmd .block-new-up:hover,
+#blockCmd .block-new2-up:hover {
   background-color: #bfb;
 }
 
@@ -120,4 +137,11 @@
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   pointer-events: none;
+}
+
+/* I M A G E   B L O C K   C O M M A N D */
+
+canvas {
+  margin: auto;
+  display: block;
 }

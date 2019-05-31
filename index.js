@@ -872,6 +872,7 @@ $("#toolbarBottomMask").hover( function () {
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
 
+
 // hide #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
@@ -972,6 +973,14 @@ $("#toolbarBottomMask").hover( function () {
     }, 15);
   });
 
+  //  insertImageBlockBefore
+  $("#blockCmd .block-new2-up").on("click", function (ev) {
+    editor.insertImageBlockBefore( activeBlocId, true);
+    setTimeout( function () {
+      triggerPseudoMouseenter(0);
+    }, 15);
+  });
+
   // insertBlockAfter
     $("#blockCmd .block-new-down").on("click", function (ev) {
       editor.insertBlockAfter( activeBlocId, "", true);
@@ -980,6 +989,17 @@ $("#toolbarBottomMask").hover( function () {
         triggerPseudoMouseenter(0);
       }, 15);
     });
+
+  // insertImageBlockAfter
+    $("#blockCmd .block-new2-down").on("click", function (ev) {
+      editor.insertImageBlockAfter( activeBlocId, true);
+      setTimeout( function () {
+        $("#blockCmd").find("span").text(activeBlocId + 1);
+        triggerPseudoMouseenter(0);
+      }, 15);
+    });
+
+
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
@@ -1013,8 +1033,34 @@ $("#toolbarBottomMask").hover( function () {
     }, 300);
   });
 
+////////////////////////////////  I M A G E   C O M M A N D
+//  show/hide .block-new2
+  $("#blockCmd .block-new-up").mouseenter( function () {
+    $(".block-new2-up").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-up").css("display","none");
+  } );
+  $("#blockCmd .block-new2-up").mouseenter( function () {
+    $(".block-new2-up").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-up").css("display","none");
+  } );
+
+  $("#blockCmd .block-new-down").mouseenter( function () {
+    $(".block-new2-down").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-down").css("display","none");
+  } );
+  $("#blockCmd .block-new2-down").mouseenter( function () {
+    $(".block-new2-down").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-down").css("display","none");
+  } );
+
+
+
 /////////////////////////////////////////  D I V E R S
-  // resize & focus
+// resize & focus
   $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL;

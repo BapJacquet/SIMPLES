@@ -195,13 +195,13 @@
 					<div id="page-container">
 						<div id="page">
 							<div id="blockCmd"><!-- Block command palette -->
-								<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
+								<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc TEXTE au dessus">
 									<img src="img/plus-black.png">
 								</div>
 								<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
 									<img src="img/delete-black.png">
 								</div>
-								<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
+								<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc TEXTE en dessous">
 									<img src="img/plus-black.png">
 								</div>
 								<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
@@ -212,6 +212,12 @@
 								</div>
 								<div class="block-number" contenteditable="false">
 									<span>1</span>
+								</div>
+								<div class="block-new2-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc IMAGE au dessus">
+									<img src="img/mini-mount.png">
+								</div>
+								<div class="block-new2-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc IMAGE au dessous">
+									<img src="img/mini-mount.png">
 								</div>
 							</div><!-- Fin block command palette -->
 							<!-- Editor container -->

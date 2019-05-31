@@ -324,7 +324,7 @@ function triggerPseudoMouseenter( decal ) {
 
 // page is empty
 function pageEmpty() {
-  if ( $("#editor").children().length > 2 || $("#txt-0").text() != "" ) return false;
+  if ( $("#editor").children().length > 1 || $("#txt-0").text() != "" ) return false;
   else return true;
 }
 
@@ -426,7 +426,7 @@ $(document).ready(function () {
   } );
 
 ///////////////////////////////////////////////////
-//                         blockcreated from editor
+//                         blockcreated (editor event)
 $("#editor").on("blockcreated", function (ev) {
   activeBlocId = ev.detail.intid;
   $("#blockCmd").find("span").text(activeBlocId + 1);
@@ -434,7 +434,7 @@ $("#editor").on("blockcreated", function (ev) {
 });
 
 ///////////////////////////////////////////////////
-//                      blockdestroyed from editor
+//                      blockdestroyed (editor event)
 $("#editor").on("blockdestroyed", function (ev) {
   var oldBlock = ev.detail.intid;
   if ( oldBlock > 0 && $("#blc-" + String(oldBlock)).next().length == 0 ) {
@@ -555,8 +555,8 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   $("#imageClickModal .close").trigger("click");
 });
 
-// hide gif loader
-$("#editor").on("imageloaded", function () {
+// image loaded (editor event)
+$("#editor").on("imageloaded", function (ev) {
   $(".loader").hide();
 });
 
@@ -872,6 +872,7 @@ $("#toolbarBottomMask").hover( function () {
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
 
+
 // hide #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
@@ -900,7 +901,7 @@ $("#toolbarBottomMask").hover( function () {
       $("#blockCmd").find(".block-move-down").css({"opacity": 1, "pointer-events": "initial"});
     }
   // enable .block-delete
-    if ( $(this).siblings().length == 1 ) {
+    if ( $(this).siblings().length == 0 ) { // only 1 block
       $("#blockCmd").find(".block-delete").css({"opacity": 0.3, "pointer-events": "none"});
     }
     else {
@@ -909,11 +910,11 @@ $("#toolbarBottomMask").hover( function () {
 
     //  palette move
     var offset = $(this).offset();
-    var left = $("#page").offset().left + 15;
+    var left = $("#page").offset().left + 8; // + 15;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();
-    var commandHeight = $("#editor").find("#blockCmd").height();
+    var commandHeight = $("#blockCmd").height();
     var decal = 0;
     if ( $("#blc-" + String(activeBlocId)).hasClass("frame") ) decal = 5;
     top = top + ((height - commandHeight) /2 + decal);
@@ -926,7 +927,7 @@ $("#toolbarBottomMask").hover( function () {
 
   //////////////////////////////////////////
   // blockCmd LEAVE
-  $("#editor").on("mouseleave", "#blockCmd", function (ev) {
+  $("#blockCmd").on("mouseleave", function (ev) {
     triggerPseudoMouseenter(0);
   });
 
@@ -972,6 +973,14 @@ $("#toolbarBottomMask").hover( function () {
     }, 15);
   });
 
+  //  insertImageBlockBefore
+  $("#blockCmd .block-new2-up").on("click", function (ev) {
+    editor.insertImageBlockBefore( activeBlocId, true);
+    setTimeout( function () {
+      triggerPseudoMouseenter(0);
+    }, 15);
+  });
+
   // insertBlockAfter
     $("#blockCmd .block-new-down").on("click", function (ev) {
       editor.insertBlockAfter( activeBlocId, "", true);
@@ -980,6 +989,17 @@ $("#toolbarBottomMask").hover( function () {
         triggerPseudoMouseenter(0);
       }, 15);
     });
+
+  // insertImageBlockAfter
+    $("#blockCmd .block-new2-down").on("click", function (ev) {
+      editor.insertImageBlockAfter( activeBlocId, true);
+      setTimeout( function () {
+        $("#blockCmd").find("span").text(activeBlocId + 1);
+        triggerPseudoMouseenter(0);
+      }, 15);
+    });
+
+
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
@@ -1013,8 +1033,34 @@ $("#toolbarBottomMask").hover( function () {
     }, 300);
   });
 
+////////////////////////////////  I M A G E   C O M M A N D
+//  show/hide .block-new2
+  $("#blockCmd .block-new-up").mouseenter( function () {
+    $(".block-new2-up").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-up").css("display","none");
+  } );
+  $("#blockCmd .block-new2-up").mouseenter( function () {
+    $(".block-new2-up").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-up").css("display","none");
+  } );
+
+  $("#blockCmd .block-new-down").mouseenter( function () {
+    $(".block-new2-down").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-down").css("display","none");
+  } );
+  $("#blockCmd .block-new2-down").mouseenter( function () {
+    $(".block-new2-down").css("display","block");
+  } ).mouseleave( function () {
+    $(".block-new2-down").css("display","none");
+  } );
+
+
+
 /////////////////////////////////////////  D I V E R S
-  // resize & focus
+// resize & focus
   $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL;

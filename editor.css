@@ -56,7 +56,8 @@
   user-select: none;
 }
 
-#blockCmd div {
+#blockCmd div,
+.editor-block .block-delete {
   position: relative;
   width: 35px;
   height: 35px;
@@ -140,6 +141,24 @@
 }
 
 /* I M A G E   B L O C K   C O M M A N D */
+
+.editor-block .block-delete {
+  top: -16px;
+  left: -38px;
+  background-color: #ccc;
+}
+
+.editor-block .block-delete:hover {
+  background-color: #fbb;
+  cursor: pointer;
+}
+
+.editor-block .block-delete img {
+  position: relative;
+  pointer-events: none;
+  left: 10px;
+  top: 2px;
+}
 
 canvas {
   margin: auto;

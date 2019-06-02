@@ -555,11 +555,6 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   $("#imageClickModal .close").trigger("click");
 });
 
-// image loaded (editor event)
-$("#editor").on("imageloaded", function (ev) {
-  $(".loader").hide();
-});
-
 //  ***************************  image drag & drop  ************
 
 // prevention du drop n'importe ou
@@ -1033,7 +1028,8 @@ $("#toolbarBottomMask").hover( function () {
     }, 300);
   });
 
-////////////////////////////////  I M A G E   C O M M A N D
+//////////////////////////  I M A G E  block  C O M M A N D
+
 //  show/hide .block-new2
   $("#blockCmd .block-new-up").mouseenter( function () {
     $(".block-new2-up").css("display","block");
@@ -1057,6 +1053,48 @@ $("#toolbarBottomMask").hover( function () {
     $(".block-new2-down").css("display","none");
   } );
 
+// buid image widgets
+  function buildImageWidgets () {
+
+  }
+
+
+  // image loaded (editor event) hide gif, add block-delete div
+  $("#editor").on("imageloaded", function (ev) {
+    $(".loader").hide();
+    /*
+    let delTag = '<div class="block-delete" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l\'image" style="opacity: 0;"><img src="img/delete-black.png"></div>';
+    if ( !$("#" + ev.detail.blockid).find(".block-delete").get(0) ) {
+      $("#" + ev.detail.blockid).append(delTag);
+    }
+    */
+  });
+
+/*
+  $("#editor").on("mouseenter", ".editor-image", function () {
+    $(this).next(".block-delete").css("opacity", "1");
+  });
+  $("#editor").on("mouseleave", ".editor-image", function () {
+    $(this).next(".block-delete").css("opacity", "0");
+  });
+
+  $("#editor").on("mouseenter", ".block-delete", function () {
+    $(this).css("opacity", "1");
+  });
+  $("#editor").on("mouseleave", ".block-delete", function () {
+    $(this).css("opacity", "0");
+  });
+
+  $("#editor").on("click", ".block-delete", function () {
+    $(this).css("display", "none").remove();
+    $("#picture .tool-frame-bullet").trigger("click");
+  });
+*/
+/*
+  $(".editor-block").on("mouseenter", "canvas", function () {
+
+  } );
+*/
 
 
 /////////////////////////////////////////  D I V E R S

@@ -216,7 +216,7 @@
 								<div class="block-new2-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc IMAGE au dessus">
 									<img src="img/mini-mount.png">
 								</div>
-								<div class="block-new2-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc IMAGE au dessous">
+								<div class="block-new2-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc IMAGE en dessous">
 									<img src="img/mini-mount.png">
 								</div>
 							</div><!-- Fin block command palette -->

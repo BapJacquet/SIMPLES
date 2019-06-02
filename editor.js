@@ -441,7 +441,7 @@ class Editor {
   }
 
   getBlockFormat (blockIndex) {
-    return this.getFormatForNode($('#txt-' + blockIndex).get(0));
+    return this.getFormatForNode($('#blc-' + blockIndex).find('.editor-text').get(0));
   }
 
   /**
@@ -476,6 +476,7 @@ class Editor {
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
     let id = this.getBlockIndexFromElement(element);
     result.frame = $('#blc-' + id).hasClass('frame');
+    result.blockType = $('#blc-' + id).hasClass('text-block') ? 'default' : ($('#blc-' + id).hasClass('image-block') ? 'images' : 'unknown');
     result.picture = $('#img-' + id).is(':visible');
     result.size = size;
     result.color = color;
@@ -561,6 +562,9 @@ class Editor {
   getNodesInElement (element) {
     let startNode = element.firstChild;
     let endNode = element;
+    if (startNode === null) {
+      return [];
+    }
     if (startNode === endNode && startNode.childNodes.length === 0) {
       return [startNode];
     }
@@ -747,9 +751,9 @@ class Editor {
     $('#blc-' + index).after(this.newImageBlockString(index + 1));
     this.refreshAllBlockID();
     if (focus) {
-      $('#txt-' + (index + 1) + '-1').focus();
+      $('#txt-' + (index + 1) + '-0').focus();
     }
-    this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
+    this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -784,7 +788,7 @@ class Editor {
     if (focus) {
       $('#txt-' + (index) + '-1').focus();
     }
-    this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
+    this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -862,7 +866,7 @@ class Editor {
   addImageBlock () {
     let id = this.blockCount;
     $(this.id).append(this.newImageBlockString(id));
-    this.setImage('#img-' + id + '-1', 'img/placeholder.png');
+    this.setImage('#img-' + id + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -872,7 +876,7 @@ class Editor {
    */
   addImageInBlock (id) {
     if (!$('#blc-' + id).hasClass('media')) {
-      let lastImg = this.getImageCountInBlock(id);
+      let lastImg = this.getImageCountInBlock(id) - 1;
       let selector = '#img-' + id + '-' + lastImg;
       $(selector).parent().after(this.newImageInImageBlockString(id, lastImg + 1));
       setTimeout(() => {
@@ -936,11 +940,13 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newBlockString (id, text) {
-    return `<div id="blc-${id}" class="editor-block media" style="font-size: 14pt;">` +
+    return `<div id="blc-${id}" class="editor-block text-block media" style="font-size: 14pt;">` +
              `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3" contenteditable="true">` +
                 `<div>${text}</div>` +
              `</div>` +
-             `<canvas id="img-${id}" class="editor-image align-self-center mr-3 hoverable" style="width:100px"/>` +
+             `<div class="editor-image-container mr-3" style="width:100px">` +
+                `<canvas id="img-${id}" class="editor-image align-self-center hoverable"/>` +
+             `</div>` +
            `</div>`;
   }
 
@@ -950,9 +956,9 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newImageBlockString (id) {
-    return `<div id="blc-${id}" class="editor-block mx-auto" style="font-size:14pt;">` +
+    return `<div id="blc-${id}" class="editor-block image-block mx-auto" style="font-size:14pt;">` +
               `<div class="row">` +
-                this.newImageInImageBlockString(id, 1) +
+                this.newImageInImageBlockString(id, 0) +
               `</div>` +
           `</div>`;
   }
@@ -988,12 +994,17 @@ class Editor {
   refreshAllBlockID () {
     $('.editor-block').each(function (index) {
       $(this).attr('id', 'blc-' + index);
-    });
-    $('.editor-text').each(function (index) {
-      $(this).attr('id', 'txt-' + index);
-    });
-    $('.editor-image').each(function (index) {
-      $(this).attr('id', 'img-' + index);
+      if ($(this).hasClass('text-block')) {
+        $(this).find('.editor-text').attr('id', 'txt-' + index);
+        $(this).find('.editor-image').attr('id', 'img-' + index);
+      } else if ($(this).hasClass('image-block')) {
+        $(this).find('.editor-text').each(function (subIndex) {
+          $(this).attr('id', 'txt-' + index + '-' + subIndex);
+        });
+        $(this).find('.editor-image').each(function (subIndex) {
+          $(this).attr('id', 'img-' + index + '-' + subIndex);
+        });
+      }
     });
   }
 
@@ -1241,7 +1252,7 @@ class Editor {
    */
   getBlockIndexFromElement (element) {
     let current = $(element);
-    while (!current.hasClass('editor-text')) {
+    while (!current.hasClass('editor-block')) {
       current = current.parent();
       if (current.length === 0) {
         return -1;
@@ -1311,16 +1322,32 @@ class Editor {
     };
     for (let i = 0; i < this.blockCount; i++) {
       let format = this.getBlockFormat(i);
-      object.blocks.push({
-        type: 'default',
-        content: $('#txt-' + i)[0].innerHTML,
-        image: $('#img-' + i)[0].toDataURL(),
-        options: {
-          leftPicture: false,
-          rightPicture: format.picture,
-          frame: format.frame
-        }
-      });
+      switch (format.blockType) {
+        case 'default':
+          object.blocks.push({
+            type: 'default',
+            content: $('#txt-' + i)[0].innerHTML,
+            image: $('#img-' + i)[0].toDataURL(),
+            options: {
+              leftPicture: false,
+              rightPicture: format.picture,
+              frame: format.frame
+            }
+          });
+          break;
+        case 'images':
+          let imagesCount = this.getImageCountInBlock(i);
+          let images = [];
+          for (let img = 0; img < imagesCount; img++) {
+            images.push({image: $('#img-' + i + '-' + img)[0].toDataURL(), text: $('#txt-' + i + '-' + img)[0].innerHTML});
+          }
+          object.blocks.push({
+            type: 'images',
+            images: images,
+            options: {}
+          });
+          break;
+      }
     }
 
     return object;
@@ -1342,17 +1369,37 @@ class Editor {
     this.clear();
 
     for (let i = 0; i < json.blocks.length; i++) {
-      if (i > 0) { // Clearing always leaves an empty block. No need to add it.
-        this.addBlock();
+      switch (json.blocks[i].type) {
+        case 'default':
+          if (i > 0) { // Clearing always leaves an empty block. No need to add it.
+            this.addBlock();
+          }
+          $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
+          setTimeout(() => {
+            this.setImage('#img-' + i, json.blocks[i].image);
+            if (json.meta.version >= 1) {
+              if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
+              if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+            }
+          }, 250);
+          break;
+        case 'images':
+          if (i === 0) { // Clearing always leaves an empty block. We need to replace it.
+            this.insertImageBlockBefore(0);
+            this.removeBlockAt(1);
+          } else {
+            this.addImageBlock();
+          }
+          for (let img = 0; img < json.blocks[i].images.length; img++) {
+            if (img > 0) {
+              this.addImageInBlock(i);
+            }
+            $('#txt-' + i + '-' + img)[0].innerHTML = json.blocks[i].images[img].text;
+            setTimeout(() => {
+              this.setImage('#img-' + i + '-' + img, json.blocks[i].images[img].image);
+            }, 250);
+          }
       }
-      $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
-      setTimeout(() => {
-        this.setImage('#img-' + i, json.blocks[i].image);
-        if (json.meta.version >= 1) {
-          if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
-          if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
-        }
-      }, 250);
     }
   }
 

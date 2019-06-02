@@ -2,6 +2,10 @@
 .editor-image {
   position: relative;
   top: 0;
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: auto;
   -webkit-filter: none;
   filter: none;
   -webkit-transition: top 0.25s, -webkit-filter 0.25s;
@@ -137,11 +141,4 @@
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   pointer-events: none;
-}
-
-/* I M A G E   B L O C K   C O M M A N D */
-
-canvas {
-  margin: auto;
-  display: block;
 }

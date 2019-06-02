@@ -925,6 +925,64 @@ class Editor {
   }
 
   /**
+   * Move a block up by the given amount.
+   * @param {int} blockID - ID of the block to move.
+   * @param {int} imageID - ID of the image to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
+   */
+  moveImageLeft (blockID, imageID, amount = 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if (imageID - amount >= 0) {
+      let element = $('#img-' + blockID + '-' + imageID).parent()[0];
+      let leftElement = $('#img-' + blockID + '-' + (imageID - amount)).parent()[0];
+      let moveDistance = $(leftElement).outerWidth();
+      Animator.moveHorizontal(element, -moveDistance, 50, duration);
+      Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
+      setTimeout(() => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(element).insertBefore($(leftElement));
+        $(element).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      }, duration * 1.1);
+    }
+  }
+
+  /**
+   * Move a block down by the given amount.
+   * @param {int} blockID - ID of the block to move.
+   * @param {int} imageID - ID of the image to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
+   */
+  moveImageRight (blockID, imageID, amount = 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if (imageID + amount < this.getImageCountInBlock(blockID)) {
+      let element = $('#img-' + blockID + '-' + (imageID + amount)).parent()[0];
+      let leftElement = $('#img-' + blockID + '-' + imageID).parent()[0];
+      let moveDistance = $(leftElement).outerWidth();
+      Animator.moveHorizontal(element, -moveDistance, 50, duration);
+      Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
+      setTimeout(() => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(leftElement).insertAfter($(element));
+        $(leftElement).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      }, duration * 1.1);
+    }
+  }
+
+  /**
    * Get the number of images within a block.
    */
   getImageCountInBlock (id) {

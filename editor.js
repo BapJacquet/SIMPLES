@@ -441,7 +441,7 @@ class Editor {
   }
 
   getBlockFormat (blockIndex) {
-    return this.getFormatForNode($('#txt-' + blockIndex).get(0));
+    return this.getFormatForNode($('#blc-' + blockIndex).find('.editor-text').get(0));
   }
 
   /**
@@ -476,7 +476,7 @@ class Editor {
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
     let id = this.getBlockIndexFromElement(element);
     result.frame = $('#blc-' + id).hasClass('frame');
-    result.blockType = $('#blc-' + id).hasClass('text-block') ? 'default' : ($('#blc-' + id).hasClass('image-block') ? 'image' : 'unknown');
+    result.blockType = $('#blc-' + id).hasClass('text-block') ? 'default' : ($('#blc-' + id).hasClass('image-block') ? 'images' : 'unknown');
     result.picture = $('#img-' + id).is(':visible');
     result.size = size;
     result.color = color;
@@ -996,7 +996,7 @@ class Editor {
       $(this).attr('id', 'blc-' + index);
       if ($(this).hasClass('text-block')) {
         $(this).find('.editor-text').attr('id', 'txt-' + index);
-        $(this).find('.editor-image').attr('id', 'txt-' + index);
+        $(this).find('.editor-image').attr('id', 'img-' + index);
       } else if ($(this).hasClass('image-block')) {
         $(this).find('.editor-text').each(function (subIndex) {
           $(this).attr('id', 'txt-' + index + '-' + subIndex);
@@ -1322,16 +1322,32 @@ class Editor {
     };
     for (let i = 0; i < this.blockCount; i++) {
       let format = this.getBlockFormat(i);
-      object.blocks.push({
-        type: 'default',
-        content: $('#txt-' + i)[0].innerHTML,
-        image: $('#img-' + i)[0].toDataURL(),
-        options: {
-          leftPicture: false,
-          rightPicture: format.picture,
-          frame: format.frame
-        }
-      });
+      switch (format.blockType) {
+        case 'default':
+          object.blocks.push({
+            type: 'default',
+            content: $('#txt-' + i)[0].innerHTML,
+            image: $('#img-' + i)[0].toDataURL(),
+            options: {
+              leftPicture: false,
+              rightPicture: format.picture,
+              frame: format.frame
+            }
+          });
+          break;
+        case 'images':
+          let imagesCount = this.getImageCountInBlock(i);
+          let images = [];
+          for (let img = 0; img < imagesCount; img++) {
+            images.push({image: $('#img-' + i + '-' + img)[0].toDataURL(), text: $('#txt-' + i + '-' + img)[0].innerHTML});
+          }
+          object.blocks.push({
+            type: 'images',
+            images: images,
+            options: {}
+          });
+          break;
+      }
     }
 
     return object;
@@ -1353,17 +1369,37 @@ class Editor {
     this.clear();
 
     for (let i = 0; i < json.blocks.length; i++) {
-      if (i > 0) { // Clearing always leaves an empty block. No need to add it.
-        this.addBlock();
+      switch (json.blocks[i].type) {
+        case 'default':
+          if (i > 0) { // Clearing always leaves an empty block. No need to add it.
+            this.addBlock();
+          }
+          $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
+          setTimeout(() => {
+            this.setImage('#img-' + i, json.blocks[i].image);
+            if (json.meta.version >= 1) {
+              if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
+              if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+            }
+          }, 250);
+          break;
+        case 'images':
+          if (i === 0) { // Clearing always leaves an empty block. We need to replace it.
+            this.insertImageBlockBefore(0);
+            this.removeBlockAt(1);
+          } else {
+            this.addImageBlock();
+          }
+          for (let img = 0; img < json.blocks[i].images.length; img++) {
+            if (img > 0) {
+              this.addImageInBlock(i);
+            }
+            $('#txt-' + i + '-' + img)[0].innerHTML = json.blocks[i].images[img].text;
+            setTimeout(() => {
+              this.setImage('#img-' + i + '-' + img, json.blocks[i].images[img].image);
+            }, 250);
+          }
       }
-      $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
-      setTimeout(() => {
-        this.setImage('#img-' + i, json.blocks[i].image);
-        if (json.meta.version >= 1) {
-          if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
-          if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
-        }
-      }, 250);
     }
   }
 

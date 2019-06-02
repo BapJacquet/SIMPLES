@@ -871,11 +871,47 @@ class Editor {
   }
 
   /**
+   * Insert an image within the image block with the given ID, just before the
+   * image with the given ID.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imgID - ID of the image to insert the new one before.
+   */
+  insertImageInBlockBefore (blockID, imgID) {
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      let selector = '#img-' + blockID + '-';
+      $(selector + imgID).parent().before(this.newImageInImageBlockString(blockID, imgID));
+      this.refreshAllBlockID();
+      setTimeout(() => {
+        this.setImage(selector + imgID, 'img/placeholder.png');
+        $('#txt-' + blockID + '-' + imgID).focus();
+      }, 1);
+    }
+  }
+
+  /**
+   * Insert an image within the image block with the given ID, just after the
+   * image with the given ID.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imgID - ID of the image to insert the new one after.
+   */
+  insertImageInBlockAfter (blockID, imgID) {
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      let selector = '#img-' + blockID + '-';
+      $(selector + imgID).parent().after(this.newImageInImageBlockString(blockID, imgID + 1));
+      this.refreshAllBlockID();
+      setTimeout(() => {
+        this.setImage(selector + (imgID + 1), 'img/placeholder.png');
+        $('#txt-' + blockID + '-' + (imgID + 1)).focus();
+      }, 1);
+    }
+  }
+
+  /**
    * Add an image within the image block with the given id.
    * @param {int} id - The id of the block.
    */
   addImageInBlock (id) {
-    if (!$('#blc-' + id).hasClass('media')) {
+    if ($('#blc-' + id).hasClass('image-block')) {
       let lastImg = this.getImageCountInBlock(id) - 1;
       let selector = '#img-' + id + '-' + lastImg;
       $(selector).parent().after(this.newImageInImageBlockString(id, lastImg + 1));
@@ -980,7 +1016,7 @@ class Editor {
    * Change the DOM ID of the block with the given id to the given new id.
    * @param {int} oldID - ID the block had until now.
    * @param {int} newID - ID the block should be having.
-   * @deprecated Use refreshAllBlockId() instead.
+   * @deprecated Use refreshAllBlockID() instead.
    */
   changeBlockID (oldID, newID) {
     $('#blc-' + oldID).attr('id', 'blc-' + newID);
@@ -1142,7 +1178,7 @@ class Editor {
    * @param {Number} blockIndex - Id of the block to clean.
    */
   cleanContent (blockIndex) {
-    let jElement = $('#txt-' + blockIndex);
+    let jElement = $('#blc-' + blockIndex).find('.editor-text');
     jElement.find('span').contents().unwrap();
     jElement.get(0).normalize();
     $(jElement.find('div div').get().reverse()).each(function () {

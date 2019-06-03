@@ -441,7 +441,7 @@ class Editor {
   }
 
   getBlockFormat (blockIndex) {
-    return this.getFormatForNode($('#txt-' + blockIndex).get(0));
+    return this.getFormatForNode($('#blc-' + blockIndex).find('.editor-text').get(0));
   }
 
   /**
@@ -476,6 +476,7 @@ class Editor {
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
     let id = this.getBlockIndexFromElement(element);
     result.frame = $('#blc-' + id).hasClass('frame');
+    result.blockType = $('#blc-' + id).hasClass('text-block') ? 'default' : ($('#blc-' + id).hasClass('image-block') ? 'images' : 'unknown');
     result.picture = $('#img-' + id).is(':visible');
     result.size = size;
     result.color = color;
@@ -561,6 +562,9 @@ class Editor {
   getNodesInElement (element) {
     let startNode = element.firstChild;
     let endNode = element;
+    if (startNode === null) {
+      return [];
+    }
     if (startNode === endNode && startNode.childNodes.length === 0) {
       return [startNode];
     }
@@ -747,9 +751,9 @@ class Editor {
     $('#blc-' + index).after(this.newImageBlockString(index + 1));
     this.refreshAllBlockID();
     if (focus) {
-      $('#txt-' + (index + 1) + '-1').focus();
+      $('#txt-' + (index + 1) + '-0').focus();
     }
-    this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
+    this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -784,7 +788,7 @@ class Editor {
     if (focus) {
       $('#txt-' + (index) + '-1').focus();
     }
-    this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
+    this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -862,8 +866,78 @@ class Editor {
   addImageBlock () {
     let id = this.blockCount;
     $(this.id).append(this.newImageBlockString(id));
-    this.setImage('#img-' + id + '-1', 'img/placeholder.png');
+    this.setImage('#img-' + id + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(id);
+  }
+
+  /**
+   * Remove the image with the given ID and switch focus to a new id.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imageID - ID of the image to remove.
+   * @param {int} focusID - ID of the block that will get the focus.
+   */
+  removeImageInBlock (blockID, imageID, focusID = imageID + 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if (imageID === 0 && this.getImageCountInBlock(blockID) === 1) {
+      this.removeBlockAt(blockID);
+    } else {
+      // There will be at least one image remaining.
+      let element = $('#img-' + blockID + '-' + imageID).parent()[0];
+      if (typeof (focusID) === 'number') {
+        $('#txt-' + focusID).focus();
+      }
+      Animator.collapse(element, duration, () => {
+        $(element).remove();
+        this.refreshAllBlockID();
+        //this.dispatchBlockDestroyedEvent(id);
+      });
+    }
+  }
+
+  /**
+   * Insert an image within the image block with the given ID, just before the
+   * image with the given ID.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imgID - ID of the image to insert the new one before.
+   */
+  insertImageInBlockBefore (blockID, imgID) {
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      if (this.getImageCountInBlock(blockID) === 6) {
+        alert("Vous ne pouvez pas mettre plus d'images dans ce bloc !");
+        return;
+      }
+      let selector = '#img-' + blockID + '-';
+      $(selector + imgID).parent().before(this.newImageInImageBlockString(blockID, imgID));
+      this.refreshAllBlockID();
+      setTimeout(() => {
+        this.setImage(selector + imgID, 'img/placeholder.png');
+        $('#txt-' + blockID + '-' + imgID).focus();
+      }, 1);
+    }
+  }
+
+  /**
+   * Insert an image within the image block with the given ID, just after the
+   * image with the given ID.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imgID - ID of the image to insert the new one after.
+   */
+  insertImageInBlockAfter (blockID, imgID) {
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      if (this.getImageCountInBlock(blockID) === 6) {
+        alert("Vous ne pouvez pas mettre plus d'images dans ce bloc !");
+        return;
+      }
+      let selector = '#img-' + blockID + '-';
+      $(selector + imgID).parent().after(this.newImageInImageBlockString(blockID, imgID + 1));
+      this.refreshAllBlockID();
+      setTimeout(() => {
+        this.setImage(selector + (imgID + 1), 'img/placeholder.png');
+        $('#txt-' + blockID + '-' + (imgID + 1)).focus();
+      }, 1);
+    }
   }
 
   /**
@@ -871,8 +945,12 @@ class Editor {
    * @param {int} id - The id of the block.
    */
   addImageInBlock (id) {
-    if (!$('#blc-' + id).hasClass('media')) {
-      let lastImg = this.getImageCountInBlock(id);
+    if ($('#blc-' + id).hasClass('image-block')) {
+      let lastImg = this.getImageCountInBlock(id) - 1;
+      if (lastImg === 5) {
+        alert("Vous ne pouvez pas mettre plus d'images dans ce bloc !");
+        return;
+      }
       let selector = '#img-' + id + '-' + lastImg;
       $(selector).parent().after(this.newImageInImageBlockString(id, lastImg + 1));
       setTimeout(() => {
@@ -881,6 +959,64 @@ class Editor {
       }, 1);
     } else {
       throw new Error('Can only add images within image blocks.');
+    }
+  }
+
+  /**
+   * Move a block up by the given amount.
+   * @param {int} blockID - ID of the block to move.
+   * @param {int} imageID - ID of the image to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
+   */
+  moveImageLeft (blockID, imageID, amount = 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if (imageID - amount >= 0) {
+      let element = $('#img-' + blockID + '-' + imageID).parent()[0];
+      let leftElement = $('#img-' + blockID + '-' + (imageID - amount)).parent()[0];
+      let moveDistance = $(leftElement).outerWidth();
+      Animator.moveHorizontal(element, -moveDistance, 50, duration);
+      Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
+      setTimeout(() => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(element).insertBefore($(leftElement));
+        $(element).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      }, duration * 1.1);
+    }
+  }
+
+  /**
+   * Move a block down by the given amount.
+   * @param {int} blockID - ID of the block to move.
+   * @param {int} imageID - ID of the image to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
+   */
+  moveImageRight (blockID, imageID, amount = 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if (imageID + amount < this.getImageCountInBlock(blockID)) {
+      let element = $('#img-' + blockID + '-' + (imageID + amount)).parent()[0];
+      let leftElement = $('#img-' + blockID + '-' + imageID).parent()[0];
+      let moveDistance = $(leftElement).outerWidth();
+      Animator.moveHorizontal(element, -moveDistance, 50, duration);
+      Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
+      setTimeout(() => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(leftElement).insertAfter($(element));
+        $(leftElement).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      }, duration * 1.1);
     }
   }
 
@@ -936,11 +1072,13 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newBlockString (id, text) {
-    return `<div id="blc-${id}" class="editor-block media" style="font-size: 14pt;">` +
+    return `<div id="blc-${id}" class="editor-block text-block media" style="font-size: 14pt;">` +
              `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3" contenteditable="true">` +
                 `<div>${text}</div>` +
              `</div>` +
-             `<canvas id="img-${id}" class="editor-image align-self-center mr-3 hoverable" style="width:100px"/>` +
+             `<div class="editor-image-container mr-3" style="width:100px">` +
+                `<img id="img-${id}" class="editor-image align-self-center hoverable"/>` +
+             `</div>` +
            `</div>`;
   }
 
@@ -950,9 +1088,9 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newImageBlockString (id) {
-    return `<div id="blc-${id}" class="editor-block mx-auto" style="font-size:14pt;">` +
+    return `<div id="blc-${id}" class="editor-block image-block mx-auto" style="font-size:14pt;">` +
               `<div class="row">` +
-                this.newImageInImageBlockString(id, 1) +
+                this.newImageInImageBlockString(id, 0) +
               `</div>` +
           `</div>`;
   }
@@ -965,7 +1103,7 @@ class Editor {
    */
   newImageInImageBlockString (id, imgID) {
     return `<div class="col editor-image-container">` +
-      `<canvas id="img-${id}-${imgID}" class="editor-image align-self-center hoverable px-auto"/>` +
+      `<img id="img-${id}-${imgID}" class="editor-image align-self-center hoverable px-auto"/>` +
       `<div id="txt-${id}-${imgID}" class="editor-text align-self-center" contenteditable="true"></div>` +
     `</div>`;
   }
@@ -974,7 +1112,7 @@ class Editor {
    * Change the DOM ID of the block with the given id to the given new id.
    * @param {int} oldID - ID the block had until now.
    * @param {int} newID - ID the block should be having.
-   * @deprecated Use refreshAllBlockId() instead.
+   * @deprecated Use refreshAllBlockID() instead.
    */
   changeBlockID (oldID, newID) {
     $('#blc-' + oldID).attr('id', 'blc-' + newID);
@@ -988,12 +1126,17 @@ class Editor {
   refreshAllBlockID () {
     $('.editor-block').each(function (index) {
       $(this).attr('id', 'blc-' + index);
-    });
-    $('.editor-text').each(function (index) {
-      $(this).attr('id', 'txt-' + index);
-    });
-    $('.editor-image').each(function (index) {
-      $(this).attr('id', 'img-' + index);
+      if ($(this).hasClass('text-block')) {
+        $(this).find('.editor-text').attr('id', 'txt-' + index);
+        $(this).find('.editor-image').attr('id', 'img-' + index);
+      } else if ($(this).hasClass('image-block')) {
+        $(this).find('.editor-text').each(function (subIndex) {
+          $(this).attr('id', 'txt-' + index + '-' + subIndex);
+        });
+        $(this).find('.editor-image').each(function (subIndex) {
+          $(this).attr('id', 'img-' + index + '-' + subIndex);
+        });
+      }
     });
   }
 
@@ -1060,23 +1203,23 @@ class Editor {
    */
   async setImage (selector, src) {
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
-    console.log(src);
+    //console.log(src);
     if (src.match(/^https?:\/\//)) {
       src = './image_proxy.php?url=' + src;
     }
-    var img = new Image();
+    var img = $(selector)[0];
     img.crossOrigin = 'Anonymous';
     img.onload = () => {
-      var canvas = $(selector).get(0);
-      canvas.width = 100;
-      canvas.height = 100;
+      /*var canvas = $(selector).get(0);
+      canvas.width = 300;
+      canvas.height = 300;
       let scale = Math.max(img.naturalWidth / canvas.width, img.naturalHeight / canvas.height);
       let width = img.naturalWidth / scale;
       let height = img.naturalHeight / scale;
       let offsetX = (canvas.width - width) / 2;
       let offsetY = (canvas.height - height) / 2;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, offsetX, offsetY, width, height);
+      ctx.drawImage(img, offsetX, offsetY, width, height);*/
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
@@ -1131,7 +1274,7 @@ class Editor {
    * @param {Number} blockIndex - Id of the block to clean.
    */
   cleanContent (blockIndex) {
-    let jElement = $('#txt-' + blockIndex);
+    let jElement = $('#blc-' + blockIndex).find('.editor-text');
     jElement.find('span').contents().unwrap();
     jElement.get(0).normalize();
     $(jElement.find('div div').get().reverse()).each(function () {
@@ -1241,7 +1384,7 @@ class Editor {
    */
   getBlockIndexFromElement (element) {
     let current = $(element);
-    while (!current.hasClass('editor-text')) {
+    while (!current.hasClass('editor-block')) {
       current = current.parent();
       if (current.length === 0) {
         return -1;
@@ -1311,16 +1454,32 @@ class Editor {
     };
     for (let i = 0; i < this.blockCount; i++) {
       let format = this.getBlockFormat(i);
-      object.blocks.push({
-        type: 'default',
-        content: $('#txt-' + i)[0].innerHTML,
-        image: $('#img-' + i)[0].toDataURL(),
-        options: {
-          leftPicture: false,
-          rightPicture: format.picture,
-          frame: format.frame
-        }
-      });
+      switch (format.blockType) {
+        case 'default':
+          object.blocks.push({
+            type: 'default',
+            content: $('#txt-' + i)[0].innerHTML,
+            image: $('#img-' + i)[0].toDataURL(),
+            options: {
+              leftPicture: false,
+              rightPicture: format.picture,
+              frame: format.frame
+            }
+          });
+          break;
+        case 'images':
+          let imagesCount = this.getImageCountInBlock(i);
+          let images = [];
+          for (let img = 0; img < imagesCount; img++) {
+            images.push({image: $('#img-' + i + '-' + img)[0].toDataURL(), text: $('#txt-' + i + '-' + img)[0].innerHTML});
+          }
+          object.blocks.push({
+            type: 'images',
+            images: images,
+            options: {}
+          });
+          break;
+      }
     }
 
     return object;
@@ -1342,17 +1501,37 @@ class Editor {
     this.clear();
 
     for (let i = 0; i < json.blocks.length; i++) {
-      if (i > 0) { // Clearing always leaves an empty block. No need to add it.
-        this.addBlock();
+      switch (json.blocks[i].type) {
+        case 'default':
+          if (i > 0) { // Clearing always leaves an empty block. No need to add it.
+            this.addBlock();
+          }
+          $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
+          setTimeout(() => {
+            this.setImage('#img-' + i, json.blocks[i].image);
+            if (json.meta.version >= 1) {
+              if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
+              if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+            }
+          }, 250);
+          break;
+        case 'images':
+          if (i === 0) { // Clearing always leaves an empty block. We need to replace it.
+            this.insertImageBlockBefore(0);
+            this.removeBlockAt(1);
+          } else {
+            this.addImageBlock();
+          }
+          for (let img = 0; img < json.blocks[i].images.length; img++) {
+            if (img > 0) {
+              this.addImageInBlock(i);
+            }
+            $('#txt-' + i + '-' + img)[0].innerHTML = json.blocks[i].images[img].text;
+            setTimeout(() => {
+              this.setImage('#img-' + i + '-' + img, json.blocks[i].images[img].image);
+            }, 250);
+          }
       }
-      $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
-      setTimeout(() => {
-        this.setImage('#img-' + i, json.blocks[i].image);
-        if (json.meta.version >= 1) {
-          if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
-          if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
-        }
-      }, 250);
     }
   }
 

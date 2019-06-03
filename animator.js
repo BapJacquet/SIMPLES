@@ -86,4 +86,34 @@ class Animator {
       }
     }
   }
+
+  /**
+   * Move an element horizontally by a given offset, with a deviation during the animation.
+   * @param {DOMElement} element - The element to collapse.
+   * @param {Number} offset - x offset to move the element by.
+   * @param {Number} deviation - y offset to displace the element during the animation.
+   * @param {Number} duration - How long the animation should last.
+   * @param {Function} callback - Callback function.
+   */
+  static moveHorizontal (element, offset, deviation = 0, duration = 1000, callback = null) {
+    duration = duration / 5;
+    let totalDuration = duration;
+    $(element).css('position', 'relative');
+    let top = parseInt($(element).css('top'), 10);
+    let left = parseInt($(element).css('left'), 10);
+    let midTop = top + deviation;
+    let targetLeft = left + offset;
+    let id = setInterval(frame, 5);
+    function frame () {
+      if (duration <= 0) {
+        clearInterval(id);
+        if (callback !== null) callback();
+      } else {
+        let interpolation = (totalDuration - duration) / totalDuration;
+        $(element).css('top', Utils.lerp(top, midTop, Math.sin(interpolation * Math.PI)));
+        $(element).css('left', Utils.lerp(left, targetLeft, interpolation));
+        duration--;
+      }
+    }
+  }
 }

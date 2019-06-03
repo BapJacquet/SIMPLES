@@ -2,6 +2,10 @@
 .editor-image {
   position: relative;
   top: 0;
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: auto;
   -webkit-filter: none;
   filter: none;
   -webkit-transition: top 0.25s, -webkit-filter 0.25s;
@@ -56,8 +60,7 @@
   user-select: none;
 }
 
-#blockCmd div,
-.editor-block .block-delete {
+#blockCmd div {
   position: relative;
   width: 35px;
   height: 35px;
@@ -138,29 +141,4 @@
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
   pointer-events: none;
-}
-
-/* I M A G E   B L O C K   C O M M A N D */
-
-.editor-block .block-delete {
-  top: -16px;
-  left: -38px;
-  background-color: #ccc;
-}
-
-.editor-block .block-delete:hover {
-  background-color: #fbb;
-  cursor: pointer;
-}
-
-.editor-block .block-delete img {
-  position: relative;
-  pointer-events: none;
-  left: 10px;
-  top: 2px;
-}
-
-canvas {
-  margin: auto;
-  display: block;
 }

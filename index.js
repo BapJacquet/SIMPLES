@@ -724,7 +724,6 @@ $("#toolbarBottomMask").hover( function () {
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-
     $(this).animate({"top": "-16px"}, 200,
       function () {
         $(this).animate({"top": 0}, 100,
@@ -871,15 +870,15 @@ $("#toolbarBottomMask").hover( function () {
 // hide #blockCmd
   $("#page").on("click", function ( ev ) {
     if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
-    //$(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
+    $("#blc-" + activeBlocId).css("background-color", "white");
   });
-
 //////////////////////////////////////////
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
 
-  // hover  block text
-    //$(this).find(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0.15)");
+  // hover  block
+    $(".editor-block").css("background-color", "white");
+    $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
 
   // enable .block-move-up
     if ( activeBlocId == 0 ) {
@@ -905,7 +904,7 @@ $("#toolbarBottomMask").hover( function () {
 
     //  palette move
     var offset = $(this).offset();
-    var left = $("#page").offset().left + 8; // + 15;
+    var left = $("#page").offset().left + 4; // + 15;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();
@@ -949,7 +948,12 @@ $("#toolbarBottomMask").hover( function () {
       var blockHeight = $(this).height();
       if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
         if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
+          let oldBlocId = activeBlocId;
           activeBlocId = Number($(this).attr("id").split("-")[1]);
+          if ( oldBlocId != activeBlocId ) {
+            $("#blc-" + oldBlocId).css("background-color", "white");
+            $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
+          }
           $("#blockCmd").find("span").text(activeBlocId + 1);
           triggerPseudoMouseenter(0);
         }
@@ -1028,7 +1032,7 @@ $("#toolbarBottomMask").hover( function () {
     }, 300);
   });
 
-//////////////////////////  I M A G E  block  C O M M A N D
+///////////////////////////////
 
 //  show/hide .block-new2
   $("#blockCmd .block-new-up").mouseenter( function () {
@@ -1053,49 +1057,90 @@ $("#toolbarBottomMask").hover( function () {
     $(".block-new2-down").css("display","none");
   } );
 
-// buid image widgets
-  function buildImageWidgets () {
+////////////////////////////////////////////////////////////////////////
+/////////////////////////////                  I M A G E  W I D G E T S
 
-  }
+  $("#editor").on("mouseenter", ".editor-image", function (ev) {
+    $(this).css("border", "2px solid #4b4");
+    $(".img-widget").css("display", "block");
+    $(".img-widget.block-delete").attr("data-true-imageID", $(this).attr("id"));
+    $(".img-widget.block-delete").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
+    $(".img-widget.block-delete").attr("data-image-id", ($(this).attr("id")).split("-")[2]);
 
+    let widgetOffset = $(ev.target).offset();
+    widgetOffset.left += $(this).width() - 14;
+    widgetOffset.top += -16;
+    $(".img-widget.block-delete").offset(widgetOffset);
 
-  // image loaded (editor event) hide gif, add block-delete div
-  $("#editor").on("imageloaded", function (ev) {
-    $(".loader").hide();
-    /*
-    let delTag = '<div class="block-delete" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l\'image" style="opacity: 0;"><img src="img/delete-black.png"></div>';
-    if ( !$("#" + ev.detail.blockid).find(".block-delete").get(0) ) {
-      $("#" + ev.detail.blockid).append(delTag);
+    if ( $(this).parent().hasClass("col") ) {
+      widgetOffset = $(ev.target).offset();
+      widgetOffset.left += $(this).width() - 14;
+      widgetOffset.top += $(this).height() - 33;
+      $(".img-widget.block-new-right").offset(widgetOffset);
+
+      widgetOffset = $(ev.target).offset();
+      widgetOffset.left += $(this).width() - 14;
+      widgetOffset.top += $(this).height() - 67;
+      $(".img-widget.block-move-right").offset(widgetOffset);
+
+      widgetOffset = $(ev.target).offset();
+      widgetOffset.left += -16;
+      widgetOffset.top += $(this).height() - 33;
+      $(".img-widget.block-new-left").offset(widgetOffset);
+
+      widgetOffset = $(ev.target).offset();
+      widgetOffset.left += -16;
+      widgetOffset.top += $(this).height() - 67;
+      $(".img-widget.block-move-left").offset(widgetOffset);
     }
-    */
+    else {
+      $(".img-widget").css("display", "none");
+      $(".img-widget.block-delete").css("display", "block");
+    }
   });
 
-/*
-  $("#editor").on("mouseenter", ".editor-image", function () {
-    $(this).next(".block-delete").css("opacity", "1");
-  });
-  $("#editor").on("mouseleave", ".editor-image", function () {
-    $(this).next(".block-delete").css("opacity", "0");
+  $("#editor").on("mouseleave", ".editor-image", function (ev) {
+      $(this).css("border", "2px solid rgba(0, 0, 0, 0)");
+      $(".img-widget").css("display", "none");
   });
 
-  $("#editor").on("mouseenter", ".block-delete", function () {
-    $(this).css("opacity", "1");
+  $("#page").on("mouseenter", ".img-widget", function (ev) {
+    if ( $(this).hasClass("block-delete") ) {
+      var trueImageID = "#" + $(this).attr("data-true-imageID");
+      if ( $(trueImageID).parent().hasClass("col") ) $(".img-widget").css("display", "block");
+      else $(this).css("display", "block");
+    }
+    else $(".img-widget").css("display", "block");
+    $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
+
   });
-  $("#editor").on("mouseleave", ".block-delete", function () {
-    $(this).css("opacity", "0");
+  $("#page").on("mouseleave", ".img-widget", function (ev) {
+    $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid rgba(0, 0, 0, 0)");
+    $(".img-widget").css("display", "none");
   });
 
-  $("#editor").on("click", ".block-delete", function () {
-    $(this).css("display", "none").remove();
-    $("#picture .tool-frame-bullet").trigger("click");
+//  image actions
+  $("#page").on("click", ".img-widget", function (ev) {
+    var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
+    if ( $(trueImageID).parent().hasClass("col") ) {
+      var blockID = Number($(".img-widget.block-delete").attr("data-block-id"));
+      var imageID = Number($(".img-widget.block-delete").attr("data-image-id"));
+      if ( $(this).hasClass("block-delete") )
+        editor.removeImageInBlock(blockID, imageID);
+      else if ( $(this).hasClass("block-new-right"))
+        editor.insertImageInBlockAfter(blockID, imageID);
+      else if ( $(this).hasClass("block-new-left"))
+        editor.insertImageInBlockBefore(blockID, imageID);
+      else if ( $(this).hasClass("block-move-left"))
+        editor.moveImageLeft(blockID, imageID);
+      else if ( $(this).hasClass("block-move-right"))
+        editor.moveImageRight(blockID, imageID);
+    }
+    else { // click image on text block
+      $("#picture .tool-frame-bullet").trigger("click");
+    }
+    $(".img-widget").css("display", "none");
   });
-*/
-/*
-  $(".editor-block").on("mouseenter", "canvas", function () {
-
-  } );
-*/
-
 
 /////////////////////////////////////////  D I V E R S
 // resize & focus
@@ -1165,6 +1210,12 @@ $("#toolbarBottomMask").hover( function () {
 
   //// close tab backstop event
   window.addEventListener("beforeunload", backstop);
+
+
+  // image loaded (editor event) hide gif
+  $("#editor").on("imageloaded", function (ev) {
+    $(".loader").hide();
+  });
 
   ////////////////////////////////////////////
   // before body display

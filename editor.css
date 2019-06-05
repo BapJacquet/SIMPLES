@@ -1,25 +1,31 @@
 
 .editor-image {
   position: relative;
-  top: 0;
   display: block;
   max-width: 100%;
   height: auto;
   margin: auto;
+  margin-bottom: 6px;
+  border: 2px solid rgba(0, 0, 0, 0);
+/*
+  top: 0;
   -webkit-filter: none;
   filter: none;
   -webkit-transition: top 0.25s, -webkit-filter 0.25s;
   transition: top 0.25s, filter 0.25s;
+*/
 }
 
 .editor-image:hover {
+  cursor: pointer;
+/*
   position: relative;
   top: -5px;
   -webkit-filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
   filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
   -webkit-transition: top 0.05s, -webkit-filter 0.25s;
   transition: top 0.05s, filter 0.25s;
-  cursor: pointer;
+*/
 }
 
 .frame {
@@ -29,7 +35,7 @@
 .editor-block {
   margin-top: 1em; /* 5 */
   margin-bottom: 1em; /* 0 */
-  cursor: text;
+  /* cursor: text; */
 }
 
 .editor-text {
@@ -39,11 +45,68 @@
   margin-top: 2px; /* 5 */
   margin-bottom: 2px; /* 0 */
   overflow: hidden;
+  cursor: text;
 }
 
 .editor-text h1 {
   text-align: center;
 }
+
+/*  I M A G E   W I D G E T S   */
+
+.img-widget {
+  position: absolute;
+  z-index: 500;
+  display: none;
+  width: 35px;
+  height: 35px;
+  margin: 2px;
+  border-radius: 25px;
+  background-color: white; /* #ddd; /* #e8e8e8; */
+  border: 2px solid #4b4;
+}
+
+.img-widget img {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  position: relative;
+  left: 8px;
+  top: 1px;
+}
+
+.img-widget.block-move-left img {
+  left: 10px;
+}
+
+.img-widget.block-move-right img {
+  left: 12px;
+}
+
+.img-widget:hover {
+  background-color: #bfb;
+  border-color: #bfb;
+  cursor: pointer;
+}
+
+.img-widget.block-delete {
+  border-color: red;
+}
+
+.img-widget.block-delete:hover {
+  background-color: #fbb;
+  border-color: #fbb;
+}
+
+/*
+.img-widget.block-delete img {
+  position: relative;
+  pointer-events: none;
+  left: 10px;
+  top: 2px;
+}
+*/
 
 /* B L O C K    C O M M A N D */
 
@@ -54,9 +117,8 @@
   height: 110px;
   border-radius: 20px;
   background-color: #f0f0f0; /* #eee; */
-  /* border: 2px solid #eee; */
-  -webkit-user-select: none; /* Safari 3.1+ */
-  -moz-user-select: none; /* Firefox 2+ */
+  -webkit-user-select: none;
+  -moz-user-select: none;
   user-select: none;
 }
 

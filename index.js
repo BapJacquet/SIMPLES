@@ -378,9 +378,17 @@ $(document).ready(function () {
       $(this).blur();
       if ( !$(".hcollapsible").hasClass("active") ) {
         $(".hcollapsible").trigger("click").blur();
+        onVerifyClick();
       }
-      onVerifyClick();
+      else {
+          $(".hcollapsible").trigger("click").blur();
+      }
   } );
+
+  $("#redo-analyse").on("click", function () {
+    $(this).blur();
+    onVerifyClick();
+  });
 
 // Après méditations de Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
   $(window).on("load resize", function() {

@@ -178,7 +178,7 @@
 				</div>
 
 				<span id="analyze" class="simples-span" >
-					<button id="verify-button" type="button" class="simples-button">Analyser</button>
+					<button id="verify-button" type="button" class="simples-button">Analyse</button>
 				</span>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
@@ -245,8 +245,9 @@
 						</div>
 					</div>
 				</div>
-				<button class="hcollapsible"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
+				<button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
 				<div class="hcollapsible-content">
+					<button id="redo-analyse" type="button">Refaire l'analyse</button>
 					<div id="stanford-connection"></div>
 					<div class="alert alert-light" role="alert" id="lexique3-connection">
 						<div>Lexique3 : </div>

@@ -911,7 +911,9 @@ $("#toolbarBottomMask").hover( function () {
     var commandHeight = $("#blockCmd").height();
     var decal = 0;
     if ( $("#blc-" + String(activeBlocId)).hasClass("frame") ) decal = 5;
-    top = top + ((height - commandHeight) /2 + decal);
+    //top = top + ((height - commandHeight) /2 + decal); // centered palette
+    var decalPalette = 5;
+    top = top + decal - decalPalette; // top aligned palette
     offset.top = top;
 
     $("#blockCmd").css({"opacity": 1});
@@ -1073,25 +1075,30 @@ $("#toolbarBottomMask").hover( function () {
     $(".img-widget.block-delete").offset(widgetOffset);
 
     if ( $(this).parent().hasClass("col") ) {
+      var decal = $(this).height() /40;
       widgetOffset = $(ev.target).offset();
       widgetOffset.left += $(this).width() - 14;
-      widgetOffset.top += $(this).height() - 33;
+      widgetOffset.top += $(this).height() - 33 - decal;
       $(".img-widget.block-new-right").offset(widgetOffset);
 
       widgetOffset = $(ev.target).offset();
       widgetOffset.left += $(this).width() - 14;
-      widgetOffset.top += $(this).height() - 67;
+      widgetOffset.top += $(this).height() - 67 - decal;
       $(".img-widget.block-move-right").offset(widgetOffset);
 
       widgetOffset = $(ev.target).offset();
       widgetOffset.left += -16;
-      widgetOffset.top += $(this).height() - 33;
+      widgetOffset.top += $(this).height() - 33 - decal;
       $(".img-widget.block-new-left").offset(widgetOffset);
 
       widgetOffset = $(ev.target).offset();
       widgetOffset.left += -16;
-      widgetOffset.top += $(this).height() - 67;
+      widgetOffset.top += $(this).height() - 67 - decal;
       $(".img-widget.block-move-left").offset(widgetOffset);
+
+      if ( $(this).parent().next("editor-image").length == 0 ) {
+      //  $(".img-widget.block-move-right").css({"opacity": "O.3", "pointer-event": "none"});
+      }
     }
     else {
       $(".img-widget").css("display", "none");

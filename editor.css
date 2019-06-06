@@ -5,7 +5,8 @@
   max-width: 100%;
   height: auto;
   margin: auto;
-  margin-bottom: 6px;
+  /* margin-bottom: 6px; */
+  border-radius: 8px;
   border: 2px solid rgba(0, 0, 0, 0);
 /*
   top: 0;

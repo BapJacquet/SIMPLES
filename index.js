@@ -378,6 +378,7 @@ $(document).ready(function () {
       $(this).blur();
       if ( !$(".hcollapsible").hasClass("active") ) {
         $(".hcollapsible").trigger("click").blur();
+        $("hcollapsible-content").slideDown(250);  // marche PAS !!!
         onVerifyClick();
       }
       else {

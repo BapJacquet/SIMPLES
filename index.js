@@ -1096,8 +1096,11 @@ $("#toolbarBottomMask").hover( function () {
       widgetOffset.top += $(this).height() - 67 - decal;
       $(".img-widget.block-move-left").offset(widgetOffset);
 
-      if ( $(this).parent().next("editor-image").length == 0 ) {
-      //  $(".img-widget.block-move-right").css({"opacity": "O.3", "pointer-event": "none"});
+      if ( $(this).parent().next().length == 0 ) {
+        $(".img-widget.block-move-right").css("display", "none");
+      }
+      if ( $(this).parent().prev().length == 0 ) {
+        $(".img-widget.block-move-left").css("display", "none");
       }
     }
     else {
@@ -1105,22 +1108,30 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-widget.block-delete").css("display", "block");
     }
   });
-
+////
   $("#editor").on("mouseleave", ".editor-image", function (ev) {
       $(this).css("border", "2px solid rgba(0, 0, 0, 0)");
       $(".img-widget").css("display", "none");
   });
-
+////
   $("#page").on("mouseenter", ".img-widget", function (ev) {
+    var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
     if ( $(this).hasClass("block-delete") ) {
-      var trueImageID = "#" + $(this).attr("data-true-imageID");
       if ( $(trueImageID).parent().hasClass("col") ) $(".img-widget").css("display", "block");
       else $(this).css("display", "block");
     }
     else $(".img-widget").css("display", "block");
-    $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
 
+    if ( $(trueImageID).parent().next().length == 0 ) {
+      $(".img-widget.block-move-right").css("display", "none");
+    }
+    if ( $(trueImageID).parent().prev().length == 0 ) {
+      $(".img-widget.block-move-left").css("display", "none");
+    }
+
+    $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
   });
+  ////
   $("#page").on("mouseleave", ".img-widget", function (ev) {
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid rgba(0, 0, 0, 0)");
     $(".img-widget").css("display", "none");

@@ -32,6 +32,8 @@
 <body style="visibility:hidden;">
 	<!-- loaderB32.gif -->
 	<div class="loader" style="display:none"><img src="img/loaderB32.gif" /></div>
+	<!-- hidden canvas -->
+	<canvas id="hidden-canvas" style="display:none"></canvas>
 	<div>
 		<div class="box">
 			<div id="header">
@@ -216,10 +218,27 @@
 								<div class="block-new2-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc IMAGE au dessus">
 									<img src="img/mini-mount.png">
 								</div>
-								<div class="block-new2-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc IMAGE au dessous">
+								<div class="block-new2-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc IMAGE en dessous">
 									<img src="img/mini-mount.png">
 								</div>
 							</div><!-- Fin block command palette -->
+							<!-- Image widgets -->
+							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+								<img src="img/delete-black.png">
+							</div>
+							<div class="block-new-right img-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-new-left img-widget"  data-toggle="tooltip" data-placement="left" title="Ajouter une image à gauche">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-move-right img-widget"  data-toggle="tooltip" data-placement="right" title="Dépacer l'image à droite">
+								<img src="img/carat-r-black.png">
+							</div>
+							<div class="block-move-left img-widget"  data-toggle="tooltip" data-placement="left" title="Dépacer l'image à gauche">
+								<img src="img/carat-l-black.png">
+							</div>
+							<!-- Fin image widgets -->
 							<!-- Editor container -->
 							<div id="editor">
 							</div>

@@ -55,7 +55,8 @@
 
 /*  I M A G E   W I D G E T S   */
 
-.img-widget {
+.img-widget,
+.img-txt-widget {
   position: absolute;
   z-index: 500;
   display: none;
@@ -67,7 +68,8 @@
   border: 2px solid #4b4;
 }
 
-.img-widget img {
+.img-widget img,
+.img-txt-widget img {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
@@ -85,7 +87,8 @@
   left: 12px;
 }
 
-.img-widget:hover {
+.img-widget:hover,
+.img-txt-widget:hover {
   background-color: #bfb;
   border-color: #bfb;
   cursor: pointer;
@@ -177,14 +180,12 @@
 
 #blockCmd .block-new2-up {
   display: none;
-  top: -222px;
-  left: -31px;
+  top: -254px;
 }
 
 #blockCmd .block-new2-down {
   display: none;
-  top: -148px;
-  left: -31px;
+  top: -116px;
 }
 
 #blockCmd .block-new-down:hover,

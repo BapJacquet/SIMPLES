@@ -1087,7 +1087,7 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget").attr("data-true-imageID", $(this).attr("id"));
       $(".img-txt-widget").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
-      widgetOffset.left += $(this).parent(".editor-block").width() - 22;
+      widgetOffset.left += $(this).parent(".editor-block").width() - 26;
       widgetOffset.top += $(this).parent(".editor-block").height() /2 - 18;
       $(".img-txt-widget").offset(widgetOffset);
     }

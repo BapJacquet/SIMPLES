@@ -1189,8 +1189,8 @@ $("#toolbarBottomMask").hover( function () {
 //  image actions
   $("#page").on("click", ".img-widget", function (ev) {
     var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
+    var blockID = Number($(".img-widget.block-delete").attr("data-block-id"));
     if ( $(trueImageID).parent().hasClass("col") ) {
-      var blockID = Number($(".img-widget.block-delete").attr("data-block-id"));
       var imageID = Number($(".img-widget.block-delete").attr("data-image-id"));
       if ( $(this).hasClass("block-delete") )
         editor.removeImageInBlock(blockID, imageID);
@@ -1204,7 +1204,7 @@ $("#toolbarBottomMask").hover( function () {
         editor.moveImageRight(blockID, imageID);
     }
     else { // click image on text block
-      $("#picture .tool-frame-bullet").trigger("click");
+      editor.setBlockFormat(blockID, {picture: false});
     }
     $(".img-widget").css("display", "none");
   });

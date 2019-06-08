@@ -880,19 +880,21 @@ class Editor {
     if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
     if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
 
-    if (imageID === 0 && this.getImageCountInBlock(blockID) === 1) {
-      this.removeBlockAt(blockID);
-    } else {
-      // There will be at least one image remaining.
-      let element = $('#img-' + blockID + '-' + imageID).parent()[0];
-      if (typeof (focusID) === 'number') {
-        $('#txt-' + focusID).focus();
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      if (imageID === 0 && this.getImageCountInBlock(blockID) === 1) {
+        this.removeBlockAt(blockID);
+      } else {
+        // There will be at least one image remaining.
+        let element = $('#img-' + blockID + '-' + imageID).parent()[0];
+        if (typeof (focusID) === 'number') {
+          $('#txt-' + focusID).focus();
+        }
+        Animator.collapse(element, duration, () => {
+          $(element).remove();
+          this.refreshAllBlockID();
+          //this.dispatchBlockDestroyedEvent(id);
+        });
       }
-      Animator.collapse(element, duration, () => {
-        $(element).remove();
-        this.refreshAllBlockID();
-        //this.dispatchBlockDestroyedEvent(id);
-      });
     }
   }
 
@@ -1184,13 +1186,14 @@ class Editor {
    * @param {Object} format - The new format of the block.
    */
   setBlockFormat (blockID, format) {
-    let frame = this.format.frame;
-    let picture = this.format.picture;
+    let oldFormat = this.getBlockFormat(blockID);
+    let frame = oldFormat.frame;
+    let picture = oldFormat.picture;
     if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
-      this.setBlockFrameVisibility(this.activeBlockId, format.frame);
+      this.setBlockFrameVisibility(blockID, format.frame);
     }
     if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
-      this.setBlockImageVisibility(this.activeBlockId, format.picture);
+      this.setBlockImageVisibility(blockID, format.picture);
     }
     this.updateFormat();
   }

@@ -178,7 +178,7 @@
 				</div>
 
 				<span id="analyze" class="simples-span" >
-					<button id="verify-button" type="button" class="simples-button">Analyser</button>
+					<button id="verify-button" type="button" class="simples-button">Analyse</button>
 				</span>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
@@ -197,13 +197,13 @@
 					<div id="page-container">
 						<div id="page">
 							<div id="blockCmd"><!-- Block command palette -->
-								<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc TEXTE au dessus">
+								<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
 									<img src="img/plus-black.png">
 								</div>
 								<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
 									<img src="img/delete-black.png">
 								</div>
-								<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc TEXTE en dessous">
+								<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
 									<img src="img/plus-black.png">
 								</div>
 								<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
@@ -215,10 +215,10 @@
 								<div class="block-number" contenteditable="false">
 									<span>1</span>
 								</div>
-								<div class="block-new2-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc IMAGE au dessus">
+								<div class="block-new2-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE au dessus">
 									<img src="img/mini-mount.png">
 								</div>
-								<div class="block-new2-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc IMAGE en dessous">
+								<div class="block-new2-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE en dessous">
 									<img src="img/mini-mount.png">
 								</div>
 							</div><!-- Fin block command palette -->
@@ -238,6 +238,9 @@
 							<div class="block-move-left img-widget"  data-toggle="tooltip" data-placement="left" title="Dépacer l'image à gauche">
 								<img src="img/carat-l-black.png">
 							</div>
+							<div class="block-new img-txt-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
+								<img src="img/plus-black.png">
+							</div>
 							<!-- Fin image widgets -->
 							<!-- Editor container -->
 							<div id="editor">
@@ -245,8 +248,9 @@
 						</div>
 					</div>
 				</div>
-				<button class="hcollapsible"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
+				<button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
 				<div class="hcollapsible-content">
+					<button id="redo-analyse" type="button">Refaire l'analyse</button>
 					<div id="stanford-connection"></div>
 					<div class="alert alert-light" role="alert" id="lexique3-connection">
 						<div>Lexique3 : </div>

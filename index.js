@@ -378,9 +378,18 @@ $(document).ready(function () {
       $(this).blur();
       if ( !$(".hcollapsible").hasClass("active") ) {
         $(".hcollapsible").trigger("click").blur();
+        $("hcollapsible-content").slideDown(250);  // marche PAS !!!
+        onVerifyClick();
       }
-      onVerifyClick();
+      else {
+          $(".hcollapsible").trigger("click").blur();
+      }
   } );
+
+  $("#redo-analyse").on("click", function () {
+    $(this).blur();
+    onVerifyClick();
+  });
 
 // Après méditations de Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
   $(window).on("load resize", function() {
@@ -927,6 +936,11 @@ $("#toolbarBottomMask").hover( function () {
     triggerPseudoMouseenter(0);
   });
 
+  // blockCmd ENTER
+  $("#blockCmd").on("mouseenter", function (ev) {
+    $(".img-txt-widget").css("display", "none");
+  });
+
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
@@ -936,7 +950,10 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // update #blockCmd from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
-    triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0);
+    if ( $(".img-txt-widget").css("display") == "block") {
+      $(".editor-text").trigger("mouseenter");
+    }
   });
 
   ///////////////////////////////
@@ -1062,6 +1079,37 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 
+
+// .img-txt-widget
+  $("#editor").on("mouseenter", ".editor-text", function (ev) {
+    if ( $(this).next().find("img").css("display") == "none" ) {
+      $(".img-txt-widget").css("display", "block");
+      $(".img-txt-widget").attr("data-true-imageID", $(this).attr("id"));
+      $(".img-txt-widget").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
+      let widgetOffset = $(this).offset();
+      widgetOffset.left += $(this).parent(".editor-block").width() - 38;
+      widgetOffset.top += $(this).parent(".editor-block").height() /2 - 20;
+      $(".img-txt-widget").offset(widgetOffset);
+    }
+  });
+  $("#editor").on("mouseleave", ".editor-block", function (ev) {
+      $(".img-txt-widget").css("display", "none");
+  });
+
+  $("#page").on("mouseenter", ".img-txt-widget", function (ev) {
+    $(".img-txt-widget").css("display", "block");
+  });
+
+  $("#page").on("mouseleave", ".img-txt-widget", function (ev) {
+    $(".img-txt-widget").css("display", "none");
+  });
+
+  $("#page").on("click", ".img-txt-widget", function (ev) {
+    $("#picture .tool-frame-bullet").trigger("click");
+    $(".img-txt-widget").css("display", "none");
+  });
+
+// .img-widget
   $("#editor").on("mouseenter", ".editor-image", function (ev) {
     $(this).css("border", "2px solid #4b4");
     $(".img-widget").css("display", "block");
@@ -1096,8 +1144,11 @@ $("#toolbarBottomMask").hover( function () {
       widgetOffset.top += $(this).height() - 67 - decal;
       $(".img-widget.block-move-left").offset(widgetOffset);
 
-      if ( $(this).parent().next("editor-image").length == 0 ) {
-      //  $(".img-widget.block-move-right").css({"opacity": "O.3", "pointer-event": "none"});
+      if ( $(this).parent().next().length == 0 ) {
+        $(".img-widget.block-move-right").css("display", "none");
+      }
+      if ( $(this).parent().prev().length == 0 ) {
+        $(".img-widget.block-move-left").css("display", "none");
       }
     }
     else {
@@ -1105,22 +1156,31 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-widget.block-delete").css("display", "block");
     }
   });
-
+////
   $("#editor").on("mouseleave", ".editor-image", function (ev) {
       $(this).css("border", "2px solid rgba(0, 0, 0, 0)");
       $(".img-widget").css("display", "none");
   });
-
+////
   $("#page").on("mouseenter", ".img-widget", function (ev) {
+
+    var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
     if ( $(this).hasClass("block-delete") ) {
-      var trueImageID = "#" + $(this).attr("data-true-imageID");
       if ( $(trueImageID).parent().hasClass("col") ) $(".img-widget").css("display", "block");
       else $(this).css("display", "block");
     }
     else $(".img-widget").css("display", "block");
-    $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
 
+    if ( $(trueImageID).parent().next().length == 0 ) {
+      $(".img-widget.block-move-right").css("display", "none");
+    }
+    if ( $(trueImageID).parent().prev().length == 0 ) {
+      $(".img-widget.block-move-left").css("display", "none");
+    }
+
+    $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
   });
+  ////
   $("#page").on("mouseleave", ".img-widget", function (ev) {
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid rgba(0, 0, 0, 0)");
     $(".img-widget").css("display", "none");
@@ -1285,8 +1345,8 @@ const BULLET_INIT = false;
 const FRAME_INIT = false;
 const PICTURE_INIT = true;
 
-const TOOLBAR_WIDTH = 840; /* 844; */
-const TOOLBAR_DECAL = 0; /* 22 */
+const TOOLBAR_WIDTH = 870; /* 840; */
+const TOOLBAR_DECAL = 30; /* 22 */
 const LOGO_DECAL = 65;
 const TOOL_BACK_COLOR = "#f0f0f0";
 const COLOR_GREEN = "009940"; // "#2ea35f";

@@ -477,7 +477,7 @@ class Editor {
     let id = this.getBlockIndexFromElement(element);
     result.frame = $('#blc-' + id).hasClass('frame');
     result.blockType = $('#blc-' + id).hasClass('text-block') ? 'default' : ($('#blc-' + id).hasClass('image-block') ? 'images' : 'unknown');
-    result.picture = $('#img-' + id).is(':visible');
+    result.picture = $('#img-' + id).parent().is(':visible');
     result.size = size;
     result.color = color;
     return result;
@@ -880,19 +880,21 @@ class Editor {
     if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
     if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
 
-    if (imageID === 0 && this.getImageCountInBlock(blockID) === 1) {
-      this.removeBlockAt(blockID);
-    } else {
-      // There will be at least one image remaining.
-      let element = $('#img-' + blockID + '-' + imageID).parent()[0];
-      if (typeof (focusID) === 'number') {
-        $('#txt-' + focusID).focus();
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      if (imageID === 0 && this.getImageCountInBlock(blockID) === 1) {
+        this.removeBlockAt(blockID);
+      } else {
+        // There will be at least one image remaining.
+        let element = $('#img-' + blockID + '-' + imageID).parent()[0];
+        if (typeof (focusID) === 'number') {
+          $('#txt-' + focusID).focus();
+        }
+        Animator.collapse(element, duration, () => {
+          $(element).remove();
+          this.refreshAllBlockID();
+          //this.dispatchBlockDestroyedEvent(id);
+        });
       }
-      Animator.collapse(element, duration, () => {
-        $(element).remove();
-        this.refreshAllBlockID();
-        //this.dispatchBlockDestroyedEvent(id);
-      });
     }
   }
 
@@ -1153,23 +1155,12 @@ class Editor {
     if (this.getSelection().rangeCount > 0) {
       let bold = this.format.bold;
       let list = this.format.bullet;
-      let frame = this.format.frame;
       let title = this.format.title;
-      let picture = this.format.picture;
       let color = this.format.color;
       if (typeof (format.title) !== 'undefined' && format.title !== title) {
         let t = format.title;
         if (t === 'none') t = 'div';
         document.execCommand('formatBlock', false, t);
-      }
-      if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
-        console.log('Frame: ' + format.frame);
-        if (format.frame) {
-          console.log('Adding frame on block ' + this.activeBlockId);
-          $('#blc-' + this.activeBlockId).addClass('frame');
-        } else {
-          $('#blc-' + this.activeBlockId).removeClass('frame');
-        }
       }
       if (typeof (format.bold) !== 'undefined' && format.bold !== bold) {
         if (bold === 'ambiguous' && format.bold === false) {
@@ -1182,18 +1173,81 @@ class Editor {
       if (typeof (format.bullet) !== 'undefined' && format.bullet !== list) {
         document.execCommand('insertUnorderedList', false, null);
       }
-      if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
-        if (format.picture) {
-          $('#img-' + this.activeBlockId).show();
-        } else {
-          $('#img-' + this.activeBlockId).hide();
-        }
-      }
       if (typeof (format.color) !== 'undefined' && format.color !== color) {
         document.execCommand('foreColor', false, format.color);
       }
-      this.updateFormat();
+      this.setBlockFormat(this.activeBlockId, format);
     }
+  }
+
+  /**
+   * Set the format of the block with the given ID.
+   * @param {int} blockID - The index of the block to change the format of.
+   * @param {Object} format - The new format of the block.
+   */
+  setBlockFormat (blockID, format) {
+    let oldFormat = this.getBlockFormat(blockID);
+    let frame = oldFormat.frame;
+    let picture = oldFormat.picture;
+    if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
+      this.setBlockFrameVisibility(blockID, format.frame);
+    }
+    if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
+      this.setBlockImageVisibility(blockID, format.picture);
+    }
+    this.updateFormat();
+  }
+
+  /**
+   * Hide the image associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the image.
+   */
+  hideBlockImage (blockID) {
+    $('#img-' + blockID).parent().hide();
+  }
+
+  /**
+   * Show the image associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the image.
+   */
+  showBlockImage (blockID) {
+    $('#img-' + blockID).parent().show();
+  }
+
+  /**
+   * Set the visibility of the image associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the image.
+   * @param {boolean} visibility - The visibility of the image.
+   */
+  setBlockImageVisibility (blockID, visibility) {
+    if (visibility) this.showBlockImage(blockID);
+    else this.hideBlockImage(blockID);
+  }
+
+  /**
+   * Hide the frame associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the frame.
+   */
+  hideBlockFrame (blockID) {
+    $('#blc-' + blockID).removeClass('frame');
+  }
+
+  /**
+   * Show the frame associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the frame.
+   */
+  showBlockFrame (blockID) {
+    $('#blc-' + blockID).addClass('frame');
+  }
+
+  /**
+   * Set the visibility of the frame associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the frame.
+   * @param {boolean} visibility - The visibility of the frame.
+   */
+  setBlockFrameVisibility (blockID, visibility) {
+    if (visibility) this.showBlockFrame(blockID);
+    else this.hideBlockFrame(blockID);
   }
 
   /**

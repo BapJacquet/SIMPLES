@@ -948,9 +948,9 @@ $("#toolbarBottomMask").hover( function () {
   });
 
   //////////////////////////////////////////
-  // update #blockCmd from keyboard
+  // update #blockCmd & .img-txt-widget from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
-    //triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0); // update #blockCmd disabled
     if ( $(".img-txt-widget").css("display") == "block") {
       $(".editor-text").trigger("mouseenter");
     }
@@ -1082,13 +1082,13 @@ $("#toolbarBottomMask").hover( function () {
 
 // .img-txt-widget
   $("#editor").on("mouseenter", ".editor-text", function (ev) {
-    if ( $(this).next().find("img").css("display") == "none" ) {
+    if ( $(this).next().css("display") == "none" ) {
       $(".img-txt-widget").css("display", "block");
       $(".img-txt-widget").attr("data-true-imageID", $(this).attr("id"));
       $(".img-txt-widget").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
-      widgetOffset.left += $(this).parent(".editor-block").width() - 38;
-      widgetOffset.top += $(this).parent(".editor-block").height() /2 - 20;
+      widgetOffset.left += $(this).parent(".editor-block").width() - 32;
+      widgetOffset.top += $(this).height() -28;
       $(".img-txt-widget").offset(widgetOffset);
     }
   });
@@ -1105,7 +1105,8 @@ $("#toolbarBottomMask").hover( function () {
   });
 
   $("#page").on("click", ".img-txt-widget", function (ev) {
-    $("#picture .tool-frame-bullet").trigger("click");
+    editor.setBlockFormat(activeBlocId, {picture: true});
+    activeTool("picture", true);
     $(".img-txt-widget").css("display", "none");
   });
 
@@ -1205,6 +1206,7 @@ $("#toolbarBottomMask").hover( function () {
     }
     else { // click image on text block
       editor.setBlockFormat(blockID, {picture: false});
+      activeTool("picture", false);
     }
     $(".img-widget").css("display", "none");
   });

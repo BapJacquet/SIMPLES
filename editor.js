@@ -33,6 +33,14 @@ class Editor {
   }
 
   /**
+   * Get the hidden canvas used to process images.
+   * @return {Canvas} Canvas.
+   */
+  get hiddenCanvas () {
+    return $('#hidden-canvas')[0];
+  }
+
+  /**
    * Get the words before which there can be line breaks.
    * @return {Array} Array of strings.
    */
@@ -1254,8 +1262,9 @@ class Editor {
    * Set the image in the block with the given id, making it DataURL-ready.
    * @param {string} selector - ID of the block.
    * @param {string} src - Path of the image source.
+   * @param {int} requestedWidth - Width of the resulting image.
    */
-  async setImage (selector, src) {
+  async setImage (selector, src, requestedWidth) {
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
@@ -1264,16 +1273,16 @@ class Editor {
     var img = $(selector)[0];
     img.crossOrigin = 'Anonymous';
     img.onload = () => {
-      /*var canvas = $(selector).get(0);
-      canvas.width = 300;
-      canvas.height = 300;
-      let scale = Math.max(img.naturalWidth / canvas.width, img.naturalHeight / canvas.height);
-      let width = img.naturalWidth / scale;
-      let height = img.naturalHeight / scale;
-      let offsetX = (canvas.width - width) / 2;
-      let offsetY = (canvas.height - height) / 2;
+      if (typeof (requestedWidth) !== 'number') {
+        requestedWidth = img.naturalWidth;
+      }
+      let canvas = this.hiddenCanvas;
+      let scale = img.naturalWidth / requestedWidth;
+      canvas.width = img.naturalWidth / scale;
+      canvas.height = img.naturalHeight / scale;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, offsetX, offsetY, width, height);*/
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      img.dataURL = canvas.toDataURL('image/png');
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
@@ -1328,6 +1337,7 @@ class Editor {
    * @param {Number} blockIndex - Id of the block to clean.
    */
   cleanContent (blockIndex) {
+    this.saveSelection();
     let jElement = $('#blc-' + blockIndex).find('.editor-text');
     jElement.find('span').contents().unwrap();
     jElement.get(0).normalize();
@@ -1337,6 +1347,38 @@ class Editor {
     jElement.find('div').each(function () {
       if ($(this).is(':empty')) $(this).remove();
     });
+    let edit = this;
+    jElement.each(function () {
+      let nodes = edit.getNodesInElement(this);
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeType === 3 && nodes[i].parentNode === this) {
+          let s = document.createElement('span');
+          this.insertBefore(s, nodes[i]);
+          s.appendChild(nodes[i]);
+        }
+      }
+    })
+    this.restoreSavedSelection();
+  }
+
+  saveSelection () {
+    let sel = this.getSelection();
+    let range = sel.getRangeAt(0);
+    let blockIndex = this.getBlockIndexFromElement(range.startContainer);
+    let startIndex = this.getIndexFromElementAndOffset(range.startContainer, range.startOffset);
+    let endIndex = this.getIndexFromElementAndOffset(range.endContainer, range.endOffset);
+    this.savedSelection = {block: blockIndex, start: startIndex, end: endIndex};
+  }
+
+  restoreSavedSelection () {
+    let sel = this.getSelection();
+    sel.removeAllRanges();
+    let range = document.createRange();
+    let start = this.getBlockElementAndOffsetAtIndex(this.savedSelection.block, this.savedSelection.start);
+    let end = this.getBlockElementAndOffsetAtIndex(this.savedSelection.block, this.savedSelection.end);
+    range.setStart(start.element, start.offset);
+    range.setEnd(end.element, end.offset);
+    sel.addRange(range);
   }
 
   /**
@@ -1513,7 +1555,7 @@ class Editor {
           object.blocks.push({
             type: 'default',
             content: $('#txt-' + i)[0].innerHTML,
-            image: $('#img-' + i)[0].toDataURL(),
+            image: $('#img-' + i)[0].dataURL,
             options: {
               leftPicture: false,
               rightPicture: format.picture,
@@ -1525,7 +1567,7 @@ class Editor {
           let imagesCount = this.getImageCountInBlock(i);
           let images = [];
           for (let img = 0; img < imagesCount; img++) {
-            images.push({image: $('#img-' + i + '-' + img)[0].toDataURL(), text: $('#txt-' + i + '-' + img)[0].innerHTML});
+            images.push({image: $('#img-' + i + '-' + img)[0].dataURL, text: $('#txt-' + i + '-' + img)[0].innerHTML});
           }
           object.blocks.push({
             type: 'images',
@@ -1629,56 +1671,64 @@ class Editor {
         doc = doc.addPage();
         currentYOffset = margin;
       }
-      let txt = $('#txt-' + i).get(0);
-      /*doc.fromHTML($('#txt-' + i).get(0),
-        margin,
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
-        {
-          'width': Utils.pixelToCm($('#txt-' + i).width()),
-          'height': Utils.pixelToCm($('#txt-' + i).height())
-        }
-      );*/
-
-      /*let nodes = this.getNodesInElement(txt);
-
-      for (let n = 0; n < nodes.length; n++) {
-        if (nodes[n].nodeType === 3) {
-          let format = this.getFormatForNode(nodes[n]);
-          doc.setFontSize(Utils.pixelToPoint(parseFloat(format.size)));
-          if (format.bold) {
-            doc.setFontType('bold');
-          } else {
-            doc.setFontType('normal');
+      switch (blockFormat.blockType) {
+        case 'default':
+          let txt = $('#txt-' + i).get(0);
+          /* doc.fromHTML($('#txt-' + i).get(0),
+            margin,
+            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
+            {
+              'width': Utils.pixelToCm($('#txt-' + i).width()),
+              'height': Utils.pixelToCm($('#txt-' + i).height())
+            }
+          ); */
+          let nodes = this.getNodesInElement(txt);
+          for (let n = 0; n < nodes.length; n++) {
+            if (nodes[n].nodeType === 3) {
+              let format = this.getFormatForNode(nodes[n]);
+              let fontSize = parseFloat(format.size);
+              let fontSizeCm = Utils.pixelToCm(Utils.pointToPixel(fontSize));
+              doc.setFontSize(fontSize);
+              if (format.bold) {
+                doc.setFontType('bold');
+              } else {
+                doc.setFontType('normal');
+              }
+              let x = margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).left);
+              let y = currentYOffset + fontSizeCm + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).top);
+              doc.rect(x, y, 1, fontSizeCm);
+              doc.text(nodes[n].textContent, x, y);
+            }
           }
-          doc.text(nodes[n].textContent,
-            margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).left),
-            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).top));
-        }
-      }*/
-      let txtWidth = Utils.pixelToCm($(txt).width());
-      let txtHeight = Utils.pixelToCm($(txt).height());
-      //$(this.id)[0].style.transform = 'scale(3)';
-      doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
-        margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
-        txtWidth,
-        txtHeight,
-        '',
-        'NONE',
-        0
-      );
-      //$(this.id)[0].style.transform = 'scale(1)';
+          /* let txtWidth = Utils.pixelToCm($(txt).width());
+          let txtHeight = Utils.pixelToCm($(txt).height());
+          doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
+            margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
+            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
+            txtWidth,
+            txtHeight,
+            '',
+            'NONE',
+            0
+          ); */
 
-      if (blockFormat.picture) {
-        doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
-          totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
-          currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
-          Utils.pixelToCm($('#img-' + i).width()),
-          Utils.pixelToCm($('#img-' + i).height()),
-          '',
-          'NONE',
-          0
-        );
+          if (blockFormat.picture) {
+            doc.addImage($('#img-' + i).get(0).dataURL, 'JPEG',
+              totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
+              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
+              Utils.pixelToCm($('#img-' + i).width()),
+              Utils.pixelToCm($('#img-' + i).height()),
+              '',
+              'NONE',
+              0
+            );
+          }
+          break;
+        case 'images':
+          doc.text("Les blocs images ne peuvent pour l'instant pas être exportés.",
+            margin, currentYOffset + Utils.pixelToCm(Utils.pointToPixel(14))
+          );
+          break;
       }
 
       currentYOffset += Utils.pixelToCm($('#blc-' + i).outerHeight());

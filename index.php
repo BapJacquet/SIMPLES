@@ -239,7 +239,7 @@
 								<img src="img/carat-l-black.png">
 							</div>
 							<div class="block-new img-txt-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
-								<img src="img/plus-black.png">
+								<img src="img/mini-mount.png">
 							</div>
 							<!-- Fin image widgets -->
 							<!-- Editor container -->

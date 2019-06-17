@@ -877,8 +877,10 @@ $("#toolbarBottomMask").hover( function () {
 
 
 // hide #blockCmd
-  $("#page").on("click", function ( ev ) {
-    if (ev.target.id == "page") $("#blockCmd").css("opacity", 0);
+  $("#page, #page-container").on("click", function ( ev ) {
+    if (ev.target.id == "page" || ev.target.id == "page-container" ) {
+      $("#blockCmd").css("opacity", 0);
+    }
     $("#blc-" + activeBlocId).css("background-color", "white");
   });
 //////////////////////////////////////////
@@ -952,7 +954,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#editor").on("keyup", ".editor-block", function (ev) {
     //triggerPseudoMouseenter(0); // update #blockCmd disabled
     if ( $(".img-txt-widget").css("display") == "block") {
-      $(".editor-text").trigger("mouseenter");
+      //$(".editor-text").trigger("mouseenter");
     }
   });
 
@@ -1088,7 +1090,8 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
       widgetOffset.left += $(this).parent(".editor-block").width() - 32;
-      widgetOffset.top += $(this).height() -28;
+      //widgetOffset.top += $(this).height() -28;
+      widgetOffset.top += 5;
       $(".img-txt-widget").offset(widgetOffset);
     }
   });

@@ -143,6 +143,10 @@
   border-radius: 25px;
 }
 
+#blockCmd:hover {
+  background-color: #e8e8e8;
+}
+
 #blockCmd div[data-toggle]:hover {
   cursor: pointer;
 }

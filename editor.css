@@ -57,6 +57,29 @@
   text-align: center;
 }
 
+/**
+ * =============================================================================
+ * Span classes.
+ * =============================================================================
+ */
+.editor-text span {
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.editor-text .editor-wrap {
+  white-space: normal;
+}
+
+.editor-text .editor-bold {
+  font-weight: bold;
+}
+/**
+ * =============================================================================
+ * End of Span classes.
+ * =============================================================================
+ */
+
 /*  I M A G E   W I D G E T S   */
 
 .img-widget,

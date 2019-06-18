@@ -116,4 +116,39 @@ class Animator {
       }
     }
   }
+
+  static switchHorizontal (element1, element2, relativeTo = element1.parentNode, deviation = 0, duration = 1000, callback = null) {
+    duration = duration / 5;
+    let totalDuration = duration;
+    $(element1).css('position', 'relative');
+    $(element2).css('position', 'relative');
+    let pos1 = Utils.getRelativeOffset(element1, relativeTo);
+    let pos2 = Utils.getRelativeOffset(element2, relativeTo);
+    let top1 = parseInt($(element1).css('top'), 10);
+    let top2 = parseInt($(element2).css('top'), 10);
+    let left1 = parseInt($(element1).css('left'), 10);
+    let left2 = parseInt($(element2).css('left'), 10);
+    let midTop1 = top1 + deviation;
+    let midTop2 = top2 - deviation;
+    let targetLeft1 = pos2.left - pos1.left;
+    let targetLeft2 = pos1.left - pos2.left;
+    let id = setInterval(frame, 5);
+    function frame () {
+      if (duration <= 0) {
+        clearInterval(id);
+        $(element1).css('top', top1);
+        $(element1).css('left', left2);
+        $(element2).css('top', top2);
+        $(element2).css('left', left1);
+        if (callback !== null) callback();
+      } else {
+        let interpolation = (totalDuration - duration) / totalDuration;
+        $(element1).css('top', Utils.lerp(top1, midTop1, Math.sin(interpolation * Math.PI)));
+        $(element1).css('left', Utils.lerp(left1, targetLeft1, interpolation));
+        $(element2).css('top', Utils.lerp(top2, midTop2, Math.sin(interpolation * Math.PI)));
+        $(element2).css('left', Utils.lerp(left2, targetLeft2, interpolation));
+        duration--;
+      }
+    }
+  }
 }

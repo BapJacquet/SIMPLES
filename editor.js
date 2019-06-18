@@ -468,21 +468,22 @@ class Editor {
    * @param {DOMElement} element - Element to check the format for.
    * @return {Format} The format of the element.
    */
-  getFormatForNode (element) {
-    let bold = this.hasReccursiveTag('B', element) || this.hasReccursiveTag('STRONG', element);
-    let listitem = this.hasReccursiveTag('LI', element);
-    let h1 = this.hasReccursiveTag('H1', element);
-    let h2 = this.hasReccursiveTag('H2', element);
-    let h3 = this.hasReccursiveTag('H3', element);
-    let h4 = this.hasReccursiveTag('H4', element);
-    let h5 = this.hasReccursiveTag('H5', element);
-    let color = this.getNodeFontColor(element) || '#000000';
-    let size = this.getNodeFontSize(element) || '14pt';
+  getFormatForNode (node) {
+    if (node.nodeType === 3) node = node.parentNode;
+    let weight = window.getComputedStyle(node)['font-weight'];//this.hasReccursiveTag('B', element) || this.hasReccursiveTag('STRONG', element);
+    let listitem = this.hasReccursiveTag('LI', node);
+    let h1 = this.hasReccursiveTag('H1', node);
+    let h2 = this.hasReccursiveTag('H2', node);
+    let h3 = this.hasReccursiveTag('H3', node);
+    let h4 = this.hasReccursiveTag('H4', node);
+    let h5 = this.hasReccursiveTag('H5', node);
+    let color = window.getComputedStyle(node)['color'];//this.getNodeFontColor(element) || '#000000';
+    let size = parseFloat(window.getComputedStyle(node)['font-size']);//this.getNodeFontSize(element) || '14pt';
     let result = {};
-    result.bold = bold;
+    result.bold = weight === '700';
     result.bullet = listitem;
     result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
-    let id = this.getBlockIndexFromElement(element);
+    let id = this.getBlockIndexFromElement(node);
     result.frame = $('#blc-' + id).hasClass('frame');
     result.blockType = $('#blc-' + id).hasClass('text-block') ? 'default' : ($('#blc-' + id).hasClass('image-block') ? 'images' : 'unknown');
     result.picture = $('#img-' + id).parent().is(':visible');
@@ -987,7 +988,16 @@ class Editor {
       let element = $('#img-' + blockID + '-' + imageID).parent()[0];
       let leftElement = $('#img-' + blockID + '-' + (imageID - amount)).parent()[0];
       let moveDistance = $(leftElement).outerWidth();
-      Animator.moveHorizontal(element, -moveDistance, 50, duration);
+      Animator.switchHorizontal(element, leftElement, $(this.id)[0], 50, duration, () => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(element).insertBefore($(leftElement));
+        $(element).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      });
+      /*Animator.moveHorizontal(element, -moveDistance, 50, duration);
       Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
       setTimeout(() => {
         $(element).css('top', 0);
@@ -997,7 +1007,7 @@ class Editor {
         $(element).insertBefore($(leftElement));
         $(element).children('.editor-text').focus();
         this.refreshAllBlockID();
-      }, duration * 1.1);
+      }, duration * 1.1);*/
     }
   }
 
@@ -1016,7 +1026,16 @@ class Editor {
       let element = $('#img-' + blockID + '-' + (imageID + amount)).parent()[0];
       let leftElement = $('#img-' + blockID + '-' + imageID).parent()[0];
       let moveDistance = $(leftElement).outerWidth();
-      Animator.moveHorizontal(element, -moveDistance, 50, duration);
+      Animator.switchHorizontal(element, leftElement, $(this.id)[0], 50, duration, () => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(leftElement).insertAfter($(element));
+        $(leftElement).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      });
+      /*Animator.moveHorizontal(element, -moveDistance, 50, duration);
       Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
       setTimeout(() => {
         $(element).css('top', 0);
@@ -1026,7 +1045,7 @@ class Editor {
         $(leftElement).insertAfter($(element));
         $(leftElement).children('.editor-text').focus();
         this.refreshAllBlockID();
-      }, duration * 1.1);
+      }, duration * 1.1);*/
     }
   }
 
@@ -1049,7 +1068,7 @@ class Editor {
   getRawTextContent (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
 
-    let element = $('#txt-' + id).get(0);
+    let element = $('#blc-' + id).find('.editor-text')[0];
     let result = '';
     if (element.childNodes.length > 0) {
       result = element.childNodes[0].textContent;
@@ -1188,6 +1207,20 @@ class Editor {
     }
   }
 
+  execCommand (command, param, selection) {
+    switch (command) {
+      case 'picture':
+        this.setBlockImageVisibility(selection.block, param);
+        break;
+      case 'frame':
+        this.setBlockFrameVisibility(selection.block, param);
+        break;
+      case 'bold':
+        this.toggleBold(selection.block, selection.start, selection.end);
+        break;
+    }
+  }
+
   /**
    * Set the format of the block with the given ID.
    * @param {int} blockID - The index of the block to change the format of.
@@ -1256,6 +1289,96 @@ class Editor {
   setBlockFrameVisibility (blockID, visibility) {
     if (visibility) this.showBlockFrame(blockID);
     else this.hideBlockFrame(blockID);
+  }
+
+  /**
+  * Toggle the state of bold.
+  * @param {int} blockIndex - The index of the block.
+  * @param {int} startIndex - The start index of the selection.
+  * @param {int} endIndex - The end index of the selection.
+  */
+  toggleBold (blockIndex, startIndex, endIndex) {
+    let oldValue = this.isBold(blockIndex, startIndex, endIndex - startIndex);
+    this.setBold(blockIndex, startIndex, endIndex - startIndex, !oldValue);
+  }
+
+  isBold (blockIndex, index, length) {
+    let endIndex = index + length;
+    let bd = this.getBlockData(blockIndex);
+    let result = null;
+    for (let b = 0; b < bd.blobs.length; b++) {
+      if (this.isBlobInRange(bd.blobs[b], index, endIndex)) {
+        if (bd.blobs[b].bold && (result == null || result === true)) result = true;
+        else if (bd.blobs[b].bold && (result == null || result === false)) result = false;
+        else {
+          result = 'ambiguous'; break;
+        }
+      }
+    }
+    return result;
+  }
+
+  setBold (blockIndex, index, length, value) {
+    let blobs = this.getBlockData(blockIndex).blobs;
+    let startBlob = this.getBlobIDAt(blobs, index);
+    if (this.splitBlobsAt(blobs, index)) { startBlob++; }
+    let endBlob = this.getBlobIDAt(blobs, index + length);
+    this.splitBlobsAt(blobs, index + length);
+    for (let i = startBlob; i <= endBlob; i++) {
+      blobs[i].format.bold = value;
+    }
+  }
+
+  splitBlobsAt (blobs, index) {
+    let blobID = this.getBlobIDAt(blobs, index);
+    if (blobs[blobID].endIndex === index) {
+      return false;
+    } else {
+      blobs.splice(blobID, 0, this.copyBlob(blobs[blobID]));
+      blobs[blobID].endIndex = index;
+      blobs[blobID + 1].startIndex = index;
+      return true;
+    }
+  }
+
+  copyBlob (blob) {
+    return this.newBlob(blob.startIndex, blob.endIndex, blob.format.bold, blob.format.color);
+  }
+
+  newBlob (start, end, bold = false, color = 'black') {
+    return {
+      startIndex: start,
+      endIndex: end,
+      format: {
+        bold: bold,
+        color: color
+      }
+    };
+  }
+
+  isBlobInRange (blob, start, end) {
+    return !(blob.endIndex < start || blob.startIndex >= end);
+  }
+
+  getBlobIDAt (blobs, index) {
+    for (let i = 0; i < blobs.length; i++) {
+      if (blobs[i].startIndex < index && blobs[i].endIndex >= index) {
+        return i;
+      }
+    }
+  }
+
+  getBlockData (blockIndex) {
+    let block = $('#blc-' + blockIndex)[0];
+    if (Utils.isNullOrUndefined(block.blockData)) {
+      this.initializeBlockData(blockIndex);
+    }
+    return block.blockData;
+  }
+
+  initializeBlockData (blockIndex) {
+    let block = $('#blc-' + blockIndex)[0];
+    block.blockData = {blobs: [this.newBlob(-1, this.getRawTextContent(blockIndex).length)]};
   }
 
   /**
@@ -1357,7 +1480,7 @@ class Editor {
           s.appendChild(nodes[i]);
         }
       }
-    })
+    });
     this.restoreSavedSelection();
   }
 
@@ -1458,7 +1581,7 @@ class Editor {
    * @return {Object} Corresponding element and offset.
    */
   getBlockElementAndOffsetAtIndex (blockIndex, index) {
-    let root = $('#txt-' + blockIndex).get(0);
+    let root = $('#blc-' + blockIndex).find('.editor-text')[0];
     let remainingChars = index;
     let nodes = this.getNodesInElement(root);
     for (let i = 0; i < nodes.length; i++) {
@@ -1470,7 +1593,7 @@ class Editor {
         }
       }
     }
-    return null;
+    return {element: root, offset: 0};
   }
 
   /**
@@ -1515,6 +1638,7 @@ class Editor {
         }
       }
     }
+    return 0;
   }
 
   /**
@@ -1606,8 +1730,9 @@ class Editor {
           setTimeout(() => {
             this.setImage('#img-' + i, json.blocks[i].image);
             if (json.meta.version >= 1) {
-              if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
-              if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+              this.setBlockFormat(i, {frame: json.blocks[i].options.frame, picture: json.blocks[i].options.rightPicture});
+              //if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
+              //if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
             }
           }, 250);
           break;
@@ -1667,10 +1792,12 @@ class Editor {
 
     for (let i = 0; i < this.blockCount; i++) {
       let blockFormat = this.getBlockFormat(i);
-      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).outerHeight()) > pageHeight - margin) {
+      let marginTop = parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-top']);
+      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).height()) + Utils.pixelToCm(marginTop) > pageHeight - margin) {
         doc = doc.addPage();
         currentYOffset = margin;
       }
+      currentYOffset += Utils.pixelToCm(marginTop);
       switch (blockFormat.blockType) {
         case 'default':
           let txt = $('#txt-' + i).get(0);
@@ -1686,9 +1813,11 @@ class Editor {
           for (let n = 0; n < nodes.length; n++) {
             if (nodes[n].nodeType === 3) {
               let format = this.getFormatForNode(nodes[n]);
-              let fontSize = parseFloat(format.size);
-              let fontSizeCm = Utils.pixelToCm(Utils.pointToPixel(fontSize));
-              doc.setFontSize(fontSize);
+              let fontSize = format.size;
+              let fontSizeCm = Utils.pixelToCm(fontSize);
+              let color = format.color;
+              doc.setTextColor(color);
+              doc.setFontSize(Utils.pixelToPoint(fontSize));
               if (format.bold) {
                 doc.setFontType('bold');
               } else {
@@ -1696,7 +1825,7 @@ class Editor {
               }
               let x = margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).left);
               let y = currentYOffset + fontSizeCm + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).top);
-              doc.rect(x, y, 1, fontSizeCm);
+              //doc.rect(x, y, 1, fontSizeCm);
               doc.text(nodes[n].textContent, x, y);
             }
           }
@@ -1731,7 +1860,7 @@ class Editor {
           break;
       }
 
-      currentYOffset += Utils.pixelToCm($('#blc-' + i).outerHeight());
+      currentYOffset += Utils.pixelToCm($('#blc-' + i).height() + parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-bottom']));
     }
     return doc;
   }

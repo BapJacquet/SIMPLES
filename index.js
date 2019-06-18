@@ -949,14 +949,16 @@ $("#toolbarBottomMask").hover( function () {
     triggerPseudoMouseenter(0);
   });
 
+/*
   //////////////////////////////////////////
   // update #blockCmd & .img-txt-widget from keyboard
   $("#editor").on("keyup", ".editor-block", function (ev) {
     //triggerPseudoMouseenter(0); // update #blockCmd disabled
     if ( $(".img-txt-widget").css("display") == "block") {
-      //$(".editor-text").trigger("mouseenter");
+      //$(".editor-text").trigger("mouseenter"); // update .img-txt-widget disabled
     }
   });
+*/
 
   ///////////////////////////////
   //  update palette activeBlocId

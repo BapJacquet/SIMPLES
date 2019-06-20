@@ -674,6 +674,7 @@ button span {
 
 .web-img:hover {
   border: 2px solid #4b4; /* #bbb; */
+  border-radius: 8px;
 }
 
 .custom-file-input ~ .custom-file-label::after {

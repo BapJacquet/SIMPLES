@@ -156,6 +156,7 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
+  border: 2px solid rgba(0, 0, 0, 0);
 }
 
 #blockCmd div {
@@ -167,7 +168,8 @@
 }
 
 #blockCmd:hover {
-  background-color: #e8e8e8;
+  background-color: #eaeaea;
+  border: 2px solid #e4e4e4;
 }
 
 #blockCmd div[data-toggle]:hover {
@@ -181,15 +183,25 @@
   top: 2px;
 }
 
+#blockCmd .block-new-up {
+  left: -2px;
+  top: -2px;
+}
+
+#blockCmd .block-new-down {
+  left: -2px;
+  top: -4px;
+}
+
 #blockCmd .block-new2-down img,
 #blockCmd .block-new2-up img {
-  left: 4px;
+  left: 5px;
   top: 5px;
 }
 
 #blockCmd .block-move-down {
-  top: -37px;
-  left: 40px;
+  top: -41px;
+  left: 38px;
 }
 
 #blockCmd .block-move-down:hover {
@@ -197,8 +209,8 @@
 }
 
 #blockCmd .block-move-up {
-  top: -149px;
-  left: 40px;
+  top: -150px;
+  left: 39px;
 }
 
 #blockCmd .block-move-up:hover {
@@ -206,8 +218,8 @@
 }
 
 #blockCmd .block-delete {
-  top: 0;
-  left: 40px;
+  top: -2px;
+  left: 39px;
 }
 
 #blockCmd .block-delete:hover {
@@ -216,12 +228,14 @@
 
 #blockCmd .block-new2-up {
   display: none;
-  top: -254px;
+  top: -256px;
+  left: -2px;
 }
 
 #blockCmd .block-new2-down {
   display: none;
-  top: -116px;
+  top: -120px;
+  left: -2px;
 }
 
 #blockCmd .block-new-down:hover,
@@ -232,8 +246,8 @@
 }
 
 #blockCmd .block-number {
-  top: -146px;
-  left: 11px;
+  top: -148px;
+  left: 7px;
   font-weight: 900;
   font-size: 20px;
   color: #4aa;

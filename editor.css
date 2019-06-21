@@ -133,6 +133,7 @@
 .img-widget.block-delete:hover {
   background-color: #fbb;
   border-color: #fbb;
+  z-index: 1000;
 }
 
 /*
@@ -144,7 +145,7 @@
 }
 */
 
-/* B L O C K    C O M M A N D */
+/*                           P A L E T T E  */
 
 #blockCmd {
   position: absolute;
@@ -152,7 +153,7 @@
   width: 80px;
   height: 110px;
   border-radius: 20px;
-  background-color: #f0f0f0; /* #eee; */
+  background-color: #f4f4f4; /* #eee; */
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
@@ -168,8 +169,8 @@
 }
 
 #blockCmd:hover {
-  background-color: #eaeaea;
-  border: 2px solid #e4e4e4;
+  /* background-color: #eaeaea; */
+  border: 2px solid #bbb;  /* #e4e4e4; */
 }
 
 #blockCmd div[data-toggle]:hover {
@@ -184,13 +185,13 @@
 }
 
 #blockCmd .block-new-up {
-  left: -2px;
-  top: -2px;
+  left: -1px;
+  top: -1px;
 }
 
 #blockCmd .block-new-down {
-  left: -2px;
-  top: -4px;
+  left: -1px;
+  top: -6px;
 }
 
 #blockCmd .block-new2-down img,
@@ -200,7 +201,7 @@
 }
 
 #blockCmd .block-move-down {
-  top: -41px;
+  top: -43px;
   left: 38px;
 }
 
@@ -209,8 +210,8 @@
 }
 
 #blockCmd .block-move-up {
-  top: -150px;
-  left: 39px;
+  top: -149px;
+  left: 38px;
 }
 
 #blockCmd .block-move-up:hover {
@@ -219,7 +220,7 @@
 
 #blockCmd .block-delete {
   top: -2px;
-  left: 39px;
+  left: 38px;
 }
 
 #blockCmd .block-delete:hover {
@@ -247,7 +248,7 @@
 
 #blockCmd .block-number {
   top: -148px;
-  left: -2px;
+  left: -1px;
   text-align: center;
   font-weight: 900;
   font-size: 20px;

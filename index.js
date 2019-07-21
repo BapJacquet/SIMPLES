@@ -915,7 +915,7 @@ $("#toolbarBottomMask").hover( function () {
 
     //  palette move
     var offset = $(this).offset();
-    var left = $("#page").offset().left + 4; // + 15;
+    var left = $("#page").offset().left + 8; // + 15;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();

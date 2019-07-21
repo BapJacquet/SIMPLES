@@ -143,10 +143,10 @@ class Animator {
         if (callback !== null) callback();
       } else {
         let interpolation = (totalDuration - duration) / totalDuration;
-        $(element1).css('top', Utils.lerp(left1, midLeft1, Math.sin(interpolation * Math.PI)));
-        $(element1).css('left', Utils.lerp(top1, targetTop1, interpolation));
-        $(element2).css('top', Utils.lerp(left2, midLeft2, Math.sin(interpolation * Math.PI)));
-        $(element2).css('left', Utils.lerp(top2, targetTop2, interpolation));
+        $(element1).css('left', Utils.lerp(left1, midLeft1, Math.sin(interpolation * Math.PI)));
+        $(element1).css('top', Utils.lerp(top1, targetTop1, interpolation));
+        $(element2).css('left', Utils.lerp(left2, midLeft2, Math.sin(interpolation * Math.PI)));
+        $(element2).css('top', Utils.lerp(top2, targetTop2, interpolation));
         duration--;
       }
     }

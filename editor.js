@@ -813,7 +813,16 @@ class Editor {
       let element = $('#blc-' + index)[0];
       let upElement = $('#blc-' + (index - amount))[0];
       let moveDistance = $(upElement).outerHeight();
-      Animator.moveVertical(element, -moveDistance, 50, duration);
+      Animator.switchVertical(element, upElement, $(this.id)[0], 50, duration, () => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(upElement).css('top', 0);
+        $(upElement).css('left', 0);
+        $(upElement).insertAfter($(element));
+        $(element).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      });
+      /*Animator.moveVertical(element, -moveDistance, 50, duration);
       Animator.moveVertical(upElement, moveDistance, -50, duration);
       setTimeout(() => {
         $(element).css('top', 0);
@@ -823,7 +832,7 @@ class Editor {
         $(element).insertBefore($(upElement));
         $(element).children('.editor-text').focus();
         this.refreshAllBlockID();
-      }, duration * 1.1);
+      }, duration * 1.1);*/
     }
   }
 
@@ -840,7 +849,16 @@ class Editor {
       let element = $('#blc-' + (index + amount))[0];
       let upElement = $('#blc-' + (index))[0];
       let moveDistance = $(upElement).outerHeight();
-      Animator.moveVertical(element, -moveDistance, 50, duration);
+      Animator.switchVertical(element, upElement, $(this.id)[0], 50, duration, () => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(upElement).css('top', 0);
+        $(upElement).css('left', 0);
+        $(upElement).insertAfter($(element));
+        $(upElement).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      });
+      /*Animator.moveVertical(element, -moveDistance, 50, duration);
       Animator.moveVertical(upElement, moveDistance, -50, duration);
       setTimeout(() => {
         $(element).css('top', 0);
@@ -850,7 +868,7 @@ class Editor {
         $(upElement).insertAfter($(element));
         $(upElement).children('.editor-text').focus();
         this.refreshAllBlockID();
-      }, duration * 1.1);
+      }, duration * 1.1);*/
     }
   }
 

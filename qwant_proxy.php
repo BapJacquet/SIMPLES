@@ -1,7 +1,7 @@
 <?php
 $q = isset($_GET['q']) ? $_GET['q'] : null;
 if(!$q) {
-  die ('Please, inform URL');
+  die ('Please, inform query');
 }
 $count = isset($_GET['count']) ? $_GET['count'] : 10;
 header ("Content-type: text/json");

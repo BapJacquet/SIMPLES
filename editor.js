@@ -812,7 +812,6 @@ class Editor {
     if (index - amount >= 0) {
       let element = $('#blc-' + index)[0];
       let upElement = $('#blc-' + (index - amount))[0];
-      let moveDistance = $(upElement).outerHeight();
       Animator.switchVertical(element, upElement, $(this.id)[0], 50, duration, () => {
         $(element).css('top', 0);
         $(element).css('left', 0);
@@ -822,17 +821,6 @@ class Editor {
         $(element).children('.editor-text').focus();
         this.refreshAllBlockID();
       });
-      /*Animator.moveVertical(element, -moveDistance, 50, duration);
-      Animator.moveVertical(upElement, moveDistance, -50, duration);
-      setTimeout(() => {
-        $(element).css('top', 0);
-        $(element).css('left', 0);
-        $(upElement).css('top', 0);
-        $(upElement).css('left', 0);
-        $(element).insertBefore($(upElement));
-        $(element).children('.editor-text').focus();
-        this.refreshAllBlockID();
-      }, duration * 1.1);*/
     }
   }
 
@@ -848,7 +836,6 @@ class Editor {
     if (index + amount < this.blockCount) {
       let element = $('#blc-' + (index + amount))[0];
       let upElement = $('#blc-' + (index))[0];
-      let moveDistance = $(upElement).outerHeight();
       Animator.switchVertical(element, upElement, $(this.id)[0], 50, duration, () => {
         $(element).css('top', 0);
         $(element).css('left', 0);
@@ -858,17 +845,6 @@ class Editor {
         $(upElement).children('.editor-text').focus();
         this.refreshAllBlockID();
       });
-      /*Animator.moveVertical(element, -moveDistance, 50, duration);
-      Animator.moveVertical(upElement, moveDistance, -50, duration);
-      setTimeout(() => {
-        $(element).css('top', 0);
-        $(element).css('left', 0);
-        $(upElement).css('top', 0);
-        $(upElement).css('left', 0);
-        $(upElement).insertAfter($(element));
-        $(upElement).children('.editor-text').focus();
-        this.refreshAllBlockID();
-      }, duration * 1.1);*/
     }
   }
 
@@ -1005,7 +981,6 @@ class Editor {
     if (imageID - amount >= 0) {
       let element = $('#img-' + blockID + '-' + imageID).parent()[0];
       let leftElement = $('#img-' + blockID + '-' + (imageID - amount)).parent()[0];
-      let moveDistance = $(leftElement).outerWidth();
       Animator.switchHorizontal(element, leftElement, $(this.id)[0], 50, duration, () => {
         $(element).css('top', 0);
         $(element).css('left', 0);
@@ -1015,17 +990,6 @@ class Editor {
         $(element).children('.editor-text').focus();
         this.refreshAllBlockID();
       });
-      /*Animator.moveHorizontal(element, -moveDistance, 50, duration);
-      Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
-      setTimeout(() => {
-        $(element).css('top', 0);
-        $(element).css('left', 0);
-        $(leftElement).css('top', 0);
-        $(leftElement).css('left', 0);
-        $(element).insertBefore($(leftElement));
-        $(element).children('.editor-text').focus();
-        this.refreshAllBlockID();
-      }, duration * 1.1);*/
     }
   }
 
@@ -1043,7 +1007,6 @@ class Editor {
     if (imageID + amount < this.getImageCountInBlock(blockID)) {
       let element = $('#img-' + blockID + '-' + (imageID + amount)).parent()[0];
       let leftElement = $('#img-' + blockID + '-' + imageID).parent()[0];
-      let moveDistance = $(leftElement).outerWidth();
       Animator.switchHorizontal(element, leftElement, $(this.id)[0], 50, duration, () => {
         $(element).css('top', 0);
         $(element).css('left', 0);
@@ -1053,17 +1016,6 @@ class Editor {
         $(leftElement).children('.editor-text').focus();
         this.refreshAllBlockID();
       });
-      /*Animator.moveHorizontal(element, -moveDistance, 50, duration);
-      Animator.moveHorizontal(leftElement, moveDistance, -50, duration);
-      setTimeout(() => {
-        $(element).css('top', 0);
-        $(element).css('left', 0);
-        $(leftElement).css('top', 0);
-        $(leftElement).css('left', 0);
-        $(leftElement).insertAfter($(element));
-        $(leftElement).children('.editor-text').focus();
-        this.refreshAllBlockID();
-      }, duration * 1.1);*/
     }
   }
 

@@ -315,6 +315,9 @@
 				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
 				<div class="modal-images sclera flex-nowrap">
 				</div>
+				<label class="col-form-label qwant-lab"><strong>Qwant</strong></label>
+				<div class="modal-images qwant flex-nowrap">
+				</div>
       </div>
     </div>
   </div>

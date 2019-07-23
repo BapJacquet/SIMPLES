@@ -488,6 +488,16 @@ function displayWebImages(imgURLs) {
     $("#imageClickModal").find(".sclera-lab").css("display", "inline-block");
   }
   else $("#imageClickModal").find(".sclera-lab").css("display", "none");
+
+  var qwant = imgURLs.qwant;
+  if ( qwant.length ) {
+    for (let i = 0; i < qwant.length; i++) {
+      let imgTag = '<img src="' + qwant[i] + '" class="web-img">';
+      $("#imageClickModal").find(".qwant").append(imgTag);
+    }
+    $("#imageClickModal").find(".qwant-lab").css("display", "inline-block");
+  }
+  else $("#imageClickModal").find(".qwant-lab").css("display", "none");
 }  // end displayWebImages
 //------------------------
 

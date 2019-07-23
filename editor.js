@@ -1824,9 +1824,20 @@ class Editor {
           }
           break;
         case 'images':
-          doc.text("Les blocs images ne peuvent pour l'instant pas être exportés.",
-            margin, currentYOffset + Utils.pixelToCm(Utils.pointToPixel(14))
-          );
+          let imageCount = this.getImageCountInBlock(i);
+          for (let img = 0; img < imageCount; img++) {
+            let jImage = $('#img-' + i + '-' + img);
+            doc.addImage(jImage.get(0).dataURL, 'JPEG',
+              margin + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).left),
+              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).top),
+              Utils.pixelToCm(jImage.width()),
+              Utils.pixelToCm(jImage.height()),
+              '',
+              'NONE',
+              0
+            );
+            // todo write captions.
+          }
           break;
       }
 

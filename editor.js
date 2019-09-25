@@ -5,7 +5,9 @@
 /* global Utils */
 /* global CustomEvent */
 /* global jsPDF */
+/* global Quill */
 
+var Keyboard = Quill.import('modules/keyboard');
 /**
  * Class containing all the functions and tools for the editor.
  */
@@ -16,12 +18,65 @@ class Editor {
    */
   constructor (id) {
     this.id = id;
-    this.fileVersion = 1;
+    this.fileVersion = 2;
     this.format = null;
+    this.initializeQuill();
     this.addBlock('', false);
     this.lastBlock = 0;
     this.lastSelection = null;
     this.registerEvents();
+  }
+
+  get bindings () {
+    let bindings = {
+      bold: {
+        key: 'B',
+        shortKey: true,
+        handler: () => {
+          this.setFormatAtSelection({bold: !this.getCurrentFormat().bold});
+        }
+      },
+      title: {
+        key: 84, // T
+        shortKey: true,
+        handler: () => {
+          console.log('test');
+          let list = [null, 'H1', 'H2', 'H3', 'H4'];
+          let t = this.getCurrentFormat().title;
+          let index = list.indexOf(t);
+          let newT = index < list.length - 1 ? list[index + 1] : list[0];
+          this.setFormatAtSelection({title: newT});
+        }
+      },
+      wrap: {
+        key: 85, // U
+        shortKey: true,
+        handler: () => {
+          console.log('test2!');
+          let w = this.getCurrentFormat().wrap;
+          if (w === 'nowrap') {
+            this.setFormatAtSelection({wrap: 'normal'});
+          } else {
+            this.setFormatAtSelection({wrap: 'nowrap'});
+          }
+        }
+      },
+      moveBlockDown: {
+        key: Keyboard.keys.DOWN, // ArrowDown
+        shortKey: true,
+        handler: () => {
+          this.moveBlockDown(this.getSelection().block);
+        }
+      },
+      moveBlockUp: {
+        key: Keyboard.keys.UP, // ArrowUp
+        shortKey: true,
+        handler: () => {
+          this.moveBlockUp(this.getSelection().block);
+        }
+      }
+    };
+    return bindings;
   }
 
   /**
@@ -30,6 +85,14 @@ class Editor {
    */
   get blockCount () {
     return $('.editor-block').length;
+  }
+
+  /**
+   * Get the hidden canvas used to process images.
+   * @return {Canvas} Canvas.
+   */
+  get hiddenCanvas () {
+    return $('#hidden-canvas')[0];
   }
 
   /**
@@ -65,11 +128,77 @@ class Editor {
   }
 
   /**
+   * Get the quill for the given id.
+   * @param {int} id - The id of the block.
+   * @return {Quill} The quill of this block.
+   */
+  getQuill (id, subid = 0) {
+    return $('#txt-' + id)[0].quill;
+  }
+
+  getSelection () {
+    for (let i = 0; i < this.blockCount; i++) {
+      let s = this.getQuill(i).getSelection();
+      if (!Utils.isNullOrUndefined(s)) {
+        return {block: i, range: s};
+      }
+    }
+  }
+
+  /**
+   * Initializes quill for the editor.
+   */
+  initializeQuill () {
+    let Inline = Quill.import('blots/inline');
+    let Block = Quill.import('blots/block');
+    let Container = Quill.import('blots/container');
+    let Parchment = Quill.import('parchment');
+
+    /*class BoldBlot extends Inline {}
+    BoldBlot.blotName = 'bold';
+    BoldBlot.tagName = 'b';
+
+    class HeaderBlot extends Block {
+      static formats (node) {
+        return HeaderBlot.tagName.indexOf(node.tagName) + 1;
+      }
+    }
+    HeaderBlot.blotName = 'header';
+    HeaderBlot.tagName = ['H1', 'H2', 'H3', 'H4'];*/
+
+    class ColorAttributor extends Parchment.Attributor.Style {
+      value (domNode) {
+        let value = super.value(domNode);
+        if (!value.startsWith('rgb(')) return value;
+        value = value.replace(/^[^\d]+/, '').replace(/[^\d]+$/, '');
+        const hex = value
+          .split(',')
+          .map(component => `00${parseInt(component, 10).toString(16)}`.slice(-2))
+          .join('');
+        return `#${hex}`;
+      }
+    }
+
+    const ColorStyle = new ColorAttributor('color', 'color', {
+      scope: Parchment.Scope.INLINE
+    });
+    const WrapClass = new Parchment.Attributor.Class('wrap', 'ql-wrap', {
+      scope: Parchment.Scope.INLINE
+    });
+
+    //Quill.register(BoldBlot);
+    //Quill.register(HeaderBlot);
+    Quill.register(ColorStyle);
+    Quill.register(WrapClass);
+    //Quill.register(IndentClass);
+  }
+
+  /**
    * Register all the events of the editor.
    */
   registerEvents () {
-    $(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
-    $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
+    //$(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
+    //$(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
     // $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
       if ($(event.target).hasClass('editor-block')) {
@@ -79,7 +208,17 @@ class Editor {
         console.log("Focusing " + $(event.target).children('.editor-text').id);
       }
     });
-    $(this.id).on('focus', '.editor-text', event => { this.updateFormat(); });
+    $(this.id).on('click', '.editor-image-container', event => {
+      if ($(event.target).hasClass('editor-image-container')) {
+        event.stopPropagation();
+        event.preventDefault();
+        $(event.target).children('.editor-text').focus();
+        console.log("Focusing " + $(event.target).children('.editor-text').id);
+      }
+    });
+    $(this.id).on('focus', '.editor-text', event => {
+      setTimeout(() => this.updateFormat(), 1);
+    });
     $(this.id).on('focus', '.editor-block', event => {
       if ($(event.target).hasClass('editor-block')) {
         event.stopPropagation();
@@ -87,9 +226,11 @@ class Editor {
         $(event.target).children('.editor-text').focus();
       }
     });
-    $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
-    $(this.id).on('click', '.editor-text', event => { this.updateFormat(); });
-    $(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
+    //$(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
+    $(this.id).on('click', '.editor-text', event => {
+      setTimeout(() => this.updateFormat(), 1);
+    });
+    /*$(this.id).on('mousedown', '.editor-text', event => { this.capturedMouseDown = true; });
     $('body').on('mouseup', event => {
       if (this.capturedMouseDown) {
         var sel = this.getSelection();
@@ -100,7 +241,7 @@ class Editor {
         setTimeout(() => this.updateFormat(), 1);
         this.capturedMouseDown = false;
       }
-    });
+    });*/
   }
 
   /**
@@ -138,7 +279,8 @@ class Editor {
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          document.execCommand('bold', false, null);
+          this.setFormatAtSelection({bold: !this.getCurrentFormat().bold});
+          //document.execCommand('bold', false, null);
         }
         break;
       case 'h':
@@ -147,7 +289,7 @@ class Editor {
           event.preventDefault();
           let current = this.getCurrentFormat().title;
           if (current === 'none') current = 'div';
-          let formats = ['div', 'h1', 'h2', 'h3', 'h4', 'h5'];
+          let formats = [null, 'h1', 'h2', 'h3', 'h4'];
           let index = formats.indexOf(current) + 1;
           if (index === formats.length) index = 0;
           document.execCommand('formatBlock', false, formats[index]);
@@ -192,7 +334,7 @@ class Editor {
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({picture: !this.format.picture});
+          this.setFormatAtSelection({picture: !this.getCurrentFormat().picture});
         }
         break;
       case 'ArrowUp':
@@ -366,19 +508,6 @@ class Editor {
   }
 
   /**
-   * Get the current selection within focused blocks.
-   * @return {Selection} The user's current selection.
-   */
-  getSelection () {
-    /* global getSelection */
-    if (getSelection().modify) { /* chrome */
-      return window.getSelection();
-    } else { /* IE */
-      return getSelection();
-    }
-  }
-
-  /**
    * Cut the current selection to the clipboard.
    */
   async cut () {
@@ -433,7 +562,11 @@ class Editor {
   }
 
   getBlockFormat (blockIndex) {
-    return this.getFormatForNode($('#txt-' + blockIndex).get(0));
+    let format = {};
+    format.frame = $('#blc-' + blockIndex).hasClass('frame');
+    format.blockType = $('#blc-' + blockIndex).hasClass('text-block') ? 'default' : ($('#blc-' + blockIndex).hasClass('image-block') ? 'images' : 'unknown');
+    format.picture = $('#img-' + blockIndex).parent().is(':visible');
+    return format;
   }
 
   /**
@@ -442,235 +575,20 @@ class Editor {
    */
   getCurrentFormat () {
     let selection = this.getSelection();
-    if (selection.rangeCount === 0) return {};
-    let range = selection.getRangeAt(0);
-    return this.checkFormatAcrossSelection(this.getFormatForNode(range.startContainer));
-  }
-
-  /**
-   * Get the format for the given node.
-   * @param {DOMElement} element - Element to check the format for.
-   * @return {Format} The format of the element.
-   */
-  getFormatForNode (element) {
-    let bold = this.hasReccursiveTag('B', element) || this.hasReccursiveTag('STRONG', element);
-    let listitem = this.hasReccursiveTag('LI', element);
-    let h1 = this.hasReccursiveTag('H1', element);
-    let h2 = this.hasReccursiveTag('H2', element);
-    let h3 = this.hasReccursiveTag('H3', element);
-    let h4 = this.hasReccursiveTag('H4', element);
-    let h5 = this.hasReccursiveTag('H5', element);
-    let color = this.getNodeFontColor(element) || '#000000';
-    let size = this.getNodeFontSize(element) || '14pt';
-    let result = {};
-    result.bold = bold;
-    result.bullet = listitem;
-    result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
-    let id = this.getBlockIndexFromElement(element);
-    result.frame = $('#blc-' + id).hasClass('frame');
-    result.picture = $('#img-' + id).is(':visible');
-    result.size = size;
-    result.color = color;
-    return result;
-  }
-
-  /**
-   * Get the font color of the element as it is displayed to the user.
-   * @param {DOMElement} element - Element to check the color for.
-   * @return {String} String representing the color in hexadecimal.
-   */
-  getNodeFontColor (element) {
-    if (element.nodeName === 'FONT') {
-      return element.color;
-    } else {
-      let e = this.findParentElementWithTag('FONT', element);
-      if (e !== null) {
-        return e.color;
-      }
+    if (Utils.isNullOrUndefined(selection)) {
+      return {};
     }
-    return null;
-  }
+    let quillFormat = this.getQuill(selection.block).getFormat(selection.index, selection.length);
 
-  /**
-   * Get the font size of the element as it is displayed to the user.
-   * @param {DOMElement} element - Element to check the color for.
-   * @return {String} String representing the color in hexadecimal.
-   */
-  getNodeFontSize (element) {
-    /*if (element.nodeName === 'FONT') {
-      return element.color;
-    } else {
-      let e = this.findParentElementWithTag('FONT', element);
-      if (e !== null) {
-        return e.color;
-      }
-    }*/
-    return null;
-  }
+    let format = this.getBlockFormat(selection.block);
+    format.bold = Utils.isNullOrUndefined(quillFormat.bold) ? false : quillFormat.bold;
+    format.bullet = Utils.isNullOrUndefined(quillFormat.list) ? false : quillFormat.list;
+    format.indent = Utils.isNullOrUndefined(quillFormat.indent) ? 0 : quillFormat.indent;
+    format.title = Utils.isNullOrUndefined(quillFormat.header) ? false : quillFormat.header;
+    format.color = Utils.isNullOrUndefined(quillFormat.color) ? '#000000' : quillFormat.color;
+    format.wrap = Utils.isNullOrUndefined(quillFormat.wrap) ? 'normal' : quillFormat.wrap;
 
-  /**
-   * Check all nodes in the current selection and merge formats into one.
-   * @param {Format} format - Initial format.
-   * @return {Format} Format of the entire selection.
-   */
-  checkFormatAcrossSelection (format) {
-    let selection = this.getSelection();
-    for (let i = 0; i < selection.rangeCount; i++) {
-      let range = selection.getRangeAt(i);
-      let nodes = this.getNodesInRange(range);
-      for (let n = 0; n < nodes.length; n++) {
-        let f = this.getFormatForNode(nodes[n]);
-        format = this.mergeFormats(format, f);
-      }
-    }
     return format;
-  }
-
-  /**
-   * Get all the nodes in the given range.
-   * @param {Range} range - Selection range.
-   * @return {DOMElementList} List of nodes within that range.
-   */
-  getNodesInRange (range) {
-    let startNode = range.startContainer.childNodes[range.startOffset] || range.startContainer;
-    let endNode = range.endContainer.childNodes[range.endOffset] || range.endContainer;
-    if (startNode === endNode && startNode.childNodes.length === 0) {
-      return [startNode];
-    }
-
-    let result = [];
-    do {
-      result.push(startNode);
-    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
-    return result;
-  }
-
-  /**
-   * Get all the nodes in the given element.
-   * @param {DOMElement} element - Element.
-   * @return {DOMElementList} List of nodes within that element.
-   */
-  getNodesInElement (element) {
-    let startNode = element.firstChild;
-    let endNode = element;
-    if (startNode === endNode && startNode.childNodes.length === 0) {
-      return [startNode];
-    }
-
-    let result = [];
-    do {
-      result.push(startNode);
-    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
-    return result;
-  }
-
-  /**
-   * Get the node next to the given node.
-   * @param {DOMElement} node - The previous node.
-   * @param {boolean} skipChildren - Whether the children nodes should be skipped.
-   * @param {DOMElement} endNode - The final node.
-   * @return {DOMElement} The next node in the hierarchy.
-   */
-  getNextNode (node, skipChildren, endNode) {
-    if (endNode === node) {
-      return null;
-    }
-    if (node.firstChild && !skipChildren) {
-      return node.firstChild;
-    }
-    if (!node.parentNode) {
-      return null;
-    }
-    return node.nextSibling || this.getNextNode(node.parentNode, true, endNode);
-  }
-
-  /**
-   * Merge formats to create a combination of the two.
-   * @param {Format} left - Format from the previous node.
-   * @param {Format} right - Format from the next node.
-   * @return {Format} The resulting format.
-   */
-  mergeFormats (left, right) {
-    let result = {
-      bold: left.bold,
-      bullet: left.bullet,
-      title: left.title,
-      frame: left.frame,
-      picture: left.picture,
-      color: left.color
-    };
-    if (left.bold === null || right.bold === null || left.bold !== right.bold) result.bold = 'ambiguous';
-    if (left.bullet === null || right.bullet === null || left.bullet !== right.bullet) result.bullet = 'ambiguous';
-    if (left.title === null || right.title === null || left.title !== right.title) result.title = 'ambiguous';
-    if (left.color === null || right.color === null || left.color !== right.color) result.color = 'ambiguous';
-    // console.log({left: left, right: right, result: result});
-    return result;
-  }
-
-  /**
-   * Check if the element or one of its parent has the given tag.
-   * @param {string} tag - The tag to check.
-   * @param {DOMElement} element - The element to check.
-   * @return {Boolean} True if the element or its parents have the tag, false otherwise.
-   */
-  hasReccursiveTag (tag, element) {
-    return element.nodeName === tag || this.findParentElementWithTag(tag, element) !== null;
-  }
-
-  /**
-   * Find the parent element with the given tag.
-   * @param {string} tag - Tag to look for.
-   * @param {DOMElement} startElement - Element to start at.
-   * @return {DOMElement} The element which has the given tag, or null.
-   */
-  findParentElementWithTag (tag, startElement) {
-    if (startElement.classList && startElement.classList.contains('editor-text')) return null;
-    let currentElement = startElement;
-    while (currentElement.parentNode) {
-      let parent = currentElement.parentNode;
-      if (parent.classList && parent.classList.contains('editor-text')) break;
-      if (parent.nodeName === tag) return parent;
-      else {
-        currentElement = parent;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Add a new line at the caret position.
-   * @deprecated Should not be used.
-   */
-  processNewLine (id) {
-    if (getSelection().modify) { /* chrome */
-      let selection = window.getSelection();
-      let range = selection.getRangeAt(0);
-      let br = document.createElement('br');
-      range.deleteContents();
-      range.insertNode(br);
-      if (br.previousSibling.tagName === 'BR') {
-        br.previousSibling.remove();
-        br.remove();
-        this.insertBlockAfter(id, '', true);
-      } else {
-        range.setStartAfter(br);
-        range.setEndAfter(br);
-        range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range); /* end chrome */
-      }
-    } else {
-      let br = document.createElement('br'); /* internet explorer */
-      let range = getSelection().getRangeAt(0);
-      range.surroundContents(br);
-      if (br.previousSibling.nodeName === 'BR') {
-        br.previousSibling.remove();
-        br.remove();
-        this.insertBlockAfter(id, '', true);
-      } else {
-        range.selectNode(br.nextSibling); /* end Internet Explorer 11 */
-      }
-    }
   }
 
   /**
@@ -679,6 +597,25 @@ class Editor {
   clear () {
     $('.editor-block').remove();
     this.addBlock('', true);
+  }
+
+  /**
+   * Create the instance of quill in the element with the given selector.
+   * @param {String} selector - Selector to get the element. The first matching element will be chosen.
+   */
+  createQuill (selector) {
+    let element = $(selector)[0];
+    let options = {
+      modules: {
+        toolbar: false,
+        keyboard: {
+          bindings: this.bindings
+        }
+      },
+      placeholder: 'Tapez le texte ici...',
+      theme: 'snow'
+    };
+    element.quill = new Quill(element, options);
   }
 
   /**
@@ -724,7 +661,25 @@ class Editor {
     if (focus) {
       $('#txt-' + (index + 1)).focus();
     }
+    this.createQuill('#txt-' + (index + 1));
     this.setImage('#img-' + (index + 1), 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(index + 1);
+  }
+
+  /**
+   * Insert an image block just below the block with the given index.
+   * @param {int} index - ID of the block that the new block should follow.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  insertImageBlockAfter (index, focus) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
+    $('#blc-' + index).after(this.newImageBlockString(index + 1));
+    this.refreshAllBlockID();
+    if (focus) {
+      $('#txt-' + (index + 1) + '-0').focus();
+    }
+    this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -742,7 +697,25 @@ class Editor {
     if (focus) {
       $('#txt-' + (index)).focus();
     }
+    this.createQuill('#txt-' + index);
     this.setImage('#img-' + (index), 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(index);
+  }
+
+  /**
+   * Insert an image block just above the block with the given index.
+   * @param {int} index - ID of the block that the new block should precede.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  insertImageBlockBefore (index, focus) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
+    $('#blc-' + index).before(this.newImageBlockString(index));
+    this.refreshAllBlockID();
+    if (focus) {
+      $('#txt-' + (index) + '-1').focus();
+    }
+    this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -757,18 +730,15 @@ class Editor {
     if (index - amount >= 0) {
       let element = $('#blc-' + index)[0];
       let upElement = $('#blc-' + (index - amount))[0];
-      let moveDistance = $(upElement).outerHeight();
-      Animator.moveVertical(element, -moveDistance, 50, duration);
-      Animator.moveVertical(upElement, moveDistance, -50, duration);
-      setTimeout(() => {
+      Animator.switchVertical(element, upElement, $(this.id)[0], 50, duration, () => {
         $(element).css('top', 0);
         $(element).css('left', 0);
         $(upElement).css('top', 0);
         $(upElement).css('left', 0);
-        $(element).insertBefore($(upElement));
+        $(upElement).insertAfter($(element));
         $(element).children('.editor-text').focus();
         this.refreshAllBlockID();
-      }, duration * 1.1);
+      });
     }
   }
 
@@ -784,10 +754,7 @@ class Editor {
     if (index + amount < this.blockCount) {
       let element = $('#blc-' + (index + amount))[0];
       let upElement = $('#blc-' + (index))[0];
-      let moveDistance = $(upElement).outerHeight();
-      Animator.moveVertical(element, -moveDistance, 50, duration);
-      Animator.moveVertical(upElement, moveDistance, -50, duration);
-      setTimeout(() => {
+      Animator.switchVertical(element, upElement, $(this.id)[0], 50, duration, () => {
         $(element).css('top', 0);
         $(element).css('left', 0);
         $(upElement).css('top', 0);
@@ -795,7 +762,7 @@ class Editor {
         $(upElement).insertAfter($(element));
         $(upElement).children('.editor-text').focus();
         this.refreshAllBlockID();
-      }, duration * 1.1);
+      });
     }
   }
 
@@ -810,8 +777,176 @@ class Editor {
     if (focus) {
       $('#txt-' + id).focus();
     }
+    this.createQuill('#txt-' + id);
     this.setImage('#img-' + id, 'img/placeholder.png');
     this.dispatchBlockCreatedEvent(id);
+  }
+
+  /**
+   * Add an image block at the end of the editor.
+   */
+  addImageBlock () {
+    let id = this.blockCount;
+    $(this.id).append(this.newImageBlockString(id));
+    this.setImage('#img-' + id + '-0', 'img/placeholder.png');
+    this.dispatchBlockCreatedEvent(id);
+  }
+
+  /**
+   * Remove the image with the given ID and switch focus to a new id.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imageID - ID of the image to remove.
+   * @param {int} focusID - ID of the block that will get the focus.
+   */
+  removeImageInBlock (blockID, imageID, focusID = imageID + 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      if (imageID === 0 && this.getImageCountInBlock(blockID) === 1) {
+        this.removeBlockAt(blockID);
+      } else {
+        // There will be at least one image remaining.
+        let element = $('#img-' + blockID + '-' + imageID).parent()[0];
+        if (typeof (focusID) === 'number') {
+          $('#txt-' + focusID).focus();
+        }
+        Animator.collapse(element, duration, () => {
+          $(element).remove();
+          this.refreshAllBlockID();
+          //this.dispatchBlockDestroyedEvent(id);
+        });
+      }
+    }
+  }
+
+  /**
+   * Insert an image within the image block with the given ID, just before the
+   * image with the given ID.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imgID - ID of the image to insert the new one before.
+   */
+  insertImageInBlockBefore (blockID, imgID) {
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      if (this.getImageCountInBlock(blockID) === 6) {
+        alert("Vous ne pouvez pas mettre plus d'images dans ce bloc !");
+        return;
+      }
+      let selector = '#img-' + blockID + '-';
+      $(selector + imgID).parent().before(this.newImageInImageBlockString(blockID, imgID));
+      this.refreshAllBlockID();
+      setTimeout(() => {
+        this.setImage(selector + imgID, 'img/placeholder.png');
+        $('#txt-' + blockID + '-' + imgID).focus();
+      }, 1);
+    }
+  }
+
+  /**
+   * Insert an image within the image block with the given ID, just after the
+   * image with the given ID.
+   * @param {int} blockID - ID of the block.
+   * @param {int} imgID - ID of the image to insert the new one after.
+   */
+  insertImageInBlockAfter (blockID, imgID) {
+    if ($('#blc-' + blockID).hasClass('image-block')) {
+      if (this.getImageCountInBlock(blockID) === 6) {
+        alert("Vous ne pouvez pas mettre plus d'images dans ce bloc !");
+        return;
+      }
+      let selector = '#img-' + blockID + '-';
+      $(selector + imgID).parent().after(this.newImageInImageBlockString(blockID, imgID + 1));
+      this.refreshAllBlockID();
+      setTimeout(() => {
+        this.setImage(selector + (imgID + 1), 'img/placeholder.png');
+        $('#txt-' + blockID + '-' + (imgID + 1)).focus();
+      }, 1);
+    }
+  }
+
+  /**
+   * Add an image within the image block with the given id.
+   * @param {int} id - The id of the block.
+   */
+  addImageInBlock (id) {
+    if ($('#blc-' + id).hasClass('image-block')) {
+      let lastImg = this.getImageCountInBlock(id) - 1;
+      if (lastImg === 5) {
+        alert("Vous ne pouvez pas mettre plus d'images dans ce bloc !");
+        return;
+      }
+      let selector = '#img-' + id + '-' + lastImg;
+      $(selector).parent().after(this.newImageInImageBlockString(id, lastImg + 1));
+      setTimeout(() => {
+        this.setImage('#img-' + id + '-' + (lastImg + 1), 'img/placeholder.png');
+        $('#txt-' + id + '-' + (lastImg + 1)).focus();
+      }, 1);
+    } else {
+      throw new Error('Can only add images within image blocks.');
+    }
+  }
+
+  /**
+   * Move a block up by the given amount.
+   * @param {int} blockID - ID of the block to move.
+   * @param {int} imageID - ID of the image to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
+   */
+  moveImageLeft (blockID, imageID, amount = 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if (imageID - amount >= 0) {
+      let element = $('#img-' + blockID + '-' + imageID).parent()[0];
+      let leftElement = $('#img-' + blockID + '-' + (imageID - amount)).parent()[0];
+      Animator.switchHorizontal(element, leftElement, $(this.id)[0], 50, duration, () => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(element).insertBefore($(leftElement));
+        $(element).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      });
+    }
+  }
+
+  /**
+   * Move a block down by the given amount.
+   * @param {int} blockID - ID of the block to move.
+   * @param {int} imageID - ID of the image to move.
+   * @param {int} amount - (Optional) amount to move the block by.
+   * @param {int} duration - (Optional) duration of the animation.
+   */
+  moveImageRight (blockID, imageID, amount = 1, duration = 250) {
+    if (typeof (blockID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (blockID)}!`);
+    if (typeof (imageID) !== 'number') throw new Error(`Param "blockID" should be a number but was ${typeof (imageID)}!`);
+
+    if (imageID + amount < this.getImageCountInBlock(blockID)) {
+      let element = $('#img-' + blockID + '-' + (imageID + amount)).parent()[0];
+      let leftElement = $('#img-' + blockID + '-' + imageID).parent()[0];
+      Animator.switchHorizontal(element, leftElement, $(this.id)[0], 50, duration, () => {
+        $(element).css('top', 0);
+        $(element).css('left', 0);
+        $(leftElement).css('top', 0);
+        $(leftElement).css('left', 0);
+        $(leftElement).insertAfter($(element));
+        $(leftElement).children('.editor-text').focus();
+        this.refreshAllBlockID();
+      });
+    }
+  }
+
+  /**
+   * Get the number of images within a block.
+   */
+  getImageCountInBlock (id) {
+    if ($('#blc-' + id).hasClass('media')) {
+      return 1;
+    } else {
+      return $('#blc-' + id).children('.row').children('.col').length;
+    }
   }
 
   /**
@@ -821,22 +956,7 @@ class Editor {
    */
   getRawTextContent (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
-
-    let element = $('#txt-' + id).get(0);
-    let result = '';
-    if (element.childNodes.length > 0) {
-      result = element.childNodes[0].textContent;
-      for (let i = 1; i < element.childNodes.length; i++) {
-        if (element.childNodes[i].tagName === 'DIV') {
-          result += '\n' + element.childNodes[i].textContent;
-        } else {
-          result += element.childNodes[i].textContent;
-        }
-      }
-    } else {
-      result = element.textContent;
-    }
-    return result;
+    return this.getQuill(id).getText();
   }
 
   /**
@@ -855,19 +975,47 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newBlockString (id, text) {
-    return `<div id="blc-${id}" class="editor-block media" style="font-size: 14pt;">` +
-             `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3" contenteditable="true">` +
+    return `<div id="blc-${id}" class="editor-block text-block media" style="font-size: 14pt;">` +
+             `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3">` +
                 `<div>${text}</div>` +
              `</div>` +
-             `<canvas id="img-${id}" class="editor-image align-self-center mr-3 hoverable" style="width:100px"/>` +
+             `<div class="editor-image-container mr-3" style="width:100px">` +
+                `<img id="img-${id}" class="editor-image align-self-center hoverable"/>` +
+             `</div>` +
            `</div>`;
+  }
+
+  /**
+   * Get a HTML string to initialize an Image Block.
+   * @param {int} id - ID of the new block.
+   * @return {string} HTML string of the new block.
+   */
+  newImageBlockString (id) {
+    return `<div id="blc-${id}" class="editor-block image-block mx-auto" style="font-size:14pt;">` +
+              `<div class="row">` +
+                this.newImageInImageBlockString(id, 0) +
+              `</div>` +
+          `</div>`;
+  }
+
+  /**
+   * Get a HTML string to initialize an Image for an Image Block.
+   * @param {int} id - Id of the block.
+   * @param {int} imgID - Id of the image within the block.
+   * @return {string} HTML string of the new image container.
+   */
+  newImageInImageBlockString (id, imgID) {
+    return `<div class="col editor-image-container">` +
+      `<img id="img-${id}-${imgID}" class="editor-image align-self-center hoverable px-auto"/>` +
+      `<div id="txt-${id}-${imgID}" class="editor-text align-self-center" contenteditable="true"></div>` +
+    `</div>`;
   }
 
   /**
    * Change the DOM ID of the block with the given id to the given new id.
    * @param {int} oldID - ID the block had until now.
    * @param {int} newID - ID the block should be having.
-   * @deprecated Use refreshAllBlockId() instead.
+   * @deprecated Use refreshAllBlockID() instead.
    */
   changeBlockID (oldID, newID) {
     $('#blc-' + oldID).attr('id', 'blc-' + newID);
@@ -881,12 +1029,17 @@ class Editor {
   refreshAllBlockID () {
     $('.editor-block').each(function (index) {
       $(this).attr('id', 'blc-' + index);
-    });
-    $('.editor-text').each(function (index) {
-      $(this).attr('id', 'txt-' + index);
-    });
-    $('.editor-image').each(function (index) {
-      $(this).attr('id', 'img-' + index);
+      if ($(this).hasClass('text-block')) {
+        $(this).find('.editor-text').attr('id', 'txt-' + index);
+        $(this).find('.editor-image').attr('id', 'img-' + index);
+      } else if ($(this).hasClass('image-block')) {
+        $(this).find('.editor-text').each(function (subIndex) {
+          $(this).attr('id', 'txt-' + index + '-' + subIndex);
+        });
+        $(this).find('.editor-image').each(function (subIndex) {
+          $(this).attr('id', 'img-' + index + '-' + subIndex);
+        });
+      }
     });
   }
 
@@ -896,85 +1049,144 @@ class Editor {
    */
   setFormatAtSelection (format) {
     console.log(format);
-    console.log(!this.hasFocus);
+    /*console.log(!this.hasFocus);
     if (!this.hasFocus) {
       $('#txt-' + this.lastBlock).focus();
-    }
-    if (this.getSelection().rangeCount > 0) {
-      let bold = this.format.bold;
-      let list = this.format.bullet;
-      let frame = this.format.frame;
-      let title = this.format.title;
-      let picture = this.format.picture;
-      let color = this.format.color;
-      if (typeof (format.title) !== 'undefined' && format.title !== title) {
+    }*/
+    let currentSelection = this.getSelection();
+    let currentFormat = this.getQuill(currentSelection.block).getFormat();
+    if (!Utils.isNullOrUndefined(currentSelection)) {
+      let bold = currentFormat.bold;
+      let list = currentFormat.list;
+      let title = currentFormat.title;
+      let color = currentFormat.color;
+      let wrap = currentFormat.wrap;
+      let indent = currentFormat.indent;
+      if (typeof (format.title) !== 'undefined' && title !== format.title) {
         let t = format.title;
-        if (t === 'none') t = 'div';
-        document.execCommand('formatBlock', false, t);
-      }
-      if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
-        console.log('Frame: ' + format.frame);
-        if (format.frame) {
-          console.log('Adding frame on block ' + this.activeBlockId);
-          $('#blc-' + this.activeBlockId).addClass('frame');
-        } else {
-          $('#blc-' + this.activeBlockId).removeClass('frame');
-        }
+        if (t === 'none') t = null;
+        this.getQuill(currentSelection.block).format('header', t);
       }
       if (typeof (format.bold) !== 'undefined' && format.bold !== bold) {
-        if (bold === 'ambiguous' && format.bold === false) {
-          document.execCommand('bold', false, null);
-          document.execCommand('bold', false, null);
-        } else {
-          document.execCommand('bold', false, null);
-        }
+        this.getQuill(currentSelection.block).format('bold', format.bold);
       }
-      if (typeof (format.bullet) !== 'undefined' && format.bullet !== list) {
-        document.execCommand('insertUnorderedList', false, null);
+      if (typeof (format.list) !== 'undefined' && format.list !== list) {
+        let l = format.list === 'bullet' ? true : format.list;
+        this.getQuill(currentSelection.block).format('list', l);
       }
-      if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
-        if (format.picture) {
-          $('#img-' + this.activeBlockId).show();
-        } else {
-          $('#img-' + this.activeBlockId).hide();
-        }
+      if (typeof (format.indent) !== 'undefined' && format.indent !== indent) {
+        this.getQuill(currentSelection.block).format('indent', format.indent);
       }
       if (typeof (format.color) !== 'undefined' && format.color !== color) {
-        document.execCommand('foreColor', false, format.color);
+        this.getQuill(currentSelection.block).format('color', format.color);
       }
-      this.updateFormat();
+      if (typeof (format.wrap) !== 'undefined' && format.wrap !== wrap) {
+        let w = format.wrap === 'normal' ? null : format.wrap;
+        this.getQuill(currentSelection.block).format('wrap', w);
+      }
+      this.setBlockFormat(currentSelection.block, format);
     }
+  }
+
+  /**
+   * Set the format of the block with the given ID.
+   * @param {int} blockID - The index of the block to change the format of.
+   * @param {Object} format - The new format of the block.
+   */
+  setBlockFormat (blockID, format) {
+    let oldFormat = this.getBlockFormat(blockID);
+    let frame = oldFormat.frame;
+    let picture = oldFormat.picture;
+    if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
+      this.setBlockFrameVisibility(blockID, format.frame);
+    }
+    if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
+      this.setBlockImageVisibility(blockID, format.picture);
+    }
+    this.updateFormat();
+  }
+
+  /**
+   * Hide the image associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the image.
+   */
+  hideBlockImage (blockID) {
+    $('#img-' + blockID).parent().hide();
+  }
+
+  /**
+   * Show the image associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the image.
+   */
+  showBlockImage (blockID) {
+    $('#img-' + blockID).parent().show();
+  }
+
+  /**
+   * Set the visibility of the image associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the image.
+   * @param {boolean} visibility - The visibility of the image.
+   */
+  setBlockImageVisibility (blockID, visibility) {
+    if (visibility) this.showBlockImage(blockID);
+    else this.hideBlockImage(blockID);
+  }
+
+  /**
+   * Hide the frame associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the frame.
+   */
+  hideBlockFrame (blockID) {
+    $('#blc-' + blockID).removeClass('frame');
+  }
+
+  /**
+   * Show the frame associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the frame.
+   */
+  showBlockFrame (blockID) {
+    $('#blc-' + blockID).addClass('frame');
+  }
+
+  /**
+   * Set the visibility of the frame associated to the given blockID.
+   * @param {int} blockID - The index of the block containing the frame.
+   * @param {boolean} visibility - The visibility of the frame.
+   */
+  setBlockFrameVisibility (blockID, visibility) {
+    if (visibility) this.showBlockFrame(blockID);
+    else this.hideBlockFrame(blockID);
   }
 
   /**
    * Set the image in the block with the given id, making it DataURL-ready.
    * @param {string} selector - ID of the block.
    * @param {string} src - Path of the image source.
+   * @param {int} requestedWidth - Width of the resulting image.
    */
-  async setImage (selector, src) {
+  async setImage (selector, src, requestedWidth) {
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
-    console.log(src);
+    //console.log(src);
     if (src.match(/^https?:\/\//)) {
       src = './image_proxy.php?url=' + src;
     }
-    var img = new Image();
+    var img = $(selector)[0];
     img.crossOrigin = 'Anonymous';
     img.onload = () => {
-      var canvas = $(selector).get(0);
-      canvas.width = 100;
-      canvas.height = 100;
-      let scale = Math.max(img.naturalWidth / canvas.width, img.naturalHeight / canvas.height);
-      let width = img.naturalWidth / scale;
-      let height = img.naturalHeight / scale;
-      let offsetX = (canvas.width - width) / 2;
-      let offsetY = (canvas.height - height) / 2;
+      if (typeof (requestedWidth) !== 'number') {
+        requestedWidth = img.naturalWidth;
+      }
+      let canvas = this.hiddenCanvas;
+      let scale = img.naturalWidth / requestedWidth;
+      canvas.width = img.naturalWidth / scale;
+      canvas.height = img.naturalHeight / scale;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, offsetX, offsetY, width, height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      img.dataURL = canvas.toDataURL('image/png');
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
       this.dispatchImageLoaded(Number(selector.substring(5)));
-      $(".loader").hide();
     };
     img.src = src;
   }
@@ -987,45 +1199,19 @@ class Editor {
    * @param {String} text - Text to insert.
    */
   setTextAt (blockIndex, startIndex, length, text) {
-    let sel = this.getSelection();
-    let range = sel.getRangeAt(0);
-    let element = range.startContainer;
-    let offset = range.startOffset;
-    let endElement = range.endContainer;
-    let endOffset = range.endOffset;
-    let selBlock = this.getBlockIndexFromElement(element);
-    let selStartIndex = 0;
-    let selEndIndex = 0;
-    let wasInBlock = selBlock === blockIndex;
-    if (wasInBlock) {
-      selStartIndex = this.getIndexFromElementAndOffset(element, offset);
-      selEndIndex = this.getIndexFromElementAndOffset(endElement, endOffset);
-    }
-    this.select(blockIndex, startIndex, length);
-    document.execCommand('insertText', false, text);
-    sel.removeAllRanges();
-    if (wasInBlock) {
-      if (selStartIndex > startIndex + length) {
-        selStartIndex += text.length - length;
-      }
-      if (selEndIndex > startIndex + length) {
-        selEndIndex += text.length - length;
-      }
-      console.log({block: selBlock, selStartIndex: selStartIndex, selEndIndex: selEndIndex, startIndex: startIndex, textLength: text.length, length: length});
-      this.select(selBlock, selStartIndex, selEndIndex - selStartIndex);
-    } else {
-      sel.addRange(range);
-      sel.getRangeAt(0).setStart(element, offset);
-      sel.getRangeAt(0).setEnd(endElement, endOffset);
-    }
+    let maxLength = this.getQuill(blockIndex).getText().length;
+    length = startIndex + length > maxLength ? maxLength - startIndex : length;
+    this.getQuill(blockIndex).deleteText(startIndex, length);
+    this.getQuill(blockIndex).insertText(startIndex, text);
   }
 
   /**
    * Clean the HTML content of the block with the given id.
    * @param {Number} blockIndex - Id of the block to clean.
    */
-  cleanContent (blockIndex) {
-    let jElement = $('#txt-' + blockIndex);
+  /*cleanContent (blockIndex) {
+    this.saveSelection();
+    let jElement = $('#blc-' + blockIndex).find('.editor-text');
     jElement.find('span').contents().unwrap();
     jElement.get(0).normalize();
     $(jElement.find('div div').get().reverse()).each(function () {
@@ -1034,6 +1220,26 @@ class Editor {
     jElement.find('div').each(function () {
       if ($(this).is(':empty')) $(this).remove();
     });
+    let edit = this;
+    jElement.each(function () {
+      let nodes = edit.getNodesInElement(this);
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeType === 3 && nodes[i].parentNode === this) {
+          let s = document.createElement('span');
+          this.insertBefore(s, nodes[i]);
+          s.appendChild(nodes[i]);
+        }
+      }
+    });
+    this.restoreSavedSelection();
+  }*/
+
+  saveSelection () {
+    this.savedSelection = this.getSelection();
+  }
+
+  restoreSavedSelection () {
+    this.select(this.savedSelection.block, this.savedSelection.index, this.savedSelection.length);
   }
 
   /**
@@ -1043,25 +1249,12 @@ class Editor {
    */
   getSignificantWords (blockIndex) {
     let jElement = $('#txt-' + blockIndex);
-    let bold = jElement.find('b');
+    let bold = jElement.find('strong');
     let result = [];
     for (let i = 0; i < bold.length; i++) {
       result.push(bold[i].textContent);
     }
     return result;
-  }
-
-  /**
-   * Move the caret forward by one.
-   */
-  moveCaretForward () {
-    let sel = this.getSelection();
-    let range = sel.getRangeAt(0);
-    if (range.startOffset + 1 >= range.startContainer.length) {
-      range.setStart(this.getNextNode(range.startContainer, false), 0);
-    } else {
-      range.setStart(range.startContainer, range.startOffset + 1);
-    }
   }
 
   /**
@@ -1071,20 +1264,7 @@ class Editor {
    * @param {int} length - (optional) length of the selection;
    */
   select (blockIndex, startIndex, length = 0) {
-    let sel = this.getSelection();
-    sel.removeAllRanges();
-    let range = document.createRange();
-    let elemAndOffset = this.getBlockElementAndOffsetAtIndex(blockIndex, startIndex);
-    if (elemAndOffset !== null) {
-      range.setStart(elemAndOffset.element, elemAndOffset.offset);
-      if (length > 0) {
-        elemAndOffset = this.getBlockElementAndOffsetAtIndex(blockIndex, startIndex + length);
-        if (elemAndOffset !== null) {
-          range.setEnd(elemAndOffset.element, elemAndOffset.offset);
-        }
-      }
-    }
-    sel.addRange(range);
+    this.getQuill(blockIndex).setSelection(startIndex, length);
   }
 
   /**
@@ -1096,7 +1276,7 @@ class Editor {
     let offset = -1;
     let patt = new RegExp('(?:^|[^a-zA-Z0-9éèêîïû])(' + text + ')(?:[^a-zA-Z0-9éèêîïû]|$)');
     for (let i = 0; i < this.blockCount; i++) {
-      let matches = this.getRawTextContent(i).match(patt);
+      let matches = this.getQuill(i).getText().match(patt);
       if (matches != null) {
         offset = matches.index;
         offset += matches[0].search(matches[1]);
@@ -1113,7 +1293,7 @@ class Editor {
    * @return {Object} Corresponding element and offset.
    */
   getBlockElementAndOffsetAtIndex (blockIndex, index) {
-    let root = $('#txt-' + blockIndex).get(0);
+    let root = $('#blc-' + blockIndex).find('.editor-text')[0];
     let remainingChars = index;
     let nodes = this.getNodesInElement(root);
     for (let i = 0; i < nodes.length; i++) {
@@ -1125,7 +1305,7 @@ class Editor {
         }
       }
     }
-    return null;
+    return {element: root, offset: 0};
   }
 
   /**
@@ -1135,7 +1315,7 @@ class Editor {
    */
   getBlockIndexFromElement (element) {
     let current = $(element);
-    while (!current.hasClass('editor-text')) {
+    while (!current.hasClass('editor-block')) {
       current = current.parent();
       if (current.length === 0) {
         return -1;
@@ -1170,6 +1350,78 @@ class Editor {
         }
       }
     }
+    return 0;
+  }
+
+  /**
+   * Get all the nodes in the given element.
+   * @param {DOMElement} element - Element.
+   * @return {DOMElementList} List of nodes within that element.
+   */
+  getNodesInElement (element) {
+    let startNode = element.firstChild;
+    let endNode = element;
+    if (startNode === null) {
+      return [];
+    }
+    if (startNode === endNode && startNode.childNodes.length === 0) {
+      return [startNode];
+    }
+
+    let result = [];
+    do {
+      result.push(startNode);
+    } while ((startNode = this.getNextNode(startNode, false, endNode)) !== null);
+    return result;
+  }
+
+  /**
+   * Get the node next to the given node.
+   * @param {DOMElement} node - The previous node.
+   * @param {boolean} skipChildren - Whether the children nodes should be skipped.
+   * @param {DOMElement} endNode - The final node.
+   * @return {DOMElement} The next node in the hierarchy.
+   */
+  getNextNode (node, skipChildren, endNode) {
+    if (endNode === node) {
+      return null;
+    }
+    if (node.firstChild && !skipChildren) {
+      return node.firstChild;
+    }
+    if (!node.parentNode) {
+      return null;
+    }
+    return node.nextSibling || this.getNextNode(node.parentNode, true, endNode);
+  }
+
+  /**
+   * Get the format for the given node.
+   * @param {DOMElement} element - Element to check the format for.
+   * @return {Format} The format of the element.
+   */
+  getFormatForNode (node) {
+    if (node.nodeType === 3) node = node.parentNode;
+    let weight = window.getComputedStyle(node)['font-weight'];
+    /* let listitem = this.hasReccursiveTag('LI', node);
+    let h1 = this.hasReccursiveTag('H1', node);
+    let h2 = this.hasReccursiveTag('H2', node);
+    let h3 = this.hasReccursiveTag('H3', node);
+    let h4 = this.hasReccursiveTag('H4', node);
+    let h5 = this.hasReccursiveTag('H5', node); */
+    let color = window.getComputedStyle(node)['color'];
+    let size = parseFloat(window.getComputedStyle(node)['font-size']);
+    let result = {};
+    result.bold = weight === '700';
+    // result.bullet = listitem;
+    // result.title = h1 ? 'h1' : (h2 ? 'h2' : (h3 ? 'h3' : (h4 ? 'h4' : (h5 ? 'h5' : 'none'))));
+    let id = this.getBlockIndexFromElement(node);
+    result.frame = $('#blc-' + id).hasClass('frame');
+    result.blockType = $('#blc-' + id).hasClass('text-block') ? 'default' : ($('#blc-' + id).hasClass('image-block') ? 'images' : 'unknown');
+    result.picture = $('#img-' + id).parent().is(':visible');
+    result.size = size;
+    result.color = color;
+    return result;
   }
 
   /**
@@ -1205,16 +1457,32 @@ class Editor {
     };
     for (let i = 0; i < this.blockCount; i++) {
       let format = this.getBlockFormat(i);
-      object.blocks.push({
-        type: 'default',
-        content: $('#txt-' + i)[0].innerHTML,
-        image: $('#img-' + i)[0].toDataURL(),
-        options: {
-          leftPicture: false,
-          rightPicture: format.picture,
-          frame: format.frame
-        }
-      });
+      switch (format.blockType) {
+        case 'default':
+          object.blocks.push({
+            type: 'default',
+            content: this.getQuill(i).getContents(),
+            image: $('#img-' + i)[0].dataURL,
+            options: {
+              leftPicture: false,
+              rightPicture: format.picture,
+              frame: format.frame
+            }
+          });
+          break;
+        case 'images':
+          let imagesCount = this.getImageCountInBlock(i);
+          let images = [];
+          for (let img = 0; img < imagesCount; img++) {
+            images.push({image: $('#img-' + i + '-' + img)[0].dataURL, text: $('#txt-' + i + '-' + img)[0].innerHTML});
+          }
+          object.blocks.push({
+            type: 'images',
+            images: images,
+            options: {}
+          });
+          break;
+      }
     }
 
     return object;
@@ -1236,17 +1504,42 @@ class Editor {
     this.clear();
 
     for (let i = 0; i < json.blocks.length; i++) {
-      if (i > 0) { // Clearing always leaves an empty block. No need to add it.
-        this.addBlock();
+      switch (json.blocks[i].type) {
+        case 'default':
+          if (i > 0) { // Clearing always leaves an empty block. No need to add it.
+            this.addBlock();
+          }
+          if (json.meta.version < 2) {
+            this.getQuill(i).clipboard.dangerouslyPasteHTML(json.blocks[i].content);
+          } else {
+            this.getQuill(i).setContents(json.blocks[i].content);
+          }
+          setTimeout(() => {
+            this.setImage('#img-' + i, json.blocks[i].image);
+            if (json.meta.version >= 1) {
+              this.setBlockFormat(i, {frame: json.blocks[i].options.frame, picture: json.blocks[i].options.rightPicture});
+              //if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
+              //if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+            }
+          }, 250);
+          break;
+        case 'images':
+          if (i === 0) { // Clearing always leaves an empty block. We need to replace it.
+            this.insertImageBlockBefore(0);
+            this.removeBlockAt(1);
+          } else {
+            this.addImageBlock();
+          }
+          for (let img = 0; img < json.blocks[i].images.length; img++) {
+            if (img > 0) {
+              this.addImageInBlock(i);
+            }
+            $('#txt-' + i + '-' + img)[0].innerHTML = json.blocks[i].images[img].text;
+            setTimeout(() => {
+              this.setImage('#img-' + i + '-' + img, json.blocks[i].images[img].image);
+            }, 250);
+          }
       }
-      $('#txt-' + i)[0].innerHTML = json.blocks[i].content;
-      setTimeout(() => {
-        this.setImage('#img-' + i, json.blocks[i].image);
-        if (json.meta.version >= 1) {
-          if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
-          if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
-        }
-      }, 250);
     }
   }
 
@@ -1286,63 +1579,92 @@ class Editor {
 
     for (let i = 0; i < this.blockCount; i++) {
       let blockFormat = this.getBlockFormat(i);
-      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).outerHeight()) > pageHeight - margin) {
+      let marginTop = parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-top']);
+      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).height()) + Utils.pixelToCm(marginTop) > pageHeight - margin) {
         doc = doc.addPage();
         currentYOffset = margin;
       }
-      let txt = $('#txt-' + i).get(0);
-      /*doc.fromHTML($('#txt-' + i).get(0),
-        margin,
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
-        {
-          'width': Utils.pixelToCm($('#txt-' + i).width()),
-          'height': Utils.pixelToCm($('#txt-' + i).height())
-        }
-      );*/
-
-      /*let nodes = this.getNodesInElement(txt);
-
-      for (let n = 0; n < nodes.length; n++) {
-        if (nodes[n].nodeType === 3) {
-          let format = this.getFormatForNode(nodes[n]);
-          doc.setFontSize(Utils.pixelToPoint(parseFloat(format.size)));
-          if (format.bold) {
-            doc.setFontType('bold');
-          } else {
-            doc.setFontType('normal');
+      currentYOffset += Utils.pixelToCm(marginTop);
+      if (blockFormat.frame) {
+        doc.setLineWidth(Utils.pixelToCm(5));
+        doc.rect(margin, currentYOffset, Utils.pixelToCm($('#blc-' + i).width()), Utils.pixelToCm($('#blc-' + i).height()));
+        doc.setLineWidth(Utils.pixelToCm(1));
+      }
+      switch (blockFormat.blockType) {
+        case 'default':
+          let txt = $('#txt-' + i).get(0);
+          /* doc.fromHTML($('#txt-' + i).get(0),
+            margin,
+            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
+            {
+              'width': Utils.pixelToCm($('#txt-' + i).width()),
+              'height': Utils.pixelToCm($('#txt-' + i).height())
+            }
+          ); */
+          let nodes = this.getNodesInElement(txt);
+          for (let n = 0; n < nodes.length; n++) {
+            if (nodes[n].nodeType === 3) {
+              let format = this.getFormatForNode(nodes[n]);
+              let fontSize = format.size;
+              let fontSizeCm = Utils.pixelToCm(fontSize);
+              let color = format.color;
+              doc.setTextColor(color);
+              doc.setFontSize(Utils.pixelToPoint(fontSize));
+              if (format.bold) {
+                doc.setFontType('bold');
+              } else {
+                doc.setFontType('normal');
+              }
+              let x = margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).left);
+              let y = currentYOffset + fontSizeCm + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).top);
+              //doc.rect(x, y, 1, fontSizeCm);
+              doc.text(nodes[n].textContent, x, y);
+            }
           }
-          doc.text(nodes[n].textContent,
-            margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).left),
-            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, txt).top));
-        }
-      }*/
-      let txtWidth = Utils.pixelToCm($(txt).width());
-      let txtHeight = Utils.pixelToCm($(txt).height());
-      //$(this.id)[0].style.transform = 'scale(3)';
-      doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
-        margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
-        currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
-        txtWidth,
-        txtHeight,
-        '',
-        'NONE',
-        0
-      );
-      //$(this.id)[0].style.transform = 'scale(1)';
+          /* let txtWidth = Utils.pixelToCm($(txt).width());
+          let txtHeight = Utils.pixelToCm($(txt).height());
+          doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
+            margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
+            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
+            txtWidth,
+            txtHeight,
+            '',
+            'NONE',
+            0
+          ); */
 
-      if (blockFormat.picture) {
-        doc.addImage($('#img-' + i).get(0).toDataURL(), 'JPEG',
-          totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
-          currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
-          Utils.pixelToCm($('#img-' + i).width()),
-          Utils.pixelToCm($('#img-' + i).height()),
-          '',
-          'NONE',
-          0
-        );
+          if (blockFormat.picture) {
+            doc.addImage($('#img-' + i).get(0).dataURL, 'JPEG',
+              margin + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0], $('#blc-' + i)[0]).left),
+              //totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
+              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
+              Utils.pixelToCm($('#img-' + i).width()),
+              Utils.pixelToCm($('#img-' + i).height()),
+              '',
+              'NONE',
+              0
+            );
+          }
+          break;
+        case 'images':
+          let imageCount = this.getImageCountInBlock(i);
+          for (let img = 0; img < imageCount; img++) {
+            let jImage = $('#img-' + i + '-' + img);
+            doc.addImage(jImage.get(0).dataURL, 'JPEG',
+              margin + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).left),
+              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).top),
+              Utils.pixelToCm(jImage.width()),
+              Utils.pixelToCm(jImage.height()),
+              '',
+              'NONE',
+              0
+            );
+            // todo write captions.
+          }
+          break;
       }
 
-      currentYOffset += Utils.pixelToCm($('#blc-' + i).outerHeight());
+      currentYOffset += Utils.pixelToCm($('#blc-' + i).height() + parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-bottom']));
     }
     return doc;
   }

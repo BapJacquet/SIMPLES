@@ -2,7 +2,7 @@
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html charset=utf-8" />
-	<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0">
 	<title>SimpLEs</title>
 
   <!-- === HTML to PDF ===-->
@@ -24,6 +24,12 @@
 	<script src='spectrum.js'></script>
 	<link rel='stylesheet' href='spectrum.css' />
 
+	<!-- Quill -->
+	<!-- Main Quill library -->
+  <script src="//cdn.quilljs.com/latest/quill.js"></script>
+
+	<link href="//cdn.quilljs.com/latest/quill.snow.css" rel="stylesheet">
+
   <link rel="stylesheet" type="text/css" href="main.css"/>
 	<link rel="stylesheet" type="text/css" href="editor.css"/>
 </head>
@@ -32,11 +38,13 @@
 <body style="visibility:hidden;">
 	<!-- loaderB32.gif -->
 	<div class="loader" style="display:none"><img src="img/loaderB32.gif" /></div>
+	<!-- hidden canvas -->
+	<canvas id="hidden-canvas" style="display:none"></canvas>
 	<div>
 		<div class="box">
-			<!--<div id="header">
-				<img src="img/lirec-black.png" id="logo" alt="SIMPLES Logo" height="49" />
-			</div>-->
+			<div id="header">
+			<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
+			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
 				<div class="btn-group" role="group">
@@ -98,7 +106,6 @@
 			<!--           							T O O L B A R -->
 			<div id="toolbar">
 				<div id="toolbarlist">
-
 					<div id="bold">
 						<div id="bold-caption" class="caption">gras</div>
 						<div class="tool bold-false">a</div>
@@ -177,10 +184,7 @@
 				</div>
 
 				<span id="analyze" class="simples-span" >
-					<button id="verify-button" type="button" class="simples-button  btn-info">
-						<!--<img src="img/SimpLES_white_square.png" alt="SIMPLES Logo"  height="46" />-->
-						<img src="img/lirec-black.png" alt="SIMPLES Logo"  height="74" />
-					</button>
+					<button id="verify-button" type="button" class="simples-button">Analyse</button>
 				</span>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
@@ -198,34 +202,61 @@
 				<div id="content">
 					<div id="page-container">
 						<div id="page">
+							<div id="blockCmd"><!-- Block command palette -->
+								<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
+									<img src="img/plus-black.png">
+								</div>
+								<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
+									<img src="img/delete-black.png">
+								</div>
+								<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
+									<img src="img/plus-black.png">
+								</div>
+								<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
+									<img src="img/carat-d-black.png">
+								</div>
+								<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
+									<img src="img/carat-u-black.png">
+								</div>
+								<div class="block-number" contenteditable="false">
+									<span>1</span>
+								</div>
+								<div class="block-new2-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE au dessus">
+									<img src="img/mini-mount.png">
+								</div>
+								<div class="block-new2-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE en dessous">
+									<img src="img/mini-mount.png">
+								</div>
+							</div><!-- Fin block command palette -->
+							<!-- Image widgets -->
+							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+								<img src="img/delete-black.png">
+							</div>
+							<div class="block-new-right img-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-new-left img-widget"  data-toggle="tooltip" data-placement="left" title="Ajouter une image à gauche">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-move-right img-widget"  data-toggle="tooltip" data-placement="right" title="Dépacer l'image à droite">
+								<img src="img/carat-r-black.png">
+							</div>
+							<div class="block-move-left img-widget"  data-toggle="tooltip" data-placement="left" title="Dépacer l'image à gauche">
+								<img src="img/carat-l-black.png">
+							</div>
+							<div class="block-new img-txt-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
+								<img src="img/mini-mount.png">
+							</div>
+							<!-- Fin image widgets -->
 							<!-- Editor container -->
 							<div id="editor">
-								<div id="blockCmd"><!-- Block command palette -->
-									<div class="block-new-up"  data-toggle="tooltip" data-placement="top" title="Ajouter un bloc au dessus">
-										<img src="img/plus-black.png">
-									</div>
-									<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
-										<img src="img/delete-black.png">
-									</div>
-									<div class="block-new-down"  data-toggle="tooltip" data-placement="bottom" title="Ajouter un bloc en dessous">
-										<img src="img/plus-black.png">
-									</div>
-									<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
-										<img src="img/carat-d-black.png">
-									</div>
-									<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
-										<img src="img/carat-u-black.png">
-									</div>
-									<div class="block-number" contenteditable="false">
-										<span>1</span>
-									</div>
-								</div><!-- Fin block command palette -->
 							</div>
 						</div>
 					</div>
 				</div>
-				<button class="hcollapsible"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
+				<button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
 				<div class="hcollapsible-content">
+					<button id="redo-analyse" type="button">Refaire l'analyse</button>
 					<div id="stanford-connection"></div>
 					<div class="alert alert-light" role="alert" id="lexique3-connection">
 						<div>Lexique3 : </div>
@@ -258,7 +289,7 @@
 <!--                         			 D I A L O G S  -->
 <!-- image dialog -->
 <div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title">Choisir une image</h3>
@@ -290,6 +321,9 @@
 				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
 				<div class="modal-images sclera flex-nowrap">
 				</div>
+				<label class="col-form-label qwant-lab"><strong>Qwant</strong></label>
+				<div class="modal-images qwant flex-nowrap">
+				</div>
       </div>
     </div>
   </div>
@@ -313,7 +347,7 @@
   </div>
 </div>  <!-- end confirm dialog -->
 
-<!-- alert -->
+<!-- simple alert -->
 <div id="simplesAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
@@ -324,13 +358,20 @@
 				</span>
       </div>
       <div class="modal-footer">
-				<button type="button" class="ok btn btn-primary" data-dismiss="modal">Ok</button>
+				<button type="button" class="ok btn btn-secondary" data-dismiss="modal">Ok</button>
       </div>
     </div>
   </div>
-</div>  <!-- end alert -->
+</div>  <!-- end simple alert -->
 
-
+<!-- help alert -->
+<div id="helpAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog .modal-xl" role="document">
+    <div class="modal-content">
+			<iframe src="help.htm"></iframe>
+    </div>
+  </div>
+</div>  <!-- end help alert -->
 
 	<!-- Initialize Simples Editor -->
 	<script type="text/javascript" src="editor.js"></script>

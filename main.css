@@ -38,18 +38,10 @@ hr {
 
 .rotate {
   transform: rotate(-90deg);
-
-  /* Safari */
-  -webkit-transform: rotate(-90deg);
-
-  /* Firefox */
-  -moz-transform: rotate(-90deg);
-
-  /* IE */
-  -ms-transform: rotate(-90deg);
-
-  /* Opera */
-  -o-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg); /* Safari */
+  -moz-transform: rotate(-90deg);   /* Firefox */
+  -ms-transform: rotate(-90deg); /* IE */
+  -o-transform: rotate(-90deg); /* Opera */
 
   /* Internet Explorer */
   filter: progid:dximagetransform.microsoft.basicimage(rotation=3);
@@ -61,6 +53,24 @@ hr {
   font-size: 72px;
   font-weight: bold;
   text-align: center;
+}
+
+#redo-analyse {
+  display: flex;
+  margin: auto;
+  border: none;
+  padding: 25px;
+  padding-top: 10px;
+  padding-bottom: 1px;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#redo-analyse:hover {
+  border-bottom: 2px solid #ccc;
+  border-radius: 10px;
+  border-color: #009940;
 }
 
 .collapsible {
@@ -94,35 +104,39 @@ hr {
   -webkit-user-select: none; /* Safari 3.1+ */
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
-  background-color: #6c757d;
-  color: white;
+  background-color: #dbdbdb;
+  color: #009940; /* COLOR_GREEN */
   cursor: pointer;
   padding-top: 80px;
   padding-right: 2px;
   padding-left: 0;
   height: 170px;
   width: 28px;
-  border: none;
-  outline: none;
+  border-color: #ececec;
+  border-width: 2px;
   font-size: 15px;
+  font-weight: 400;
   letter-spacing: 1px;
 }
 
 .hcollapsible:hover {
-  color: #2ea35f; /* COLOR_GREEN */
-  background-color: #eee !important;
+  /* background-color: #eee !important; */
+  border-color: #ececec;
+  background-color: white;
 }
 
 .hcollapsible-content {
   -webkit-user-select: none; /* Safari 3.1+ */
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
-  padding: 0 18px;
-  flex: 0, 0, 300px;
+/*  padding: 0 18px; */
+  padding-left: 7px;
+/*  flex: 0, 0, 300px; */
   display: none;
   overflow: auto;
-  width: 300px;
+  width: 250px; /* 300 */
   background-color: #fff;
+  border-left: 1px solid #ccc;
 }
 
 /* #menu button{
@@ -263,10 +277,12 @@ button span {
   margin-left: 20px;
   margin-top: 2px;
   height: 36px;
+  position: relative;
+  left: 80px;
 }
 
 .main-menu { /* menu button */
-  color: #2ea35f; /* COLOR_GREEN */
+  color: #009940; /* COLOR_GREEN */
   background-color: white;
   border: none;
   font-size: 20px;
@@ -282,17 +298,26 @@ button span {
 
 /*                      toolbar  */
 
+#logoLirec {
+  position: fixed;
+  height: 82px;
+  width: 82px;
+  left: -1px;
+  top: 5px; /* 38px; */
+  transform: rotate(-20deg);
+}
+
 #toolbarBottomMask {
   z-index: 500;
   position: absolute;
-  top: 85px; /* 82 */
+  top: 85px;
   height: 22px;
   width: 100%;
 }
 
 #toolbarScrollBar {
   height: 13px;
-  border-bottom: 1px solid #ccc; /* #2ea35f; COLOR_GREEN */
+  border-bottom: 1px solid #ccc;
 }
 
 #toolbar {
@@ -403,7 +428,7 @@ button span {
 .color-green {
   font-weight: 200;
   font-size: 38px;
-  color: #2ea35f; /* COLOR_GREEN */
+  color: #009940; /* COLOR_GREEN */
   left: -30px;
 }
 
@@ -617,19 +642,23 @@ button span {
 /*     Simples! button */
 .simples-button {
   position: relative;
-  top: -4px; /* -4px; */
-  border: none;
-  padding-top: 12px; /* 16px; */
-  padding-bottom: 12px;
+  top: 14px; /* 9px; */
+  left: -8px;
+  border: 4px solid white; /*  #888; */
+  border-radius: 10px;
   cursor: pointer;
-  width: 96px;  /* 100 */
-  height: 96px; /* 100 */
-  /* background-color: #2ea35f; /* COLOR_GREEN */
-  background-color: #fff;
+  width: 120px;  /* 96 */
+  height: 73px; /* 100 */
+  background-color: #e4e4e4; /* #f0f0f0; /* TOOL_BACK_COLOR */
+  color: #009940;
+  font-size: 26px;
+  font-weight: 500;
 }
 
 .simples-button:hover {
-  background-color: #37b25c;
+  /* background-color: #37b25c; */
+  border-color: #009940;
+  background-color: white;
 }
 
 /* images dialog */
@@ -644,7 +673,8 @@ button span {
 }
 
 .web-img:hover {
-  border: 2px solid #bbb;
+  border: 2px solid #4b4; /* #bbb; */
+  border-radius: 8px;
 }
 
 .custom-file-input ~ .custom-file-label::after {
@@ -662,8 +692,8 @@ button span {
   z-index: 1100;
   top: 50%;
   left: 50%;
-  margin-top: -16px;
-  margin-left: -16px;
+  margin-top: -50px;
+  margin-left: -50px;
 }
 
 /*             ...suite #content

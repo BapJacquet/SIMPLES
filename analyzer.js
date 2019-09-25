@@ -260,14 +260,36 @@ async function getImagesSuggestions (blockIndex) {
   return getImagesForKeyword(search);
 }
 
-async function getImagesForKeyword (keyword) {
-  let result = {arasaac: [], sclera: [], searchText: keyword};
-  if ( keyword ) {
-    let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
-    let json = await response.json();
-    for (let i = 0; i < json.length; i++) {
-      result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
+async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: true, qwant: true}) {
+  let result = {arasaac: [], sclera: [], qwant: [], searchText: keyword};
+  if (keyword) {
+    if (options.arasaac) {
+      try {
+        let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
+        let json = await response.json();
+        for (let i = 0; i < json.length; i++) {
+          result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
+        }
+      } catch (ex) {
+        console.log(ex);
+      }
+    }
+    if (options.sclera) {
+      // TODO add.
+    }
+    if (options.qwant) {
+      try {
+        let response = await fetch(`qwant_proxy.php?count=10&q=${keyword}`);
+        let json = await response.json();
+        let items = json.data.result.items;
+        for (let r in items) {
+          result.qwant.push(items[r].media);
+        }
+      } catch (ex) {
+        console.log(ex);
+      }
     }
   }
+  console.log(result);
   return result;
 }

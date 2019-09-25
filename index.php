@@ -24,6 +24,12 @@
 	<script src='spectrum.js'></script>
 	<link rel='stylesheet' href='spectrum.css' />
 
+	<!-- Quill -->
+	<!-- Main Quill library -->
+  <script src="//cdn.quilljs.com/latest/quill.js"></script>
+
+	<link href="//cdn.quilljs.com/latest/quill.snow.css" rel="stylesheet">
+
   <link rel="stylesheet" type="text/css" href="main.css"/>
 	<link rel="stylesheet" type="text/css" href="editor.css"/>
 </head>

@@ -61,6 +61,14 @@ class Editor {
           }
         }
       },
+      newBlock: {
+        key: Keyboard.keys.ENTER,
+        prefix: "\n",
+        handler: () => {
+          let s = this.getSelection();
+          this.insertBlockAfter(s.block);
+        }
+      },
       moveBlockDown: {
         key: Keyboard.keys.DOWN, // ArrowDown
         shortKey: true,
@@ -136,6 +144,10 @@ class Editor {
     return $('#txt-' + id)[0].quill;
   }
 
+  /**
+   * Get the current selection in the editor.
+   * @return {JSONObject} Contains the id of the block, and the range.
+   */
   getSelection () {
     for (let i = 0; i < this.blockCount; i++) {
       let s = this.getQuill(i).getSelection();
@@ -533,13 +545,12 @@ class Editor {
   updateFormat () {
     let oldFormat = this.format;
     this.format = this.getCurrentFormat();
-    // console.log(this.format);
     if (oldFormat == null) {
       this.dispatchCurrentFormatChanged(this.format);
     } else {
       let boldChanged = oldFormat.bold !== this.format.bold;
       let titleChanged = oldFormat.title !== this.format.title;
-      let listChanged = oldFormat.bullet !== this.format.bullet;
+      let listChanged = oldFormat.list !== this.format.list;
       let frameChanged = oldFormat.frame !== this.format.frame;
       let colorChanged = oldFormat.color !== this.format.color;
       let pictureChanged = oldFormat.picture !== this.format.picture;
@@ -570,7 +581,7 @@ class Editor {
 
     let format = this.getBlockFormat(selection.block);
     format.bold = Utils.isNullOrUndefined(quillFormat.bold) ? false : quillFormat.bold;
-    format.bullet = Utils.isNullOrUndefined(quillFormat.list) ? false : quillFormat.list;
+    format.list = Utils.isNullOrUndefined(quillFormat.list) ? false : quillFormat.list;
     format.indent = Utils.isNullOrUndefined(quillFormat.indent) ? 0 : quillFormat.indent;
     format.title = Utils.isNullOrUndefined(quillFormat.header) ? false : quillFormat.header;
     format.color = Utils.isNullOrUndefined(quillFormat.color) ? '#000000' : quillFormat.color;

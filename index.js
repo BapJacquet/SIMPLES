@@ -247,6 +247,15 @@ function hideToolbarBlock(blockId) {
 //                                    send toolbar data to editor
 function sendtoEditor(tool, val) {
   var v = val;
+  if( tool == "bullet" ) {
+    tool = "list";
+    switch (val) {
+      case 'true':
+        v = 'bullet'; break;
+      case 'false':
+        v = false; break;
+    }
+  }
   if ( tool == "color" ) {
     switch( val ) {
       case 'red':
@@ -305,7 +314,7 @@ function setFormatAtToolbar(format) {
   activeTool("size", format.size);
   activeTool("color", color);
   activeTool("title", format.title);
-  activeTool("bullet", format.bullet);
+  activeTool("bullet", format.list);
   activeTool("frame", format.frame);
   activeTool("picture", format.picture);
 }

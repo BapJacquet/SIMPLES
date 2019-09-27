@@ -154,18 +154,6 @@ class Editor {
     let Container = Quill.import('blots/container');
     let Parchment = Quill.import('parchment');
 
-    /*class BoldBlot extends Inline {}
-    BoldBlot.blotName = 'bold';
-    BoldBlot.tagName = 'b';
-
-    class HeaderBlot extends Block {
-      static formats (node) {
-        return HeaderBlot.tagName.indexOf(node.tagName) + 1;
-      }
-    }
-    HeaderBlot.blotName = 'header';
-    HeaderBlot.tagName = ['H1', 'H2', 'H3', 'H4'];*/
-
     class ColorAttributor extends Parchment.Attributor.Style {
       value (domNode) {
         let value = super.value(domNode);
@@ -1168,7 +1156,14 @@ class Editor {
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
-      src = './image_proxy.php?url=' + src;
+      let res = src.match(/image_proxy\.php\?url=(https?:\/\/.+$)/);
+      if (res) {
+        // For when we're moving an image already within the editor.
+        src = './image_proxy.php?url=' + res[1];
+      } else {
+        // Ensure cross domain images are displayed.
+        src = './image_proxy.php?url=' + src;
+      }
     }
     var img = $(selector)[0];
     img.crossOrigin = 'Anonymous';

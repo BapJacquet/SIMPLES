@@ -194,7 +194,7 @@ class Editor {
    */
   registerEvents () {
     //$(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
-    //$(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
+    $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
     // $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
       if ($(event.target).hasClass('editor-block')) {
@@ -266,7 +266,7 @@ class Editor {
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          document.execCommand('insertUnorderedList', false, null);
+          this.setFormatAtSelection({list: !this.getCurrentFormat().list});
         }
         break;
       case 'b':
@@ -274,7 +274,6 @@ class Editor {
           event.stopPropagation();
           event.preventDefault();
           this.setFormatAtSelection({bold: !this.getCurrentFormat().bold});
-          //document.execCommand('bold', false, null);
         }
         break;
       case 'h':
@@ -286,14 +285,7 @@ class Editor {
           let formats = [null, 'h1', 'h2', 'h3', 'h4'];
           let index = formats.indexOf(current) + 1;
           if (index === formats.length) index = 0;
-          document.execCommand('formatBlock', false, formats[index]);
-        }
-        break;
-      case 'o':
-        if (event.ctrlKey) {
-          event.stopPropagation();
-          event.preventDefault();
-          console.log(this.toHTML());
+          this.setFormatAtSelection({title: formats[index]});
         }
         break;
       case '+':
@@ -359,7 +351,7 @@ class Editor {
     }
     // Update the format.
     setTimeout(() => this.updateFormat(), 1);
-    switch (event.key) {
+    /*switch (event.key) {
       case 'ArrowLeft':
       case 'ArrowRight':
       case 'ArrowUp':
@@ -367,7 +359,7 @@ class Editor {
         if (!event.ctrlKey) return;
     }
     setTimeout(() => this.processAllSpaces(id), 1);
-    setTimeout(() => this.cleanContent(id), 2);
+    setTimeout(() => this.cleanContent(id), 2);*/
   }
 
   /**

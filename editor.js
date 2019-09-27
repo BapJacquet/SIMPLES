@@ -116,7 +116,7 @@ class Editor {
    * @return {boolean} true if it does have the focus, false otherwise.
    */
   get hasFocus () {
-    return $(document.activeElement).hasClass('editor-text');
+    return !Utils.isNullOrUndefined(this.getSelection());
   }
 
   /**
@@ -125,11 +125,7 @@ class Editor {
    */
   get activeBlockId () {
     if (this.hasFocus) {
-      let current = document.activeElement;
-      while (!$(current).hasClass('editor-text')) {
-        current = current.parentNode;
-      }
-      return parseInt(current.id.substring(4));
+      return this.getSelection().block;
     } else {
       return this.lastBlock;
     }
@@ -226,7 +222,7 @@ class Editor {
         $(event.target).children('.editor-text').focus();
       }
     });
-    //$(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
+    $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
     $(this.id).on('click', '.editor-text', event => {
       setTimeout(() => this.updateFormat(), 1);
     });
@@ -253,9 +249,7 @@ class Editor {
     let id = parseInt(caller.id.substring(4));
     console.log(id + ' has lost focus.');
     this.lastBlock = id;
-    let sel = this.getSelection();
-    let range = sel.getRangeAt(0);
-    this.lastSelection = {startContainer: range.startContainer, startOffset: range.startOffset, endContainer: range.endContainer, endOffset: range.endOffset};
+    this.lastSelection = this.getSelection();
     console.log(this.lastSelection);
     this.updateFormat();
   }
@@ -1048,10 +1042,10 @@ class Editor {
    */
   setFormatAtSelection (format) {
     console.log(format);
-    /*console.log(!this.hasFocus);
+    console.log(!this.hasFocus);
     if (!this.hasFocus) {
       $('#txt-' + this.lastBlock).focus();
-    }*/
+    }
     let currentSelection = this.getSelection();
     let currentFormat = this.getQuill(currentSelection.block).getFormat();
     if (!Utils.isNullOrUndefined(currentSelection)) {

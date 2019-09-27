@@ -43,7 +43,7 @@
 	<div>
 		<div class="box">
 			<div id="header">
-			<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
+				<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">

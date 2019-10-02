@@ -245,13 +245,16 @@ class Editor {
    * @param {Event} event - Event to handle.
    */
   onBlur (event) {
-    let caller = event.target;
+    /*let caller = event.target;
+    console.log(caller);
+    console.log(caller.id);
     let id = parseInt(caller.id.substring(4));
     console.log(id + ' has lost focus.');
-    this.lastBlock = id;
+    this.lastBlock = id;*/
     this.lastSelection = this.getSelection();
+    this.lastBlock = this.lastSelection.block;
     console.log(this.lastSelection);
-    this.updateFormat();
+    //this.updateFormat();
   }
 
   /**

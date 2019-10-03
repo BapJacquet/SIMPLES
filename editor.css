@@ -45,12 +45,18 @@
 
 .editor-text {
   border: none;
+  font-family: Arial, sans-serif;
+  font-size: 14pt;
   margin: 10px 1em 10px 1em;
   min-height: 22px;
   margin-top: 2px; /* 5 */
   margin-bottom: 2px; /* 0 */
   overflow: hidden;
   cursor: text;
+}
+
+.ql-container.ql-snow {
+  border: 0px;
 }
 
 .editor-text h1 {
@@ -62,16 +68,22 @@
  * Span classes.
  * =============================================================================
  */
-.editor-text span {
+ /* When the user manually sets no wrap */
+.editor-text .ql-wrap-nowrap {
+  white-space: nowrap;
+  display: inline-block;
+}
+/* When the user manually sets wrap */
+.editor-text .ql-wrap-wrap {
+  white-space: normal;
+}
+/* When the editor automatically sets no wrap */
+.editor-text .ql-wrap-auto-nowrap {
   white-space: nowrap;
   display: inline-block;
 }
 
-.editor-text .editor-wrap {
-  white-space: normal;
-}
-
-.editor-text .editor-bold {
+.editor-text .ql-bold {
   font-weight: bold;
 }
 /**

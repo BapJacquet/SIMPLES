@@ -24,6 +24,12 @@
 	<script src='spectrum.js'></script>
 	<link rel='stylesheet' href='spectrum.css' />
 
+	<!-- Quill -->
+	<!-- Main Quill library -->
+  <script src="//cdn.quilljs.com/latest/quill.js"></script>
+
+	<link href="//cdn.quilljs.com/latest/quill.snow.css" rel="stylesheet">
+
   <link rel="stylesheet" type="text/css" href="main.css"/>
 	<link rel="stylesheet" type="text/css" href="editor.css"/>
 </head>
@@ -37,7 +43,7 @@
 	<div>
 		<div class="box">
 			<div id="header">
-			<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
+				<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">

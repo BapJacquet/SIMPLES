@@ -247,6 +247,15 @@ function hideToolbarBlock(blockId) {
 //                                    send toolbar data to editor
 function sendtoEditor(tool, val) {
   var v = val;
+  if( tool == "bullet" ) {
+    tool = "list";
+    switch (val) {
+      case 'true':
+        v = 'bullet'; break;
+      case 'false':
+        v = false; break;
+    }
+  }
   if ( tool == "color" ) {
     switch( val ) {
       case 'red':
@@ -305,7 +314,7 @@ function setFormatAtToolbar(format) {
   activeTool("size", format.size);
   activeTool("color", color);
   activeTool("title", format.title);
-  activeTool("bullet", format.bullet);
+  activeTool("bullet", format.list);
   activeTool("frame", format.frame);
   activeTool("picture", format.picture);
 }
@@ -1366,7 +1375,7 @@ const TOOLBAR_WIDTH = 870; /* 840; */
 const TOOLBAR_DECAL = 30; /* 22 */
 const LOGO_DECAL = 65;
 const TOOL_BACK_COLOR = "#f0f0f0";
-const COLOR_GREEN = "009940"; // "#2ea35f";
+const COLOR_GREEN = "#009940"; // "#2ea35f";
 
 const TOOLBAR_BLOCK_LEFT = {"bold": 0, "size": -64, "color": -158, "title": -240, "bullet": -328, "frame": -355, "picture": -390};
 

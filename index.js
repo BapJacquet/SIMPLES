@@ -149,6 +149,8 @@ function onPDFClick(){
 // ******************************************** T O O L B A R
 
 function initToolbar() {                 // tool cursor initial values
+  $("#size").css("display","none");
+
   $("#bold-cursor").css("left", CURSOR_DATA["bold-" + BOLD_INIT]);
   $("#size-cursor").css("left", CURSOR_DATA["size-" + SIZE_INIT]);
   $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
@@ -1239,7 +1241,7 @@ $("#toolbarBottomMask").hover( function () {
 // resize & focus
   $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
-    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL;
+    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
     $("#toolbarlist").css({"left": move});
     if ( TOOLBAR_WIDTH < $(body).width() ) {
       $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
@@ -1371,13 +1373,14 @@ const BULLET_INIT = false;
 const FRAME_INIT = false;
 const PICTURE_INIT = true;
 
-const TOOLBAR_WIDTH = 870; /* 840; */
-const TOOLBAR_DECAL = 30; /* 22 */
-const LOGO_DECAL = 65;
+const TOOLBAR_WIDTH = 790; /* 870; /* 840; */
+const TOOLBAR_DECAL_RIGHT = 40; /* 30; /* 22 */
+const LOGO_DECAL = 10; /* 65; */
 const TOOL_BACK_COLOR = "#f0f0f0";
 const COLOR_GREEN = "#009940"; // "#2ea35f";
 
-const TOOLBAR_BLOCK_LEFT = {"bold": 0, "size": -64, "color": -158, "title": -240, "bullet": -328, "frame": -355, "picture": -390};
+//const TOOLBAR_BLOCK_LEFT = {"bold": 0, "size": -64, "color": -158, "title": -240, "bullet": -328, "frame": -355, "picture": -390};
+const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "frame": -287, "picture": -322};
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;

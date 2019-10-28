@@ -281,7 +281,7 @@ class Editor {
           event.stopPropagation();
           event.preventDefault();
           let current = this.getCurrentFormat().title;
-          if (current === 'none') current = 'div';
+          if (current === 'none') current = null;
           let formats = [null, 'h1', 'h2', 'h3', 'h4'];
           let index = formats.indexOf(current) + 1;
           if (index === formats.length) index = 0;

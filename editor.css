@@ -38,10 +38,17 @@
 }
 
 .editor-block {
+  /*display: grid;*/
   margin-top: 1em; /* 5 */
   margin-bottom: 1em; /* 0 */
+  width: 100%;
   /* cursor: text; */
 }
+
+/*.editor-block.text-block {
+  grid-template-columns: 1fr 100px;
+  margin: auto 0;
+}*/
 
 .editor-text {
   border: none;

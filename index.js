@@ -141,9 +141,9 @@ function onVerifyClick(){
  * Create a PDF from the page.
  */
 function onPDFClick(){
-  editor.toPDF().then( function (doc) {
-    doc.save('Mon fichier.pdf');
-  });
+  editor.toPDF();/*.then( function (pdfString) {
+    writeFile(pdfString, "monfichier.pdf", "application/pdf");
+  });*/
 }
 
 // ******************************************** T O O L B A R

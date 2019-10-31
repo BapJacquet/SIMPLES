@@ -964,10 +964,10 @@ class Editor {
    */
   newBlockString (id, text) {
     return `<div id="blc-${id}" class="editor-block text-block media" style="font-size: 14pt;">` +
-             `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3">` +
+             `<div id="txt-${id}" class="editor-text media-body align-self-center">` +
                 `<div>${text}</div>` +
              `</div>` +
-             `<div class="editor-image-container mr-3" style="width:100px">` +
+             `<div class="editor-image-container" style="width:100px">` +
                 `<img id="img-${id}" class="editor-image align-self-center hoverable"/>` +
              `</div>` +
            `</div>`;
@@ -1539,6 +1539,21 @@ class Editor {
   }
 
   /**
+   * Import a compatible file into the editor, replacing the current contents in the process.
+   * @param {string} path - Path of the file to import.
+   */
+  import (path) {
+    let splitPath = path.split('.');
+    let extension = splitPath[splitPath.length - 1];
+    switch (extension) {
+      case 'docx':
+        alert("Il n'est pas encore possible d'importer des documents DOCX."); break;
+      case 'odt':
+        alert("Il n'est pas encore possible d'importer des documents ODT."); break;
+    }
+  }
+
+  /**
    * Turn the content of the editor into a website-ready HTML.
    * @return {string} The HTML string.
    */
@@ -1564,6 +1579,8 @@ class Editor {
    * @return {jsPDF} The generated PDF document.
    */
   async toPDF () {
+    return Converter.htmlToPdf($(this.id).html());
+
     let doc = new jsPDF();
 
     let totalWidth = 210; // 210 mm, 21 cm

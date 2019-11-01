@@ -5,6 +5,7 @@
 /* global Utils */
 /* global CustomEvent */
 /* global jsPDF */
+/* global pdfMake */
 /* global Quill */
 
 var Keyboard = Quill.import('modules/keyboard');
@@ -20,6 +21,7 @@ class Editor {
     this.id = id;
     this.fileVersion = 2;
     this.format = null;
+    this.initializeStyles();
     this.initializeQuill();
     this.addBlock('', false);
     this.lastBlock = 0;
@@ -151,6 +153,37 @@ class Editor {
         return {block: i, range: s};
       }
     }
+  }
+
+  /**
+   * Create the default styles.
+   */
+  initializeStyles () {
+    this.defaultStyle = {
+      fontSize: 14,
+      alignment: 'left'
+    };
+    this.styles = {
+      h1: {
+        alignment: 'center'
+      }
+    };
+    this.tableLayouts = {
+      frame: {
+        hLineWidth: function (i) {
+          return 4;
+        },
+        vLineWidth: function (i) {
+          return 4;
+        },
+        hLineColor: function (i) {
+          return 'black';
+        },
+        vLineColor: function (i) {
+          return 'black';
+        }
+      }
+    };
   }
 
   /**
@@ -948,6 +981,40 @@ class Editor {
   }
 
   /**
+   * Get the Quill Delta of the block with the given id.
+   * @param {int} id - ID of the block to get the delta of.
+   * @return {JSONObject} The delta.
+   */
+  getDelta (id) {
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    return this.getQuill(id).getContents();
+  }
+
+  /**
+   * Get the Styled text of the block with the given id.
+   * @param {int} id - ID of the block to get the Styled text from.
+   * @return {JSONObject} The styled text.
+   */
+  getStyledText (id) {
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    let delta = this.getQuill(id).getContents();
+    let result = [];
+    for (let i = 0; i < delta.ops.length; i++) {
+      let item = delta.ops[i];
+      if (Utils.isNullOrUndefined(item.attributes)) {
+        result.push(item.insert);
+      } else {
+        result.push({
+          text: item.insert,
+          bold: item.attributes.bold,
+          color: item.attributes.color
+        });
+      }
+    }
+    return result;
+  }
+
+  /**
    * Get the length of the text content of the block with the given id.
    * @param {Number} id - ID of the block.
    * @return {Number} The number of characters in this block.
@@ -1576,109 +1643,66 @@ class Editor {
 
   /**
    * Turn the content of the editor into a PDF document.
-   * @return {jsPDF} The generated PDF document.
+   * @return {pdfMakeDocument} The generated PDF document.
    */
   async toPDF () {
-    return Converter.htmlToPdf($(this.id).html());
-
-    let doc = new jsPDF();
-
-    let totalWidth = 210; // 210 mm, 21 cm
-    let margin = 25.4; // 1 inch = 25.4mm
-    let pageHeight = 297;
-
-    let currentYOffset = margin;
+    let docDefinition = {
+      content: [],
+      styles: this.styles,
+      defaultStyle: this.defaultStyle,
+      pageMargins: [72, 72, 72, 72] // 72 = 1 inch
+    };
 
     for (let i = 0; i < this.blockCount; i++) {
       let blockFormat = this.getBlockFormat(i);
-      let marginTop = parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-top']);
-      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).height()) + Utils.pixelToCm(marginTop) > pageHeight - margin) {
-        doc = doc.addPage();
-        currentYOffset = margin;
-      }
-      currentYOffset += Utils.pixelToCm(marginTop);
-      if (blockFormat.frame) {
-        doc.setLineWidth(Utils.pixelToCm(5));
-        doc.rect(margin, currentYOffset, Utils.pixelToCm($('#blc-' + i).width()), Utils.pixelToCm($('#blc-' + i).height()));
-        doc.setLineWidth(Utils.pixelToCm(1));
-      }
+      let blockDefinition = {
+        layout: blockFormat.frame ? 'frame' : 'noBorders',
+        margin: [0, 4]
+      };
       switch (blockFormat.blockType) {
-        case 'default':
-          let txt = $('#txt-' + i).get(0);
-          /* doc.fromHTML($('#txt-' + i).get(0),
-            margin,
-            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
-            {
-              'width': Utils.pixelToCm($('#txt-' + i).width()),
-              'height': Utils.pixelToCm($('#txt-' + i).height())
-            }
-          ); */
-          let nodes = this.getNodesInElement(txt);
-          for (let n = 0; n < nodes.length; n++) {
-            if (nodes[n].nodeType === 3) {
-              let format = this.getFormatForNode(nodes[n]);
-              let fontSize = format.size;
-              let fontSizeCm = Utils.pixelToCm(fontSize);
-              let color = format.color;
-              doc.setTextColor(color);
-              doc.setFontSize(Utils.pixelToPoint(fontSize));
-              if (format.bold) {
-                doc.setFontType('bold');
-              } else {
-                doc.setFontType('normal');
-              }
-              let x = margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).left);
-              let y = currentYOffset + fontSizeCm + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).top);
-              //doc.rect(x, y, 1, fontSizeCm);
-              doc.text(nodes[n].textContent, x, y);
-            }
-          }
-          /* let txtWidth = Utils.pixelToCm($(txt).width());
-          let txtHeight = Utils.pixelToCm($(txt).height());
-          doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
-            margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
-            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
-            txtWidth,
-            txtHeight,
-            '',
-            'NONE',
-            0
-          ); */
-
+        case 'default': {
+          let content = [[{
+            text: this.getStyledText(i),
+            margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset($('#txt-' + i)[0], $('#blc-' + i)[0]).top), 0, 0]
+          }]];
           if (blockFormat.picture) {
-            doc.addImage($('#img-' + i).get(0).dataURL, 'JPEG',
-              margin + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0], $('#blc-' + i)[0]).left),
-              //totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
-              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
-              Utils.pixelToCm($('#img-' + i).width()),
-              Utils.pixelToCm($('#img-' + i).height()),
-              '',
-              'NONE',
-              0
-            );
+            content[0].push({
+              image: $('#img-' + i).get(0).dataURL,
+              width: Utils.pixelToPoint(100),
+              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset($('#img-' + i)[0], $('#blc-' + i)[0]).top), 0, 0]
+            });
           }
+          blockDefinition.table = {
+            widths: blockFormat.picture ? ['*', 'auto'] : ['*'],
+            body: content
+          };
           break;
-        case 'images':
+        }
+        case 'images': {
           let imageCount = this.getImageCountInBlock(i);
-          for (let img = 0; img < imageCount; img++) {
-            let jImage = $('#img-' + i + '-' + img);
-            doc.addImage(jImage.get(0).dataURL, 'JPEG',
-              margin + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).left),
-              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).top),
-              Utils.pixelToCm(jImage.width()),
-              Utils.pixelToCm(jImage.height()),
-              '',
-              'NONE',
-              0
-            );
-            // todo write captions.
+          let widths = [];
+          let content = [[], []];
+          for (let c = 0; c < imageCount; c++) {
+            let img = $(`#img-${i}-${c}`)[0];
+            widths.push('*');
+            content[0].push({
+              image: img.dataURL,
+              width: Utils.pixelToPoint($(img).width()),
+              margin: [Utils.pixelToPoint(Utils.getRelativeOffset(img, $(`#txt-${i}-${c}`)[0]).left), 0, 0, 0]
+            });
+            content[1].push($(`#txt-${i}-${c}`).get(0).textContent);
           }
+          blockDefinition.table = {
+            widths: widths,
+            body: content
+          };
           break;
+        }
       }
-
-      currentYOffset += Utils.pixelToCm($('#blc-' + i).height() + parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-bottom']));
+      docDefinition.content.push(blockDefinition);
     }
-    return doc;
+    console.log(docDefinition);
+    return pdfMake.createPdf(docDefinition, this.tableLayouts);
   }
 
   /**

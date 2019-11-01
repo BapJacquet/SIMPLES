@@ -8,11 +8,4 @@ class Converter {
     };
     $.post('./converters/toDOCX.php', data);
   }
-
-  static async htmlToPdf (html) {
-    let data = {
-      html: html
-    };
-    $.redirect('./converters/toPDF.php', data, 'POST');
-  }
 }

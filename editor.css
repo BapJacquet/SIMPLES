@@ -34,7 +34,7 @@
 }
 
 .frame {
-  border: 5px solid #343434;
+  border: 4pt solid #343434;
 }
 
 .editor-block {
@@ -54,7 +54,7 @@
   border: none;
   font-family: Arial, sans-serif;
   font-size: 14pt;
-  margin: 10px 1em 10px 1em;
+  /*margin: 10px 1em 10px 1em;*/
   min-height: 22px;
   margin-top: 2px; /* 5 */
   margin-bottom: 2px; /* 0 */
@@ -68,6 +68,10 @@
 
 .editor-text h1 {
   text-align: center;
+}
+
+.ql-editor {
+  padding: 0;
 }
 
 /**

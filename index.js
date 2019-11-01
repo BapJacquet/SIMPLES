@@ -141,8 +141,8 @@ function onVerifyClick(){
  * Create a PDF from the page.
  */
 function onPDFClick(){
-  editor.toPDF().then( function (doc) {
-    doc.save('Mon fichier.pdf');
+  editor.toPDF().then( function (docFactory) {
+    docFactory.download("monfichier.pdf");
   });
 }
 

@@ -2,8 +2,8 @@
 function connect()
 {
 	define("MYHOST","localhost");
-	define("MYUSER","sioux");
-	define("MYPASS","sioux");
+	define("MYUSER","simples");
+	define("MYPASS","lutins");
 	define("MYBASE","simples");
 
 	$idcomW = new mysqli(MYHOST,MYUSER,MYPASS,MYBASE);

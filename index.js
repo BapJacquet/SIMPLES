@@ -686,6 +686,10 @@ $(".write-file").on("click", function () {
   if ( $(this).attr("id") == "exportFilePDF" ) {
     onPDFClick();
   }
+  // Exporter au format ODT...
+  if ( $(this).attr("id") == "exportFileODT" ) {
+    onODTClick();
+  }
   // Exporter au format HTML...
   else if ( $(this).attr("id") == "exportFileHTML" )  {
     Converter.toHtml(editor).then(function(string) {

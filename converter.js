@@ -11,9 +11,9 @@ class Converter {
    * @return {string} The resulting HTML string.
    */
   static async toHtml (editor) {
-    function times(string, times) {
+    function times (string, times) {
       let result = '';
-      for(let i = 0; i < times; i++){
+      for (let i = 0; i < times; i++) {
         result += string;
       }
       return result;

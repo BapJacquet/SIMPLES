@@ -1349,7 +1349,7 @@ $("#toolbarBottomMask").hover( function () {
 //  ****************************************************************************
 
 // user
-if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
+//if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
 
 const editor = new Editor('#editor');
 

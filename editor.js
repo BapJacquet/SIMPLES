@@ -5,6 +5,7 @@
 /* global Utils */
 /* global CustomEvent */
 /* global jsPDF */
+/* global pdfMake */
 /* global Quill */
 
 var Keyboard = Quill.import('modules/keyboard');
@@ -20,6 +21,7 @@ class Editor {
     this.id = id;
     this.fileVersion = 2;
     this.format = null;
+    this.initializeStyles();
     this.initializeQuill();
     this.addBlock('', false);
     this.lastBlock = 0;
@@ -132,12 +134,50 @@ class Editor {
   }
 
   /**
+   * Get the block with the given ID.
+   * @param {int} id - The ID of the block.
+   * @return {DOMElement} The block element.
+   */
+  getBlockElement (id) {
+    return $('#blc-' + id)[0];
+  }
+
+  /**
+   * Get the text with the given ID.
+   * @param {int} id - The ID of the block.
+   * @param {int} subid - (Optional) The subid of the text.
+   * @return {DOMElement} The text element.
+   */
+  getTextElement (id, subid) {
+    if (Utils.isNullOrUndefined(subid)) {
+      return $('#txt-' + id)[0];
+    } else {
+      return $(`#txt-${id}-${subid}`)[0];
+    }
+  }
+
+  /**
+   * Get the image with the given ID.
+   * @param {int} id - The ID of the block.
+   * @param {int} subid - (Optional) The subid of the image.
+   * @return {DOMElement} The image element.
+   */
+  getImageElement (id, subid) {
+    if (Utils.isNullOrUndefined(subid)) {
+      return $('#img-' + id)[0];
+    } else {
+      return $(`#img-${id}-${subid}`)[0];
+    }
+  }
+
+  /**
    * Get the quill for the given id.
    * @param {int} id - The id of the block.
+   * @param {int} subid - (Optional) The subid of the text.
    * @return {Quill} The quill of this block.
    */
-  getQuill (id, subid = 0) {
-    return $('#txt-' + id)[0].quill;
+  getQuill (id, subid) {
+    return this.getTextElement(id, subid).quill;
   }
 
   /**
@@ -151,6 +191,37 @@ class Editor {
         return {block: i, range: s};
       }
     }
+  }
+
+  /**
+   * Create the default styles.
+   */
+  initializeStyles () {
+    this.defaultStyle = {
+      fontSize: 14,
+      alignment: 'left'
+    };
+    this.styles = {
+      h1: {
+        alignment: 'center'
+      }
+    };
+    this.tableLayouts = {
+      frame: {
+        hLineWidth: function (i) {
+          return 4;
+        },
+        vLineWidth: function (i) {
+          return 4;
+        },
+        hLineColor: function (i) {
+          return 'black';
+        },
+        vLineColor: function (i) {
+          return 'black';
+        }
+      }
+    };
   }
 
   /**
@@ -284,7 +355,7 @@ class Editor {
           event.stopPropagation();
           event.preventDefault();
           let current = this.getCurrentFormat().title;
-          if (current === 'none') current = 'div';
+          if (current === 'none') current = null;
           let formats = [null, 'h1', 'h2', 'h3', 'h4'];
           let index = formats.indexOf(current) + 1;
           if (index === formats.length) index = 0;
@@ -948,6 +1019,40 @@ class Editor {
   }
 
   /**
+   * Get the Quill Delta of the block with the given id.
+   * @param {int} id - ID of the block to get the delta of.
+   * @return {JSONObject} The delta.
+   */
+  getDelta (id) {
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    return this.getQuill(id).getContents();
+  }
+
+  /**
+   * Get the Styled text of the block with the given id.
+   * @param {int} id - ID of the block to get the Styled text from.
+   * @return {JSONObject} The styled text.
+   */
+  getStyledText (id) {
+    if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    let delta = this.getQuill(id).getContents();
+    let result = [];
+    for (let i = 0; i < delta.ops.length; i++) {
+      let item = delta.ops[i];
+      if (Utils.isNullOrUndefined(item.attributes)) {
+        result.push(item.insert);
+      } else {
+        result.push({
+          text: item.insert,
+          bold: item.attributes.bold,
+          color: item.attributes.color
+        });
+      }
+    }
+    return result;
+  }
+
+  /**
    * Get the length of the text content of the block with the given id.
    * @param {Number} id - ID of the block.
    * @return {Number} The number of characters in this block.
@@ -964,10 +1069,10 @@ class Editor {
    */
   newBlockString (id, text) {
     return `<div id="blc-${id}" class="editor-block text-block media" style="font-size: 14pt;">` +
-             `<div id="txt-${id}" class="editor-text media-body align-self-center mr-3">` +
+             `<div id="txt-${id}" class="editor-text media-body align-self-center">` +
                 `<div>${text}</div>` +
              `</div>` +
-             `<div class="editor-image-container mr-3" style="width:100px">` +
+             `<div class="editor-image-container" style="width:100px">` +
                 `<img id="img-${id}" class="editor-image align-self-center hoverable"/>` +
              `</div>` +
            `</div>`;
@@ -1539,6 +1644,21 @@ class Editor {
   }
 
   /**
+   * Import a compatible file into the editor, replacing the current contents in the process.
+   * @param {string} path - Path of the file to import.
+   */
+  import (path) {
+    let splitPath = path.split('.');
+    let extension = splitPath[splitPath.length - 1];
+    switch (extension) {
+      case 'docx':
+        alert("Il n'est pas encore possible d'importer des documents DOCX."); break;
+      case 'odt':
+        alert("Il n'est pas encore possible d'importer des documents ODT."); break;
+    }
+  }
+
+  /**
    * Turn the content of the editor into a website-ready HTML.
    * @return {string} The HTML string.
    */
@@ -1557,111 +1677,6 @@ class Editor {
     } else {
       return '<!-- CASE WITHOUT BOOTSTRAP -->';
     }
-  }
-
-  /**
-   * Turn the content of the editor into a PDF document.
-   * @return {jsPDF} The generated PDF document.
-   */
-  async toPDF () {
-    let doc = new jsPDF();
-
-    let totalWidth = 210; // 210 mm, 21 cm
-    let margin = 25.4; // 1 inch = 25.4mm
-    let pageHeight = 297;
-
-    let currentYOffset = margin;
-
-    for (let i = 0; i < this.blockCount; i++) {
-      let blockFormat = this.getBlockFormat(i);
-      let marginTop = parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-top']);
-      if (currentYOffset + Utils.pixelToCm($('#blc-' + i).height()) + Utils.pixelToCm(marginTop) > pageHeight - margin) {
-        doc = doc.addPage();
-        currentYOffset = margin;
-      }
-      currentYOffset += Utils.pixelToCm(marginTop);
-      if (blockFormat.frame) {
-        doc.setLineWidth(Utils.pixelToCm(5));
-        doc.rect(margin, currentYOffset, Utils.pixelToCm($('#blc-' + i).width()), Utils.pixelToCm($('#blc-' + i).height()));
-        doc.setLineWidth(Utils.pixelToCm(1));
-      }
-      switch (blockFormat.blockType) {
-        case 'default':
-          let txt = $('#txt-' + i).get(0);
-          /* doc.fromHTML($('#txt-' + i).get(0),
-            margin,
-            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#txt-' + i)[0]).top),
-            {
-              'width': Utils.pixelToCm($('#txt-' + i).width()),
-              'height': Utils.pixelToCm($('#txt-' + i).height())
-            }
-          ); */
-          let nodes = this.getNodesInElement(txt);
-          for (let n = 0; n < nodes.length; n++) {
-            if (nodes[n].nodeType === 3) {
-              let format = this.getFormatForNode(nodes[n]);
-              let fontSize = format.size;
-              let fontSizeCm = Utils.pixelToCm(fontSize);
-              let color = format.color;
-              doc.setTextColor(color);
-              doc.setFontSize(Utils.pixelToPoint(fontSize));
-              if (format.bold) {
-                doc.setFontType('bold');
-              } else {
-                doc.setFontType('normal');
-              }
-              let x = margin + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).left);
-              let y = currentYOffset + fontSizeCm + Utils.pixelToCm(Utils.getRelativeOffset(nodes[n].parentNode, $('#blc-' + i)[0]).top);
-              //doc.rect(x, y, 1, fontSizeCm);
-              doc.text(nodes[n].textContent, x, y);
-            }
-          }
-          /* let txtWidth = Utils.pixelToCm($(txt).width());
-          let txtHeight = Utils.pixelToCm($(txt).height());
-          doc.addImage((await html2canvas(txt, {scale: 3})).toDataURL(), 'JPEG',
-            margin + Utils.pixelToCm(Utils.getRelativeOffset(txt).left),
-            currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(txt).top),
-            txtWidth,
-            txtHeight,
-            '',
-            'NONE',
-            0
-          ); */
-
-          if (blockFormat.picture) {
-            doc.addImage($('#img-' + i).get(0).dataURL, 'JPEG',
-              margin + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0], $('#blc-' + i)[0]).left),
-              //totalWidth - margin - Utils.pixelToCm($('#img-' + i).outerWidth()),
-              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset($('#img-' + i)[0]).top),
-              Utils.pixelToCm($('#img-' + i).width()),
-              Utils.pixelToCm($('#img-' + i).height()),
-              '',
-              'NONE',
-              0
-            );
-          }
-          break;
-        case 'images':
-          let imageCount = this.getImageCountInBlock(i);
-          for (let img = 0; img < imageCount; img++) {
-            let jImage = $('#img-' + i + '-' + img);
-            doc.addImage(jImage.get(0).dataURL, 'JPEG',
-              margin + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).left),
-              currentYOffset + Utils.pixelToCm(Utils.getRelativeOffset(jImage[0], $('#blc-' + i)[0]).top),
-              Utils.pixelToCm(jImage.width()),
-              Utils.pixelToCm(jImage.height()),
-              '',
-              'NONE',
-              0
-            );
-            // todo write captions.
-          }
-          break;
-      }
-
-      currentYOffset += Utils.pixelToCm($('#blc-' + i).height() + parseFloat(window.getComputedStyle($('#blc-' + i)[0])['margin-bottom']));
-    }
-    return doc;
   }
 
   /**

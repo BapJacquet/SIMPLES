@@ -8,12 +8,19 @@
   <!-- === HTML to PDF ===-->
 	<script src="./html2canvas.min.js"></script>
   <script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.60/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.60/vfs_fonts.js"></script>
+
+	<!-- === ZIP ===-->
+	<script src="./jszip-utils.min.js"></script>
+	<script src="./jszip.min.js"></script>
 
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 	<!-- jQuery library -->
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.rawgit.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
   <!-- Popper -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
@@ -378,6 +385,7 @@
 	<script type="text/javascript" src="analyzer.js"></script>
 	<script type="text/javascript" src="animator.js"></script>
 	<script type="text/javascript" src="utils.js"></script>
+	<script type="text/javascript" src="converter.js"></script>
 
 	<!-- jQuery ready -->
 	<script src="index.js"></script>

@@ -7,7 +7,12 @@
 
 // Ecriture fichier texte sur disque
 function writeFile(data, filename, type) {
-  var file = new Blob([data], {type: type});
+  var file;
+  if (data instanceof Blob) {
+    file = data;
+  } else {
+    file = new Blob([data], {type: type});
+  }
   var a = document.createElement("a");
   var url = URL.createObjectURL(file);
   a.href = url;
@@ -138,11 +143,20 @@ function onVerifyClick(){
 }
 
 /**
- * Create a PDF from the page.
+ * Create a PDF from the document.
  */
 function onPDFClick(){
-  editor.toPDF().then( function (docFactory) {
+  Converter.toPdf(editor).then( function (docFactory) {
     docFactory.download("monfichier.pdf");
+  });
+}
+
+/**
+ * Create a ODT file from the document.
+ */
+function onODTClick(){
+  Converter.toOdt(editor).then( function (blob) {
+    writeFile(blob, 'monfichier.odt');
   });
 }
 
@@ -674,7 +688,9 @@ $(".write-file").on("click", function () {
   }
   // Exporter au format HTML...
   else if ( $(this).attr("id") == "exportFileHTML" )  {
-    writeFile(editor.toHTML(), "mon fichier.txt", "text/plain");
+    Converter.toHtml(editor).then(function(string) {
+      writeFile(string, "mon fichier.html", "text/html");
+    });
   }
   // Enregistrer...
   else if ( $(this).attr("id") == "saveFile") {

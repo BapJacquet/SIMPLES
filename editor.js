@@ -134,12 +134,50 @@ class Editor {
   }
 
   /**
+   * Get the block with the given ID.
+   * @param {int} id - The ID of the block.
+   * @return {DOMElement} The block element.
+   */
+  getBlockElement (id) {
+    return $('#blc-' + id)[0];
+  }
+
+  /**
+   * Get the text with the given ID.
+   * @param {int} id - The ID of the block.
+   * @param {int} subid - (Optional) The subid of the text.
+   * @return {DOMElement} The text element.
+   */
+  getTextElement (id, subid) {
+    if (Utils.isNullOrUndefined(subid)) {
+      return $('#txt-' + id)[0];
+    } else {
+      return $(`#txt-${id}-${subid}`)[0];
+    }
+  }
+
+  /**
+   * Get the image with the given ID.
+   * @param {int} id - The ID of the block.
+   * @param {int} subid - (Optional) The subid of the image.
+   * @return {DOMElement} The image element.
+   */
+  getImageElement (id, subid) {
+    if (Utils.isNullOrUndefined(subid)) {
+      return $('#img-' + id)[0];
+    } else {
+      return $(`#img-${id}-${subid}`)[0];
+    }
+  }
+
+  /**
    * Get the quill for the given id.
    * @param {int} id - The id of the block.
+   * @param {int} subid - (Optional) The subid of the text.
    * @return {Quill} The quill of this block.
    */
-  getQuill (id, subid = 0) {
-    return $('#txt-' + id)[0].quill;
+  getQuill (id, subid) {
+    return this.getTextElement(id, subid).quill;
   }
 
   /**
@@ -1639,70 +1677,6 @@ class Editor {
     } else {
       return '<!-- CASE WITHOUT BOOTSTRAP -->';
     }
-  }
-
-  /**
-   * Turn the content of the editor into a PDF document.
-   * @return {pdfMakeDocument} The generated PDF document.
-   */
-  async toPDF () {
-    let docDefinition = {
-      content: [],
-      styles: this.styles,
-      defaultStyle: this.defaultStyle,
-      pageMargins: [72, 72, 72, 72] // 72 = 1 inch
-    };
-
-    for (let i = 0; i < this.blockCount; i++) {
-      let blockFormat = this.getBlockFormat(i);
-      let blockDefinition = {
-        layout: blockFormat.frame ? 'frame' : 'noBorders',
-        margin: [0, 4]
-      };
-      switch (blockFormat.blockType) {
-        case 'default': {
-          let content = [[{
-            text: this.getStyledText(i),
-            margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset($('#txt-' + i)[0], $('#blc-' + i)[0]).top), 0, 0]
-          }]];
-          if (blockFormat.picture) {
-            content[0].push({
-              image: $('#img-' + i).get(0).dataURL,
-              width: Utils.pixelToPoint(100),
-              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset($('#img-' + i)[0], $('#blc-' + i)[0]).top), 0, 0]
-            });
-          }
-          blockDefinition.table = {
-            widths: blockFormat.picture ? ['*', 'auto'] : ['*'],
-            body: content
-          };
-          break;
-        }
-        case 'images': {
-          let imageCount = this.getImageCountInBlock(i);
-          let widths = [];
-          let content = [[], []];
-          for (let c = 0; c < imageCount; c++) {
-            let img = $(`#img-${i}-${c}`)[0];
-            widths.push('*');
-            content[0].push({
-              image: img.dataURL,
-              width: Utils.pixelToPoint($(img).width()),
-              margin: [Utils.pixelToPoint(Utils.getRelativeOffset(img, $(`#txt-${i}-${c}`)[0]).left), 0, 0, 0]
-            });
-            content[1].push($(`#txt-${i}-${c}`).get(0).textContent);
-          }
-          blockDefinition.table = {
-            widths: widths,
-            body: content
-          };
-          break;
-        }
-      }
-      docDefinition.content.push(blockDefinition);
-    }
-    console.log(docDefinition);
-    return pdfMake.createPdf(docDefinition, this.tableLayouts);
   }
 
   /**

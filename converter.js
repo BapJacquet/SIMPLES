@@ -6,6 +6,62 @@
 
 class Converter {
   /**
+   * Create the HTML code from the content of the given editor.
+   * @param {Editor} editor - The editor to draw the content from.
+   * @return {string} The resulting HTML string.
+   */
+  static async toHtml (editor) {
+    function times(string, times) {
+      let result = '';
+      for(let i = 0; i < times; i++){
+        result += string;
+      }
+      return result;
+    }
+
+    let blocks = '';
+    for (let i = 0; i < editor.blockCount; i++) {
+      let blockFormat = editor.getBlockFormat(i);
+      let blockClasses = blockFormat.blockType + '-block' + (blockFormat.frame ? ' frame' : '');
+      let blockStyle = '';
+      let content = '';
+      switch (blockFormat.blockType) {
+        case 'default':
+          if (blockFormat.picture) {
+            content += `<div class="lefttext">${editor.getTextElement(i).innerHTML}</div>`;
+            content += `<div class="rightpicture"><img src="${editor.getImageElement(i).dataURL}"></img></div>`;
+          } else {
+            content = `<div class="fulltext">${editor.getTextElement(i).innerHTML}</div>`;
+          }
+          break;
+        case 'images':
+          for (let c = 0; c < editor.getImageCountInBlock(i); c++) {
+            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).innerHTML}</div>`;
+          }
+          blockStyle = 'grid-template-columns:' + times(' 1fr', editor.getImageCountInBlock(i)) + ';';
+          break;
+      }
+      blocks += `<div class="${blockClasses}" style="${blockStyle}">${content}</div>`;
+    }
+    let style = '.lirec-container {font-size: 14pt; font-family: Arial; max-width: 600px; margin: auto;}';
+    style += '.default-block {display: grid; grid-template-columns: 100px 1fr 100px;}';
+    style += '.images-block {display: grid;}';
+    style += '.frame {border: 4pt solid black;}';
+    style += '.fulltext {grid-column: 1 / span 3;}';
+    style += '.lefttext {grid-column: 1 / span 2; align-self: center;}';
+    style += '.righttext {grid-column: 2 / span 2; align-self: center;}';
+    style += '.middletext {grid-column: 2 / span 1; align-self: center;}';
+    style += '.leftpicture {grid-column: 1 / span 1; width: 100px; align-self: center;}';
+    style += '.rightpicture {grid-column: 3 / span 1; width: 100px; align-self: center;}';
+    style += '.image {padding: auto;}';
+    style += 'p {margin: 0;}';
+    style += 'h1,h2,h3,h4,h5 {margin: 0;}';
+    let styleContainer = `<style type="text/css">${style}</style>`;
+    let container = `<html><head>${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
+    return container;
+  }
+
+  /**
    * Create a PDF document from the content of the given editor.
    * @param {Editor} editor - The editor to draw the content from.
    * @return {makePdfDocument} The resulting pdf.

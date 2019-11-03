@@ -688,7 +688,9 @@ $(".write-file").on("click", function () {
   }
   // Exporter au format HTML...
   else if ( $(this).attr("id") == "exportFileHTML" )  {
-    writeFile(editor.toHTML(), "mon fichier.txt", "text/plain");
+    Converter.toHtml(editor).then(function(string) {
+      writeFile(string, "mon fichier.html", "text/html");
+    });
   }
   // Enregistrer...
   else if ( $(this).attr("id") == "saveFile") {

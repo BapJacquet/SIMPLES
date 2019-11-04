@@ -55,9 +55,9 @@
   font-family: Arial, sans-serif;
   font-size: 14pt;
   /*margin: 10px 1em 10px 1em;*/
-  min-height: 22px;
-  margin-top: 2px; /* 5 */
-  margin-bottom: 2px; /* 0 */
+  min-height: 18pt;
+  margin-top: 1pt; /* 5 */
+  margin-bottom: 1pt; /* 0 */
   overflow: hidden;
   cursor: text;
 }
@@ -66,8 +66,21 @@
   border: 0px;
 }
 
-.editor-text h1 {
+.editor-text .ql-editor h1 {
+  font-size: 28pt;
   text-align: center;
+}
+
+.editor-text .ql-editor h2 {
+  font-size: 20pt;
+}
+
+.editor-text .ql-editor h3 {
+  font-size: 18pt;
+}
+
+.editor-text .ql-editor h4 {
+  font-size: 16pt;
 }
 
 .ql-editor {

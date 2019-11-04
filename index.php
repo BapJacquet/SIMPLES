@@ -262,12 +262,13 @@
 						</div>
 					</div>
 				</div>
-				<button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
-				<div class="hcollapsible-content">
+				<!--button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button-->
+				<div id="analysisPanel">
+					<div class="analysis-header"></div>
 					<button id="redo-analyse" type="button">Refaire l'analyse</button>
 					<div id="stanford-connection"></div>
 					<div class="alert alert-light" role="alert" id="lexique3-connection">
-						<div>Lexique3 : </div>
+						<div>Un instant... : </div>
 						<div class="progress">
 							<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
 							aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
@@ -278,18 +279,6 @@
 					<div class="score">90</div>
   				<!-- <p>Résultats de l'analyze :</p> -->
 					<div id="analysis-content"></div>
-					<button class="collapsible">Règles prioritaires</button>
-					<div class="collapsible-content">
-	  				<p>Résultats de l'analyze</p>
-					</div>
-					<button class="collapsible">Règles très importantes</button>
-					<div class="collapsible-content">
-	  				<p>Résultats de l'analyze</p>
-					</div>
-					<button class="collapsible">Règles importantes</button>
-					<div class="collapsible-content">
-	  				<p>Résultats de l'analyze</p>
-					</div>
 				</div>
 			</div>  <!-- end editor -->
 	</div>
@@ -364,6 +353,8 @@
 				<span style="font-size: 36px;">
 					 <i class="fas fa-hammer"></i>
 				</span>
+      </div>
+			<div class="modal-body">
       </div>
       <div class="modal-footer">
 				<button type="button" class="ok btn btn-secondary" data-dismiss="modal">Ok</button>

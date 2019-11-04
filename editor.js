@@ -186,9 +186,15 @@ class Editor {
    */
   getSelection () {
     for (let i = 0; i < this.blockCount; i++) {
-      let s = this.getQuill(i).getSelection();
-      if (!Utils.isNullOrUndefined(s)) {
-        return {block: i, range: s};
+      switch (this.getBlockFormat(i).blockType) {
+        case 'default':
+          let s = this.getQuill(i).getSelection();
+          if (!Utils.isNullOrUndefined(s)) {
+            return {block: i, range: s};
+          }
+          break;
+        case 'images':
+          break;
       }
     }
   }
@@ -203,9 +209,20 @@ class Editor {
     };
     this.styles = {
       h1: {
-        alignment: 'center'
+        alignment: 'center',
+        fontSize: 28
+      },
+      h2: {
+        fontSize: 20
+      },
+      h3: {
+        fontSize: 18
+      },
+      h4: {
+        fontSize: 16
       }
     };
+
     this.tableLayouts = {
       frame: {
         hLineWidth: function (i) {
@@ -1040,13 +1057,36 @@ class Editor {
     for (let i = 0; i < delta.ops.length; i++) {
       let item = delta.ops[i];
       if (Utils.isNullOrUndefined(item.attributes)) {
-        result.push(item.insert);
+        let split = item.insert.split('\n');
+        for (let s = 0; s < split.length; s++) {
+          if (s > 0) {
+            result.push('\n');
+          }
+          if (split[s] !== '') result.push(split[s]);
+        }
       } else {
-        result.push({
-          text: item.insert,
-          bold: item.attributes.bold,
-          color: item.attributes.color
-        });
+        if (item.insert === '\n') {
+          result.push('\n');
+          if (!Utils.isNullOrUndefined(item.attributes.header)) {
+            let j = result.length - 2;
+            while (j >= 0 && result[j] !== '\n') {
+              if (Utils.isNullOrUndefined(result[j]).text) {
+                result[j] = {text: result[j], style: 'h' + item.attributes.header};
+              } else {
+                result[j].style = 'h' + item.attributes.header;
+              }
+              j--;
+            }
+          }
+        } else {
+          let split = item.insert.split('\n');
+          for (let s = 0; s < split.length; s++) {
+            if (s > 0) {
+              result.push('\n');
+            }
+            if (split[s] !== '') result.push({text: split[s], bold: item.attributes.bold, color: item.attributes.color});
+          }
+        }
       }
     }
     return result;

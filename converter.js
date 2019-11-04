@@ -53,7 +53,7 @@ class Converter {
     style += '.middletext {grid-column: 2 / span 1; align-self: center;}';
     style += '.leftpicture {grid-column: 1 / span 1; width: 100px; align-self: center;}';
     style += '.rightpicture {grid-column: 3 / span 1; width: 100px; align-self: center;}';
-    style += '.image {padding: auto;}';
+    style += '.image {display: block; max-width: 100%; height: auto; margin: auto;}';
     style += 'p {margin: 0;}';
     style += 'h1,h2,h3,h4,h5 {margin: 0;}';
     let styleContainer = `<style type="text/css">${style}</style>`;

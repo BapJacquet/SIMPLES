@@ -69,8 +69,17 @@ function displayAnalysisResults(event){
   if(complexWords.length > 0){
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-danger" role="alert">${complexWords.length} mots compliqués !</div>`);
     for(var i = 0; i < complexWords.length; i++){
+      let synonyms = '';
+      let content = `<p>${description(frequencyToText(complexWords[i].frequency))}</p>`;
+      if (complexWords[i].dictionary.meanings.length > 0) {
+        for (let j = 0; j < complexWords[i].dictionary.meanings[0].synonyms.length; j++) {
+          synonyms += complexWords[i].dictionary.meanings[0].synonyms[j] + ' ';
+        }
+        content += `<p><strong>Définition :</strong><br/>${complexWords[i].dictionary.meanings[0].definition}</p><p><strong>Synonymes :</strong><br/>${synonyms}</p>`;
+      }
+      let popover = `data-html="true" data-placement="left" data-trigger="click" data-toggle="popover" title='${frequencyToText(complexWords[i].frequency)}' data-content="${content}"`;
       analysisContent.insertAdjacentHTML('beforeend',
-      `<input type='button' data-placement="bottom" data-trigger="hover" data-toggle="popover" title='${frequencyToText(complexWords[i].frequency)}' data-content="${description(frequencyToText(complexWords[i].frequency))}" class='btn btn-outline-danger btn-sm' type="button"  value='${complexWords[i].text}'
+      `<input type='button' ${popover} class='btn btn-outline-danger btn-sm' type="button"  value='${complexWords[i].text}'
       onclick='editor.selectFirst("${complexWords[i].text}", true);' />`);
     }
     $('[data-toggle="popover"]').popover();
@@ -378,8 +387,11 @@ function confirmDialog(title, body, action) {
   }
 
 // alert
-  function simplesAlert(title) {
+  function simplesAlert(title, icon = 'fa-hammer', content = "Cette commande n'est pas disponible.") {
     $("#simplesAlert .modal-title").text(title);
+    $("#simplesAlert .modal-body").html(content);
+    $("#simplesAlert i").removeClass();
+    $("#simplesAlert i").addClass('fas ' + icon);
     $("#simplesAlert").modal("show");
   }
 
@@ -401,13 +413,14 @@ $(document).ready(function () {
 // click on verify button and open panel if closed
   $("#verify-button").on("click", function () {
       $(this).blur();
-      if ( !$(".hcollapsible").hasClass("active") ) {
-        $(".hcollapsible").trigger("click").blur();
-        $("hcollapsible-content").slideDown(250);  // marche PAS !!!
+      if ($("#analysisPanel").is(':visible')) {
+        $("#analysisPanel").hide(250);
+        $("#verify-button").removeClass('active');
+        $("#analysis-content input").popover('hide');
+      } else {
+        $("#analysisPanel").show(250);
+        $("#verify-button").addClass('active');
         onVerifyClick();
-      }
-      else {
-          $(".hcollapsible").trigger("click").blur();
       }
   } );
 

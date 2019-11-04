@@ -127,15 +127,16 @@ function analyzeText (text) {
                 // Autres informations
                 let data = await checkLexique3(word);
                 // Fréquence du mot
-                try {
+                if (!Utils.isNullOrUndefined(data)) {
                   word.frequency = Math.max(data.movies, data.books);
-                  // Ajoute le mot à la liste des mots complexes si besoin.
-                  switch (frequencyToText(word.frequency)) {
-                    case 'inconnu': case 'très rare': case 'rare': case 'commun':
-                      complexWords.push(word); break;
-                  }
-                } catch (e) {
-                  console.log('Erreur data: ' + data);
+                  word.lemma = data.lemma;
+                }
+                // Ajoute le mot à la liste des mots complexes si besoin.
+                switch (frequencyToText(word.frequency)) {
+                  case 'inconnu': case 'très rare': case 'rare': case 'commun':
+                    word.dictionary = await getDictionaryEntry(word.lemma || word.text);
+                    complexWords.push(word);
+                    break;
                 }
               }
             }
@@ -161,7 +162,7 @@ function analyzeText (text) {
  */
 function needLexique3 (pos) {
   switch (pos) {
-    case 'PUNCT' : case 'ADP' : case 'DET' : case 'PRON' : return false;
+    case 'PUNCT' : case 'ADP' : case 'DET' : case 'PRON' : case 'PART': return false;
     default: return true;
   }
 }
@@ -249,6 +250,30 @@ function createCORSRequest (method, url, async = true) {
     xhr = null;
   }
   return xhr;
+}
+
+async function getDictionaryEntry (word) {
+  let response;
+  try {
+    response = await $.get('https://googledictionaryapi.eu-gb.mybluemix.net/', {define: word, lang: 'fr'});
+  } catch (e) {
+    return {meanings: []};
+  }
+  let result = {
+    meanings: []
+  };
+  for (let i = 0; i < response.length; i++) {
+    let type = Object.keys(response[i].meaning)[0];
+    for (let j = 0; j < response[i].meaning[type].definitions.length; j++) {
+      result.meanings.push({
+        type: type,
+        definition: response[i].meaning[type].definitions[j].definition,
+        example: response[i].meaning[type].definitions[j].example,
+        synonyms: response[i].meaning[type].definitions[j].synonyms
+      });
+    }
+  }
+  return result;
 }
 
 async function getImagesSuggestions (blockIndex) {

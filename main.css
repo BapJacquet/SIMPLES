@@ -275,10 +275,22 @@ button span {
   background-color: #f0f0f0; /* TOOL_BACK_COLOR */
 }
 
+.rulesScores {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  text-align: center;
+}
+
 #analysisPanel {
   background-color: white;
-  max-width: 50%;
-  min-width: 200px;
+  width: 30vw;
+  overflow-y: scroll;
+  /*max-width: 50%;
+  min-width: 200px;*/
+}
+
+#analysis-content {
+  font-size: 10pt;
 }
 
 /*  ------------------  S E B   ------------------ */

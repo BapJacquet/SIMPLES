@@ -148,7 +148,23 @@ function refreshPageScale(){
  * Start the analysis.
  */
 function onVerifyClick(){
-  analyzeAllEditorContent();
+  //analyzeAllEditorContent();
+  $('#analysis-content').empty();
+  $('#analysis-content').append('<ul></ul>');
+  checkFalcQuality(editor).then(function (result) {
+    console.log('test2');
+    $('#mainRules').text(result.mainRulesSuccess);
+    $('#veryImportantRules').text(result.veryImportantRulesSuccess);
+    $('#importantRules').text(result.importantRulesSuccess);
+    for (let i = 0; i < result.rules.length; i++) {
+      console.log('test');
+      $('#analysis-content ul').append(`<li style="color: ${result.rules[i].success?'green':'red'}">${result.rules[i].rule}</li>`);
+      $('#analysis-content ul li').hide();
+      $('#analysis-content ul li').each(function(index, element) {
+        setTimeout(() => {$(this).show(300)}, index * 300);
+      });
+    }
+  });
 }
 
 /**
@@ -1352,6 +1368,7 @@ $("#toolbarBottomMask").hover( function () {
     $("#blc-0").trigger("mouseenter");
     $( window ).trigger("resize");
     $('body').css({"visibility":"visible"});
+    $('#analysisPanel').hide();
   }, 200);
   /*
     if ( localStorage.getItem('simplesLoadFile') == 'yes' ) {

@@ -277,6 +277,20 @@
 						</div>
 					</div>
 					<div class="score">90</div>
+					<div class="rulesScores">
+						<div>
+							<p>Prioritaires</p>
+							<p><span id="mainRules"></span><span> sur 15</span></p>
+						</div>
+						<div>
+							<p>Très Importantes</p>
+							<p><span id="veryImportantRules"></span><span> sur 4</span></p>
+						</div>
+						<div>
+							<p>Importantes</p>
+							<p><span id="importantRules"></span><span> sur 30</span></p>
+						</div>
+					</div>
   				<!-- <p>Résultats de l'analyze :</p> -->
 					<div id="analysis-content"></div>
 				</div>

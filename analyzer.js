@@ -11,6 +11,75 @@
 
 var body = $('body').get(0);
 
+var rules = [
+  {priority: 3,
+    text: 'Impliquez des personnes en situation de handicap ou du groupe cible.',
+    test: function (data) { return {result: false, info: {}}; }},
+  {priority: 3,
+    text: 'Placez vos informations dans un ordre facile à comprendre et facile à suivre.',
+    test: function (data) { return {result: false, info: {}}; }},
+  {priority: 3,
+    text: 'Faites des phrases courtes. Ecrivez une seule idée par phrase.',
+    test: function (data) { return {result: false, info: {}}; }},
+  {priority: 3,
+    text: "Si possible, une phrase doit tenir sur une seule ligne. Sinon, coupez la phrase à l'endroit où une pause sera faite lorsque le texte sera lu à voix haute.",
+    test: function (data) { return {result: false, info: {}}; }},
+  {priority: 3,
+    text: 'Mettez un point et faites une nouvelle phrase avant de commencer une nouvelle idée. Évitez les virgules et les "et".',
+    test: function (data) {
+      let pattern = /(?:,|et)/ig;
+      let count = 0;
+      for (let i = 0; i < data.raw.length; i++) {
+        let m = data.raw[i].match(pattern);
+        console.log(m);
+        if (!Utils.isNullOrUndefined(m)) {
+          count += m.length;
+        }
+        console.log(count);
+      }
+      return {result: count <= data.raw.length, info: {}};
+    }},
+  {priority: 3,
+    text: 'Utilisez des mots faciles à comprendre. Utilisez des mots que les personnes connaissent bien.',
+    test: function (data) { return data.complexWords.length === 0; }},
+  {priority: 3,
+    text: 'Expliquez clairement les mots difficiles au moment où ils sont utilisés.',
+    test: function (data) { return {result: false, info: {}}; }},
+  {priority: 3,
+    text: "Utilisez toujours une police d'écriture facile à lire : Arial 14.",
+    test: function (data) { return {result: true, info: {}}; }},
+  {priority: 3,
+    text: "N'utilisez jamais une écriture trop claire ou en couleur qui ne s'imprime pas bien.",
+    test: function (data) { return {result: false, info: {}}; }},
+  {priority: 3,
+    text: "N'écrivez jamais en italique.",
+    test: function (data) { return {result: true, info: {}}; }},
+  {priority: 3,
+    text: "N'écrivez pas avec des ombres ou des contours.",
+    test: function (data) { return {result: true, info: {}}; }},
+  {priority: 3,
+    text: 'Ne soulignez pas le texte.',
+    test: function (data) { return {result: true, info: {}}; }},
+  {priority: 3,
+    text: 'Commencez toujours une nouvelle phrase sur une nouvelle ligne.',
+    test: function (data) {
+      let pattern = /[\.\?\!][^\n\.\?\!]+\w+/gm;
+      let result = true;
+      for (let i = 0; i < data.raw.length; i++) {
+        if (!Utils.isNullOrUndefined(data.raw[i].match(pattern))) {
+          result = false;
+        }
+      }
+      return {result: result, info: {}};
+    }},
+  {priority: 3,
+    text: 'Ne mettez pas trop de texte sur une page.',
+    test: function (data) { return {result: false, info: {}}; }},
+  {priority: 3,
+    text: 'Places des images à coté du texte pour le décrire.',
+    test: function (data) { return {result: false, info: {}}; }}
+];
+
 /* =======================================================================
    EVENTS
    ======================================================================= */
@@ -153,6 +222,39 @@ function analyzeText (text) {
     }
   };
   request.send(text);
+}
+
+async function checkTokensComplexity (tokens, checkedWords) {
+  let complexWords = [];
+  for (let t = 0; t < tokens.length; t++) {
+    let alreadyChecked = false;
+    for (let w = 0; w < checkedWords.length; w++) {
+      if (checkedWords[w].text === tokens[t].word && checkedWords[w].pos === tokens[t].pos) {
+        alreadyChecked = true;
+        break;
+      }
+    }
+    if (alreadyChecked) continue;
+    let word = {
+      text: tokens[t].word,
+      pos: tokens[t].pos
+    };
+    if (needLexique3(word.pos)) {
+      checkedWords.push(word);
+      let data = await checkLexique3(word);
+      if (!Utils.isNullOrUndefined(data)) {
+        word.frequency = Math.max(data.movies, data.books);
+        word.lemma = data.lemma;
+      }
+      switch (frequencyToText(word.frequency)) {
+        case 'inconnu': case 'très rare': case 'rare': case 'commun':
+          word.dictionary = await getDictionaryEntry(word.lemma || word.text);
+          complexWords.push(word);
+          break;
+      }
+    }
+  }
+  return complexWords;
 }
 
 /**
@@ -316,5 +418,75 @@ async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: t
     }
   }
   console.log(result);
+  return result;
+}
+
+async function checkFalcQuality (editor) {
+  // Prepare data
+  dispatchProgressChanged(0);
+  let rawTextContent = [];
+  let sentencesTokens = [];
+  let fullStyledContent = [];
+  for (let i = 0; i < editor.blockCount; i++) {
+    let text = editor.getRawTextContent(i);
+    rawTextContent.push(text);
+    //if (text !== '') {
+      sentencesTokens.push(await getTokens(text));
+    /*} else {
+      sentencesTokens.push({sentences: []});
+    }*/
+    fullStyledContent.push(editor.getStyledText(i));
+    dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
+  }
+  // Check complex words.
+  dispatchProgressChanged(0);
+  let complexWords = [];
+  let checkedWords = [];
+  for (let i = 0; i < editor.blockCount; i++) {
+    for (let s = 0; s < sentencesTokens[i].sentences.length; s++) {
+      let cw = await checkTokensComplexity(sentencesTokens[i].sentences[s].tokens, checkedWords);
+      complexWords = complexWords.concat(cw);
+    }
+    dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
+  }
+  let result = {
+    rules: await checkRules({raw: rawTextContent, complexWords: complexWords, tokens: sentencesTokens, styled: fullStyledContent})
+  };
+  let mainRules = 0;
+  let veryImportantRules = 0;
+  let importantRules = 0;
+  for (let i = 0; i < result.rules.length; i++) {
+    if (rules[i].priority === 3 && result.rules[i].success) {
+      mainRules++;
+    } else if (rules[i].priority === 2 && result.rules[i].success) {
+      veryImportantRules++;
+    } else if (rules[i].priority === 1 && result.rules[i].success) {
+      importantRules++;
+    }
+  }
+  result.mainRulesSuccess = mainRules;
+  result.veryImportantRulesSuccess = veryImportantRules;
+  result.importantRulesSuccess = importantRules;
+  return result;
+}
+
+async function getTokens (text) {
+  return JSON.parse($.ajax({
+    type: 'POST',
+    url: 'http://sioux.univ-paris8.fr:9000/',
+    data: text,
+    dataType: 'application/json',
+    async: false
+  }).responseText);
+}
+
+async function checkRules (data) {
+  let result = [];
+  dispatchProgressChanged(0);
+  for (let i = 0; i < rules.length; i++) {
+    let testResult = rules[i].test(data);
+    result.push({rule: rules[i].text, success: testResult.result, info: testResult.info});
+    dispatchProgressChanged(((i + 1) * 100) / rules.length);
+  }
   return result;
 }

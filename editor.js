@@ -1032,6 +1032,7 @@ class Editor {
    */
   getRawTextContent (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (this.getBlockFormat(id).blockType !== 'default') return '';
     return this.getQuill(id).getText();
   }
 
@@ -1052,6 +1053,7 @@ class Editor {
    */
   getStyledText (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (this.getBlockFormat(id).blockType !== 'default') return [];
     let delta = this.getQuill(id).getContents();
     let result = [];
     for (let i = 0; i < delta.ops.length; i++) {

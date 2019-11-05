@@ -390,6 +390,16 @@ function triggerPseudoMouseenter( decal ) {
   //$("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
+// show hide analysis panel and move block palette accordingly
+function analysisPanelShowHide(showHide, timeOut) {
+  $("#blockCmd").css("display","none");
+  $("#analysisPanel")[showHide](timeOut);
+  setTimeout( function () {
+      $("#blockCmd").css("display","block");
+      $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+    }, timeOut + 10);
+}
+
 // page is empty
 function pageEmpty() {
   if ( $("#editor").children().length > 1 || $("#txt-0").text() != "" ) return false;
@@ -448,13 +458,15 @@ $(document).ready(function () {
   $("#verify-button").on("click", function () {
       $(this).blur();
       if ($("#analysisPanel").is(':visible')) {
-        $("#analysisPanel").hide(250);
+        //$("#analysisPanel").hide(250);
+        analysisPanelShowHide("hide", 250);
         $("#verify-button").removeClass('active');
         $("#analysis-content input").popover('hide');
       } else {
-        $("#analysisPanel").show(250);
+        //$("#analysisPanel").show(250);
+        analysisPanelShowHide("show", 250);
         $("#verify-button").addClass('active');
-        onVerifyClick();
+        //onVerifyClick();
       }
   } );
 

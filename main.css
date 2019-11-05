@@ -53,23 +53,28 @@ hr {
   font-size: 72px;
   font-weight: bold;
   text-align: center;
+  /* padding-left: 10px; */
+  border-left: 5px solid #009940;
 }
 
 #redo-analyse {
   display: flex;
-  margin: auto;
+  float: right;
+  /* margin: auto; */
   border: none;
-  padding: 25px;
-  padding-top: 10px;
+  border-bottom: 5px solid #ccc;
+  padding: 12px;
+  padding-top: 3px;
   padding-bottom: 1px;
-  background-color: white;
-  font-size: 14pt;
+  /* background-color: #eee; */
+  font-size: 11pt;
+  font-weight: 600;
   cursor: pointer;
 }
 
 #redo-analyse:hover {
-  border-bottom: 2px solid #ccc;
-  border-radius: 10px;
+  border-bottom: 5px solid #ccc;
+  /* border-radius: 10px; */
   border-color: #009940;
 }
 
@@ -219,7 +224,7 @@ button span {
 */
 
 #analysis-content {
-  margin: 5px;
+  /* margin: 5px; */
 }
 
 .popover-header {
@@ -292,6 +297,7 @@ button span {
   height: 100%;
   display: grid;
   grid-template-rows: auto auto auto 1fr;
+
   /*overflow-y: scroll;*/
   /*max-width: 50%;
   min-width: 200px;*/
@@ -315,6 +321,7 @@ li.nav-item {
   font-size: 12pt;
   overflow-y: scroll;
   max-height: 100%;
+  border-left: 5px solid #009940
 }
 
 #analysis-content>div{
@@ -699,21 +706,21 @@ li.nav-item {
 
 .analysis-header {
   background-color: #009940;
-  height: 2px;
+  height: 5px;
   width: 100%;
 }
 
 /*     Simples! button */
 .simples-button{
   position: relative;
-  top: 17px; /* 9px; */
+  top: 13px; /* 9px; */
   transition: top 0.3s;
   /*left: -8px;*/
   border: 1px solid #009940; /*  #888; */
-  border-radius: 10px 10px 10px 10px;
+  /* border-radius: 10px 10px 10px 10px; */
   cursor: pointer;
-  width: 120px;  /* 96 */
-  height: 73px; /* 100 */
+  width: 126px;  /* 96 */
+  height: 75px; /* 100 */
   background-color: #009940;
   /*background-color: #e4e4e4;*/ /* #f0f0f0; /* TOOL_BACK_COLOR */
   color: white;
@@ -722,11 +729,11 @@ li.nav-item {
 }
 
 .simples-button.active {
-  border: 1px solid #009940; /*  #888; */
-  top: 22px;
+  /*  border: 1px solid #009940; */
+  top: 20px;
   transition: top 0.3s;
-  transition: border-radius 0.3s;
-  border-radius: 10px 10px 0px 0px;
+  /* transition: border-radius 0.3s; */
+  /* border-radius: 10px 10px 0px 0px; */
 }
 
 .simples-button:hover {

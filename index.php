@@ -266,7 +266,7 @@
 				<div id="analysisPanel">
 					<div class="analysis-header"></div>
 					<div class="analysiscontainer">
-						<button id="redo-analyse" type="button">Refaire l'analyse</button>
+						<button id="redo-analyse" type="button">Faire l'analyse</button>
 						<div id="stanford-connection"></div>
 						<div class="alert alert-light" role="alert" id="lexique3-connection">
 							<div>Un instant... : </div>

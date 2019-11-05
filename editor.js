@@ -68,7 +68,7 @@ class Editor {
         //prefix: /\n/m,
         handler: () => {
           let s = this.getSelection();
-          this.insertBlockAfter(s.block, '');
+          this.splitBlock(s.block, s.range.index);
           this.select(s.block + 1, 0);
         }
       },
@@ -430,13 +430,14 @@ class Editor {
         }
         break;
       case 'Backspace':
-        if (this.getBlockLength(id) === 1 && id !== 0) {
+        let s = this.getSelection();
+        if (s.range.index === 0 && id !== 0) {
           event.stopPropagation();
           event.preventDefault();
-          this.removeBlockAt(id, id - 1, 1);
           let l = this.getBlockLength(id - 1);
+          this.mergeBlocks(id - 1, id, 1);
           if (l > 0) {
-            this.select(id - 1, l);
+            this.select(id - 1, l - 1);
           }
         }
         break;
@@ -693,6 +694,50 @@ class Editor {
       theme: 'snow'
     };
     element.quill = new Quill(element, options);
+  }
+
+  /**
+   * Splits a text block into two at the given index.
+   * @param {int} id - The id of the block to split.
+   * @param {int} index - The index where to do the split.
+   */
+  splitBlock (id, index) {
+    let d1 = this.getQuill(id).getContents(0, index);
+    let d2 = this.getQuill(id).getContents(index);
+    let copiedFormat = false;
+    for (let i = 0; i < d2.ops.length; i++) {
+      if (d2.ops[i].insert === '\n') {
+        d1.ops.push(d2.ops[i]);
+        copiedFormat = true;
+      }
+    }
+    if (!copiedFormat) {
+      d1.ops.push({insert: '\n'});
+    }
+    let l = this.getBlockLength(id) - index;
+    this.insertBlockAfter(id, '');
+    this.getQuill(id + 1).setContents(d2);
+    this.getQuill(id).setContents(d1);
+  }
+
+  /**
+   * Merge two text blocks together into one.
+   * @param {int} first - Text block which will be on top.
+   * @param {int} last - Text block which will be at the bottom.
+   */
+  mergeBlocks (first, last, duration) {
+    let d2 = this.getQuill(last).getContents();
+    let d1 = this.getQuill(first).getContents();
+    let dr = d1;
+    let lastOp = dr.ops[dr.ops.length - 1];
+    if (lastOp.insert.lastIndexOf('\n') === 0) {
+      dr.ops.splice(-1, 1);
+    } else {
+      lastOp.insert = lastOp.insert.substring(0, lastOp.insert.length - 1);
+    }
+    dr.ops = dr.ops.concat(d2.ops);
+    this.getQuill(first).setContents(dr);
+    this.removeBlockAt(last, first, duration);
   }
 
   /**

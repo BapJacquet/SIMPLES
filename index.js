@@ -148,7 +148,41 @@ function refreshPageScale(){
  * Start the analysis.
  */
 function onVerifyClick(){
-  analyzeAllEditorContent();
+  //analyzeAllEditorContent();
+  $('#analysis-main-content>ul').html('');
+  $('#analysis-veryImportant-content>ul').html('');
+  $('#analysis-important-content>ul').html('');
+  checkFalcQuality(editor).then(function (result) {
+    // Mise à jour des scores.
+    $('#mainRules').text(result.mainRulesSuccess);
+    $('#veryImportantRules').text(result.veryImportantRulesSuccess);
+    $('#importantRules').text(result.importantRulesSuccess);
+    $('.score').text(result.score);
+    // Ajout des items dans les différentes catégories.
+    for (let i = 0; i < result.rules.length; i++) {
+      let tab = '', color = 'black';
+      switch (result.rules[i].priority) {
+        case 3: tab = 'main'; break;
+        case 2: tab = 'veryImportant'; break;
+        case 1: tab = 'important'; break;
+      }
+      if(!Utils.isNullOrUndefined(result.rules[i].success)) {
+        color = result.rules[i].success ? 'green': 'red';
+      }
+      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}">${result.rules[i].rule}</li>`);
+      $(`#analysis-${tab}-content ul li`).hide();
+    }
+    // Animations pour faire apparaitre les items.
+    $('#analysis-main-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+    $('#analysis-veryImportant-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+    $('#analysis-important-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+  });
 }
 
 /**
@@ -1352,6 +1386,7 @@ $("#toolbarBottomMask").hover( function () {
     $("#blc-0").trigger("mouseenter");
     $( window ).trigger("resize");
     $('body').css({"visibility":"visible"});
+    $('#analysisPanel').hide();
   }, 200);
   /*
     if ( localStorage.getItem('simplesLoadFile') == 'yes' ) {

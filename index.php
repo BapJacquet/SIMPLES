@@ -265,20 +265,48 @@
 				<!--button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button-->
 				<div id="analysisPanel">
 					<div class="analysis-header"></div>
-					<button id="redo-analyse" type="button">Refaire l'analyse</button>
-					<div id="stanford-connection"></div>
-					<div class="alert alert-light" role="alert" id="lexique3-connection">
-						<div>Un instant... : </div>
-						<div class="progress">
-							<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
-							aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
-								0%
+					<div class="analysiscontainer">
+						<button id="redo-analyse" type="button">Refaire l'analyse</button>
+						<div id="stanford-connection"></div>
+						<div class="alert alert-light" role="alert" id="lexique3-connection">
+							<div>Un instant... : </div>
+							<div class="progress">
+								<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
+								aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
+									0%
+								</div>
 							</div>
 						</div>
+						<div class="score" data-toggle="tooltip" title="Il faut un score d'au moins 80 pour pouvoir être considéré comme du FALC, avec au moins 14 règles prioritaires, 2 très importantes et 15 importantes.">90</div>
 					</div>
-					<div class="score">90</div>
-  				<!-- <p>Résultats de l'analyze :</p> -->
-					<div id="analysis-content"></div>
+					<div>
+						<ul class="nav nav-tabs nav-justified rulesScores" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="mainTab" data-toggle="tab" href="#analysis-main-content" role="tab">
+									<p>Prioritaires</p>
+									<p><span id="mainRules"></span><span> sur 15</span></p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="veryImportantTab" data-toggle="tab" href="#analysis-veryImportant-content" role="tab">
+									<p>Très Importantes</p>
+									<p><span id="veryImportantRules"></span><span> sur 4</span></p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="importantTab" data-toggle="tab" href="#analysis-important-content" role="tab">
+									<p>Importantes</p>
+									<p><span id="importantRules"></span><span> sur 30</span></p>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<!-- <p>Résultats de l'analyze :</p> -->
+					<div id="analysis-content" class="tab-content">
+						<div id="analysis-main-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="mainTab"><ul></ul></div>
+						<div id="analysis-veryImportant-content" class="tab-pane fade" role="tabpanel" aria-labelledby="veryImportantTab"><ul></ul></div>
+						<div id="analysis-important-content" class="tab-pane fade" role="tabpanel" aria-labelledby="importantTab"><ul></ul></div>
+					</div>
 				</div>
 			</div>  <!-- end editor -->
 	</div>
@@ -378,6 +406,7 @@
 	<script type="text/javascript" src="animator.js"></script>
 	<script type="text/javascript" src="utils.js"></script>
 	<script type="text/javascript" src="converter.js"></script>
+	<script type="text/javascript" src="w3color.js"></script>
 
 	<!-- jQuery ready -->
 	<script src="index.js"></script>

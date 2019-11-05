@@ -65,10 +65,11 @@ class Editor {
       },
       newBlock: {
         key: Keyboard.keys.ENTER,
-        prefix: "\n",
+        //prefix: /\n/m,
         handler: () => {
           let s = this.getSelection();
-          this.insertBlockAfter(s.block);
+          this.insertBlockAfter(s.block, '');
+          this.select(s.block + 1, 0);
         }
       },
       moveBlockDown: {
@@ -350,8 +351,8 @@ class Editor {
    * @param {KeyboardEvent} event - Event to handle.
    */
   onKeyDown (event) {
-    let caller = event.target;
-    let id = parseInt(caller.id.substring(4));
+    if (!this.hasFocus) return;
+    let id = this.getSelection().block;
     switch (event.key) {
       case 'l':
         if (event.ctrlKey) {
@@ -429,10 +430,10 @@ class Editor {
         }
         break;
       case 'Backspace':
-        if (this.getBlockLength(id) === 0 && id !== 0 && $('#txt-' + id).children().length === 0) {
+        if (this.getBlockLength(id) === 1 && id !== 0) {
           event.stopPropagation();
           event.preventDefault();
-          this.removeBlockAt(id, id - 1);
+          this.removeBlockAt(id, id - 1, 1);
           let l = this.getBlockLength(id - 1);
           if (l > 0) {
             this.select(id - 1, l);
@@ -1032,6 +1033,7 @@ class Editor {
    */
   getRawTextContent (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (this.getBlockFormat(id).blockType !== 'default') return '';
     return this.getQuill(id).getText();
   }
 
@@ -1052,6 +1054,7 @@ class Editor {
    */
   getStyledText (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (this.getBlockFormat(id).blockType !== 'default') return [];
     let delta = this.getQuill(id).getContents();
     let result = [];
     for (let i = 0; i < delta.ops.length; i++) {

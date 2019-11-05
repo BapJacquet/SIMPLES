@@ -261,8 +261,8 @@ button span {
   /* border: 1px solid black; */
   display: flex;
   flex-flow: column;
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
 }
 
 .hbox {
@@ -275,22 +275,50 @@ button span {
   background-color: #f0f0f0; /* TOOL_BACK_COLOR */
 }
 
-.rulesScores {
+.hbox>div{
+  height: 100%;
+  overflow-y: hidden;
+}
+
+/*.rulesScores {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   text-align: center;
-}
+}*/
 
 #analysisPanel {
   background-color: white;
   width: 30vw;
-  overflow-y: scroll;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  /*overflow-y: scroll;*/
   /*max-width: 50%;
   min-width: 200px;*/
 }
 
+a.nav-link {
+  padding: 0px;
+  height: 100%;
+  background-color: transparent;
+}
+
+a.nav-link p {
+  margin: 0px;
+}
+
+li.nav-item {
+  display:block;
+}
+
 #analysis-content {
-  font-size: 10pt;
+  font-size: 12pt;
+  overflow-y: scroll;
+  max-height: 100%;
+}
+
+#analysis-content>div{
+  overflow-y: visible;
 }
 
 /*  ------------------  S E B   ------------------ */

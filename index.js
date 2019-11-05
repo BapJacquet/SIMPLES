@@ -149,21 +149,39 @@ function refreshPageScale(){
  */
 function onVerifyClick(){
   //analyzeAllEditorContent();
-  $('#analysis-content').empty();
-  $('#analysis-content').append('<ul></ul>');
+  $('#analysis-main-content>ul').html('');
+  $('#analysis-veryImportant-content>ul').html('');
+  $('#analysis-important-content>ul').html('');
   checkFalcQuality(editor).then(function (result) {
-    console.log('test2');
+    // Mise à jour des scores.
     $('#mainRules').text(result.mainRulesSuccess);
     $('#veryImportantRules').text(result.veryImportantRulesSuccess);
     $('#importantRules').text(result.importantRulesSuccess);
+    $('.score').text(result.score);
+    // Ajout des items dans les différentes catégories.
     for (let i = 0; i < result.rules.length; i++) {
-      console.log('test');
-      $('#analysis-content ul').append(`<li style="color: ${result.rules[i].success?'green':'red'}">${result.rules[i].rule}</li>`);
-      $('#analysis-content ul li').hide();
-      $('#analysis-content ul li').each(function(index, element) {
-        setTimeout(() => {$(this).show(300)}, index * 300);
-      });
+      let tab = '', color = 'black';
+      switch (result.rules[i].priority) {
+        case 3: tab = 'main'; break;
+        case 2: tab = 'veryImportant'; break;
+        case 1: tab = 'important'; break;
+      }
+      if(!Utils.isNullOrUndefined(result.rules[i].success)) {
+        color = result.rules[i].success ? 'green': 'red';
+      }
+      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}">${result.rules[i].rule}</li>`);
+      $(`#analysis-${tab}-content ul li`).hide();
     }
+    // Animations pour faire apparaitre les items.
+    $('#analysis-main-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+    $('#analysis-veryImportant-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+    $('#analysis-important-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
   });
 }
 

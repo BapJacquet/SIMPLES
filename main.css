@@ -54,7 +54,6 @@ hr {
   font-weight: bold;
   text-align: center;
   /* padding-left: 10px; */
-  border-left: 5px solid #009940;
 }
 
 #redo-analyse {
@@ -297,6 +296,7 @@ button span {
   height: 100%;
   display: grid;
   grid-template-rows: auto auto auto 1fr;
+  border-left: 5px solid #009940;
 
   /*overflow-y: scroll;*/
   /*max-width: 50%;
@@ -321,7 +321,6 @@ li.nav-item {
   font-size: 12pt;
   overflow-y: scroll;
   max-height: 100%;
-  border-left: 5px solid #009940
 }
 
 #analysis-content>div{

@@ -264,9 +264,10 @@
 				</div>
 				<!--button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button-->
 				<div id="analysisPanel">
-					<div class="analysis-header"></div>
-					<div class="analysiscontainer">
+					<div class="analysis-header">
 						<button id="redo-analyse" type="button">Faire l'analyse</button>
+					</div>
+					<div class="analysiscontainer">
 						<div id="stanford-connection"></div>
 						<div class="alert alert-light" role="alert" id="lexique3-connection">
 							<div>Un instant... : </div>

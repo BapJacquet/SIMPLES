@@ -392,10 +392,10 @@ function triggerPseudoMouseenter( decal ) {
 
 // show hide analysis panel and move block palette accordingly
 function analysisPanelShowHide(showHide, timeOut) {
-  $("#blockCmd").css("display","none");
+  $("#blockCmd").hide(50);
   $("#analysisPanel")[showHide](timeOut);
   setTimeout( function () {
-      $("#blockCmd").css("display","block");
+      $("#blockCmd").show(50);
       $("#blc-" + String(activeBlocId)).trigger("mouseenter");
     }, timeOut + 10);
 }
@@ -458,13 +458,11 @@ $(document).ready(function () {
   $("#verify-button").on("click", function () {
       $(this).blur();
       if ($("#analysisPanel").is(':visible')) {
-        //$("#analysisPanel").hide(250);
-        analysisPanelShowHide("hide", 250);
+        analysisPanelShowHide("hide", 200);
         $("#verify-button").removeClass('active');
         $("#analysis-content input").popover('hide');
       } else {
-        //$("#analysisPanel").show(250);
-        analysisPanelShowHide("show", 250);
+        analysisPanelShowHide("show", 200);
         $("#verify-button").addClass('active');
         //onVerifyClick();
       }
@@ -1393,12 +1391,12 @@ $("#toolbarBottomMask").hover( function () {
 
   ////////////////////////////////////////////
   // before body display
+  analysisPanelShowHide("hide", 0);
   setTimeout(function () {
     initToolbar();
     $("#blc-0").trigger("mouseenter");
     $( window ).trigger("resize");
     $('body').css({"visibility":"visible"});
-    $('#analysisPanel').hide();
   }, 200);
   /*
     if ( localStorage.getItem('simplesLoadFile') == 'yes' ) {

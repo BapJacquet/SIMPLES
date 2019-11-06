@@ -53,27 +53,29 @@ hr {
   font-size: 72px;
   font-weight: bold;
   text-align: center;
-  /* padding-left: 10px; */
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  user-select: none;
+
 }
 
 #redo-analyse {
   display: flex;
-  float: right;
-  /* margin: auto; */
+  /* float: right; */
+  margin: auto;
+  border-radius: 20px;
   border: none;
-  border-bottom: 5px solid #ccc;
-  padding: 12px;
-  padding-top: 3px;
+  border-bottom: 4px solid #ccc;
+  /* padding: 12px; */
+  padding-top: 5px;
   padding-bottom: 1px;
   /* background-color: #eee; */
-  font-size: 11pt;
+  font-size: 12pt;
   font-weight: 600;
   cursor: pointer;
 }
 
 #redo-analyse:hover {
-  border-bottom: 5px solid #ccc;
-  /* border-radius: 10px; */
   border-color: #009940;
 }
 
@@ -222,10 +224,6 @@ button span {
 }
 */
 
-#analysis-content {
-  /* margin: 5px; */
-}
-
 .popover-header {
   font-size: 16pt;
   font-family: Arial;
@@ -291,16 +289,26 @@ button span {
 }*/
 
 #analysisPanel {
-  background-color: white;
+  background-color: #fdfdd6;
   width: 30vw;
   height: 100%;
   display: grid;
   grid-template-rows: auto auto auto 1fr;
-  border-left: 5px solid #009940;
+  /* border-left: 5px solid #009940; */
+  border: 5px solid #009940;
+  border-radius: 20px;
 
   /*overflow-y: scroll;*/
   /*max-width: 50%;
   min-width: 200px;*/
+}
+
+.nav { /* bootstrap class extend */
+  font-weight: 600;
+  line-height: 1.3;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  user-select: none;
 }
 
 a.nav-link {
@@ -321,6 +329,8 @@ li.nav-item {
   font-size: 12pt;
   overflow-y: scroll;
   max-height: 100%;
+  background-color: white;
+  padding-top: 8px;
 }
 
 #analysis-content>div{
@@ -704,19 +714,22 @@ li.nav-item {
 }
 
 .analysis-header {
-  background-color: #009940;
-  height: 5px;
+  /* background-color: #009940; */
+  height: 40px;
   width: 100%;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  user-select: none;
 }
 
 /*     Simples! button */
 .simples-button{
   position: relative;
-  top: 13px; /* 9px; */
+  top: 15px; /* 9px; */
+  left: -13px;
   transition: top 0.3s;
-  /*left: -8px;*/
   border: 1px solid #009940; /*  #888; */
-  /* border-radius: 10px 10px 10px 10px; */
+  border-radius: 20px;
   cursor: pointer;
   width: 126px;  /* 96 */
   height: 75px; /* 100 */

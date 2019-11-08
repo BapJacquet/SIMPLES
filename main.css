@@ -352,9 +352,10 @@ li.nav-item {
   max-height: 100%;
   background-color: white;
   padding-top: 8px;
+  border-left: 1px solid #dfe2e6;
 }
 
-#analysis-content>div{
+#analysis-content > div {
   overflow-y: visible;
 }
 

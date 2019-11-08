@@ -69,8 +69,17 @@ function displayAnalysisResults(event){
   if(complexWords.length > 0){
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-danger" role="alert">${complexWords.length} mots compliqués !</div>`);
     for(var i = 0; i < complexWords.length; i++){
+      let synonyms = '';
+      let content = `<p>${description(frequencyToText(complexWords[i].frequency))}</p>`;
+      if (complexWords[i].dictionary.meanings.length > 0) {
+        for (let j = 0; j < complexWords[i].dictionary.meanings[0].synonyms.length; j++) {
+          synonyms += complexWords[i].dictionary.meanings[0].synonyms[j] + ' ';
+        }
+        content += `<p><strong>Définition :</strong><br/>${complexWords[i].dictionary.meanings[0].definition}</p><p><strong>Synonymes :</strong><br/>${synonyms}</p>`;
+      }
+      let popover = `data-html="true" data-placement="left" data-trigger="click" data-toggle="popover" title='${frequencyToText(complexWords[i].frequency)}' data-content="${content}"`;
       analysisContent.insertAdjacentHTML('beforeend',
-      `<input type='button' data-placement="bottom" data-trigger="hover" data-toggle="popover" title='${frequencyToText(complexWords[i].frequency)}' data-content="${description(frequencyToText(complexWords[i].frequency))}" class='btn btn-outline-danger btn-sm' type="button"  value='${complexWords[i].text}'
+      `<input type='button' ${popover} class='btn btn-outline-danger btn-sm' type="button"  value='${complexWords[i].text}'
       onclick='editor.selectFirst("${complexWords[i].text}", true);' />`);
     }
     $('[data-toggle="popover"]').popover();
@@ -139,7 +148,46 @@ function refreshPageScale(){
  * Start the analysis.
  */
 function onVerifyClick(){
-  analyzeAllEditorContent();
+  //analyzeAllEditorContent();
+  $('#analysis-main-content>ul').html('');
+  $('#analysis-veryImportant-content>ul').html('');
+  $('#analysis-important-content>ul').html('');
+  checkFalcQuality(editor).then(function (result) {
+    // Mise à jour des scores.
+    $('#mainRules').text(result.mainRulesSuccess);
+    $('#veryImportantRules').text(result.veryImportantRulesSuccess);
+    $('#importantRules').text(result.importantRulesSuccess);
+    $('.score').text(result.score);
+    // Ajout des items dans les différentes catégories.
+    for (let i = 0; i < result.rules.length; i++) {
+      let tab = '', color = 'black';
+      switch (result.rules[i].priority) {
+        case 3: tab = 'main'; break;
+        case 2: tab = 'veryImportant'; break;
+        case 1: tab = 'important'; break;
+      }
+      let regexp;
+      if(!Utils.isNullOrUndefined(result.rules[i].success)) {
+        color = result.rules[i].success ? 'green': 'red';
+        regexp = result.rules[i].success ? null : result.rules[i].info.focusPattern;
+      }
+      regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick='editor.selectNextMatch(" + regexp.toString() + ");'><i class='fas fa-search'></i></button>";
+      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div>${result.rules[i].rule}</div>${regexp}</li>`);
+      $(`#analysis-${tab}-content ul li`).hide();
+    }
+    // Animations pour faire apparaitre les items.
+    $('#analysis-main-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+    $('#analysis-veryImportant-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+    $('#analysis-important-content ul li').each(function(index, element) {
+      setTimeout(() => {$(this).show(150)}, index * 150);
+    });
+
+    $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
+  });
 }
 
 /**
@@ -347,6 +395,16 @@ function triggerPseudoMouseenter( decal ) {
   //$("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
+// show hide analysis panel and move block palette accordingly
+function analysisPanelShowHide(showHide, timeOut) {
+  $("#blockCmd").hide(50);
+  $("#analysisPanel")[showHide](timeOut);
+  setTimeout( function () {
+      $("#blockCmd").show(50);
+      $("#blc-" + String(activeBlocId)).trigger("mouseenter");
+    }, timeOut + 10);
+}
+
 // page is empty
 function pageEmpty() {
   if ( $("#editor").children().length > 1 || $("#txt-0").text() != "" ) return false;
@@ -378,8 +436,11 @@ function confirmDialog(title, body, action) {
   }
 
 // alert
-  function simplesAlert(title) {
+  function simplesAlert(title, icon = 'fa-hammer', content = "Cette commande n'est pas disponible.") {
     $("#simplesAlert .modal-title").text(title);
+    $("#simplesAlert .modal-body").html(content);
+    $("#simplesAlert i").removeClass();
+    $("#simplesAlert i").addClass('fas ' + icon);
     $("#simplesAlert").modal("show");
   }
 
@@ -401,13 +462,14 @@ $(document).ready(function () {
 // click on verify button and open panel if closed
   $("#verify-button").on("click", function () {
       $(this).blur();
-      if ( !$(".hcollapsible").hasClass("active") ) {
-        $(".hcollapsible").trigger("click").blur();
-        $("hcollapsible-content").slideDown(250);  // marche PAS !!!
-        onVerifyClick();
-      }
-      else {
-          $(".hcollapsible").trigger("click").blur();
+      if ($("#analysisPanel").is(':visible')) {
+        analysisPanelShowHide("hide", 200);
+        $("#verify-button").removeClass('active');
+        $("#analysis-content input").popover('hide');
+      } else {
+        analysisPanelShowHide("show", 200);
+        $("#verify-button").addClass('active');
+        //onVerifyClick();
       }
   } );
 
@@ -685,6 +747,10 @@ $(".write-file").on("click", function () {
   // Exporter au format PDF...
   if ( $(this).attr("id") == "exportFilePDF" ) {
     onPDFClick();
+  }
+  // Exporter au format ODT...
+  if ( $(this).attr("id") == "exportFileODT" ) {
+    onODTClick();
   }
   // Exporter au format HTML...
   else if ( $(this).attr("id") == "exportFileHTML" )  {
@@ -1330,6 +1396,7 @@ $("#toolbarBottomMask").hover( function () {
 
   ////////////////////////////////////////////
   // before body display
+  analysisPanelShowHide("hide", 0);
   setTimeout(function () {
     initToolbar();
     $("#blc-0").trigger("mouseenter");
@@ -1349,7 +1416,7 @@ $("#toolbarBottomMask").hover( function () {
 //  ****************************************************************************
 
 // user
-if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
+//if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
 
 const editor = new Editor('#editor');
 

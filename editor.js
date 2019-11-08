@@ -65,10 +65,11 @@ class Editor {
       },
       newBlock: {
         key: Keyboard.keys.ENTER,
-        prefix: "\n",
+        //prefix: /\n/m,
         handler: () => {
           let s = this.getSelection();
-          this.insertBlockAfter(s.block);
+          this.splitBlock(s.block, s.range.index);
+          this.select(s.block + 1, 0);
         }
       },
       moveBlockDown: {
@@ -186,9 +187,15 @@ class Editor {
    */
   getSelection () {
     for (let i = 0; i < this.blockCount; i++) {
-      let s = this.getQuill(i).getSelection();
-      if (!Utils.isNullOrUndefined(s)) {
-        return {block: i, range: s};
+      switch (this.getBlockFormat(i).blockType) {
+        case 'default':
+          let s = this.getQuill(i).getSelection();
+          if (!Utils.isNullOrUndefined(s)) {
+            return {block: i, range: s};
+          }
+          break;
+        case 'images':
+          break;
       }
     }
   }
@@ -203,9 +210,20 @@ class Editor {
     };
     this.styles = {
       h1: {
-        alignment: 'center'
+        alignment: 'center',
+        fontSize: 28
+      },
+      h2: {
+        fontSize: 20
+      },
+      h3: {
+        fontSize: 18
+      },
+      h4: {
+        fontSize: 16
       }
     };
+
     this.tableLayouts = {
       frame: {
         hLineWidth: function (i) {
@@ -333,8 +351,8 @@ class Editor {
    * @param {KeyboardEvent} event - Event to handle.
    */
   onKeyDown (event) {
-    let caller = event.target;
-    let id = parseInt(caller.id.substring(4));
+    if (!this.hasFocus) return;
+    let id = this.getSelection().block;
     switch (event.key) {
       case 'l':
         if (event.ctrlKey) {
@@ -412,13 +430,14 @@ class Editor {
         }
         break;
       case 'Backspace':
-        if (this.getBlockLength(id) === 0 && id !== 0 && $('#txt-' + id).children().length === 0) {
+        let s = this.getSelection();
+        if (s.range.index === 0 && id !== 0) {
           event.stopPropagation();
           event.preventDefault();
-          this.removeBlockAt(id, id - 1);
           let l = this.getBlockLength(id - 1);
+          this.mergeBlocks(id - 1, id, 1);
           if (l > 0) {
-            this.select(id - 1, l);
+            this.select(id - 1, l - 1);
           }
         }
         break;
@@ -675,6 +694,50 @@ class Editor {
       theme: 'snow'
     };
     element.quill = new Quill(element, options);
+  }
+
+  /**
+   * Splits a text block into two at the given index.
+   * @param {int} id - The id of the block to split.
+   * @param {int} index - The index where to do the split.
+   */
+  splitBlock (id, index) {
+    let d1 = this.getQuill(id).getContents(0, index);
+    let d2 = this.getQuill(id).getContents(index);
+    let copiedFormat = false;
+    for (let i = 0; i < d2.ops.length; i++) {
+      if (d2.ops[i].insert === '\n') {
+        d1.ops.push(d2.ops[i]);
+        copiedFormat = true;
+      }
+    }
+    if (!copiedFormat) {
+      d1.ops.push({insert: '\n'});
+    }
+    let l = this.getBlockLength(id) - index;
+    this.insertBlockAfter(id, '');
+    this.getQuill(id + 1).setContents(d2);
+    this.getQuill(id).setContents(d1);
+  }
+
+  /**
+   * Merge two text blocks together into one.
+   * @param {int} first - Text block which will be on top.
+   * @param {int} last - Text block which will be at the bottom.
+   */
+  mergeBlocks (first, last, duration) {
+    let d2 = this.getQuill(last).getContents();
+    let d1 = this.getQuill(first).getContents();
+    let dr = d1;
+    let lastOp = dr.ops[dr.ops.length - 1];
+    if (lastOp.insert.lastIndexOf('\n') === 0) {
+      dr.ops.splice(-1, 1);
+    } else {
+      lastOp.insert = lastOp.insert.substring(0, lastOp.insert.length - 1);
+    }
+    dr.ops = dr.ops.concat(d2.ops);
+    this.getQuill(first).setContents(dr);
+    this.removeBlockAt(last, first, duration);
   }
 
   /**
@@ -1015,6 +1078,7 @@ class Editor {
    */
   getRawTextContent (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (this.getBlockFormat(id).blockType !== 'default') return '';
     return this.getQuill(id).getText();
   }
 
@@ -1035,18 +1099,42 @@ class Editor {
    */
   getStyledText (id) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (this.getBlockFormat(id).blockType !== 'default') return [];
     let delta = this.getQuill(id).getContents();
     let result = [];
     for (let i = 0; i < delta.ops.length; i++) {
       let item = delta.ops[i];
       if (Utils.isNullOrUndefined(item.attributes)) {
-        result.push(item.insert);
+        let split = item.insert.split('\n');
+        for (let s = 0; s < split.length; s++) {
+          if (s > 0) {
+            result.push('\n');
+          }
+          if (split[s] !== '') result.push(split[s]);
+        }
       } else {
-        result.push({
-          text: item.insert,
-          bold: item.attributes.bold,
-          color: item.attributes.color
-        });
+        if (item.insert === '\n') {
+          result.push('\n');
+          if (!Utils.isNullOrUndefined(item.attributes.header)) {
+            let j = result.length - 2;
+            while (j >= 0 && result[j] !== '\n') {
+              if (Utils.isNullOrUndefined(result[j]).text) {
+                result[j] = {text: result[j], style: 'h' + item.attributes.header};
+              } else {
+                result[j].style = 'h' + item.attributes.header;
+              }
+              j--;
+            }
+          }
+        } else {
+          let split = item.insert.split('\n');
+          for (let s = 0; s < split.length; s++) {
+            if (s > 0) {
+              result.push('\n');
+            }
+            if (split[s] !== '') result.push({text: split[s], bold: item.attributes.bold, color: item.attributes.color});
+          }
+        }
       }
     }
     return result;
@@ -1384,6 +1472,32 @@ class Editor {
         break;
       }
     }
+  }
+
+  /**
+   * Select the next occurence of the given pattern.
+   * @param {RegExp} pattern - Pattern to search for.
+   * @param {int} startBlock - (Optional) The block id to start searching in.
+   * @param {int} startIndex - (Optional) The index to start searching from.
+   */
+  selectNextMatch (pattern, startBlock = null, startIndex = null) {
+    let sel = this.getSelection();
+    startBlock = startBlock == null ? (this.hasFocus ? sel.block : 0) : startBlock;
+    startIndex = startIndex == null ? (this.hasFocus ? sel.range.index + sel.range.length : 0) : startIndex;
+    let offset = -1;
+    for (let i = startBlock; i < this.blockCount; i++) {
+      if (this.getBlockFormat(i).blockType === 'default') {
+        let index = i === startBlock ? startIndex : 0;
+        pattern.lastIndex = index;
+        let matches = pattern.exec(this.getRawTextContent(i));
+        if (matches != null) {
+          offset = matches.index;
+          this.select(i, offset, matches[0].length);
+          return;
+        }
+      }
+    }
+    if (startBlock !== 0 || startIndex !== 0) this.selectNextMatch(pattern, 0, 0);
   }
 
   /**

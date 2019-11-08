@@ -1475,6 +1475,32 @@ class Editor {
   }
 
   /**
+   * Select the next occurence of the given pattern.
+   * @param {RegExp} pattern - Pattern to search for.
+   * @param {int} startBlock - (Optional) The block id to start searching in.
+   * @param {int} startIndex - (Optional) The index to start searching from.
+   */
+  selectNextMatch (pattern, startBlock = null, startIndex = null) {
+    let sel = this.getSelection();
+    startBlock = startBlock == null ? (this.hasFocus ? sel.block : 0) : startBlock;
+    startIndex = startIndex == null ? (this.hasFocus ? sel.range.index + sel.range.length : 0) : startIndex;
+    let offset = -1;
+    for (let i = startBlock; i < this.blockCount; i++) {
+      if (this.getBlockFormat(i).blockType === 'default') {
+        let index = i === startBlock ? startIndex : 0;
+        pattern.lastIndex = index;
+        let matches = pattern.exec(this.getRawTextContent(i));
+        if (matches != null) {
+          offset = matches.index;
+          this.select(i, offset, matches[0].length);
+          return;
+        }
+      }
+    }
+    if (startBlock !== 0 || startIndex !== 0) this.selectNextMatch(pattern, 0, 0);
+  }
+
+  /**
    * Get the element and the offset at the given index.
    * @param {int} blockIndex - Index of the block to look into.
    * @param {int} index - Index of the character.

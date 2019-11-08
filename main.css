@@ -298,7 +298,7 @@ button span {
   height: 100%;
   display: grid;
   grid-template-rows: auto auto auto 1fr;
-  border-left: 5px solid #f6f6f6;
+  border-left: 3px solid #f6f6f6;
   /* border: 5px solid #009940;
   border-radius: 20px; */
 
@@ -352,9 +352,10 @@ li.nav-item {
   max-height: 100%;
   background-color: white;
   padding-top: 8px;
+  border-left: 1px solid #dfe2e6;
 }
 
-#analysis-content>div{
+#analysis-content > div {
   overflow-y: visible;
 }
 

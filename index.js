@@ -166,10 +166,13 @@ function onVerifyClick(){
         case 2: tab = 'veryImportant'; break;
         case 1: tab = 'important'; break;
       }
+      let regexp;
       if(!Utils.isNullOrUndefined(result.rules[i].success)) {
         color = result.rules[i].success ? 'green': 'red';
+        regexp = result.rules[i].success ? null : result.rules[i].info.focusPattern;
       }
-      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}">${result.rules[i].rule}</li>`);
+      regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick='editor.selectNextMatch(" + regexp.toString() + ");'><i class='fas fa-search'></i></button>";
+      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div>${result.rules[i].rule}</div>${regexp}</li>`);
       $(`#analysis-${tab}-content ul li`).hide();
     }
     // Animations pour faire apparaitre les items.
@@ -182,6 +185,8 @@ function onVerifyClick(){
     $('#analysis-important-content ul li').each(function(index, element) {
       setTimeout(() => {$(this).show(150)}, index * 150);
     });
+
+    $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
   });
 }
 

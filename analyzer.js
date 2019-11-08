@@ -38,7 +38,7 @@ var rules = [
         }
         console.log(count);
       }
-      return {result: count <= data.raw.length, info: {}};
+      return {result: count <= data.raw.length, info: {focusPattern: pattern}};
     }},
   {priority: 3,
     text: 'Utilisez&nbsp;des&nbsp;mots faciles&nbsp;à&nbsp;comprendre.\nUtilisez&nbsp;des&nbsp;mots que&nbsp;les&nbsp;personnes connaissent&nbsp;bien.',
@@ -86,7 +86,7 @@ var rules = [
           result = false;
         }
       }
-      return {result: result, info: {}};
+      return {result: result, info: {focusPattern: pattern}};
     }},
   {priority: 3,
     text: 'Ne&nbsp;mettez&nbsp;pas trop&nbsp;de&nbsp;texte sur&nbsp;une&nbsp;page.',
@@ -101,8 +101,8 @@ var rules = [
   {priority: 2,
     text: 'Parlez&nbsp;directement&nbspaux&nbspgens. Utilisez&nbspdes&nbspmots&nbsp;comme&nbsp;"vous".',
     test: function (data) {
-      let positivePattern = /(?:vous|tu|je)/gmi;
-      let negativePattern = /(?:il|elle|on|ils|elles|nous)/gmi;
+      let positivePattern = /\W(?:vous|tu|je)\W/gmi;
+      let negativePattern = /\W(?:il|elle|on|ils|elles|nous)\W/gmi;
       let positiveCount = 0;
       let negativeCount = 0;
       for (let i = 0; i < data.raw.length; i++) {
@@ -115,12 +115,12 @@ var rules = [
           negativeCount += nm.length;
         }
       }
-      return {result: negativeCount <= positiveCount / 2, info: {}};
+      return {result: negativeCount <= positiveCount / 2, info: {focusPattern: negativePattern}};
     }},
   {priority: 2,
     text: "Utilisez&nbsp;des&nbsp;phrases&nbsp;positives. Evitez&nbsp;les&nbsp;phrases&nbsp;négatives quand&nbsp;c'est&nbsp;possible.",
     test: function (data) {
-      let pattern = /n(?:e|').+\spas[^\w]/gmi;
+      let pattern = /\Wn(?:e|').+\spas\W/gmi;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -128,7 +128,7 @@ var rules = [
           count += m.length;
         }
       }
-      return {result: count === 0, info: {}};
+      return {result: count === 0, info: {focusPattern: pattern}};
     }},
   {priority: 2,
     text: 'Alignez&nbsp;le&nbsp;texte à&nbsp;gauche.',
@@ -158,7 +158,7 @@ var rules = [
   {priority: 1,
     text: "Attention&nbsp;aux&nbsp;pronoms&nbsp;: vérifiez&nbsp;qu'il&nbsp;est&nbsp;toujours&nbsp;clair de&nbsp;qui&nbsp;ou&nbsp;de&nbsp;quoi parle&nbsp;le&nbsp;pronom.",
     test: function (data) {
-      let pattern = /(?:il|elle|on|ils|elles|nous)/gmi;
+      let pattern = /\W(?:il|elle|on|ils|elles|nous)\W/gmi;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -166,7 +166,7 @@ var rules = [
           count += m.length;
         }
       }
-      return {result: count === 0, info: {}};
+      return {result: count === 0, info: {focusPattern: pattern}};
     }},
   {priority: 1,
     text: 'Écrivez&nbsp;les&nbsp;nombres en&nbsp;chiffres, pas&nbsp;en&nbsp;lettres.',
@@ -179,7 +179,7 @@ var rules = [
           count += m.length;
         }
       }
-      return {result: count === 0, info: {}};
+      return {result: count === 0, info: {focusPattern: pattern}};
     }},
   {priority: 1,
     text: 'Favorisez le présent.',
@@ -190,7 +190,7 @@ var rules = [
   {priority: 1,
     text: 'Écrivez&nbsp;les&nbsp;dates en&nbsp;entier.',
     test: function (data) {
-      let pattern = /[^\w][0-3]?[0-9]\/[0-1]?[0-9](?:\/\d{2})?[^\w]/igm;
+      let pattern = /\W[0-3]?[0-9]\/[0-1]?[0-9](?:\/\d{2})?\W/igm;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -198,7 +198,7 @@ var rules = [
           count += m.length;
         }
       }
-      return {result: count === 0, info: {}};
+      return {result: count === 0, info: {focusPattern: pattern}};
     }},
   {priority: 1,
     text: "N'utilisez pas de mots d'une langue étrangère, sauf si ces mots sont connus.",
@@ -214,7 +214,7 @@ var rules = [
           count += m.length;
         }
       }
-      return {result: count === 0, info: {}};
+      return {result: count === 0, info: {focusPattern: pattern}};
     }},
   {priority: 1,
     text: 'Évitez les caractères spéciaux.',
@@ -222,7 +222,7 @@ var rules = [
   {priority: 1,
     text: 'Évitez toutes les abréviations.',
     test: function (data) {
-      let pattern = /[^\w](?:etc\.|par ex\.|e\.?g\.)[^\w]/gmi;
+      let pattern = /\W(?:etc\.|par ex\.|e\.?g\.)\W/gmi;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -230,12 +230,12 @@ var rules = [
           count += m.length;
         }
       }
-      return {result: count === 0, info: {}};
+      return {result: count === 0, info: {focusPattern: pattern}};
     }},
   {priority: 1,
     text: "N'utilisez jamais de chiffres romains.",
     test: function (data) {
-      let pattern = /[^\w][IVX]+[^\w]/gm;
+      let pattern = /\W[IVX]+\W/gm;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -243,7 +243,7 @@ var rules = [
           count += m.length;
         }
       }
-      return {result: count === 0, info: {}};
+      return {result: count === 0, info: {focusPattern: pattern}};
     }},
   {priority: 1,
     text: "N'écrivez pas de mots entiers en majuscules.",

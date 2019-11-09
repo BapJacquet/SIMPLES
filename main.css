@@ -369,7 +369,7 @@ li.nav-item {
 }
 
 #analysis-content {
-  font-size: 11pt;
+  font-size: 12pt;
   overflow-y: scroll;
   max-height: 100%;
   background-color: white;
@@ -532,7 +532,7 @@ li.nav-item {
 .color-red {
   font-weight: 200;
   font-size: 38px;
-  color: red;
+  color: #c10000;
   left: -10px;
 }
 
@@ -546,7 +546,7 @@ li.nav-item {
 .color-green {
   font-weight: 200;
   font-size: 38px;
-  color: #009940; /* COLOR_GREEN */
+  color: #006700; /* COLOR_GREEN */
   left: -30px;
 }
 

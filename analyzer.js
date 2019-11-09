@@ -63,7 +63,7 @@ var rules = [
           for (let j = 0; j < cm.dictionary.meanings[0].synonyms.length; j++) {
             synonyms += cm.dictionary.meanings[0].synonyms[j] + ' ';
           }
-          content += `<p><strong>Définition :</strong><br/>${cm.dictionary.meanings[0].definition}</p><p><strong>Synonymes :</strong><br/>${synonyms}</p>`;
+          content += `<p><strong>Définition :</strong><br/>${cm.dictionary.meanings[0].definition.replace(/"/g, '\'\'')}</p><p><strong>Synonymes :</strong><br/>${synonyms}</p>`;
         }
         let popover = `data-html="true" data-placement="left" data-trigger="hover" data-toggle="popover" title='${frequencyToText(cm.frequency)}' data-content="${content}"`;
 

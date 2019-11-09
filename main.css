@@ -71,6 +71,7 @@ hr {
   background: red;
   border-radius: 5px;
   border: 1px solid red;
+  cursor: pointer;
 }
 
 #redo-analyse {
@@ -251,6 +252,7 @@ button span {
 #analysis-content li {
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-column-gap: 1em;
   margin: 2em 0px;
 }
 

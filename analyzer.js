@@ -24,7 +24,21 @@ var rules = [
     test: function (data) { return {result: undefined, info: {}}; }},
   {priority: 3,
     text: "Si&nbsp;possible, une&nbsp;phrase&nbsp;doit&nbsp;tenir sur&nbsp;une&nbsp;seule&nbsp;ligne.\nSinon,&nbsp;coupez&nbsp;la&nbsp;phrase à&nbsp;l'endroit où&nbsp;une&nbsp;pause&nbsp;sera&nbsp;faite lorsque&nbsp;le&nbsp;texte&nbsp;sera&nbsp;lu à&nbsp;voix&nbsp;haute.",
-    test: function (data) { return {result: undefined, info: {}}; }},
+    test: function (data) {
+      let pattern = /[^.!?\s][^.!?\n]+[.?!\n]/gm;
+      let count = 0;
+      for (let i = 0; i < data.raw.length; i++) {
+        let m = data.raw[i].match(pattern);
+        if (!Utils.isNullOrUndefined(m)) {
+          for (let s of m) {
+            if (s.visualWidth() >= $(editor.getTextElement(i)).width()) {
+              count++;
+            }
+          }
+        }
+      }
+      return {result: count === 0, info: {}};
+    }},
   {priority: 3,
     text: 'Mettez&nbsp;un&nbsp;point et&nbsp;faites&nbsp;une&nbsp;nouvelle&nbsp;phrase avant&nbsp;de&nbsp;commencer une&nbsp;nouvelle&nbsp;idée.\nÉvitez&nbsp;les&nbsp;virgules et&nbsp;les&nbsp;"et".',
     test: function (data) {
@@ -32,18 +46,30 @@ var rules = [
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
-        console.log(m);
         if (!Utils.isNullOrUndefined(m)) {
           count += m.length;
         }
-        console.log(count);
       }
       return {result: count <= data.raw.length, info: {focusPattern: pattern}};
     }},
   {priority: 3,
     text: 'Utilisez&nbsp;des&nbsp;mots faciles&nbsp;à&nbsp;comprendre.\nUtilisez&nbsp;des&nbsp;mots que&nbsp;les&nbsp;personnes connaissent&nbsp;bien.',
     test: function (data) {
-      return {result: data.complexWords.length === 0, info: {}};
+      let appendedContent = '';
+      for(let cm of data.complexWords) {
+        let synonyms = '';
+        let content = `<p>${description(frequencyToText(cm.frequency))}</p>`;
+        if (cm.dictionary.meanings.length > 0) {
+          for (let j = 0; j < cm.dictionary.meanings[0].synonyms.length; j++) {
+            synonyms += cm.dictionary.meanings[0].synonyms[j] + ' ';
+          }
+          content += `<p><strong>Définition :</strong><br/>${cm.dictionary.meanings[0].definition}</p><p><strong>Synonymes :</strong><br/>${synonyms}</p>`;
+        }
+        let popover = `data-html="true" data-placement="left" data-trigger="hover" data-toggle="popover" title='${frequencyToText(cm.frequency)}' data-content="${content}"`;
+
+        appendedContent += `<button type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
+      }
+      return {result: data.complexWords.length === 0, info: {append: '<div>' + appendedContent + '</div>'}};
     }},
   {priority: 3,
     text: 'Expliquez&nbsp;clairement les&nbsp;mots&nbsp;difficiles au&nbsp;moment où&nbsp;ils&nbsp;sont&nbsp;utilisés.',
@@ -171,7 +197,7 @@ var rules = [
   {priority: 1,
     text: 'Écrivez&nbsp;les&nbsp;nombres en&nbsp;chiffres, pas&nbsp;en&nbsp;lettres.',
     test: function (data) {
-      let pattern = /(?:deux|trois|quatres|cinq|six|sept|huigt|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingt|trente|quarante|cinquante|soixante|cent|mille)/ig
+      let pattern = /\W(?:deux|trois|quatre|cinq|six|sept|huigt|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|cent|mille)(?:(?:-|\s)?(?:deux|trois|quatre|cinq|six|sept|huigt|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|cent|mille))*\W/ig
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -454,7 +480,7 @@ async function checkTokensComplexity (tokens, checkedWords) {
       }
       switch (frequencyToText(word.frequency)) {
         case 'inconnu': case 'très rare': case 'rare': case 'commun':
-          word.dictionary = await getDictionaryEntry(word.lemma || word.text);
+          word.dictionary = await getInternauteEntry(word.lemma || word.text);
           complexWords.push(word);
           break;
       }
@@ -470,7 +496,7 @@ async function checkTokensComplexity (tokens, checkedWords) {
  */
 function needLexique3 (pos) {
   switch (pos) {
-    case 'PUNCT' : case 'ADP' : case 'DET' : case 'PRON' : case 'PART': return false;
+    case 'PUNCT' : case 'ADP' : case 'DET' : case 'PRON' : case 'PART': case 'SCONJ': case 'CONJ': case 'NUM': return false;
     default: return true;
   }
 }
@@ -560,11 +586,12 @@ function createCORSRequest (method, url, async = true) {
   return xhr;
 }
 
-async function getDictionaryEntry (word) {
+async function getGoogleEntry (word) {
   let response;
   try {
-    response = await $.get('https://googledictionaryapi.eu-gb.mybluemix.net/', {define: word, lang: 'fr'});
+    response = await $.get('https://googledictionaryapi.eu-gb.mybluemix.net/', {define: encodeURIComponent(word), lang: 'fr'});
   } catch (e) {
+    console.log("Error: " + e.message);
     return {meanings: []};
   }
   let result = {
@@ -578,6 +605,30 @@ async function getDictionaryEntry (word) {
         definition: response[i].meaning[type].definitions[j].definition,
         example: response[i].meaning[type].definitions[j].example,
         synonyms: response[i].meaning[type].definitions[j].synonyms
+      });
+    }
+  }
+  return result;
+}
+
+async function getInternauteEntry (word, pos = null) {
+  let response;
+  try {
+    response = await $.get('./internaute_proxy.php', {word: encodeURIComponent(word)});
+  } catch (e) {
+    console.log("Error: " + e.message);
+    return {meanings: []};
+  }
+  response = JSON.parse(response);
+  let result = {meanings: []};
+  for (let i = 0; i < response.length; i++) {
+    let type = response[i].pos;
+    for (let j = 0; j < response[i].meanings.length; j++) {
+      result.meanings.push({
+        type: type,
+        definition: response[i].meanings[j].definition,
+        example: response[i].meanings[j].example,
+        synonyms: response[i].meanings[j].synonyms
       });
     }
   }
@@ -612,7 +663,7 @@ async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: t
     }
     if (options.qwant) {
       try {
-        let response = await fetch(`qwant_proxy.php?count=10&q=${keyword}`);
+        let response = await fetch(`qwant_proxy.php?count=10&q=${keyword} pictogramme`);
         let json = await response.json();
         let items = json.data.result.items;
         for (let r in items) {

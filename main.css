@@ -72,6 +72,7 @@ hr {
   border-radius: 5px;
   border: 1px solid red;
   cursor: pointer;
+  margin: 2px;
 }
 
 #redo-analyse {

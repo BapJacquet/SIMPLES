@@ -65,6 +65,7 @@ class Editor {
       },
       newBlock: {
         key: Keyboard.keys.ENTER,
+        shortKey: true,
         //prefix: /\n/m,
         handler: () => {
           let s = this.getSelection();
@@ -1374,6 +1375,10 @@ class Editor {
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      this.dispatchImageLoaded(Number(selector.substring(5)));
+    };
+    img.onerror = () => {
+      alert("Erreur lors du chargement de l'image.");
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
     img.src = src;

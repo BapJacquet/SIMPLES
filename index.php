@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html charset=utf-8" />
 	<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0">
-	<title>SimpLEs</title>
+	<title>Lirec</title>
 
   <!-- === HTML to PDF ===-->
 	<script src="./html2canvas.min.js"></script>
@@ -406,6 +406,7 @@
 	<script type="text/javascript" src="analyzer.js"></script>
 	<script type="text/javascript" src="animator.js"></script>
 	<script type="text/javascript" src="utils.js"></script>
+	<script type="text/javascript" src="extensions.js"></script>
 	<script type="text/javascript" src="converter.js"></script>
 	<script type="text/javascript" src="w3color.js"></script>
 

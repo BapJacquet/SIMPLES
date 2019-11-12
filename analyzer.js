@@ -516,7 +516,9 @@ async function checkLexique3 (word) {
   let pos = convertPos(word.pos, 'Lexique3');
   console.log(text + '  ' + pos);
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  let response = await fetch(`https://sioux.univ-paris8.fr/simples/lexique3_multi.php?word=${text}&pos=${pos}`)
+  let response = await fetch(`${window.location.origin}/${window.location.pathname.split('/')[1]}/lexique3_multi.php?word=${text}&pos=${pos}`)
+  // let response = await fetch(`http://51.91.138.70/lirec/lexique3_multi.php?word=${text}&pos=${pos}`)
+  // let response = await fetch(`https://sioux.univ-paris8.fr/simples/lexique3_multi.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`http://localhost:8888/simples2/lexique3_multi.php?word=${text}&pos=${pos}`)
     .catch(function (error) {

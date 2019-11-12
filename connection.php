@@ -5,6 +5,7 @@ $base=connect();
 $date = date('Y-m-d');
 $time = date('H:i:s');
 $clientIP = $_SERVER["REMOTE_ADDR"];
+if ( $clientIP == '::1' ) exit;
 $version = $_POST["version"];
 $user = $_POST["user"];
 //echo $version; exit;
@@ -20,7 +21,7 @@ if (!$result) {
   echo $query;
 }
 else {
-  if ( $user == 'ok' ) echo 'http://sioux.univ-paris8.fr/simples/index.php';
+  if ( $user == 'ok' ) exit; // echo 'http://sioux.univ-paris8.fr/simples/index.php';
   else echo 'error';
 }
 /*

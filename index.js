@@ -171,8 +171,9 @@ function onVerifyClick(){
         color = result.rules[i].success ? 'green': 'red';
         regexp = result.rules[i].success ? null : result.rules[i].info.focusPattern;
       }
+      let appendedContent = result.rules[i].info.append || '';
       regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick='editor.selectNextMatch(" + regexp.toString() + ");'><i class='fas fa-search'></i></button>";
-      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div>${result.rules[i].rule}</div>${regexp}</li>`);
+      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div><div>${result.rules[i].rule}</div>${appendedContent}</div>${regexp}</li>`);
       $(`#analysis-${tab}-content ul li`).hide();
     }
     // Animations pour faire apparaitre les items.
@@ -187,6 +188,7 @@ function onVerifyClick(){
     });
 
     $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
+    $('[data-toggle="popover"]').popover();
   });
 }
 
@@ -323,7 +325,7 @@ function sendtoEditor(tool, val) {
   if ( tool == "color" ) {
     switch( val ) {
       case 'red':
-        v = "#ff0000"; break;
+        v = COLOR_RED; break;
       case 'green':
         v = COLOR_GREEN; break;
       case 'blue':
@@ -356,7 +358,7 @@ function setFormatAtToolbar(format) {
   console.log("couleur from ed: " + color);
 
   switch( color ) {
-    case "#ff0000":
+    case COLOR_RED:
       color = 'red'; break;
     case COLOR_GREEN:
       color = 'green'; break;
@@ -1361,6 +1363,7 @@ $("#toolbarBottomMask").hover( function () {
 
   // new connection
   $(window).on("load", function() {
+    if ( window.location.port == "8888") return;
     var version = navigator.platform + ' ' + navigator.userAgent;
     $.ajax({
       url: 'connection_count.php',
@@ -1416,7 +1419,10 @@ $("#toolbarBottomMask").hover( function () {
 //  ****************************************************************************
 
 // user
-//if ( localStorage.user == undefined || localStorage.user != "ok" ) window.location = "http://sioux.univ-paris8.fr/simples/index.html";
+//debugger;
+if ( localStorage.user == undefined || localStorage.user != "ok" ) askUserName();
+//else window.location = window.location.href.split(".")[0] + ".php";
+
 
 const editor = new Editor('#editor');
 
@@ -1460,7 +1466,8 @@ const TOOLBAR_WIDTH = 790; /* 870; /* 840; */
 const TOOLBAR_DECAL_RIGHT = 40; /* 30; /* 22 */
 const LOGO_DECAL = 10; /* 65; */
 const TOOL_BACK_COLOR = "#f0f0f0";
-const COLOR_GREEN = "#009940"; // "#2ea35f";
+const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
+const COLOR_RED = "#c10000";
 
 //const TOOLBAR_BLOCK_LEFT = {"bold": 0, "size": -64, "color": -158, "title": -240, "bullet": -328, "frame": -355, "picture": -390};
 const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "frame": -287, "picture": -322};

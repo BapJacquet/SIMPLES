@@ -10,7 +10,7 @@ function connect()
 	if (!$idcomW)
 	{
 	  echo "<script type=text/javascript>";
-		echo "alert('Connexion mode Write Impossible à la base DRUMY')</script>";
+		echo "alert('Connexion mode Write Impossible à la base simples')</script>";
 		exit();
 	}
 	$idcomW->query("SET sql_mode = 'ONLY_FULL_GROUP_BY'");

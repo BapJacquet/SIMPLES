@@ -198,6 +198,7 @@
 				<span id="analyze" class="simples-span" >
 					<button id="verify-button" type="button" class="simples-button">Analyse</button>
 				</span>
+				<div><div id="toolMask"></div></div>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
 					<img id="img-arrow-r" src="img/carat-r-white.png">
@@ -208,6 +209,7 @@
 			<!-- double div to avoid 'à méditer pour Seb' -->
 			<div><div id="toolbarBottomMask"></div></div>
 			<div><div id="toolbarScrollBar"></div></div>
+
 
 			<!--															E D I T O R  -->
 			<div class="hbox">

@@ -104,6 +104,10 @@
 				  </div>
 				</div>
 
+				<div>
+					<a id="pingbutton"><i class="fas fa-exclamation-triangle"></i></a>
+				</div>
+
 				<!-- hidden input for file dialog -->
 				<input type="file" id="openFileInput" style="display:none;">
 				<!-- hidden input for file colorpicker

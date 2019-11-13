@@ -11,6 +11,66 @@
 
 var body = $('body').get(0);
 
+var pings = {
+  Principal: {
+    url: './index.php',
+    latency: 0,
+    usable: true
+  },
+  Lexique3: {
+    url: './lexique3_multi.php',
+    latency: 0,
+    usable: true
+  },
+  Stanford: {
+    url: 'http://sioux.univ-paris8.fr:9000',
+    latency: 0,
+    usable: true
+  }
+}
+
+$('#pingbutton').on('click', function () {
+  simplesAlert('Notifications', 'fa-exclamation-triangle', '<div><div id="pingers">Un instant...<div></div>');
+});
+$('#pingbutton').hide();
+
+var pingClock = setInterval(async function () {
+  let s = '';
+  for (let p in pings) {
+    pings[p] = await ping(pings[p]);
+    let use = pings[p].usable ? '(Utilisable)' : '(Inaccessible)';
+    s += `<div>${p} : ${pings[p].latency}ms ${use}</div>`;
+  }
+  if (pings.Principal.latency > 500 || pings.Lexique3.latency > 500 || pings.Stanford.latency > 500) {
+    $('#pingbutton').show(150);
+  } else {
+    $('#pingbutton').hide(150);
+  }
+  $('#pingers').html(s);
+}, 1000)
+
+async function ping (object) {
+  var start = $.now();
+  let p = new Promise((resolve, reject) => {
+    $.ajax({
+      type: 'HEAD',
+      url: object.url,
+      cache: false,
+      success: function () {
+        object.usable = true;
+      },
+      error: function () {
+        object.usable = false;
+      },
+      complete: function () {
+        object.latency = $.now() - start;
+        resolve(object);
+      }
+    });
+  })
+  return p;
+}
+
 var rules = [
   // Prioritaires
   {priority: 3,
@@ -471,7 +531,7 @@ async function checkTokensComplexity (tokens, checkedWords) {
       text: tokens[t].word,
       pos: tokens[t].pos
     };
-    if (needLexique3(word.pos)) {
+    if (needLexique3(word.pos) && pings.Lexique3.usable) {
       checkedWords.push(word);
       let data = await checkLexique3(word);
       if (!Utils.isNullOrUndefined(data)) {
@@ -516,7 +576,7 @@ async function checkLexique3 (word) {
   let pos = convertPos(word.pos, 'Lexique3');
   console.log(text + '  ' + pos);
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  let response = await fetch(`${window.location.origin}/${window.location.pathname.split('/')[1]}/lexique3_multi.php?word=${text}&pos=${pos}`)
+  let response = await fetch(`lexique3_multi.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`http://51.91.138.70/lirec/lexique3_multi.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`https://sioux.univ-paris8.fr/simples/lexique3_multi.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
@@ -689,11 +749,7 @@ async function checkFalcQuality (editor) {
   for (let i = 0; i < editor.blockCount; i++) {
     let text = editor.getRawTextContent(i);
     rawTextContent.push(text);
-    //if (text !== '') {
-      sentencesTokens.push(await getTokens(text));
-    /*} else {
-      sentencesTokens.push({sentences: []});
-    }*/
+    if (pings.Stanford.usable) sentencesTokens.push(await getTokens(text));
     fullStyledContent.push(editor.getStyledText(i));
     dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
   }
@@ -702,9 +758,11 @@ async function checkFalcQuality (editor) {
   let complexWords = [];
   let checkedWords = [];
   for (let i = 0; i < editor.blockCount; i++) {
-    for (let s = 0; s < sentencesTokens[i].sentences.length; s++) {
-      let cw = await checkTokensComplexity(sentencesTokens[i].sentences[s].tokens, checkedWords);
-      complexWords = complexWords.concat(cw);
+    if (sentencesTokens.length > 0) {
+      for (let s = 0; s < sentencesTokens[i].sentences.length; s++) {
+        let cw = await checkTokensComplexity(sentencesTokens[i].sentences[s].tokens, checkedWords);
+        complexWords = complexWords.concat(cw);
+      }
     }
     dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
   }

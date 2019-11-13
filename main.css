@@ -770,6 +770,17 @@ li.nav-item {
   border-top-left-radius: 0;  /* 5px */
 }
 
+#toolMask {
+  position: relative;
+  float: right;
+  top: -54px;
+  left: 133px;
+  height: 63px;
+  width: 20px;
+  z-index: 550;
+  background-color: white;
+}
+
 /*     Simples! button */
 .simples-button {
   position: relative;
@@ -782,26 +793,20 @@ li.nav-item {
   width: 126px;
   height: 70px;
   background-color: #009940;
-  /*background-color: #e4e4e4;*/ /* #f0f0f0; /* TOOL_BACK_COLOR */
   color: white;
   font-size: 26px;
   font-weight: 500;
 }
 
 .simples-button.active {
-  /*  border: 1px solid #009940; */
   top: 20px;
   transition: top 0.3s;
   height: 75px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  /* transition: border-radius 0.3s; */
-  /* border-radius: 10px 10px 0px 0px; */
 }
 
 .simples-button:hover {
-  /* background-color: #37b25c; */
-  /*border-color: #009940;*/
   background-color: #10A950;
 }
 

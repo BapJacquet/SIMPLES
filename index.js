@@ -1328,10 +1328,10 @@ $("#toolbarBottomMask").hover( function () {
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
     $("#toolbarlist").css({"left": move});
     if ( TOOLBAR_WIDTH < $(body).width() ) {
-      $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
+      $("#toolbarScrollBar").css({"background-color": "white"});
     }
     else {
-      $("#toolbarScrollBar").css({"background-color": "white"});
+      $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
     }
     if ( TOOLBAR_WIDTH < $(body).width() - LOGO_DECAL) {
       $("#logoLirec").css("visibility","visible");
@@ -1363,7 +1363,6 @@ $("#toolbarBottomMask").hover( function () {
 
   // new connection
   $(window).on("load", function() {
-    if ( window.location.port == "8888") return;
     var version = navigator.platform + ' ' + navigator.userAgent;
     $.ajax({
       url: 'connection_count.php',

@@ -85,7 +85,7 @@ hr {
   padding: 0;
   padding-top: 5px;
   padding-bottom: 1px;
-  /* background-color: #eee; */
+  background-color: #f6f6f6;
   font-size: 13pt;
   font-weight: 600;
   cursor: pointer;
@@ -393,20 +393,21 @@ li.nav-item {
   user-select: none;
   margin-left: 20px;
   margin-top: 2px;
+  border-bottom: 1px solid #b6b4b6;
   height: 36px;
   position: relative;
   left: 80px;
 }
 
 .main-menu { /* menu button */
-  color: #009940; /* COLOR_GREEN */
+  color: #353a40; /* #009940; /* COLOR_GREEN */
   background-color: white;
   border: none;
   font-size: 20px;
 }
 
 .main-menu:hover {
-  background-color: #888;
+  /* background-color: #888; */
 }
 
 .dropdown-toggle:hover {
@@ -434,12 +435,12 @@ li.nav-item {
 
 #toolbarScrollBar {
   height: 13px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #b6b4b6;
 }
 
 #toolbar {
   height: 72px; /* 76 */
-  background-color: #f0f0f0; /* TOOL_BACK_COLOR */
+  background-color: white; /* #f0f0f0; /* TOOL_BACK_COLOR */
   color: white;
 }
 
@@ -772,7 +773,7 @@ li.nav-item {
 /*     Simples! button */
 .simples-button {
   position: relative;
-  top: 12px;
+  top: 17px;
   left: -13px;
   transition: top 0.3s;
   border: 1px solid #009940;

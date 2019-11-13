@@ -772,21 +772,13 @@ li.nav-item {
 
 #toolMask {
   position: relative;
-<<<<<<< HEAD
   float: right;
   top: -54px;
   left: 133px;
-=======
-  top: -76px;
->>>>>>> 770e1d5cef7e3c620d4829fbf8e73e939cea0891
   height: 63px;
   width: 20px;
   z-index: 550;
   background-color: white;
-<<<<<<< HEAD
-=======
-  float: right;
->>>>>>> 770e1d5cef7e3c620d4829fbf8e73e939cea0891
 }
 
 /*     Simples! button */

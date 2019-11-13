@@ -205,6 +205,8 @@
 			<!-- double div to avoid 'à méditer pour Seb' -->
 			<div><div id="toolbarBottomMask"></div></div>
 			<div><div id="toolbarScrollBar"></div></div>
+			<div><div id="toolMask"></div></div>
+
 
 
 			<!--															E D I T O R  -->

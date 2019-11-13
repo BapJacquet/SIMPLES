@@ -1464,7 +1464,7 @@ const PICTURE_INIT = true;
 const TOOLBAR_WIDTH = 790; /* 870; /* 840; */
 const TOOLBAR_DECAL_RIGHT = 40; /* 30; /* 22 */
 const LOGO_DECAL = 10; /* 65; */
-const TOOL_BACK_COLOR = "#f0f0f0";
+const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0"; 
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
 const COLOR_RED = "#c10000";
 

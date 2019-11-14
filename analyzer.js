@@ -41,7 +41,8 @@ var pingClock = setInterval(async function () {
     let use = pings[p].usable ? '(Utilisable)' : '(Inaccessible)';
     s += `<div>${p} : ${pings[p].latency}ms ${use}</div>`;
   }
-  if (pings.Principal.latency > 500 || pings.Lexique3.latency > 500 || pings.Stanford.latency > 500) {
+  if (pings.Principal.latency > 500 || pings.Lexique3.latency > 500 || pings.Stanford.latency > 500 ||
+      !pings.Principal.usable || !pings.Lexique3.usable || !pings.Stanford.usable) {
     $('#pingbutton').show(150);
   } else {
     $('#pingbutton').hide(150);

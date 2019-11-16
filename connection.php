@@ -5,12 +5,11 @@ $base=connect();
 $date = date('Y-m-d');
 $time = date('H:i:s');
 $clientIP = $_SERVER["REMOTE_ADDR"];
-if ( $clientIP == '::1' ) exit;
 $version = $_POST["version"];
 $user = $_POST["user"];
 //echo $version; exit;
 if ( $user == 'lutins' ) $user = 'ok';
-else $user ='';
+else $user ='unknown';
 
 $query = "INSERT INTO Connection (`user`, `clientIP`, `date`, `time`, `version`) VALUES ('$user', '$clientIP', '$date', '$time', '$version')";
 $result = $base->query($query);

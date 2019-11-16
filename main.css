@@ -85,7 +85,7 @@ hr {
   padding: 0;
   padding-top: 5px;
   padding-bottom: 1px;
-  /* background-color: #eee; */
+  background-color: #f6f6f6;
   font-size: 13pt;
   font-weight: 600;
   cursor: pointer;
@@ -391,22 +391,30 @@ li.nav-item {
   -webkit-user-select: none; /* Safari 3.1+ */
   -moz-user-select: none; /* Firefox 2+ */
   user-select: none;
-  margin-left: 20px;
+  margin-left: 100px;
   margin-top: 2px;
+  border-bottom: 1px solid #b6b4b6;
   height: 36px;
-  position: relative;
-  left: 80px;
+  display:grid;
+  grid-template-columns: 1fr auto;
+}
+
+#pingbutton {
+  font-size: 17pt;
+  cursor: pointer;
+  margin: 0 1em;
+  color: #c10000;
 }
 
 .main-menu { /* menu button */
-  color: #009940; /* COLOR_GREEN */
+  color: #353a40; /* #009940; /* COLOR_GREEN */
   background-color: white;
   border: none;
   font-size: 20px;
 }
 
 .main-menu:hover {
-  background-color: #888;
+  /* background-color: #888; */
 }
 
 .dropdown-toggle:hover {
@@ -434,12 +442,12 @@ li.nav-item {
 
 #toolbarScrollBar {
   height: 13px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #b6b4b6;
 }
 
 #toolbar {
   height: 72px; /* 76 */
-  background-color: #f0f0f0; /* TOOL_BACK_COLOR */
+  background-color: white; /* #f0f0f0; /* TOOL_BACK_COLOR */
   color: white;
 }
 
@@ -684,7 +692,7 @@ li.nav-item {
 }
 
 #bullet-caption {
-  left: 48px;
+  left: 52px;
 }
 
 #frame-caption {
@@ -769,10 +777,21 @@ li.nav-item {
   border-top-left-radius: 0;  /* 5px */
 }
 
+#toolMask {
+  position: relative;
+  float: right;
+  top: -54px;
+  left: 133px;
+  height: 63px;
+  width: 20px;
+  z-index: 550;
+  background-color: white;
+}
+
 /*     Simples! button */
 .simples-button {
   position: relative;
-  top: 12px;
+  top: 17px;
   left: -13px;
   transition: top 0.3s;
   border: 1px solid #009940;
@@ -781,26 +800,20 @@ li.nav-item {
   width: 126px;
   height: 70px;
   background-color: #009940;
-  /*background-color: #e4e4e4;*/ /* #f0f0f0; /* TOOL_BACK_COLOR */
   color: white;
   font-size: 26px;
   font-weight: 500;
 }
 
 .simples-button.active {
-  /*  border: 1px solid #009940; */
   top: 20px;
   transition: top 0.3s;
   height: 75px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  /* transition: border-radius 0.3s; */
-  /* border-radius: 10px 10px 0px 0px; */
 }
 
 .simples-button:hover {
-  /* background-color: #37b25c; */
-  /*border-color: #009940;*/
   background-color: #10A950;
 }
 

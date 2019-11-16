@@ -1328,10 +1328,10 @@ $("#toolbarBottomMask").hover( function () {
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
     $("#toolbarlist").css({"left": move});
     if ( TOOLBAR_WIDTH < $(body).width() ) {
-      $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
+      $("#toolbarScrollBar").css({"background-color": "white"});
     }
     else {
-      $("#toolbarScrollBar").css({"background-color": "white"});
+      $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
     }
     if ( TOOLBAR_WIDTH < $(body).width() - LOGO_DECAL) {
       $("#logoLirec").css("visibility","visible");
@@ -1363,7 +1363,6 @@ $("#toolbarBottomMask").hover( function () {
 
   // new connection
   $(window).on("load", function() {
-    if ( window.location.port == "8888") return;
     var version = navigator.platform + ' ' + navigator.userAgent;
     $.ajax({
       url: 'connection_count.php',
@@ -1465,11 +1464,10 @@ const PICTURE_INIT = true;
 const TOOLBAR_WIDTH = 790; /* 870; /* 840; */
 const TOOLBAR_DECAL_RIGHT = 40; /* 30; /* 22 */
 const LOGO_DECAL = 10; /* 65; */
-const TOOL_BACK_COLOR = "#f0f0f0";
+const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0"; 
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
 const COLOR_RED = "#c10000";
 
-//const TOOLBAR_BLOCK_LEFT = {"bold": 0, "size": -64, "color": -158, "title": -240, "bullet": -328, "frame": -355, "picture": -390};
 const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "frame": -287, "picture": -322};
 
 var activeTools = {}; // tools present state

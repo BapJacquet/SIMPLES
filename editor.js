@@ -1347,6 +1347,7 @@ class Editor {
    * @param {int} requestedWidth - Width of the resulting image.
    */
   async setImage (selector, src, requestedWidth) {
+    if (src === '') src = './img/placeholder.png';
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
@@ -1377,8 +1378,8 @@ class Editor {
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
-    img.onerror = () => {
-      alert("Erreur lors du chargement de l'image.");
+    img.onerror = (e) => {
+      alert("Erreur lors du chargement de l'image." + e);
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
     img.src = src;
@@ -1681,7 +1682,7 @@ class Editor {
           object.blocks.push({
             type: 'default',
             content: this.getQuill(i).getContents(),
-            image: $('#img-' + i)[0].dataURL,
+            image: this.getImageElement(0).dataURL,
             options: {
               leftPicture: false,
               rightPicture: format.picture,

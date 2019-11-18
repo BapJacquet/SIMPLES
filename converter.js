@@ -29,6 +29,7 @@ class Converter {
         case 'default':
           if (blockFormat.picture) {
             content += `<div class="lefttext">${editor.getTextElement(i).innerHTML}</div>`;
+            console.log(editor.getTextElement(i).dataURL)
             content += `<div class="rightpicture"><img src="${editor.getImageElement(i).dataURL}"></img></div>`;
           } else {
             content = `<div class="fulltext">${editor.getTextElement(i).innerHTML}</div>`;

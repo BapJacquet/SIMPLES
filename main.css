@@ -435,7 +435,7 @@ li.nav-item {
 #toolbarBottomMask {
   z-index: 500;
   position: absolute;
-  top: 85px;
+  top: 92px;
   height: 22px;
   width: 100%;
 }
@@ -649,19 +649,26 @@ li.nav-item {
 }
 
 /*                  PICTURE */
-#picture {
+#picture,
+#pictureL {
   color: black;
 }
 
-.picture-true {
+.picture-true,
+.pictureL-true {
   font-weight: 200;
   font-size: 38px;
 }
 
-.picture-false {
+.picture-false,
+.pictureL-false {
   font-weight: 200;
   font-size: 38px;
   left: 24px;
+}
+
+#pictureText {
+  top: -5px;
 }
 
 /*              caption     */
@@ -696,10 +703,15 @@ li.nav-item {
 }
 
 #frame-caption {
-  left: 52px;
+  left: 54px;
+}
+
+#pictureL-caption {
+  left: 71px;
 }
 
 #picture-caption {
+  visibility: hidden;
   left: 55px;
 }
 

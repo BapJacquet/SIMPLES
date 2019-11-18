@@ -178,6 +178,18 @@
 						</div>
 					</div>
 
+					<div id="pictureL">
+						<div id="pictureL-caption" class="caption">images</div>
+						<div class="tool-frame-bullet pictureL-true check"><img src="img/pictureLTrue.png" /></div>
+						<div  id="pictureL-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+					</div>
+
+					<div id="pictureText">
+						<img src="img/pictureText.png" />
+					</div>
+
 					<div id="picture">
 						<div id="picture-caption" class="caption">image</div>
 						<div class="tool-frame-bullet picture-true check"><img src="img/pictureTrue.png" /></div>

@@ -576,8 +576,8 @@ li.nav-item {
   top: -10px;
 }
 
-#tool-limit-bullet {
-  left: 10px;
+#tool-limit-number {
+  left: 23px;
   top: -10px;
 }
 
@@ -623,16 +623,15 @@ li.nav-item {
 .bullet-true {
   font-weight: 200;
   font-size: 38px;
-  top: 1px;
 }
 
-.bullet-false {
+/*                  NUMBER  */
+.number-true {
   font-weight: 200;
   font-size: 38px;
-  left: 24px;
 }
 
-/*                  FRAME */
+/*                  FRAME  */
 #frame {
   color: black;
 }
@@ -640,12 +639,6 @@ li.nav-item {
 .frame-true {
   font-weight: 200;
   font-size: 38px;
-}
-
-.frame-false {
-  font-weight: 200;
-  font-size: 38px;
-  left: 24px;
 }
 
 /*                  PICTURE */
@@ -700,6 +693,10 @@ li.nav-item {
 
 #bullet-caption {
   left: 52px;
+}
+
+#number-caption {
+  left: 64px;
 }
 
 #frame-caption {

@@ -167,7 +167,15 @@
 						<div  id="bullet-cursor" class="tool-cursor">
 							<img src="img/arrow-u-black.png" />
 						</div>
-						<div id="tool-limit-bullet" class="tool-limit">|</div>
+					</div>
+
+					<div id="number">
+						<div id="number-caption" class="caption">numéro</div>
+						<div class="tool-frame-bullet number-true check"><img src="img/numberTrue.png" /></div>
+						<div  id="number-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+						<div id="tool-limit-number" class="tool-limit">|</div>
 					</div>
 
 					<div id="frame">

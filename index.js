@@ -220,6 +220,7 @@ function initToolbar() {                 // tool cursor initial values
   $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
   $("#title-cursor").css("left", CURSOR_DATA["title-" + TITLE_INIT]);
   $("#bullet-cursor").css("left", CURSOR_DATA["bullet-" + BULLET_INIT]);
+  $("#number-cursor").css("left", CURSOR_DATA["number-" + NUMBER_INIT]);
   $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
   $("#pictureL-cursor").css("left", CURSOR_DATA["pictureL-" + PICTUREL_INIT]);
   $("#picture-cursor").css("left", CURSOR_DATA["picture-" + PICTURE_INIT]);
@@ -233,6 +234,7 @@ function initToolbar() {                 // tool cursor initial values
   activeTool("color", COLOR_INIT);
   activeTool("title", TITLE_INIT);
   activeTool("bullet", BULLET_INIT);
+  activeTool("number", NUMBER_INIT);
   activeTool("frame", FRAME_INIT);
   activeTool("pictureL", PICTUREL_INIT);
   activeTool("picture", PICTURE_INIT);
@@ -828,9 +830,9 @@ $("#aideItem").on("click", function () {
 
 // jquery tool hover
   $(".tool, .tool-frame-bullet").mouseenter( function () {
-    $(this).css({"top":"-5px", "cursor": "pointer"});
+    if ( editor.hasFocus ) $(this).css({"top":"-5px", "cursor": "pointer"});
   } ).mouseleave( function () {
-    $(this).css({"top":"0", "cursor": "default"});
+    if ( editor.hasFocus ) $(this).css({"top":"0", "cursor": "default"});
   } );
 
 $("#toolbarBottomMask").hover( function () {
@@ -841,20 +843,22 @@ $("#toolbarBottomMask").hover( function () {
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-    $(this).animate({"top": "-16px"}, 200,
-      function () {
-        $(this).animate({"top": 0}, 100,
-          function () { $(this).blur();
-        });
-      }
-    );
+    if ( editor.hasFocus ) {
 
-    toolClick(e, this);
-    $(this).trigger("mouseleave");
-    setTimeout( function () {
-      triggerPseudoMouseenter(0);
-    }, 15);
+      $(this).animate({"top": "-16px"}, 200,
+        function () {
+          $(this).animate({"top": 0}, 100,
+            function () { $(this).blur();
+          });
+        }
+      );
 
+      toolClick(e, this);
+      $(this).trigger("mouseleave");
+      setTimeout( function () {
+        triggerPseudoMouseenter(0);
+      }, 15);
+    }
   } );
 
 //                                    C O L O R P I C K E R
@@ -1456,6 +1460,8 @@ const CURSOR_DATA = {
 
     "bullet-true": "-16px",
 
+    "number-true": "-14px",
+
     "frame-true": "-16px",
 
     "pictureL-true": "-31px",
@@ -1469,6 +1475,7 @@ const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
 const BULLET_INIT = false;
+const NUMBER_INIT = false;
 const FRAME_INIT = false;
 const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
@@ -1480,7 +1487,7 @@ const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
 const COLOR_RED = "#c10000";
 
-const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "frame": -287, "pictureL": -322, "pictureText": -354, "picture": -412};
+const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "number": -310, "frame": -320, "pictureL": -355, "pictureText": -387, "picture": -445};
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;

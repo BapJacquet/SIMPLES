@@ -368,7 +368,7 @@
         </div>
 				<label class="col-form-label">Entrer une URL ou des mots-clés</label>
 				<div class="input-group mb-3">
-					<input  id="image-url" type="text" class="form-control">
+					<input  id="image-url" type="text" class="form-control" data-val="">
 					<div class="input-group-append">
 						<button id="modalFind" type="button" class="btn btn-secondary">Chercher</button>
 					</div>

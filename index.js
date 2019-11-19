@@ -560,8 +560,14 @@ function displayWebImages(imgURLs) {
   serchText: ["mot1 mot2"]}
   */
   $("#imageClickModal").find(".modal-images").html(""); // clear images
-  $("#imageClickModal").find("#image-url").val(imgURLs.searchText); // keywords
-
+  var keywords = imgURLs.searchText;
+  if ( keywords ) {
+    $("#imageClickModal").find("#image-url").val(keywords); // keywords
+    $("#image-url").attr("data-val", keywords);
+  }
+  else {
+    $("#imageClickModal").find("#image-url").val($("#image-url").attr("data-val"));
+  }
   var arasaac = imgURLs.arasaac;
   if ( arasaac.length ) {
     for (let i = 0; i < arasaac.length; i++) {
@@ -644,6 +650,7 @@ $("#imageClickModal").find("#modalFind").on("click", function (ev) {
         displayWebImages(result);
         $(".loader").hide();
       });
+      $("#image-url").attr("data-val", urlOrKeyword);
     }
   }
 });

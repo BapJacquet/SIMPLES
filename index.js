@@ -281,7 +281,6 @@ function moveCursor(tool, val, anim) {
       else {
         $(cursor).css("visibility", "visible");
       }
-
       var newTool = tool + "-" + val;
       var position = CURSOR_DATA[newTool];
       if ( anim ) $(cursor).animate({"left": position}, 150);
@@ -923,7 +922,7 @@ $("#toolbarBottomMask").hover( function () {
       if ( offset.left >= 0  &&  dragMouse > 0)
           $("#toolbarlist").css({"left": 0});
       else if ( offset.left <= trueWidth - TOOLBAR_WIDTH  &&  dragMouse < 0)
-          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH});
+          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH });
       else $("#toolbarlist").css({"left": offset.left + dragMouse});
     }
   });
@@ -1209,6 +1208,7 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget").offset(widgetOffset);
     }
   });
+
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
       $(".img-txt-widget").css("display", "none");
   });
@@ -1480,14 +1480,14 @@ const FRAME_INIT = false;
 const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
 
-const TOOLBAR_WIDTH = 790; /* 870; /* 840; */
-const TOOLBAR_DECAL_RIGHT = 40; /* 30; /* 22 */
-const LOGO_DECAL = 10; /* 65; */
+const TOOLBAR_WIDTH = 900; /* 790; /* 870; /* 840; */
+const TOOLBAR_DECAL_RIGHT = 35; /* 40; /* 30; /* 22 */
+const LOGO_DECAL = 50; /* 65; */
 const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
 const COLOR_RED = "#c10000";
 
-const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "number": -310, "frame": -320, "pictureL": -355, "pictureText": -387, "picture": -445};
+const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -255, "number": -310, "frame": -320, "pictureL": -355, "pictureText": -387, "picture": -445};
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;

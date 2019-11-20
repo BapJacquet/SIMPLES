@@ -45,13 +45,27 @@
   /* cursor: text; */
 }
 
-/*.editor-block.text-block {
-  grid-template-columns: 1fr 100px;
-  margin: auto 0;
-}*/
+.editor-block.text-block {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+}
+
+.editor-block.text-block .left-image {
+  grid-column: 1;
+}
+
+.editor-block.text-block .right-image {
+  grid-column: 3;
+}
+
+.editor-block.text-block .editor-text {
+  grid-column: 2;
+}
 
 .editor-text {
   border: none;
+  align-self: center;
+  height: auto;
   font-family: Arial, sans-serif;
   font-size: 14pt;
   /*margin: 10px 1em 10px 1em;*/

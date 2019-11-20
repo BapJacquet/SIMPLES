@@ -19,7 +19,7 @@ class Editor {
    */
   constructor (id) {
     this.id = id;
-    this.fileVersion = 2;
+    this.fileVersion = 3;
     this.format = null;
     this.initializeStyles();
     this.initializeQuill();
@@ -55,7 +55,7 @@ class Editor {
         shortKey: true,
         handler: () => {
           console.log('test2!');
-          let w = this.getCurrentFormat().wrap;
+          const w = this.getCurrentFormat().wrap;
           if (w === 'nowrap') {
             this.setFormatAtSelection({wrap: 'normal'});
           } else {
@@ -65,12 +65,14 @@ class Editor {
       },
       newBlock: {
         key: Keyboard.keys.ENTER,
-        shortKey: true,
-        //prefix: /\n/m,
+        prefix: /^$/,
         handler: () => {
-          let s = this.getSelection();
-          this.splitBlock(s.block, s.range.index);
-          this.select(s.block + 1, 0);
+          const s = this.getSelection();
+          if (this.getQuill(s.block).getText(s.range.index - 1, 1) === '\n') {
+            this.getQuill(s.block).deleteText(s.range.index - 1, 1);
+            this.splitBlock(s.block, s.range.index - 1);
+            this.select(s.block + 1, 0);
+          }
         }
       },
       moveBlockDown: {
@@ -633,8 +635,9 @@ class Editor {
       let listChanged = oldFormat.list !== this.format.list;
       let frameChanged = oldFormat.frame !== this.format.frame;
       let colorChanged = oldFormat.color !== this.format.color;
-      let pictureChanged = oldFormat.picture !== this.format.picture;
-      if (boldChanged || titleChanged || listChanged || frameChanged || colorChanged || pictureChanged) {
+      let pictureLeftChanged = oldFormat.pictureLeft !== this.format.pictureLeft;
+      let pictureRightChanged = oldFormat.pictureRight !== this.format.pictureRight
+      if (boldChanged || titleChanged || listChanged || frameChanged || colorChanged || pictureLeftChanged || pictureRightChanged) {
         this.dispatchCurrentFormatChanged(this.format);
       }
     }
@@ -644,7 +647,8 @@ class Editor {
     let format = {};
     format.frame = $('#blc-' + blockIndex).hasClass('frame');
     format.blockType = $('#blc-' + blockIndex).hasClass('text-block') ? 'default' : ($('#blc-' + blockIndex).hasClass('image-block') ? 'images' : 'unknown');
-    format.picture = $('#img-' + blockIndex).parent().is(':visible');
+    format.pictureLeft = $('#img-' + blockIndex + '-0').parent().is(':visible');
+    format.pictureRight = $('#img-' + blockIndex + '-1').parent().is(':visible');
     return format;
   }
 
@@ -785,7 +789,9 @@ class Editor {
       $('#txt-' + (index + 1)).focus();
     }
     this.createQuill('#txt-' + (index + 1));
-    this.setImage('#img-' + (index + 1), 'img/placeholder.png');
+    this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
+    this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
+    this.hideBlockImage(index + 1, 0);
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -821,7 +827,9 @@ class Editor {
       $('#txt-' + (index)).focus();
     }
     this.createQuill('#txt-' + index);
-    this.setImage('#img-' + (index), 'img/placeholder.png');
+    this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
+    this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
+    this.hideBlockImage(index, 0);
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -901,7 +909,9 @@ class Editor {
       $('#txt-' + id).focus();
     }
     this.createQuill('#txt-' + id);
-    this.setImage('#img-' + id, 'img/placeholder.png');
+    this.setImage('#img-' + id + '-0', 'img/placeholder.png');
+    this.setImage('#img-' + id + '-1', 'img/placeholder.png');
+    this.hideBlockImage(id, 0);
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -1157,12 +1167,15 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newBlockString (id, text) {
-    return `<div id="blc-${id}" class="editor-block text-block media" style="font-size: 14pt;">` +
-             `<div id="txt-${id}" class="editor-text media-body align-self-center">` +
+    return `<div id="blc-${id}" class="editor-block text-block" style="font-size: 14pt;">` +
+             `<div class="editor-image-container left-image" style="width:100px">` +
+                `<img id="img-${id}-0" class="editor-image align-self-center hoverable"/>` +
+             `</div>` +
+             `<div id="txt-${id}" class="editor-text align-self-center">` +
                 `<div>${text}</div>` +
              `</div>` +
-             `<div class="editor-image-container" style="width:100px">` +
-                `<img id="img-${id}" class="editor-image align-self-center hoverable"/>` +
+             `<div class="editor-image-container right-image" style="width:100px">` +
+                `<img id="img-${id}-1" class="editor-image align-self-center hoverable"/>` +
              `</div>` +
            `</div>`;
   }
@@ -1202,7 +1215,8 @@ class Editor {
   changeBlockID (oldID, newID) {
     $('#blc-' + oldID).attr('id', 'blc-' + newID);
     $('#txt-' + oldID).attr('id', 'txt-' + newID);
-    $('#img-' + oldID).attr('id', 'img-' + newID);
+    $('#img-' + oldID + '-0').attr('id', 'img-' + newID + '-0');
+    $('#img-' + oldID + '-1').attr('id', 'img-' + newID + '-1');
   }
 
   /**
@@ -1213,7 +1227,8 @@ class Editor {
       $(this).attr('id', 'blc-' + index);
       if ($(this).hasClass('text-block')) {
         $(this).find('.editor-text').attr('id', 'txt-' + index);
-        $(this).find('.editor-image').attr('id', 'img-' + index);
+        $(this).find('.editor-image.left-image').attr('id', 'img-' + index + '-0');
+        $(this).find('.editor-image.right-image').attr('id', 'img-' + index + '-1');
       } else if ($(this).hasClass('image-block')) {
         $(this).find('.editor-text').each(function (subIndex) {
           $(this).attr('id', 'txt-' + index + '-' + subIndex);
@@ -1253,8 +1268,7 @@ class Editor {
         this.getQuill(currentSelection.block).format('bold', format.bold);
       }
       if (typeof (format.list) !== 'undefined' && format.list !== list) {
-        let l = format.list === 'bullet' ? true : format.list;
-        this.getQuill(currentSelection.block).format('list', l);
+        this.getQuill(currentSelection.block).format('list', format.list);
       }
       if (typeof (format.indent) !== 'undefined' && format.indent !== indent) {
         this.getQuill(currentSelection.block).format('indent', format.indent);
@@ -1278,12 +1292,18 @@ class Editor {
   setBlockFormat (blockID, format) {
     let oldFormat = this.getBlockFormat(blockID);
     let frame = oldFormat.frame;
-    let picture = oldFormat.picture;
-    if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
+    let lp = Utils.isNullOrUndefined(format.pictureLeft) ? format.pictureL : format.pictureLeft;
+    let leftPicture = oldFormat.pictureLeft;
+    let rp = Utils.isNullOrUndefined(format.pictureRight) ? format.picture : format.pictureRight;
+    let rightPicture = oldFormat.pictureRight;
+    if (!Utils.isNullOrUndefined(format.frame) && format.frame !== frame) {
       this.setBlockFrameVisibility(blockID, format.frame);
     }
-    if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
-      this.setBlockImageVisibility(blockID, format.picture);
+    if (!Utils.isNullOrUndefined(rp) && rp !== rightPicture) {
+      this.setBlockImageVisibility(blockID, rp, 1);
+    }
+    if (!Utils.isNullOrUndefined(lp) && lp !== leftPicture) {
+      this.setBlockImageVisibility(blockID, lp, 0);
     }
     this.updateFormat();
   }
@@ -1291,27 +1311,30 @@ class Editor {
   /**
    * Hide the image associated to the given blockID.
    * @param {int} blockID - The index of the block containing the image.
+   * @param {int} imageID - The id of the image. 0 For left, 1 for right.
    */
-  hideBlockImage (blockID) {
-    $('#img-' + blockID).parent().hide();
+  hideBlockImage (blockID, imageID) {
+    $('#img-' + blockID + '-' + imageID).parent().hide();
   }
 
   /**
    * Show the image associated to the given blockID.
    * @param {int} blockID - The index of the block containing the image.
+   * @param {int} imageID - The id of the image. 0 For left, 1 for right.
    */
-  showBlockImage (blockID) {
-    $('#img-' + blockID).parent().show();
+  showBlockImage (blockID, imageID) {
+    $('#img-' + blockID + '-' + imageID).parent().show();
   }
 
   /**
    * Set the visibility of the image associated to the given blockID.
    * @param {int} blockID - The index of the block containing the image.
    * @param {boolean} visibility - The visibility of the image.
+   * @param {int} imageID - The id of the image. 0 For left, 1 for right.
    */
-  setBlockImageVisibility (blockID, visibility) {
-    if (visibility) this.showBlockImage(blockID);
-    else this.hideBlockImage(blockID);
+  setBlockImageVisibility (blockID, visibility, imageID) {
+    if (visibility) this.showBlockImage(blockID, imageID);
+    else this.hideBlockImage(blockID, imageID);
   }
 
   /**
@@ -1347,6 +1370,7 @@ class Editor {
    * @param {int} requestedWidth - Width of the resulting image.
    */
   async setImage (selector, src, requestedWidth) {
+    if (src === '') src = './img/placeholder.png';
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
@@ -1377,8 +1401,8 @@ class Editor {
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
-    img.onerror = () => {
-      alert("Erreur lors du chargement de l'image.");
+    img.onerror = (e) => {
+      alert("Erreur lors du chargement de l'image." + e);
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
     img.src = src;
@@ -1681,10 +1705,10 @@ class Editor {
           object.blocks.push({
             type: 'default',
             content: this.getQuill(i).getContents(),
-            image: $('#img-' + i)[0].dataURL,
+            images: [this.getImageElement(i, 0).dataURL, this.getImageElement(i, 1).dataURL],
             options: {
-              leftPicture: false,
-              rightPicture: format.picture,
+              leftPicture: format.pictureLeft,
+              rightPicture: format.pictureRight,
               frame: format.frame
             }
           });
@@ -1734,11 +1758,18 @@ class Editor {
             this.getQuill(i).setContents(json.blocks[i].content);
           }
           setTimeout(() => {
-            this.setImage('#img-' + i, json.blocks[i].image);
+            if (json.meta.version < 3) {
+              this.setImage('#img-' + i + '-1', json.blocks[i].image);
+            } else {
+              this.setImage('#img-' + i + '-0', json.blocks[i].images[0]);
+              this.setImage('#img-' + i + '-1', json.blocks[i].images[1]);
+            }
             if (json.meta.version >= 1) {
-              this.setBlockFormat(i, {frame: json.blocks[i].options.frame, picture: json.blocks[i].options.rightPicture});
-              //if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
-              //if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+              this.setBlockFormat(i, {
+                frame: json.blocks[i].options.frame,
+                pictureRight: json.blocks[i].options.rightPicture,
+                pictureLeft: json.blocks[i].options.leftPicture
+              });
             }
           }, 250);
           break;

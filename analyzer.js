@@ -207,7 +207,7 @@ var rules = [
   {priority: 2,
     text: "Utilisez&nbsp;des&nbsp;phrases&nbsp;positives. Evitez&nbsp;les&nbsp;phrases&nbsp;négatives quand&nbsp;c'est&nbsp;possible.",
     test: function (data) {
-      let pattern = /\Wn(?:e|').+\spas\W/gmi;
+      let pattern = /\Wn(?:e|\').+\spas\W/gmi;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);

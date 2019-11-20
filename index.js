@@ -316,16 +316,25 @@ function hideToolbarBlock(blockId) {
 //                                    send toolbar data to editor
 function sendtoEditor(tool, val) {
   var v = val;
-  if( tool == "bullet" ) {
+  if( tool === "number" ) {
     tool = "list";
     switch (val) {
-      case 'true':
-        v = 'bullet'; break;
-      case 'false':
+      case true:
+        v = 'ordered'; break;
+      case false:
         v = false; break;
     }
   }
-  if ( tool == "color" ) {
+  if( tool === "bullet" ) {
+    tool = "list";
+    switch (val) {
+      case true:
+        v = 'bullet'; break;
+      case false:
+        v = false; break;
+    }
+  }
+  if ( tool === "color" ) {
     switch( val ) {
       case 'red':
         v = COLOR_RED; break;
@@ -383,10 +392,11 @@ function setFormatAtToolbar(format) {
   activeTool("size", format.size);
   activeTool("color", color);
   activeTool("title", format.title);
-  activeTool("bullet", format.list);
+  activeTool("bullet", format.list === "bullet");
+  activeTool("number", format.list === "ordered");
   activeTool("frame", format.frame);
-  activeTool("pictureL", format.pictureL);
-  activeTool("picture", format.picture);
+  activeTool("pictureL", format.pictureLeft);
+  activeTool("picture", format.pictureRight);
 }
 
 // update cursor & activeTools

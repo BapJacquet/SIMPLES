@@ -391,12 +391,14 @@ function setFormatAtToolbar(format) {
   activeTool("bold", format.bold);
   activeTool("size", format.size);
   activeTool("color", color);
-  activeTool("title", format.title);
   activeTool("bullet", format.list === "bullet");
   activeTool("number", format.list === "ordered");
   activeTool("frame", format.frame);
   activeTool("pictureL", format.pictureLeft);
   activeTool("picture", format.pictureRight);
+  if ( Number.isInteger(format.title) )
+      activeTool("title", "h" + format.title);
+  else activeTool("title", "none");
 }
 
 // update cursor & activeTools

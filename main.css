@@ -7,7 +7,7 @@ body {
   height: 100%;
 }
 
-button:focus { /* get rid of the blue */
+button:focus { /* get rid of the blue for buttons */
   outline: 0 !important;
 }
 

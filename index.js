@@ -664,6 +664,7 @@ $("#imageClickModal").find("#image-url").on("keyup", function(ev) {
   }
 });
 
+
 // send web image to editor
 $("#imageClickModal").on("click", ".web-img", function (ev) {
   var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
@@ -998,6 +999,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#page, #page-container").on("click", function ( ev ) {
     if (ev.target.id == "page" || ev.target.id == "page-container" ) {
       $("#blockCmd").css("opacity", 0);
+      $("#editor").find(".editor-text").css("border",0);
     }
     $("#blc-" + activeBlocId).css("background-color", "white");
   });
@@ -1342,12 +1344,19 @@ $("#toolbarBottomMask").hover( function () {
   });
 
 /////////////////////////////////////////  D I V E R S
+
+// focus editor.text TEST
+  $("#editor").on("click", ".editor-text" , function(ev) {
+    $("#editor").find(".editor-text").css("border",0);
+    $(this).css("border","1px solid gray");
+  });
+
 // resize & focus
   $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
     $("#toolbarlist").css({"left": move});
-    if ( TOOLBAR_WIDTH < $(body).width() ) {
+    if ( TOOLBAR_WIDTH < $(body).width() + LOGO_DECAL) {
       $("#toolbarScrollBar").css({"background-color": "white"});
     }
     else {
@@ -1488,8 +1497,8 @@ const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
 
 const TOOLBAR_WIDTH = 900; /* 790; /* 870; /* 840; */
-const TOOLBAR_DECAL_RIGHT = 35; /* 40; /* 30; /* 22 */
-const LOGO_DECAL = 50; /* 65; */
+const TOOLBAR_DECAL_RIGHT = -20; /* 35; /* 40; /* 30; /* 22 */
+const LOGO_DECAL = 80; /* 65; */
 const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
 const COLOR_RED = "#c10000";

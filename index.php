@@ -352,14 +352,17 @@
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title">Choisir une image</h3>
+        <h1 class="modal-title">Choisir une image</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
 				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary btn-block">Choisir un fichier sur l'ordinateur</button>
-				<br>
+				<br/>
+				<button id="imgButtonHour" type="button" class="btn btn-secondary">Choisir une heure</button>
+				<button id="imgButtonDay" type="button" class="btn btn-secondary">Choisir un jour</button>
+				<br/>	<br/>
         <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
 					<div class="custom-file">
 						<input id="imgFromDisk" type="file" class="custom-file-input btn btn-info">
@@ -370,7 +373,7 @@
 				<div class="input-group mb-3">
 					<input  id="image-url" type="text" class="form-control" data-val="">
 					<div class="input-group-append">
-						<button id="modalFind" type="button" class="btn btn-secondary">Chercher</button>
+						<button id="modalFind" type="button" class="btn btn-success">Chercher</button>
 					</div>
 				</div>
 				<!-- modal-images -->

@@ -923,7 +923,7 @@ $("#toolbarBottomMask").hover( function () {
   * toolbarScrollBar hover
   */
  $("#toolbarScrollBar").hover( function () {
-   if ( TOOLBAR_WIDTH > $(body).width() ) {
+   if ( TOOLBAR_WIDTH > $(body).width()  + LOGO_DECAL) {
      $("#toolbarScrollBar").css("cursor", "ew-resize");
    }
  }, function () {

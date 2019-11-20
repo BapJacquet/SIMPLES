@@ -220,7 +220,9 @@ function initToolbar() {                 // tool cursor initial values
   $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
   $("#title-cursor").css("left", CURSOR_DATA["title-" + TITLE_INIT]);
   $("#bullet-cursor").css("left", CURSOR_DATA["bullet-" + BULLET_INIT]);
+  $("#number-cursor").css("left", CURSOR_DATA["number-" + NUMBER_INIT]);
   $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
+  $("#pictureL-cursor").css("left", CURSOR_DATA["pictureL-" + PICTUREL_INIT]);
   $("#picture-cursor").css("left", CURSOR_DATA["picture-" + PICTURE_INIT]);
 
   $("#toolbarlist").children().each( function (i, elem) {
@@ -232,7 +234,9 @@ function initToolbar() {                 // tool cursor initial values
   activeTool("color", COLOR_INIT);
   activeTool("title", TITLE_INIT);
   activeTool("bullet", BULLET_INIT);
+  activeTool("number", NUMBER_INIT);
   activeTool("frame", FRAME_INIT);
+  activeTool("pictureL", PICTUREL_INIT);
   activeTool("picture", PICTURE_INIT);
 }
 ////////////
@@ -277,7 +281,6 @@ function moveCursor(tool, val, anim) {
       else {
         $(cursor).css("visibility", "visible");
       }
-
       var newTool = tool + "-" + val;
       var position = CURSOR_DATA[newTool];
       if ( anim ) $(cursor).animate({"left": position}, 150);
@@ -382,6 +385,7 @@ function setFormatAtToolbar(format) {
   activeTool("title", format.title);
   activeTool("bullet", format.list);
   activeTool("frame", format.frame);
+  activeTool("pictureL", format.pictureL);
   activeTool("picture", format.picture);
 }
 
@@ -556,8 +560,14 @@ function displayWebImages(imgURLs) {
   serchText: ["mot1 mot2"]}
   */
   $("#imageClickModal").find(".modal-images").html(""); // clear images
-  $("#imageClickModal").find("#image-url").val(imgURLs.searchText); // keywords
-
+  var keywords = imgURLs.searchText;
+  if ( keywords ) {
+    $("#imageClickModal").find("#image-url").val(keywords); // keywords
+    $("#image-url").attr("data-val", keywords);
+  }
+  else {
+    $("#imageClickModal").find("#image-url").val($("#image-url").attr("data-val"));
+  }
   var arasaac = imgURLs.arasaac;
   if ( arasaac.length ) {
     for (let i = 0; i < arasaac.length; i++) {
@@ -640,6 +650,7 @@ $("#imageClickModal").find("#modalFind").on("click", function (ev) {
         displayWebImages(result);
         $(".loader").hide();
       });
+      $("#image-url").attr("data-val", urlOrKeyword);
     }
   }
 });
@@ -825,9 +836,9 @@ $("#aideItem").on("click", function () {
 
 // jquery tool hover
   $(".tool, .tool-frame-bullet").mouseenter( function () {
-    $(this).css({"top":"-5px", "cursor": "pointer"});
+    if ( editor.hasFocus ) $(this).css({"top":"-5px", "cursor": "pointer"});
   } ).mouseleave( function () {
-    $(this).css({"top":"0", "cursor": "default"});
+    if ( editor.hasFocus ) $(this).css({"top":"0", "cursor": "default"});
   } );
 
 $("#toolbarBottomMask").hover( function () {
@@ -838,20 +849,22 @@ $("#toolbarBottomMask").hover( function () {
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-    $(this).animate({"top": "-16px"}, 200,
-      function () {
-        $(this).animate({"top": 0}, 100,
-          function () { $(this).blur();
-        });
-      }
-    );
+    if ( editor.hasFocus ) {
 
-    toolClick(e, this);
-    $(this).trigger("mouseleave");
-    setTimeout( function () {
-      triggerPseudoMouseenter(0);
-    }, 15);
+      $(this).animate({"top": "-16px"}, 200,
+        function () {
+          $(this).animate({"top": 0}, 100,
+            function () { $(this).blur();
+          });
+        }
+      );
 
+      toolClick(e, this);
+      $(this).trigger("mouseleave");
+      setTimeout( function () {
+        triggerPseudoMouseenter(0);
+      }, 15);
+    }
   } );
 
 //                                    C O L O R P I C K E R
@@ -916,7 +929,7 @@ $("#toolbarBottomMask").hover( function () {
       if ( offset.left >= 0  &&  dragMouse > 0)
           $("#toolbarlist").css({"left": 0});
       else if ( offset.left <= trueWidth - TOOLBAR_WIDTH  &&  dragMouse < 0)
-          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH});
+          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH });
       else $("#toolbarlist").css({"left": offset.left + dragMouse});
     }
   });
@@ -1202,6 +1215,7 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget").offset(widgetOffset);
     }
   });
+
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
       $(".img-txt-widget").css("display", "none");
   });
@@ -1212,6 +1226,12 @@ $("#toolbarBottomMask").hover( function () {
 
   $("#page").on("mouseleave", ".img-txt-widget", function (ev) {
     $(".img-txt-widget").css("display", "none");
+  });
+
+  $("#page").on("click", ".imgL-txt-widget", function (ev) {
+    editor.setBlockFormat(activeBlocId, {pictureL: true});
+    activeTool("pictureL", true);
+    $(".imgL-txt-widget").css("display", "none");
   });
 
   $("#page").on("click", ".img-txt-widget", function (ev) {
@@ -1447,9 +1467,13 @@ const CURSOR_DATA = {
 
     "bullet-true": "-16px",
 
+    "number-true": "-14px",
+
     "frame-true": "-16px",
 
-    "picture-true": "-17px",
+    "pictureL-true": "-31px",
+
+    "picture-true": "-30px",
 
 };
 
@@ -1458,17 +1482,19 @@ const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
 const BULLET_INIT = false;
+const NUMBER_INIT = false;
 const FRAME_INIT = false;
+const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
 
-const TOOLBAR_WIDTH = 790; /* 870; /* 840; */
-const TOOLBAR_DECAL_RIGHT = 40; /* 30; /* 22 */
-const LOGO_DECAL = 10; /* 65; */
-const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0"; 
+const TOOLBAR_WIDTH = 900; /* 790; /* 870; /* 840; */
+const TOOLBAR_DECAL_RIGHT = 35; /* 40; /* 30; /* 22 */
+const LOGO_DECAL = 50; /* 65; */
+const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
 const COLOR_RED = "#c10000";
 
-const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "frame": -287, "picture": -322};
+const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -255, "number": -310, "frame": -320, "pictureL": -355, "pictureText": -387, "picture": -445};
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;

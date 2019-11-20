@@ -167,7 +167,15 @@
 						<div  id="bullet-cursor" class="tool-cursor">
 							<img src="img/arrow-u-black.png" />
 						</div>
-						<div id="tool-limit-bullet" class="tool-limit">|</div>
+					</div>
+
+					<div id="number">
+						<div id="number-caption" class="caption">numéro</div>
+						<div class="tool-frame-bullet number-true check"><img src="img/numberTrue.png" /></div>
+						<div  id="number-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+						<div id="tool-limit-number" class="tool-limit">|</div>
 					</div>
 
 					<div id="frame">
@@ -176,6 +184,18 @@
 						<div  id="frame-cursor" class="tool-cursor">
 							<img src="img/arrow-u-black.png" />
 						</div>
+					</div>
+
+					<div id="pictureL">
+						<div id="pictureL-caption" class="caption">images</div>
+						<div class="tool-frame-bullet pictureL-true check"><img src="img/pictureLTrue.png" /></div>
+						<div  id="pictureL-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+					</div>
+
+					<div id="pictureText">
+						<img src="img/pictureText.png" />
 					</div>
 
 					<div id="picture">
@@ -243,6 +263,14 @@
 								</div>
 							</div><!-- Fin block command palette -->
 							<!-- Image widgets -->
+							<!--
+							<div class="block-delete img-widget imgL" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+								<img src="img/delete-black.png">
+							</div>
+							<div class="block-new img-txt-widget imgL"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
+								<img src="img/mini-mount.png">
+							</div>
+							-->
 							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
 								<img src="img/delete-black.png">
 							</div>
@@ -340,7 +368,7 @@
         </div>
 				<label class="col-form-label">Entrer une URL ou des mots-clés</label>
 				<div class="input-group mb-3">
-					<input  id="image-url" type="text" class="form-control">
+					<input  id="image-url" type="text" class="form-control" data-val="">
 					<div class="input-group-append">
 						<button id="modalFind" type="button" class="btn btn-secondary">Chercher</button>
 					</div>

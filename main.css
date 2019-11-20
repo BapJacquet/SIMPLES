@@ -435,7 +435,7 @@ li.nav-item {
 #toolbarBottomMask {
   z-index: 500;
   position: absolute;
-  top: 85px;
+  top: 92px;
   height: 22px;
   width: 100%;
 }
@@ -576,8 +576,8 @@ li.nav-item {
   top: -10px;
 }
 
-#tool-limit-bullet {
-  left: 10px;
+#tool-limit-number {
+  left: 23px;
   top: -10px;
 }
 
@@ -623,16 +623,15 @@ li.nav-item {
 .bullet-true {
   font-weight: 200;
   font-size: 38px;
-  top: 1px;
 }
 
-.bullet-false {
+/*                  NUMBER  */
+.number-true {
   font-weight: 200;
   font-size: 38px;
-  left: 24px;
 }
 
-/*                  FRAME */
+/*                  FRAME  */
 #frame {
   color: black;
 }
@@ -642,26 +641,27 @@ li.nav-item {
   font-size: 38px;
 }
 
-.frame-false {
-  font-weight: 200;
-  font-size: 38px;
-  left: 24px;
-}
-
 /*                  PICTURE */
-#picture {
+#picture,
+#pictureL {
   color: black;
 }
 
-.picture-true {
+.picture-true,
+.pictureL-true {
   font-weight: 200;
   font-size: 38px;
 }
 
-.picture-false {
+.picture-false,
+.pictureL-false {
   font-weight: 200;
   font-size: 38px;
   left: 24px;
+}
+
+#pictureText {
+  top: -5px;
 }
 
 /*              caption     */
@@ -692,14 +692,23 @@ li.nav-item {
 }
 
 #bullet-caption {
-  left: 52px;
+  left: 49px;
+}
+
+#number-caption {
+  left: 64px;
 }
 
 #frame-caption {
-  left: 52px;
+  left: 54px;
+}
+
+#pictureL-caption {
+  left: 71px;
 }
 
 #picture-caption {
+  visibility: hidden;
   left: 55px;
 }
 
@@ -840,6 +849,7 @@ li.nav-item {
 /*  divers */
 #lexique3-connection {
   display: none;
+  background-color: #f6f6f6;
 }
 
 /* loaderB32 */

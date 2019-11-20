@@ -995,7 +995,7 @@ $("#toolbarBottomMask").hover( function () {
   ////////////////////////////////////////////////////// B L O C K S
 
 
-// hide #blockCmd
+// hide #blockCmd & text border
   $("#page, #page-container").on("click", function ( ev ) {
     if (ev.target.id == "page" || ev.target.id == "page-container" ) {
       $("#blockCmd").css("opacity", 0);

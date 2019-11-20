@@ -358,10 +358,10 @@
         </button>
       </div>
       <div class="modal-body">
-				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary btn-block">Choisir un fichier sur l'ordinateur</button>
-				<br/>
-				<button id="imgButtonHour" type="button" class="btn btn-secondary">Choisir une heure</button>
-				<button id="imgButtonDay" type="button" class="btn btn-secondary">Choisir un jour</button>
+				<label class="col-form-label">Choisir&nbsp;</label>
+				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary">un fichier sur l'ordinateur</button>
+				<button id="imgButtonHour" type="button" class="btn btn-secondary">une heure</button>
+				<button id="imgButtonDay" type="button" class="btn btn-secondary">une date</button>
 				<br/>	<br/>
         <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
 					<div class="custom-file">

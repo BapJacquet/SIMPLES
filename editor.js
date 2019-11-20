@@ -287,6 +287,10 @@ class Editor {
   registerEvents () {
     //$(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
+    $(this.id).on('click', '.editor-block.text-block', event => {
+      const id = Number(event.currentTarget.id.substring(4));
+      this.getQuill(id).focus();
+    });
     // $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
       if ($(event.target).hasClass('editor-block')) {
@@ -297,11 +301,14 @@ class Editor {
       }
     });
     $(this.id).on('click', '.editor-image-container', event => {
-      if ($(event.target).hasClass('editor-image-container')) {
+      if ($(event.currentTarget).hasClass('editor-image-container')) {
         event.stopPropagation();
         event.preventDefault();
-        $(event.target).children('.editor-text').focus();
-        console.log("Focusing " + $(event.target).children('.editor-text').id);
+        let textid = $(event.currentTarget).children('.editor-text')[0].id;
+        let blockid = Number(textid.split('-')[1]);
+        let subid = Number(textid.split('-')[2]);
+        this.getQuill(blockid, subid).focus();
+        console.log("Focusing " + textid);
       }
     });
     $(this.id).on('focus', '.editor-text', event => {
@@ -686,7 +693,7 @@ class Editor {
    * Create the instance of quill in the element with the given selector.
    * @param {String} selector - Selector to get the element. The first matching element will be chosen.
    */
-  createQuill (selector) {
+  createQuill (selector, placeholder = 'Tapez le texte ici...') {
     let element = $(selector)[0];
     let options = {
       modules: {
@@ -695,7 +702,7 @@ class Editor {
           bindings: this.bindings
         }
       },
-      placeholder: 'Tapez le texte ici...',
+      placeholder: placeholder,
       theme: 'snow'
     };
     element.quill = new Quill(element, options);
@@ -809,6 +816,7 @@ class Editor {
       $('#txt-' + (index + 1) + '-0').focus();
     }
     this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
+    this.createQuill('#txt-' + (index + 1) + '-0', 'Tapez la légende ici...');
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -844,9 +852,10 @@ class Editor {
     $('#blc-' + index).before(this.newImageBlockString(index));
     this.refreshAllBlockID();
     if (focus) {
-      $('#txt-' + (index) + '-1').focus();
+      $('#txt-' + (index) + '-0').focus();
     }
     this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
+    this.createQuill('#txt-' + index + '-0', 'Tapez la légende ici...');
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -922,6 +931,7 @@ class Editor {
     let id = this.blockCount;
     $(this.id).append(this.newImageBlockString(id));
     this.setImage('#img-' + id + '-0', 'img/placeholder.png');
+    this.createQuill('#txt-' + id + '-0', 'Tapez la légende ici...');
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -968,6 +978,7 @@ class Editor {
       let selector = '#img-' + blockID + '-';
       $(selector + imgID).parent().before(this.newImageInImageBlockString(blockID, imgID));
       this.refreshAllBlockID();
+      this.createQuill('#txt-' + blockID + '-' + (imgID), 'Tapez la légende ici...');
       setTimeout(() => {
         this.setImage(selector + imgID, 'img/placeholder.png');
         $('#txt-' + blockID + '-' + imgID).focus();
@@ -990,6 +1001,7 @@ class Editor {
       let selector = '#img-' + blockID + '-';
       $(selector + imgID).parent().after(this.newImageInImageBlockString(blockID, imgID + 1));
       this.refreshAllBlockID();
+      this.createQuill('#txt-' + blockID + '-' + (imgID + 1), 'Tapez la légende ici...');
       setTimeout(() => {
         this.setImage(selector + (imgID + 1), 'img/placeholder.png');
         $('#txt-' + blockID + '-' + (imgID + 1)).focus();
@@ -1010,6 +1022,7 @@ class Editor {
       }
       let selector = '#img-' + id + '-' + lastImg;
       $(selector).parent().after(this.newImageInImageBlockString(id, lastImg + 1));
+      this.createQuill('#txt-' + id + '-' + (lastImg + 1), 'Tapez la légende ici...');
       setTimeout(() => {
         this.setImage('#img-' + id + '-' + (lastImg + 1), 'img/placeholder.png');
         $('#txt-' + id + '-' + (lastImg + 1)).focus();
@@ -1075,8 +1088,8 @@ class Editor {
    * Get the number of images within a block.
    */
   getImageCountInBlock (id) {
-    if ($('#blc-' + id).hasClass('media')) {
-      return 1;
+    if ($('#blc-' + id).hasClass('text-block')) {
+      return 2;
     } else {
       return $('#blc-' + id).children('.row').children('.col').length;
     }
@@ -1202,7 +1215,7 @@ class Editor {
   newImageInImageBlockString (id, imgID) {
     return `<div class="col editor-image-container">` +
       `<img id="img-${id}-${imgID}" class="editor-image align-self-center hoverable px-auto"/>` +
-      `<div id="txt-${id}-${imgID}" class="editor-text align-self-center" contenteditable="true"></div>` +
+      `<div id="txt-${id}-${imgID}" class="editor-text align-self-center" style="width: auto;"></div>` +
     `</div>`;
   }
 

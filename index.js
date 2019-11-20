@@ -1009,7 +1009,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#page, #page-container").on("click", function ( ev ) {
     if (ev.target.id == "page" || ev.target.id == "page-container" ) {
       $("#blockCmd").css("opacity", 0);
-      $("#editor").find(".editor-text").css("border",0);
+      // $("#editor").find(".editor-text").css("border",0); // end focusing text
     }
     $("#blc-" + activeBlocId).css("background-color", "white");
   });
@@ -1355,11 +1355,11 @@ $("#toolbarBottomMask").hover( function () {
 
 /////////////////////////////////////////  D I V E R S
 
-// focus editor.text TEST
+/* focusing editor.text TEST
   $("#editor").on("click", ".editor-text" , function(ev) {
     $("#editor").find(".editor-text").css("border",0);
     $(this).css("border","1px solid gray");
-  });
+  }); */
 
 // resize & focus
   $( window ).on("resize focus", function () {

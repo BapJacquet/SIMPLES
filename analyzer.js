@@ -48,7 +48,7 @@ var pingClock = setInterval(async function () {
     $('#pingbutton').hide(150);
   }
   $('#pingers').html(s);
-}, 1000)
+}, 5000)
 
 async function ping (object) {
   var start = $.now();
@@ -207,7 +207,7 @@ var rules = [
   {priority: 2,
     text: "Utilisez&nbsp;des&nbsp;phrases&nbsp;positives. Evitez&nbsp;les&nbsp;phrases&nbsp;négatives quand&nbsp;c'est&nbsp;possible.",
     test: function (data) {
-      let pattern = /\Wn(?:e|\').+\spas\W/gmi;
+      let pattern = /(?:^|\W)n(?:e|').+pas(?:$|\W)/gmi;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -293,7 +293,7 @@ var rules = [
   {priority: 1,
     text: "Évitez&nbsp;d'utiliser&nbsp;des&nbsp;pourcentages ou&nbsp;de&nbsp;grands&nbsp;nombres. Utilisez&nbsp;plutôt&nbsp;\"peu&nbsp;de\" ou&nbsp;\"beaucoup&nbsp;de\".",
     test: function (data) {
-      let pattern = /[0-1]?[0-9]{1,2}%/gm;
+      let pattern = /[0-1]?[0-9]{1,2}\s*%/gm;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);

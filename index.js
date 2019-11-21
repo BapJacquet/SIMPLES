@@ -172,7 +172,7 @@ function onVerifyClick(){
         regexp = result.rules[i].success ? null : result.rules[i].info.focusPattern;
       }
       let appendedContent = result.rules[i].info.append || '';
-      regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick='editor.selectNextMatch(" + regexp.toString() + ");'><i class='fas fa-search'></i></button>";
+      regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick=\"editor.selectNextMatch(" + regexp.toString() + ");\"><i class='fas fa-search'></i></button>";
       $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div><div>${result.rules[i].rule}</div>${appendedContent}</div>${regexp}</li>`);
       $(`#analysis-${tab}-content ul li`).hide();
     }

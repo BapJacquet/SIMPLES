@@ -311,7 +311,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="score" data-toggle="tooltip" title="Il faut un score d'au moins 80 pour pouvoir être considéré comme du FALC, avec au moins 14 règles prioritaires, 2 très importantes et 15 importantes.">90</div>
+						<div class="score" data-toggle="tooltip" title="Il faut un score d'au moins 80 pour pouvoir être considéré comme du FALC, avec au moins 14 règles prioritaires, 2 très importantes et 15 importantes.">?</div>
 					</div>
 					<div>
 						<ul class="nav nav-tabs nav-justified rulesScores" role="tablist">

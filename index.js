@@ -152,6 +152,7 @@ function onVerifyClick(){
   $('#analysis-main-content>ul').html('');
   $('#analysis-veryImportant-content>ul').html('');
   $('#analysis-important-content>ul').html('');
+  $('.score').text('?')
   checkFalcQuality(editor).then(function (result) {
     // Mise à jour des scores.
     $('#mainRules').text(result.mainRulesSuccess);

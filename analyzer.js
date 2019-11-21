@@ -103,7 +103,7 @@ var rules = [
   {priority: 3,
     text: 'Mettez&nbsp;un&nbsp;point et&nbsp;faites&nbsp;une&nbsp;nouvelle&nbsp;phrase avant&nbsp;de&nbsp;commencer une&nbsp;nouvelle&nbsp;idée.\nÉvitez&nbsp;les&nbsp;virgules et&nbsp;les&nbsp;"et".',
     test: function (data) {
-      let pattern = /(?:,|et)/ig;
+      let pattern = /(?:,|\bet\b)/ig;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -166,7 +166,7 @@ var rules = [
   {priority: 3,
     text: 'Commencez&nbsp;toujours une&nbsp;nouvelle&nbsp;phrase sur&nbsp;une&nbsp;nouvelle&nbsp;ligne.',
     test: function (data) {
-      let pattern = /[\.\?\!][^\n\.\?\!]+\w+/gm;
+      let pattern = /(?<=[\.\?\!])[^\n\.\?\!]+[\.\?\!]?/gm;
       let result = true;
       for (let i = 0; i < data.raw.length; i++) {
         if (!Utils.isNullOrUndefined(data.raw[i].match(pattern))) {
@@ -188,8 +188,8 @@ var rules = [
   {priority: 2,
     text: 'Parlez&nbsp;directement&nbspaux&nbspgens. Utilisez&nbspdes&nbspmots&nbsp;comme&nbsp;"vous".',
     test: function (data) {
-      let positivePattern = /\W(?:vous|tu|je)\W/gmi;
-      let negativePattern = /\W(?:il|elle|on|ils|elles|nous)\W/gmi;
+      let positivePattern = /\b(?:vous|tu|je)\b/gmi;
+      let negativePattern = /\b(?:il|elle|on|ils|elles|nous)\b/gmi;
       let positiveCount = 0;
       let negativeCount = 0;
       for (let i = 0; i < data.raw.length; i++) {
@@ -207,7 +207,7 @@ var rules = [
   {priority: 2,
     text: "Utilisez&nbsp;des&nbsp;phrases&nbsp;positives. Evitez&nbsp;les&nbsp;phrases&nbsp;négatives quand&nbsp;c'est&nbsp;possible.",
     test: function (data) {
-      let pattern = /(?:^|\W)n(?:e|').+pas(?:$|\W)/gmi;
+      let pattern = /\bn(?:e|').+pas\b/gmi;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -245,7 +245,7 @@ var rules = [
   {priority: 1,
     text: "Attention&nbsp;aux&nbsp;pronoms&nbsp;: vérifiez&nbsp;qu'il&nbsp;est&nbsp;toujours&nbsp;clair de&nbsp;qui&nbsp;ou&nbsp;de&nbsp;quoi parle&nbsp;le&nbsp;pronom.",
     test: function (data) {
-      let pattern = /\W(?:il|elle|on|ils|elles|nous)\W/gmi;
+      let pattern = /\b(?:il|elle|on|ils|elles|nous)\b/gmi;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -258,7 +258,7 @@ var rules = [
   {priority: 1,
     text: 'Écrivez&nbsp;les&nbsp;nombres en&nbsp;chiffres, pas&nbsp;en&nbsp;lettres.',
     test: function (data) {
-      let pattern = /\W(?:deux|trois|quatre|cinq|six|sept|huigt|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|cent|mille)(?:(?:-|\s)?(?:deux|trois|quatre|cinq|six|sept|huigt|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|cent|mille))*\W/ig
+      let pattern = /\b(?:deux|trois|quatre|cinq|six|sept|huigt|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|cent|mille)(?:(?:-|\s)?(?:deux|trois|quatre|cinq|six|sept|huigt|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingts?|trente|quarante|cinquante|soixante|cent|mille))*\b/ig
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -277,7 +277,7 @@ var rules = [
   {priority: 1,
     text: 'Écrivez&nbsp;les&nbsp;dates en&nbsp;entier.',
     test: function (data) {
-      let pattern = /\W[0-3]?[0-9]\/[0-1]?[0-9](?:\/\d{2})?\W/igm;
+      let pattern = /\b(?:[0-2]?[0-9](?::|\s*h\s*)(?:[0-9]{2})?|[0-3]?[0-9]\/[0-1]?[0-9](?:\/\d{2})?)\b/igm;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);
@@ -305,7 +305,17 @@ var rules = [
     }},
   {priority: 1,
     text: 'Évitez les caractères spéciaux.',
-    test: function (data) { return {result: undefined, info: {}}; }},
+    test: function (data) {
+      let pattern = /[&#§¤|]/gm;
+      let count = 0;
+      for (let i = 0; i < data.raw.length; i++) {
+        let m = data.raw[i].match(pattern);
+        if (!Utils.isNullOrUndefined(m)) {
+          count += m.length;
+        }
+      }
+      return {result: count === 0, info: {focusPattern: pattern}};
+    }},
   {priority: 1,
     text: 'Évitez toutes les abréviations.',
     test: function (data) {
@@ -334,7 +344,17 @@ var rules = [
     }},
   {priority: 1,
     text: "N'écrivez pas de mots entiers en majuscules.",
-    test: function (data) { return {result: undefined, info: {}}; }},
+    test: function (data) {
+      let pattern = /(?:\W|^)[A-Z]+(?:\W|$)/gm;
+      let count = 0;
+      for (let i = 0; i < data.raw.length; i++) {
+        let m = data.raw[i].match(pattern);
+        if (!Utils.isNullOrUndefined(m)) {
+          count += m.length;
+        }
+      }
+      return {result: count === 0, info: {focusPattern: pattern}};
+    }},
   {priority: 1,
     text: "Utilisez&nbsp;un&nbsp;seul&nbsp;type&nbsp;d'écriture dans&nbsp;le&nbsp;texte.",
     test: function (data) { return {result: true, info: {}}; }},
@@ -572,22 +592,26 @@ async function checkLexique3 (word) {
   // S'assure que le mot est en minuscules.
   let text = word.text.toLowerCase();
   // Enlève le tiret si il y en a un au début du mot.
-  if (text.startsWith('-')) text = text.substring(1, text.length);
+  if (text.startsWith('-')) text = text.substring(1);
   // Transforme la fonction syntaxique pour être compatible avec Lexique3.
-  let pos = convertPos(word.pos, 'Lexique3');
+  const pos = convertPos(word.pos, 'Lexique3');
   console.log(text + '  ' + pos);
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  let response = await fetch(`lexique3_multi.php?word=${text}&pos=${pos}`)
+  const data = await $.ajax('./lexique3_multi.php?word=${text}&pos=${pos}', {
+    data: {
+      word: text,
+      pos: pos
+    },
+    error: function (error) {
+      dispatchAnalysisStatusChanged('lexique3', 'echec');
+      console.log(error);
+    },
+    dataType: 'json'
+  });
   // let response = await fetch(`http://51.91.138.70/lirec/lexique3_multi.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`https://sioux.univ-paris8.fr/simples/lexique3_multi.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`http://localhost/lexique3.php?word=${text}&pos=${pos}`)
   // let response = await fetch(`http://localhost:8888/simples2/lexique3_multi.php?word=${text}&pos=${pos}`)
-    .catch(function (error) {
-      dispatchAnalysisStatusChanged('lexique3', 'echec');
-      console.log(error);
-    });
-  let data = await response.json();
-
   // console.log(text + "(" +pos +") : " + JSON.stringify(data));
   dispatchAnalysisStatusChanged('lexique3', 'ok');
   console.log(data);
@@ -677,15 +701,15 @@ async function getGoogleEntry (word) {
 async function getInternauteEntry (word, pos = null) {
   let response;
   try {
-    response = await $.get('./internaute_proxy.php', {word: encodeURIComponent(word)});
+    response = await $.get('./internaute_proxy.php', { word: encodeURIComponent(word) });
   } catch (e) {
-    console.log("Error: " + e.message);
-    return {meanings: []};
+    console.log('Error: ' + e.message);
+    return { meanings: [] };
   }
   response = JSON.parse(response);
-  let result = {meanings: []};
+  const result = { meanings: [] };
   for (let i = 0; i < response.length; i++) {
-    let type = response[i].pos;
+    const type = response[i].pos;
     for (let j = 0; j < response[i].meanings.length; j++) {
       result.meanings.push({
         type: type,
@@ -699,7 +723,7 @@ async function getInternauteEntry (word, pos = null) {
 }
 
 async function getImagesSuggestions (blockIndex) {
-  let words = editor.getSignificantWords(blockIndex);
+  const words = editor.getSignificantWords(blockIndex);
   let search = '';
   for (let i = 0; i < words.length; i++) {
     search += words[i] + ' ';
@@ -707,24 +731,24 @@ async function getImagesSuggestions (blockIndex) {
   return getImagesForKeyword(search);
 }
 
-async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: true, qwant: true}) {
+async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: true, qwant: true }) {
   console.log('Checking images for: ' + keyword);
-  let result = { arasaac: [], sclera: [], qwant: [], searchText: keyword };
+  const result = { arasaac: [], sclera: [], qwant: [], searchText: keyword };
   if (keyword) {
     if (options.arasaac) {
       console.log('Trying on ARASAAC...')
       try {
         // let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
-        let json = await $.ajax('https://api.arasaac.org/api/pictograms/fr/search/' + keyword, {
+        const json = await $.ajax('https://api.arasaac.org/api/pictograms/fr/search/' + keyword, {
           dataType: 'json',
           timeout: 5000
-        })
-        console.log('Found ' + json.length + ' pictograms.')
+        });
+        console.log('Found ' + json.length + ' pictograms.');
         for (let i = 0; i < json.length; i++) {
           result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
         }
       } catch (ex) {
-        console.log('Failed to get images from ARASAAC.')
+        console.log('Failed to get images from ARASAAC.');
         console.log(ex);
       }
     }
@@ -732,10 +756,10 @@ async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: t
       // TODO add.
     }
     if (options.qwant) {
-      console.log('Trying on QWANT...')
+      console.log('Trying on QWANT...');
       try {
         // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
-        let response = await $.ajax('./qwant_proxy.php', {
+        const response = await $.ajax('./qwant_proxy.php', {
           data: {
             count: 10,
             q: keyword + ' pictogramme'
@@ -743,13 +767,13 @@ async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: t
           dataType: 'json',
           timeout: 5000
         });
-        let items = response.data.result.items;
-        console.log('Found ' + items.length + ' pictograms.')
-        for (let r in items) {
+        const items = response.data.result.items;
+        console.log('Found ' + items.length + ' pictograms.');
+        for (const r in items) {
           result.qwant.push(items[r].media);
         }
       } catch (ex) {
-        console.log('Failed to get images from QWANT.')
+        console.log('Failed to get images from QWANT.');
         console.log(ex);
       }
     }
@@ -761,11 +785,11 @@ async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: t
 async function checkFalcQuality (editor) {
   // Prepare data
   dispatchProgressChanged(0);
-  let rawTextContent = [];
-  let sentencesTokens = [];
-  let fullStyledContent = [];
+  const rawTextContent = [];
+  const sentencesTokens = [];
+  const fullStyledContent = [];
   for (let i = 0; i < editor.blockCount; i++) {
-    let text = editor.getRawTextContent(i);
+    const text = editor.getRawTextContent(i);
     rawTextContent.push(text);
     if (pings.Stanford.usable) sentencesTokens.push(await getTokens(text));
     fullStyledContent.push(editor.getStyledText(i));
@@ -774,18 +798,18 @@ async function checkFalcQuality (editor) {
   // Check complex words.
   dispatchProgressChanged(0);
   let complexWords = [];
-  let checkedWords = [];
+  const checkedWords = [];
   for (let i = 0; i < editor.blockCount; i++) {
     if (sentencesTokens.length > 0) {
       for (let s = 0; s < sentencesTokens[i].sentences.length; s++) {
-        let cw = await checkTokensComplexity(sentencesTokens[i].sentences[s].tokens, checkedWords);
+        const cw = await checkTokensComplexity(sentencesTokens[i].sentences[s].tokens, checkedWords);
         complexWords = complexWords.concat(cw);
       }
     }
     dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
   }
-  let result = {
-    rules: await checkRules({raw: rawTextContent, complexWords: complexWords, tokens: sentencesTokens, styled: fullStyledContent})
+  const result = {
+    rules: await checkRules({ raw: rawTextContent, complexWords: complexWords, tokens: sentencesTokens, styled: fullStyledContent })
   };
   let mainRules = 0;
   let veryImportantRules = 0;
@@ -818,11 +842,11 @@ async function getTokens (text) {
 }
 
 async function checkRules (data) {
-  let result = [];
+  const result = [];
   dispatchProgressChanged(0);
   for (let i = 0; i < rules.length; i++) {
-    let testResult = rules[i].test(data);
-    result.push({priority: rules[i].priority, rule: rules[i].text, success: testResult.result, info: testResult.info});
+    const testResult = rules[i].test(data);
+    result.push({ priority: rules[i].priority, rule: rules[i].text, success: testResult.result, info: testResult.info });
     dispatchProgressChanged(((i + 1) * 100) / rules.length);
   }
   return result;

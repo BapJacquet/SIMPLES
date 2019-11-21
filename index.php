@@ -267,10 +267,10 @@
 							<div class="block-delete img-widget imgL" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
 								<img src="img/delete-black.png">
 							</div>
+							-->
 							<div class="block-new img-txt-widget imgL"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
 								<img src="img/mini-mount.png">
 							</div>
-							-->
 							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
 								<img src="img/delete-black.png">
 							</div>

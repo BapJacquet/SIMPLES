@@ -31,6 +31,20 @@ class Editor {
 
   get bindings () {
     let bindings = {
+      list: {
+        key: 'l',
+        shortKey: true,
+        handler: () => {
+          this.setFormatAtSelection({ list: !this.getCurrentFormat().list });
+        }
+      },
+      frame: {
+        key: 'f',
+        shortKey: true,
+        handler: () => {
+          this.setFormatAtSelection({frame: !this.getCurrentFormat().frame});
+        }
+      },
       bold: {
         key: 'B',
         shortKey: true,
@@ -39,27 +53,44 @@ class Editor {
         }
       },
       title: {
-        key: 84, // T
+        key: 'h', // h
         shortKey: true,
         handler: () => {
           console.log('test');
-          let list = [null, 'H1', 'H2', 'H3', 'H4'];
+          let list = ['none', 'h1', 'h2', 'h3', 'h4'];
           let t = this.getCurrentFormat().title;
           let index = list.indexOf(t);
           let newT = index < list.length - 1 ? list[index + 1] : list[0];
           this.setFormatAtSelection({title: newT});
         }
       },
+      pictureRight: {
+        key: 'i',
+        shortKey: true,
+        handler: () => {
+          const bf = this.getCurrentFormat().pictureRight;
+          this.setFormatAtSelection({ pictureRight: !bf });
+        }
+      },
+      pictureLeft: {
+        key: 'I',
+        shortKey: true,
+        shiftKey: true,
+        handler: () => {
+          const bf = this.getCurrentFormat().pictureLeft;
+          this.setFormatAtSelection({ pictureLeft: !bf });
+        }
+      },
       wrap: {
-        key: 85, // U
+        key: 'U', // U
         shortKey: true,
         handler: () => {
           console.log('test2!');
           const w = this.getCurrentFormat().wrap;
           if (w === 'nowrap') {
-            this.setFormatAtSelection({wrap: 'normal'});
+            this.setFormatAtSelection({ wrap: 'normal' });
           } else {
-            this.setFormatAtSelection({wrap: 'nowrap'});
+            this.setFormatAtSelection({ wrap: 'nowrap' });
           }
         }
       },
@@ -69,10 +100,16 @@ class Editor {
         handler: () => {
           const s = this.getSelection();
           if (this.getQuill(s.block).getText(s.range.index - 1, 1) === '\n') {
-            this.getQuill(s.block).deleteText(s.range.index - 1, 1);
+            if (this.getQuill(s.block).getText(s.range.index, 1) === '\n') {
+              this.getQuill(s.block).deleteText(s.range.index, 1);
+            } else {
+              this.getQuill(s.block).deleteText(s.range.index - 1, 1);
+            }
             this.splitBlock(s.block, s.range.index - 1);
             this.select(s.block + 1, 0);
+            return false;
           }
+          return true;
         }
       },
       moveBlockDown: {
@@ -229,18 +266,18 @@ class Editor {
 
     this.tableLayouts = {
       frame: {
-        hLineWidth: function (i) {
-          return 4;
-        },
-        vLineWidth: function (i) {
-          return 4;
-        },
-        hLineColor: function (i) {
-          return 'black';
-        },
-        vLineColor: function (i) {
-          return 'black';
-        }
+        hLineWidth: function (i, node) {
+					return (i === 0 || i === node.table.body.length) ? 4 : 0;
+				},
+				vLineWidth: function (i, node) {
+					return (i === 0 || i === node.table.widths.length) ? 4 : 0;
+				},
+				hLineColor: function (i, node) {
+					return 'black';
+				},
+				vLineColor: function (i, node) {
+					return 'black';
+				}
       }
     };
   }
@@ -249,6 +286,8 @@ class Editor {
    * Initializes quill for the editor.
    */
   initializeQuill () {
+    Quill.imports['modules/keyboard'].DEFAULTS = [];
+
     let Inline = Quill.import('blots/inline');
     let Block = Quill.import('blots/block');
     let Container = Quill.import('blots/container');
@@ -300,7 +339,7 @@ class Editor {
         console.log("Focusing " + $(event.target).children('.editor-text').id);
       }
     });
-    $(this.id).on('click', '.editor-image-container', event => {
+    $(this.id).on('click', '.col.editor-image-container', event => {
       if ($(event.currentTarget).hasClass('editor-image-container')) {
         event.stopPropagation();
         event.preventDefault();
@@ -364,32 +403,31 @@ class Editor {
     if (!this.hasFocus) return;
     let id = this.getSelection().block;
     switch (event.key) {
-      case 'l':
+      /*case 'l':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({list: !this.getCurrentFormat().list});
+          this.setFormatAtSelection({ list: !this.getCurrentFormat().list });
         }
-        break;
-      case 'b':
+        break;*/
+      /*case 'b':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({bold: !this.getCurrentFormat().bold});
+          this.setFormatAtSelection({ bold: !this.getCurrentFormat().bold });
         }
-        break;
-      case 'h':
+        break;*/
+      /*case 'h':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
           let current = this.getCurrentFormat().title;
-          if (current === 'none') current = null;
-          let formats = [null, 'h1', 'h2', 'h3', 'h4'];
+          let formats = ['none', 'h1', 'h2', 'h3', 'h4'];
           let index = formats.indexOf(current) + 1;
           if (index === formats.length) index = 0;
           this.setFormatAtSelection({title: formats[index]});
         }
-        break;
+        break;*/
       case '+':
         if (event.ctrlKey) {
           event.stopPropagation();
@@ -418,14 +456,14 @@ class Editor {
           $(container).css('font-size', `${Utils.pointToPixel(size - 1)}px`);
         }
         break;
-      case 'i':
+      /*case 'i':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({picture: !this.getCurrentFormat().picture});
+          this.setFormatAtSelection({ pictureRight: !this.getCurrentFormat().pictureRight });
         }
-        break;
-      case 'ArrowUp':
+        break;*/
+      /*case 'ArrowUp':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
@@ -438,7 +476,7 @@ class Editor {
           event.preventDefault();
           this.moveBlockDown(id);
         }
-        break;
+        break;*/
       case 'Backspace':
         let s = this.getSelection();
         if (s.range.index === 0 && id !== 0) {
@@ -674,7 +712,7 @@ class Editor {
     format.bold = Utils.isNullOrUndefined(quillFormat.bold) ? false : quillFormat.bold;
     format.list = Utils.isNullOrUndefined(quillFormat.list) ? false : quillFormat.list;
     format.indent = Utils.isNullOrUndefined(quillFormat.indent) ? 0 : quillFormat.indent;
-    format.title = Utils.isNullOrUndefined(quillFormat.header) ? false : quillFormat.header;
+    format.title = Utils.isNullOrUndefined(quillFormat.header) ? 'none' : (quillFormat.header === false ? 'none' : 'h' + quillFormat.header);
     format.color = Utils.isNullOrUndefined(quillFormat.color) ? '#000000' : quillFormat.color;
     format.wrap = Utils.isNullOrUndefined(quillFormat.wrap) ? 'normal' : quillFormat.wrap;
 
@@ -696,6 +734,7 @@ class Editor {
   createQuill (selector, placeholder = 'Tapez le texte ici...') {
     let element = $(selector)[0];
     let options = {
+      formats: ['bold', 'list', 'header', 'color'],
       modules: {
         toolbar: false,
         keyboard: {
@@ -1142,7 +1181,7 @@ class Editor {
           if (!Utils.isNullOrUndefined(item.attributes.header)) {
             let j = result.length - 2;
             while (j >= 0 && result[j] !== '\n') {
-              if (Utils.isNullOrUndefined(result[j]).text) {
+              if (Utils.isNullOrUndefined(result[j].text)) {
                 result[j] = {text: result[j], style: 'h' + item.attributes.header};
               } else {
                 result[j].style = 'h' + item.attributes.header;

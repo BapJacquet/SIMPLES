@@ -708,6 +708,7 @@ async function getImagesSuggestions (blockIndex) {
 }
 
 async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: true, qwant: true}) {
+  console.log('Checking images for: ' + keyword);
   let result = {arasaac: [], sclera: [], qwant: [], searchText: keyword};
   if (keyword) {
     if (options.arasaac) {

@@ -396,9 +396,7 @@ function setFormatAtToolbar(format) {
   activeTool("frame", format.frame);
   activeTool("pictureL", format.pictureLeft);
   activeTool("picture", format.pictureRight);
-  if ( Number.isInteger(format.title) )
-      activeTool("title", "h" + format.title);
-  else activeTool("title", "none");
+  activeTool("title", format.title);
 }
 
 // update cursor & activeTools

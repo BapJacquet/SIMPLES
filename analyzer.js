@@ -709,16 +709,22 @@ async function getImagesSuggestions (blockIndex) {
 
 async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: true, qwant: true}) {
   console.log('Checking images for: ' + keyword);
-  let result = {arasaac: [], sclera: [], qwant: [], searchText: keyword};
+  let result = { arasaac: [], sclera: [], qwant: [], searchText: keyword };
   if (keyword) {
     if (options.arasaac) {
+      console.log('Trying on ARASAAC...')
       try {
-        let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
-        let json = await response.json();
+        // let response = await fetch('https://api.arasaac.org/api/pictograms/fr/search/' + keyword);
+        let json = await $.ajax('https://api.arasaac.org/api/pictograms/fr/search/' + keyword, {
+          dataType: 'json',
+          timeout: 5000
+        })
+        console.log('Found ' + json.length + ' pictograms.')
         for (let i = 0; i < json.length; i++) {
           result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
         }
       } catch (ex) {
+        console.log('Failed to get images from ARASAAC.')
         console.log(ex);
       }
     }
@@ -726,14 +732,24 @@ async function getImagesForKeyword (keyword, options = {arasaac: true, sclera: t
       // TODO add.
     }
     if (options.qwant) {
+      console.log('Trying on QWANT...')
       try {
-        let response = await fetch(`qwant_proxy.php?count=10&q=${keyword} pictogramme`);
-        let json = await response.json();
-        let items = json.data.result.items;
+        // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
+        let response = await $.ajax('./qwant_proxy.php', {
+          data: {
+            count: 10,
+            q: keyword + ' pictogramme'
+          },
+          dataType: 'json',
+          timeout: 5000
+        });
+        let items = response.data.result.items;
+        console.log('Found ' + items.length + ' pictograms.')
         for (let r in items) {
           result.qwant.push(items[r].media);
         }
       } catch (ex) {
+        console.log('Failed to get images from QWANT.')
         console.log(ex);
       }
     }

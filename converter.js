@@ -84,19 +84,27 @@ class Converter {
       };
       switch (blockFormat.blockType) {
         case 'default': {
-          let content = [[{
-            text: editor.getStyledText(i),
-            margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 0, 0]
-          }]];
-          if (blockFormat.picture) {
+          let content = [[]];
+          if (blockFormat.pictureLeft) {
             content[0].push({
-              image: editor.getImageElement(i).dataURL,
+              image: editor.getImageElement(i, 0).dataURL,
               width: Utils.pixelToPoint(100),
-              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i), blockElement).top), 0, 0]
+              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i, 0), blockElement).top), 0, 0]
+            });
+          }
+          content[0].push({
+            text: editor.getStyledText(i),
+            margin: [5, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 5, 1]
+          });
+          if (blockFormat.pictureRight) {
+            content[0].push({
+              image: editor.getImageElement(i, 1).dataURL,
+              width: Utils.pixelToPoint(100),
+              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i, 1), blockElement).top), 0, 0]
             });
           }
           blockDefinition.table = {
-            widths: blockFormat.picture ? ['*', 'auto'] : ['*'],
+            widths: blockFormat.pictureRight ? (blockFormat.pictureLeft ? ['auto', '*', 'auto'] : ['*', 'auto']) : (blockFormat.pictureLeft ? ['auto', '*'] : ['*']),
             body: content
           };
           break;

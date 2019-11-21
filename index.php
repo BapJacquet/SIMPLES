@@ -265,10 +265,10 @@
 							<!-- Image widgets -->
 										<!---->
 										<!-- img-txt-widget -->
-							<div class="block-new img-txt-widget img-right"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
+							<div class="block-new img-txt-widget img-right"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
 								<img src="img/mini-mount.png">
 							</div>
-							<div class="block-new img-txt-widget img-left"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
+							<div class="block-new img-txt-widget img-left"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à gauche">
 								<img src="img/mini-mount.png">
 							</div>
 										<!-- img-widget & img-txt-widget -->

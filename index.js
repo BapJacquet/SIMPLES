@@ -1240,7 +1240,7 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget.img-right").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
       widgetOffset.left += $(this).width() - 40;
-      widgetOffset.top -= 32;
+      widgetOffset.top -= 30;
       $(".img-txt-widget.img-right").offset(widgetOffset);
     }
     if ( $(this).find(".editor-text").prev().css("display") == "none" ) {
@@ -1249,7 +1249,7 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget.img-left").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
       widgetOffset.left -= 0;
-      widgetOffset.top -= 32;
+      widgetOffset.top -= 30;
       $(".img-txt-widget.img-left").offset(widgetOffset);
     }
   });
@@ -1275,14 +1275,14 @@ $("#toolbarBottomMask").hover( function () {
   });
 
   $("#page").on("click", ".img-left", function (ev) {
-    editor.setBlockFormat(activeBlocId, {pictureL: true});
+    editor.setBlockFormat(activeBlocId, {pictureLeft: true});
     activeTool("pictureL", true);
     $(".imgL-txt-widget").css("display", "none");
     $(".block-new.img-txt-widget.img-left").css("display", "none");
   });
 
   $("#page").on("click", ".img-right", function (ev) {
-    editor.setBlockFormat(activeBlocId, {picture: true});
+    editor.setBlockFormat(activeBlocId, {pictureRight: true});
     activeTool("picture", true);
     $(".img-txt-widget").css("display", "none");
     $(".block-new.img-txt-widget.img-right").css("display", "none");

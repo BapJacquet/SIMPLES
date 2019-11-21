@@ -1075,23 +1075,24 @@ $("#toolbarBottomMask").hover( function () {
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
     triggerPseudoMouseenter(0);
-    $(".img-txt-widget").css("display", "none");
+    //$(".img-txt-widget").css("display", "none");
   });
 
-  // page ENTER
+  // page LEAVE
   $("#page").on("mouseleave", function ( ev ) {
     $(".img-txt-widget").css("display", "none");
   });
 
-  // page LEAVE
+  // page ENTER
   $("#page").on("mouseenter", function ( ev ) {
-    //$(".img-txt-widget").css("display", "none");
+    //
   });
 
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-    triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0);
+    $(".img-txt-widget").css("display", "none");
   });
 
 /*
@@ -1115,10 +1116,12 @@ $("#toolbarBottomMask").hover( function () {
       var blockTop = $(this).offset().top;
       var blockHeight = $(this).height();
       if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
+        //$(".img-txt-widget").css("display", "none");
         if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
           let oldBlocId = activeBlocId;
           activeBlocId = Number($(this).attr("id").split("-")[1]);
           if ( oldBlocId != activeBlocId ) {
+            $(".img-txt-widget").css("display", "none");
             $("#blc-" + oldBlocId).css("background-color", "white");
             $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
           }

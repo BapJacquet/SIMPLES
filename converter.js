@@ -47,7 +47,7 @@ class Converter {
     let style = '.lirec-container {font-size: 14pt; font-family: Arial; max-width: 600px; margin: auto;}';
     style += '.default-block {display: grid; grid-template-columns: 100px 1fr 100px;}';
     style += '.images-block {display: grid;}';
-    style += '.frame {border: 4pt solid black;}';
+    style += '.frame {border: 4pt solid black; border-thickness: 4pt}';
     style += '.fulltext {grid-column: 1 / span 3;}';
     style += '.lefttext {grid-column: 1 / span 2; align-self: center;}';
     style += '.righttext {grid-column: 2 / span 2; align-self: center;}';
@@ -125,7 +125,7 @@ class Converter {
       docDefinition.content.push(blockDefinition);
     }
     console.log(docDefinition);
-    return pdfMake.createPdf(docDefinition, this.tableLayouts);
+    return pdfMake.createPdf(docDefinition, editor.tableLayouts);
   }
 
   /**

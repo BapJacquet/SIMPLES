@@ -1068,15 +1068,25 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0);
     $(".img-txt-widget").css("display", "none");
   });
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
+    triggerPseudoMouseenter(0);
     $(".img-txt-widget").css("display", "none");
   });
 
+  // page ENTER
+  $("#page").on("mouseleave", function ( ev ) {
+    $(".img-txt-widget").css("display", "none");
+  });
+
+  // page LEAVE
+  $("#page").on("mouseenter", function ( ev ) {
+    //$(".img-txt-widget").css("display", "none");
+  });
 
   //////////////////////////////////////////
   // .editor-block  LEAVE

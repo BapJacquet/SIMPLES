@@ -400,6 +400,8 @@ li.nav-item {
 }
 
 #pingbutton {
+  background: transparent;
+  border: 0px solid;
   font-size: 17pt;
   cursor: pointer;
   margin: 0 1em;

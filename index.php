@@ -105,7 +105,7 @@
 				</div>
 
 				<div>
-					<a id="pingbutton"><i class="fas fa-exclamation-triangle"></i></a>
+					<button id="pingbutton" type="button" data-title="Connexion" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><div id='pingers' style='width:400px;'>Un instant...<div></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i></button>
 				</div>
 
 				<!-- hidden input for file dialog -->
@@ -305,7 +305,7 @@
 						<div class="alert alert-light" role="alert" id="lexique3-connection">
 							<div>Un instant... : </div>
 							<div class="progress">
-								<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
+								<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="0"
 								aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
 									0%
 								</div>

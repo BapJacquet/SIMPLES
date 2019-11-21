@@ -29,12 +29,16 @@ var pings = {
   }
 }
 
-$('#pingbutton').on('click', function () {
+/*$('#pingbutton').on('click', function () {
   simplesAlert('Notifications', 'fa-exclamation-triangle', '<div><div id="pingers">Un instant...<div></div>');
-});
+});*/
 $('#pingbutton').hide();
+$('[data-toggle="popover"]').popover();
+$('#pingbutton').on('shown.bs.popover', function () {
+  pingAll();
+})
 
-var pingClock = setInterval(async function () {
+async function pingAll () {
   let s = '';
   for (let p in pings) {
     pings[p] = await ping(pings[p]);
@@ -48,7 +52,9 @@ var pingClock = setInterval(async function () {
     $('#pingbutton').hide(150);
   }
   $('#pingers').html(s);
-}, 5000)
+}
+
+var pingClock = setInterval(pingAll, 5000)
 
 async function ping (object) {
   var start = $.now();
@@ -126,7 +132,7 @@ var rules = [
           }
           content += `<p><strong>Définition :</strong><br/>${cm.dictionary.meanings[0].definition.replace(/"/g, '\'\'')}</p><p><strong>Synonymes :</strong><br/>${synonyms}</p>`;
         }
-        let popover = `data-html="true" data-placement="left" data-trigger="hover" data-toggle="popover" title='${frequencyToText(cm.frequency)}' data-content="${content}"`;
+        let popover = `data-html="true" data-boundary="viewport" data-placement="auto" data-trigger="hover" data-toggle="popover" title='${frequencyToText(cm.frequency)}' data-content="${content}"`;
 
         appendedContent += `<button type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
       }
@@ -597,7 +603,7 @@ async function checkLexique3 (word) {
   const pos = convertPos(word.pos, 'Lexique3');
   console.log(text + '  ' + pos);
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  const data = await $.ajax('./lexique3_multi.php?word=${text}&pos=${pos}', {
+  const data = await $.ajax('./lexique3_multi.php', {
     data: {
       word: text,
       pos: pos
@@ -797,6 +803,14 @@ async function checkFalcQuality (editor) {
   }
   // Check complex words.
   dispatchProgressChanged(0);
+  let checkedSentences = 0;
+  let sentencesCount = 0;
+  for (let i = 0; i < editor.blockCount; i++) {
+    if (sentencesTokens.length > 0) {
+      sentencesCount += sentencesTokens[i].sentences.length;
+    }
+  }
+
   let complexWords = [];
   const checkedWords = [];
   for (let i = 0; i < editor.blockCount; i++) {
@@ -804,9 +818,10 @@ async function checkFalcQuality (editor) {
       for (let s = 0; s < sentencesTokens[i].sentences.length; s++) {
         const cw = await checkTokensComplexity(sentencesTokens[i].sentences[s].tokens, checkedWords);
         complexWords = complexWords.concat(cw);
+        checkedSentences += 1;
+        dispatchProgressChanged(((checkedSentences) * 100) / sentencesCount);
       }
     }
-    dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
   }
   const result = {
     rules: await checkRules({ raw: rawTextContent, complexWords: complexWords, tokens: sentencesTokens, styled: fullStyledContent })
@@ -832,13 +847,13 @@ async function checkFalcQuality (editor) {
 }
 
 async function getTokens (text) {
-  return JSON.parse($.ajax({
+  return $.ajax({
     type: 'POST',
     url: 'http://sioux.univ-paris8.fr:9000/',
     data: text,
-    dataType: 'application/json',
+    dataType: 'json',
     async: false
-  }).responseText);
+  });
 }
 
 async function checkRules (data) {

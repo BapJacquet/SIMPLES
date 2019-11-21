@@ -734,7 +734,7 @@ class Editor {
   createQuill (selector, placeholder = 'Tapez le texte ici...') {
     let element = $(selector)[0];
     let options = {
-      formats: ['bold', 'list', 'header', 'color'],
+      formats: ['bold', 'list', 'header', 'color', 'wrap'],
       modules: {
         toolbar: false,
         keyboard: {
@@ -1279,8 +1279,8 @@ class Editor {
       $(this).attr('id', 'blc-' + index);
       if ($(this).hasClass('text-block')) {
         $(this).find('.editor-text').attr('id', 'txt-' + index);
-        $(this).find('.editor-image.left-image').attr('id', 'img-' + index + '-0');
-        $(this).find('.editor-image.right-image').attr('id', 'img-' + index + '-1');
+        $(this).find('.left-image .editor-image').attr('id', 'img-' + index + '-0');
+        $(this).find('.right-image .editor-image').attr('id', 'img-' + index + '-1');
       } else if ($(this).hasClass('image-block')) {
         $(this).find('.editor-text').each(function (subIndex) {
           $(this).attr('id', 'txt-' + index + '-' + subIndex);

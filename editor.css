@@ -145,6 +145,11 @@
   border: 2px solid #4b4;
 }
 
+.img-txt-widget {
+  width: 37px;
+  height: 37px;
+}
+
 .img-widget img,
 .img-txt-widget img {
   -webkit-user-select: none;
@@ -157,6 +162,12 @@
 }
 
 .img-txt-widget img {
+  left: 4px;
+  top: 4px;
+}
+
+.img-widget.block-new-left img,
+.img-widget.block-new-right img {
   left: 3px;
   top: 3px;
 }

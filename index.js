@@ -1011,6 +1011,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#page, #page-container").on("click", function ( ev ) {
     if (ev.target.id == "page" || ev.target.id == "page-container" ) {
       $("#blockCmd").css("opacity", 0);
+      $(".img-txt-widget").css("display", "none");
       // $("#editor").find(".editor-text").css("border",0); // end focusing text
     }
     $("#blc-" + activeBlocId).css("background-color", "white");
@@ -1067,18 +1068,31 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0);
+    $(".img-txt-widget").css("display", "none");
   });
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
+    triggerPseudoMouseenter(0);
+    //$(".img-txt-widget").css("display", "none");
+  });
+
+  // page LEAVE
+  $("#page").on("mouseleave", function ( ev ) {
     $(".img-txt-widget").css("display", "none");
+  });
+
+  // page ENTER
+  $("#page").on("mouseenter", function ( ev ) {
+    //
   });
 
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-    triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0);
+    $(".img-txt-widget").css("display", "none");
   });
 
 /*
@@ -1102,10 +1116,12 @@ $("#toolbarBottomMask").hover( function () {
       var blockTop = $(this).offset().top;
       var blockHeight = $(this).height();
       if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
+        //$(".img-txt-widget").css("display", "none");
         if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
           let oldBlocId = activeBlocId;
           activeBlocId = Number($(this).attr("id").split("-")[1]);
           if ( oldBlocId != activeBlocId ) {
+            $(".img-txt-widget").css("display", "none");
             $("#blc-" + oldBlocId).css("background-color", "white");
             $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
           }
@@ -1217,16 +1233,24 @@ $("#toolbarBottomMask").hover( function () {
 
 
 // .img-txt-widget
-  $("#editor").on("mouseenter", ".editor-text", function (ev) {
-    if ( $(this).next().css("display") == "none" ) {
-      $(".img-txt-widget").css("display", "block");
-      $(".img-txt-widget").attr("data-true-imageID", $(this).attr("id"));
-      $(".img-txt-widget").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
+  $("#editor").on("mouseenter", ".editor-block", function (ev) {
+    if ( $(this).find(".editor-text").next().css("display") == "none" ) {
+      $(".img-txt-widget.img-right").css("display", "block");
+      $(".img-txt-widget.img-right").attr("data-true-imageID", $(this).attr("id"));
+      $(".img-txt-widget.img-right").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
-      widgetOffset.left += $(this).parent(".editor-block").width() - 32;
-      //widgetOffset.top += $(this).height() -28;
-      widgetOffset.top += 5;
-      $(".img-txt-widget").offset(widgetOffset);
+      widgetOffset.left += $(this).width() - 40;
+      widgetOffset.top -= 32;
+      $(".img-txt-widget.img-right").offset(widgetOffset);
+    }
+    if ( $(this).find(".editor-text").prev().css("display") == "none" ) {
+      $(".img-txt-widget.img-left").css("display", "block");
+      $(".img-txt-widget.img-left").attr("data-true-imageID", $(this).attr("id"));
+      $(".img-txt-widget.img-left").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
+      let widgetOffset = $(this).offset();
+      widgetOffset.left -= 0;
+      widgetOffset.top -= 32;
+      $(".img-txt-widget.img-left").offset(widgetOffset);
     }
   });
 
@@ -1234,24 +1258,34 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget").css("display", "none");
   });
 
-  $("#page").on("mouseenter", ".img-txt-widget", function (ev) {
-    $(".img-txt-widget").css("display", "block");
+  $("#page").on("mouseenter", ".img-txt-widget.img-right", function (ev) {
+    $(".img-txt-widget.img-right").css("display", "block");
   });
 
-  $("#page").on("mouseleave", ".img-txt-widget", function (ev) {
-    $(".img-txt-widget").css("display", "none");
+  $("#page").on("mouseleave", ".img-txt-widget.img-right", function (ev) {
+    $(".img-txt-widget.img-right").css("display", "none");
   });
 
-  $("#page").on("click", ".imgL-txt-widget", function (ev) {
+  $("#page").on("mouseenter", ".img-txt-widget.img-left", function (ev) {
+    $(".img-txt-widget.img-left").css("display", "block");
+  });
+
+  $("#page").on("mouseleave", ".img-txt-widget.img-left", function (ev) {
+    $(".img-txt-widget.img-left").css("display", "none");
+  });
+
+  $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureL: true});
     activeTool("pictureL", true);
     $(".imgL-txt-widget").css("display", "none");
+    $(".block-new.img-txt-widget.img-left").css("display", "none");
   });
 
-  $("#page").on("click", ".img-txt-widget", function (ev) {
+  $("#page").on("click", ".img-right", function (ev) {
     editor.setBlockFormat(activeBlocId, {picture: true});
     activeTool("picture", true);
     $(".img-txt-widget").css("display", "none");
+    $(".block-new.img-txt-widget.img-right").css("display", "none");
   });
 
 // .img-widget
@@ -1267,7 +1301,7 @@ $("#toolbarBottomMask").hover( function () {
     widgetOffset.top += -16;
     $(".img-widget.block-delete").offset(widgetOffset);
 
-    if ( $(this).parent().hasClass("col") ) {
+    if ( $(this).parent().hasClass("col") ) { // image block
       var decal = $(this).height() /40;
       widgetOffset = $(ev.target).offset();
       widgetOffset.left += $(this).width() - 14;
@@ -1296,7 +1330,7 @@ $("#toolbarBottomMask").hover( function () {
         $(".img-widget.block-move-left").css("display", "none");
       }
     }
-    else {
+    else {  // text block
       $(".img-widget").css("display", "none");
       $(".img-widget.block-delete").css("display", "block");
     }
@@ -1331,12 +1365,13 @@ $("#toolbarBottomMask").hover( function () {
     $(".img-widget").css("display", "none");
   });
 
-//  image actions
+// image actions
   $("#page").on("click", ".img-widget", function (ev) {
     var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
     var blockID = Number($(".img-widget.block-delete").attr("data-block-id"));
+    var imageID = Number($(".img-widget.block-delete").attr("data-image-id"));
+    // image block
     if ( $(trueImageID).parent().hasClass("col") ) {
-      var imageID = Number($(".img-widget.block-delete").attr("data-image-id"));
       if ( $(this).hasClass("block-delete") )
         editor.removeImageInBlock(blockID, imageID);
       else if ( $(this).hasClass("block-new-right"))
@@ -1348,9 +1383,16 @@ $("#toolbarBottomMask").hover( function () {
       else if ( $(this).hasClass("block-move-right"))
         editor.moveImageRight(blockID, imageID);
     }
-    else { // click image on text block
-      editor.setBlockFormat(blockID, {picture: false});
-      activeTool("picture", false);
+    // text block
+    else {
+      if ( imageID == 0 ) {
+        activeTool("pictureL", false);
+        editor.setBlockFormat(blockID, {pictureLeft: false});
+      }
+      else {
+        activeTool("picture", false);
+        editor.setBlockFormat(blockID, {pictureRight: false});
+      }
     }
     $(".img-widget").css("display", "none");
   });
@@ -1444,6 +1486,7 @@ $("#toolbarBottomMask").hover( function () {
     initToolbar();
     $("#blc-0").trigger("mouseenter");
     $( window ).trigger("resize");
+    $(".img-txt-widget").css("display", "none");
     $('body').css({"visibility":"visible"});
   }, 200);
   /*

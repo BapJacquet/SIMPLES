@@ -263,31 +263,30 @@
 								</div>
 							</div><!-- Fin block command palette -->
 							<!-- Image widgets -->
-							<!--
-							<div class="block-delete img-widget imgL" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
-								<img src="img/delete-black.png">
-							</div>
-							-->
-							<div class="block-new img-txt-widget imgL"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
+										<!---->
+										<!-- img-txt-widget -->
+							<div class="block-new img-txt-widget img-right"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
 								<img src="img/mini-mount.png">
 							</div>
+							<div class="block-new img-txt-widget img-left"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
+								<img src="img/mini-mount.png">
+							</div>
+										<!-- img-widget & img-txt-widget -->
 							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
 								<img src="img/delete-black.png">
 							</div>
+										<!-- img-widget -->
 							<div class="block-new-right img-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
-								<img src="img/plus-black.png">
+								<img src="img/mini-mount.png">
 							</div>
 							<div class="block-new-left img-widget"  data-toggle="tooltip" data-placement="left" title="Ajouter une image à gauche">
-								<img src="img/plus-black.png">
+								<img src="img/mini-mount.png">
 							</div>
 							<div class="block-move-right img-widget"  data-toggle="tooltip" data-placement="right" title="Dépacer l'image à droite">
 								<img src="img/carat-r-black.png">
 							</div>
 							<div class="block-move-left img-widget"  data-toggle="tooltip" data-placement="left" title="Dépacer l'image à gauche">
 								<img src="img/carat-l-black.png">
-							</div>
-							<div class="block-new img-txt-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
-								<img src="img/mini-mount.png">
 							</div>
 							<!-- Fin image widgets -->
 							<!-- Editor container -->

@@ -1,3 +1,10 @@
+/**
+ * Draws a clock.
+ * @param {int} hour - The hour displayed on the clock.
+ * @param {int} minutes - The minutes displayed on the clock.
+ * @param {object} options - Options for drawing the clock.
+ * @return {DataURL} The data URL representing the clock.
+ */
 function drawClock (hour, minutes, options = { size: 300, strict: false }) {
   let can = document.createElement('canvas');
   can.width = options.size || 300;

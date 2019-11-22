@@ -1424,6 +1424,9 @@ class Editor {
   async setImage (selector, src, requestedWidth) {
     if (src === '') src = './img/placeholder.png';
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
+    if ($('.text-block ' + selector).length > 0) {
+      requestedWidth = 100;
+    }
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
       let res = src.match(/image_proxy\.php\?url=(https?:\/\/.+$)/);

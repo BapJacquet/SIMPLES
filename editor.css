@@ -72,6 +72,8 @@
   min-height: 18pt;
   margin-top: 1pt; /* 5 */
   margin-bottom: 1pt; /* 0 */
+  margin-left: 5pt;
+  margin-right: 5pt;
   overflow: hidden;
   cursor: text;
 }

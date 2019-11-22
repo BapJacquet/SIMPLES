@@ -152,6 +152,7 @@ function onVerifyClick(){
   $('#analysis-main-content>ul').html('');
   $('#analysis-veryImportant-content>ul').html('');
   $('#analysis-important-content>ul').html('');
+  $('.score').text('?')
   checkFalcQuality(editor).then(function (result) {
     // Mise à jour des scores.
     $('#mainRules').text(result.mainRulesSuccess);
@@ -172,7 +173,7 @@ function onVerifyClick(){
         regexp = result.rules[i].success ? null : result.rules[i].info.focusPattern;
       }
       let appendedContent = result.rules[i].info.append || '';
-      regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick='editor.selectNextMatch(" + regexp.toString() + ");'><i class='fas fa-search'></i></button>";
+      regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick=\"editor.selectNextMatch(" + regexp.toString() + ");\"><i class='fas fa-search'></i></button>";
       $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div><div>${result.rules[i].rule}</div>${appendedContent}</div>${regexp}</li>`);
       $(`#analysis-${tab}-content ul li`).hide();
     }
@@ -220,7 +221,9 @@ function initToolbar() {                 // tool cursor initial values
   $("#color-cursor").css("left", CURSOR_DATA["color-" + COLOR_INIT]);
   $("#title-cursor").css("left", CURSOR_DATA["title-" + TITLE_INIT]);
   $("#bullet-cursor").css("left", CURSOR_DATA["bullet-" + BULLET_INIT]);
+  $("#number-cursor").css("left", CURSOR_DATA["number-" + NUMBER_INIT]);
   $("#frame-cursor").css("left", CURSOR_DATA["frame-" + FRAME_INIT]);
+  $("#pictureL-cursor").css("left", CURSOR_DATA["pictureL-" + PICTUREL_INIT]);
   $("#picture-cursor").css("left", CURSOR_DATA["picture-" + PICTURE_INIT]);
 
   $("#toolbarlist").children().each( function (i, elem) {
@@ -232,7 +235,9 @@ function initToolbar() {                 // tool cursor initial values
   activeTool("color", COLOR_INIT);
   activeTool("title", TITLE_INIT);
   activeTool("bullet", BULLET_INIT);
+  activeTool("number", NUMBER_INIT);
   activeTool("frame", FRAME_INIT);
+  activeTool("pictureL", PICTUREL_INIT);
   activeTool("picture", PICTURE_INIT);
 }
 ////////////
@@ -277,7 +282,6 @@ function moveCursor(tool, val, anim) {
       else {
         $(cursor).css("visibility", "visible");
       }
-
       var newTool = tool + "-" + val;
       var position = CURSOR_DATA[newTool];
       if ( anim ) $(cursor).animate({"left": position}, 150);
@@ -313,16 +317,25 @@ function hideToolbarBlock(blockId) {
 //                                    send toolbar data to editor
 function sendtoEditor(tool, val) {
   var v = val;
-  if( tool == "bullet" ) {
+  if( tool === "number" ) {
     tool = "list";
     switch (val) {
-      case 'true':
-        v = 'bullet'; break;
-      case 'false':
+      case true:
+        v = 'ordered'; break;
+      case false:
         v = false; break;
     }
   }
-  if ( tool == "color" ) {
+  if( tool === "bullet" ) {
+    tool = "list";
+    switch (val) {
+      case true:
+        v = 'bullet'; break;
+      case false:
+        v = false; break;
+    }
+  }
+  if ( tool === "color" ) {
     switch( val ) {
       case 'red':
         v = COLOR_RED; break;
@@ -379,10 +392,12 @@ function setFormatAtToolbar(format) {
   activeTool("bold", format.bold);
   activeTool("size", format.size);
   activeTool("color", color);
-  activeTool("title", format.title);
-  activeTool("bullet", format.list);
+  activeTool("bullet", format.list === "bullet");
+  activeTool("number", format.list === "ordered");
   activeTool("frame", format.frame);
-  activeTool("picture", format.picture);
+  activeTool("pictureL", format.pictureLeft);
+  activeTool("picture", format.pictureRight);
+  activeTool("title", format.title);
 }
 
 // update cursor & activeTools
@@ -556,8 +571,14 @@ function displayWebImages(imgURLs) {
   serchText: ["mot1 mot2"]}
   */
   $("#imageClickModal").find(".modal-images").html(""); // clear images
-  $("#imageClickModal").find("#image-url").val(imgURLs.searchText); // keywords
-
+  var keywords = imgURLs.searchText;
+  if ( keywords ) {
+    $("#imageClickModal").find("#image-url").val(keywords); // keywords
+    $("#image-url").attr("data-val", keywords);
+  }
+  else {
+    $("#imageClickModal").find("#image-url").val($("#image-url").attr("data-val"));
+  }
   var arasaac = imgURLs.arasaac;
   if ( arasaac.length ) {
     for (let i = 0; i < arasaac.length; i++) {
@@ -640,6 +661,7 @@ $("#imageClickModal").find("#modalFind").on("click", function (ev) {
         displayWebImages(result);
         $(".loader").hide();
       });
+      $("#image-url").attr("data-val", urlOrKeyword);
     }
   }
 });
@@ -652,6 +674,7 @@ $("#imageClickModal").find("#image-url").on("keyup", function(ev) {
     $(this).blur();
   }
 });
+
 
 // send web image to editor
 $("#imageClickModal").on("click", ".web-img", function (ev) {
@@ -825,9 +848,9 @@ $("#aideItem").on("click", function () {
 
 // jquery tool hover
   $(".tool, .tool-frame-bullet").mouseenter( function () {
-    $(this).css({"top":"-5px", "cursor": "pointer"});
+    if ( editor.hasFocus ) $(this).css({"top":"-5px", "cursor": "pointer"});
   } ).mouseleave( function () {
-    $(this).css({"top":"0", "cursor": "default"});
+    if ( editor.hasFocus ) $(this).css({"top":"0", "cursor": "default"});
   } );
 
 $("#toolbarBottomMask").hover( function () {
@@ -838,20 +861,22 @@ $("#toolbarBottomMask").hover( function () {
 
 //  tool click
   $(".tool, .tool-frame-bullet").on("click", function(e) {
-    $(this).animate({"top": "-16px"}, 200,
-      function () {
-        $(this).animate({"top": 0}, 100,
-          function () { $(this).blur();
-        });
-      }
-    );
+    if ( editor.hasFocus ) {
 
-    toolClick(e, this);
-    $(this).trigger("mouseleave");
-    setTimeout( function () {
-      triggerPseudoMouseenter(0);
-    }, 15);
+      $(this).animate({"top": "-16px"}, 200,
+        function () {
+          $(this).animate({"top": 0}, 100,
+            function () { $(this).blur();
+          });
+        }
+      );
 
+      toolClick(e, this);
+      $(this).trigger("mouseleave");
+      setTimeout( function () {
+        triggerPseudoMouseenter(0);
+      }, 15);
+    }
   } );
 
 //                                    C O L O R P I C K E R
@@ -899,7 +924,7 @@ $("#toolbarBottomMask").hover( function () {
   * toolbarScrollBar hover
   */
  $("#toolbarScrollBar").hover( function () {
-   if ( TOOLBAR_WIDTH > $(body).width() ) {
+   if ( TOOLBAR_WIDTH > $(body).width()  + LOGO_DECAL) {
      $("#toolbarScrollBar").css("cursor", "ew-resize");
    }
  }, function () {
@@ -916,7 +941,7 @@ $("#toolbarBottomMask").hover( function () {
       if ( offset.left >= 0  &&  dragMouse > 0)
           $("#toolbarlist").css({"left": 0});
       else if ( offset.left <= trueWidth - TOOLBAR_WIDTH  &&  dragMouse < 0)
-          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH});
+          $("#toolbarlist").css({"left": trueWidth - TOOLBAR_WIDTH });
       else $("#toolbarlist").css({"left": offset.left + dragMouse});
     }
   });
@@ -981,10 +1006,12 @@ $("#toolbarBottomMask").hover( function () {
   ////////////////////////////////////////////////////// B L O C K S
 
 
-// hide #blockCmd
+// hide #blockCmd & text border
   $("#page, #page-container").on("click", function ( ev ) {
     if (ev.target.id == "page" || ev.target.id == "page-container" ) {
       $("#blockCmd").css("opacity", 0);
+      $(".img-txt-widget").css("display", "none");
+      // $("#editor").find(".editor-text").css("border",0); // end focusing text
     }
     $("#blc-" + activeBlocId).css("background-color", "white");
   });
@@ -1040,18 +1067,31 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0);
+    $(".img-txt-widget").css("display", "none");
   });
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
+    triggerPseudoMouseenter(0);
     $(".img-txt-widget").css("display", "none");
+  });
+
+  // page LEAVE
+  $("#page").on("mouseleave", function ( ev ) {
+    $(".img-txt-widget").css("display", "none");
+  });
+
+  // page ENTER
+  $("#page").on("mouseenter", function ( ev ) {
+    //
   });
 
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-    triggerPseudoMouseenter(0);
+    //triggerPseudoMouseenter(0);
+    $(".img-txt-widget").css("display", "none");
   });
 
 /*
@@ -1079,6 +1119,7 @@ $("#toolbarBottomMask").hover( function () {
           let oldBlocId = activeBlocId;
           activeBlocId = Number($(this).attr("id").split("-")[1]);
           if ( oldBlocId != activeBlocId ) {
+            $(".img-txt-widget").css("display", "none");
             $("#blc-" + oldBlocId).css("background-color", "white");
             $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
           }
@@ -1190,34 +1231,59 @@ $("#toolbarBottomMask").hover( function () {
 
 
 // .img-txt-widget
-  $("#editor").on("mouseenter", ".editor-text", function (ev) {
-    if ( $(this).next().css("display") == "none" ) {
-      $(".img-txt-widget").css("display", "block");
-      $(".img-txt-widget").attr("data-true-imageID", $(this).attr("id"));
-      $(".img-txt-widget").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
+  $("#editor").on("mouseenter", ".editor-block", function (ev) {
+    if ( $(this).find(".editor-text").next().css("display") == "none" ) {
+      $(".img-txt-widget.img-right").css("display", "block");
+      $(".img-txt-widget.img-right").attr("data-true-imageID", $(this).attr("id"));
+      $(".img-txt-widget.img-right").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
-      widgetOffset.left += $(this).parent(".editor-block").width() - 32;
-      //widgetOffset.top += $(this).height() -28;
-      widgetOffset.top += 5;
-      $(".img-txt-widget").offset(widgetOffset);
+      widgetOffset.left += $(this).width() - 40;
+      widgetOffset.top -= 30;
+      $(".img-txt-widget.img-right").offset(widgetOffset);
+    }
+    if ( $(this).find(".editor-text").prev().css("display") == "none" ) {
+      $(".img-txt-widget.img-left").css("display", "block");
+      $(".img-txt-widget.img-left").attr("data-true-imageID", $(this).attr("id"));
+      $(".img-txt-widget.img-left").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
+      let widgetOffset = $(this).offset();
+      widgetOffset.left -= 0;
+      widgetOffset.top -= 30;
+      $(".img-txt-widget.img-left").offset(widgetOffset);
     }
   });
+
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
       $(".img-txt-widget").css("display", "none");
   });
 
-  $("#page").on("mouseenter", ".img-txt-widget", function (ev) {
-    $(".img-txt-widget").css("display", "block");
+  $("#page").on("mouseenter", ".img-txt-widget.img-right", function (ev) {
+    $(".img-txt-widget.img-right").css("display", "block");
   });
 
-  $("#page").on("mouseleave", ".img-txt-widget", function (ev) {
-    $(".img-txt-widget").css("display", "none");
+  $("#page").on("mouseleave", ".img-txt-widget.img-right", function (ev) {
+    $(".img-txt-widget.img-right").css("display", "none");
   });
 
-  $("#page").on("click", ".img-txt-widget", function (ev) {
-    editor.setBlockFormat(activeBlocId, {picture: true});
+  $("#page").on("mouseenter", ".img-txt-widget.img-left", function (ev) {
+    $(".img-txt-widget.img-left").css("display", "block");
+  });
+
+  $("#page").on("mouseleave", ".img-txt-widget.img-left", function (ev) {
+    $(".img-txt-widget.img-left").css("display", "none");
+  });
+
+  $("#page").on("click", ".img-left", function (ev) {
+    editor.setBlockFormat(activeBlocId, {pictureLeft: true});
+    activeTool("pictureL", true);
+    $(".imgL-txt-widget").css("display", "none");
+    $(".block-new.img-txt-widget.img-left").css("display", "none");
+  });
+
+  $("#page").on("click", ".img-right", function (ev) {
+    editor.setBlockFormat(activeBlocId, {pictureRight: true});
     activeTool("picture", true);
     $(".img-txt-widget").css("display", "none");
+    $(".block-new.img-txt-widget.img-right").css("display", "none");
   });
 
 // .img-widget
@@ -1233,7 +1299,7 @@ $("#toolbarBottomMask").hover( function () {
     widgetOffset.top += -16;
     $(".img-widget.block-delete").offset(widgetOffset);
 
-    if ( $(this).parent().hasClass("col") ) {
+    if ( $(this).parent().hasClass("col") ) { // image block
       var decal = $(this).height() /40;
       widgetOffset = $(ev.target).offset();
       widgetOffset.left += $(this).width() - 14;
@@ -1262,7 +1328,7 @@ $("#toolbarBottomMask").hover( function () {
         $(".img-widget.block-move-left").css("display", "none");
       }
     }
-    else {
+    else {  // text block
       $(".img-widget").css("display", "none");
       $(".img-widget.block-delete").css("display", "block");
     }
@@ -1297,12 +1363,13 @@ $("#toolbarBottomMask").hover( function () {
     $(".img-widget").css("display", "none");
   });
 
-//  image actions
+// image actions
   $("#page").on("click", ".img-widget", function (ev) {
     var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
     var blockID = Number($(".img-widget.block-delete").attr("data-block-id"));
+    var imageID = Number($(".img-widget.block-delete").attr("data-image-id"));
+    // image block
     if ( $(trueImageID).parent().hasClass("col") ) {
-      var imageID = Number($(".img-widget.block-delete").attr("data-image-id"));
       if ( $(this).hasClass("block-delete") )
         editor.removeImageInBlock(blockID, imageID);
       else if ( $(this).hasClass("block-new-right"))
@@ -1314,20 +1381,34 @@ $("#toolbarBottomMask").hover( function () {
       else if ( $(this).hasClass("block-move-right"))
         editor.moveImageRight(blockID, imageID);
     }
-    else { // click image on text block
-      editor.setBlockFormat(blockID, {picture: false});
-      activeTool("picture", false);
+    // text block
+    else {
+      if ( imageID == 0 ) {
+        activeTool("pictureL", false);
+        editor.setBlockFormat(blockID, {pictureLeft: false});
+      }
+      else {
+        activeTool("picture", false);
+        editor.setBlockFormat(blockID, {pictureRight: false});
+      }
     }
     $(".img-widget").css("display", "none");
   });
 
 /////////////////////////////////////////  D I V E R S
+
+/* focusing editor.text TEST
+  $("#editor").on("click", ".editor-text" , function(ev) {
+    $("#editor").find(".editor-text").css("border",0);
+    $(this).css("border","1px solid gray");
+  }); */
+
 // resize & focus
   $( window ).on("resize focus", function () {
     triggerPseudoMouseenter(0);
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
     $("#toolbarlist").css({"left": move});
-    if ( TOOLBAR_WIDTH < $(body).width() ) {
+    if ( TOOLBAR_WIDTH < $(body).width() + LOGO_DECAL) {
       $("#toolbarScrollBar").css({"background-color": "white"});
     }
     else {
@@ -1403,6 +1484,7 @@ $("#toolbarBottomMask").hover( function () {
     initToolbar();
     $("#blc-0").trigger("mouseenter");
     $( window ).trigger("resize");
+    $(".img-txt-widget").css("display", "none");
     $('body').css({"visibility":"visible"});
   }, 200);
   /*
@@ -1447,9 +1529,13 @@ const CURSOR_DATA = {
 
     "bullet-true": "-16px",
 
+    "number-true": "-14px",
+
     "frame-true": "-16px",
 
-    "picture-true": "-17px",
+    "pictureL-true": "-31px",
+
+    "picture-true": "-30px",
 
 };
 
@@ -1458,17 +1544,19 @@ const SIZE_INIT = "s1";
 const COLOR_INIT = "black";
 const TITLE_INIT = "none";
 const BULLET_INIT = false;
+const NUMBER_INIT = false;
 const FRAME_INIT = false;
+const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
 
-const TOOLBAR_WIDTH = 790; /* 870; /* 840; */
-const TOOLBAR_DECAL_RIGHT = 40; /* 30; /* 22 */
-const LOGO_DECAL = 10; /* 65; */
-const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0"; 
+const TOOLBAR_WIDTH = 900; /* 790; /* 870; /* 840; */
+const TOOLBAR_DECAL_RIGHT = -20; /* 35; /* 40; /* 30; /* 22 */
+const LOGO_DECAL = 80; /* 65; */
+const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";
 const COLOR_RED = "#c10000";
 
-const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -260, "frame": -287, "picture": -322};
+const TOOLBAR_BLOCK_LEFT = {"bold": 0, "color": -90, "title": -172, "bullet": -255, "number": -310, "frame": -320, "pictureL": -355, "pictureText": -387, "picture": -445};
 
 var activeTools = {}; // tools present state
 var mousedownID = -1;

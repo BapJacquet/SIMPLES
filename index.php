@@ -105,7 +105,7 @@
 				</div>
 
 				<div>
-					<a id="pingbutton"><i class="fas fa-exclamation-triangle"></i></a>
+					<button id="pingbutton" type="button" data-title="Connexion" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><div id='pingers' style='width:400px;'>Un instant...<div></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i></button>
 				</div>
 
 				<!-- hidden input for file dialog -->
@@ -167,7 +167,15 @@
 						<div  id="bullet-cursor" class="tool-cursor">
 							<img src="img/arrow-u-black.png" />
 						</div>
-						<div id="tool-limit-bullet" class="tool-limit">|</div>
+					</div>
+
+					<div id="number">
+						<div id="number-caption" class="caption">numéro</div>
+						<div class="tool-frame-bullet number-true check"><img src="img/numberTrue.png" /></div>
+						<div  id="number-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+						<div id="tool-limit-number" class="tool-limit">|</div>
 					</div>
 
 					<div id="frame">
@@ -176,6 +184,18 @@
 						<div  id="frame-cursor" class="tool-cursor">
 							<img src="img/arrow-u-black.png" />
 						</div>
+					</div>
+
+					<div id="pictureL">
+						<div id="pictureL-caption" class="caption">images</div>
+						<div class="tool-frame-bullet pictureL-true check"><img src="img/pictureLTrue.png" /></div>
+						<div  id="pictureL-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+					</div>
+
+					<div id="pictureText">
+						<img src="img/pictureText.png" />
 					</div>
 
 					<div id="picture">
@@ -243,23 +263,30 @@
 								</div>
 							</div><!-- Fin block command palette -->
 							<!-- Image widgets -->
+										<!---->
+										<!-- img-txt-widget -->
+							<div class="block-new img-txt-widget img-right"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
+								<img src="img/mini-mount.png">
+							</div>
+							<div class="block-new img-txt-widget img-left"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à gauche">
+								<img src="img/mini-mount.png">
+							</div>
+										<!-- img-widget & img-txt-widget -->
 							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
 								<img src="img/delete-black.png">
 							</div>
+										<!-- img-widget -->
 							<div class="block-new-right img-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
-								<img src="img/plus-black.png">
+								<img src="img/mini-mount.png">
 							</div>
 							<div class="block-new-left img-widget"  data-toggle="tooltip" data-placement="left" title="Ajouter une image à gauche">
-								<img src="img/plus-black.png">
+								<img src="img/mini-mount.png">
 							</div>
 							<div class="block-move-right img-widget"  data-toggle="tooltip" data-placement="right" title="Dépacer l'image à droite">
 								<img src="img/carat-r-black.png">
 							</div>
 							<div class="block-move-left img-widget"  data-toggle="tooltip" data-placement="left" title="Dépacer l'image à gauche">
 								<img src="img/carat-l-black.png">
-							</div>
-							<div class="block-new img-txt-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
-								<img src="img/mini-mount.png">
 							</div>
 							<!-- Fin image widgets -->
 							<!-- Editor container -->
@@ -278,13 +305,13 @@
 						<div class="alert alert-light" role="alert" id="lexique3-connection">
 							<div>Un instant... : </div>
 							<div class="progress">
-								<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
+								<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="0"
 								aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
 									0%
 								</div>
 							</div>
 						</div>
-						<div class="score" data-toggle="tooltip" title="Il faut un score d'au moins 80 pour pouvoir être considéré comme du FALC, avec au moins 14 règles prioritaires, 2 très importantes et 15 importantes.">90</div>
+						<div class="score" data-toggle="tooltip" title="Il faut un score d'au moins 80 pour pouvoir être considéré comme du FALC, avec au moins 14 règles prioritaires, 2 très importantes et 15 importantes.">?</div>
 					</div>
 					<div>
 						<ul class="nav nav-tabs nav-justified rulesScores" role="tablist">
@@ -324,14 +351,17 @@
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title">Choisir une image</h3>
+        <h1 class="modal-title">Choisir une image</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary btn-block">Choisir un fichier sur l'ordinateur</button>
-				<br>
+				<label class="col-form-label">Choisir&nbsp;</label>
+				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary">un fichier sur l'ordinateur</button>
+				<button id="imgButtonHour" type="button" class="btn btn-secondary">une heure</button>
+				<button id="imgButtonDay" type="button" class="btn btn-secondary">une date</button>
+				<br/>	<br/>
         <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
 					<div class="custom-file">
 						<input id="imgFromDisk" type="file" class="custom-file-input btn btn-info">
@@ -340,9 +370,9 @@
         </div>
 				<label class="col-form-label">Entrer une URL ou des mots-clés</label>
 				<div class="input-group mb-3">
-					<input  id="image-url" type="text" class="form-control">
+					<input  id="image-url" type="text" class="form-control" data-val="">
 					<div class="input-group-append">
-						<button id="modalFind" type="button" class="btn btn-secondary">Chercher</button>
+						<button id="modalFind" type="button" class="btn btn-success">Chercher</button>
 					</div>
 				</div>
 				<!-- modal-images -->

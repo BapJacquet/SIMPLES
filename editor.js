@@ -19,7 +19,7 @@ class Editor {
    */
   constructor (id) {
     this.id = id;
-    this.fileVersion = 2;
+    this.fileVersion = 3;
     this.format = null;
     this.initializeStyles();
     this.initializeQuill();
@@ -31,6 +31,20 @@ class Editor {
 
   get bindings () {
     let bindings = {
+      list: {
+        key: 'l',
+        shortKey: true,
+        handler: () => {
+          this.setFormatAtSelection({ list: !this.getCurrentFormat().list });
+        }
+      },
+      frame: {
+        key: 'f',
+        shortKey: true,
+        handler: () => {
+          this.setFormatAtSelection({frame: !this.getCurrentFormat().frame});
+        }
+      },
       bold: {
         key: 'B',
         shortKey: true,
@@ -39,38 +53,63 @@ class Editor {
         }
       },
       title: {
-        key: 84, // T
+        key: 'h', // h
         shortKey: true,
         handler: () => {
           console.log('test');
-          let list = [null, 'H1', 'H2', 'H3', 'H4'];
+          let list = ['none', 'h1', 'h2', 'h3', 'h4'];
           let t = this.getCurrentFormat().title;
           let index = list.indexOf(t);
           let newT = index < list.length - 1 ? list[index + 1] : list[0];
           this.setFormatAtSelection({title: newT});
         }
       },
+      pictureRight: {
+        key: 'i',
+        shortKey: true,
+        handler: () => {
+          const bf = this.getCurrentFormat().pictureRight;
+          this.setFormatAtSelection({ pictureRight: !bf });
+        }
+      },
+      pictureLeft: {
+        key: 'I',
+        shortKey: true,
+        shiftKey: true,
+        handler: () => {
+          const bf = this.getCurrentFormat().pictureLeft;
+          this.setFormatAtSelection({ pictureLeft: !bf });
+        }
+      },
       wrap: {
-        key: 85, // U
+        key: 'U', // U
         shortKey: true,
         handler: () => {
           console.log('test2!');
-          let w = this.getCurrentFormat().wrap;
+          const w = this.getCurrentFormat().wrap;
           if (w === 'nowrap') {
-            this.setFormatAtSelection({wrap: 'normal'});
+            this.setFormatAtSelection({ wrap: 'normal' });
           } else {
-            this.setFormatAtSelection({wrap: 'nowrap'});
+            this.setFormatAtSelection({ wrap: 'nowrap' });
           }
         }
       },
       newBlock: {
         key: Keyboard.keys.ENTER,
-        shortKey: true,
-        //prefix: /\n/m,
+        prefix: /^$/,
         handler: () => {
-          let s = this.getSelection();
-          this.splitBlock(s.block, s.range.index);
-          this.select(s.block + 1, 0);
+          const s = this.getSelection();
+          if (this.getQuill(s.block).getText(s.range.index - 1, 1) === '\n') {
+            if (this.getQuill(s.block).getText(s.range.index, 1) === '\n') {
+              this.getQuill(s.block).deleteText(s.range.index, 1);
+            } else {
+              this.getQuill(s.block).deleteText(s.range.index - 1, 1);
+            }
+            this.splitBlock(s.block, s.range.index - 1);
+            this.select(s.block + 1, 0);
+            return false;
+          }
+          return true;
         }
       },
       moveBlockDown: {
@@ -227,18 +266,18 @@ class Editor {
 
     this.tableLayouts = {
       frame: {
-        hLineWidth: function (i) {
-          return 4;
-        },
-        vLineWidth: function (i) {
-          return 4;
-        },
-        hLineColor: function (i) {
-          return 'black';
-        },
-        vLineColor: function (i) {
-          return 'black';
-        }
+        hLineWidth: function (i, node) {
+					return (i === 0 || i === node.table.body.length) ? 4 : 0;
+				},
+				vLineWidth: function (i, node) {
+					return (i === 0 || i === node.table.widths.length) ? 4 : 0;
+				},
+				hLineColor: function (i, node) {
+					return 'black';
+				},
+				vLineColor: function (i, node) {
+					return 'black';
+				}
       }
     };
   }
@@ -247,6 +286,8 @@ class Editor {
    * Initializes quill for the editor.
    */
   initializeQuill () {
+    Quill.imports['modules/keyboard'].DEFAULTS = [];
+
     let Inline = Quill.import('blots/inline');
     let Block = Quill.import('blots/block');
     let Container = Quill.import('blots/container');
@@ -285,6 +326,10 @@ class Editor {
   registerEvents () {
     //$(this.id).on('keypress', '.editor-block', event => { this.onKeyPress(event); });
     $(this.id).on('keydown', '.editor-block', event => { this.onKeyDown(event); });
+    $(this.id).on('click', '.editor-block.text-block', event => {
+      const id = Number(event.currentTarget.id.substring(4));
+      this.getQuill(id).focus();
+    });
     // $(this.id).on('click', '.editor-image', event => { this.dispatchImageClickEvent('#' + event.target.id); });
     $(this.id).on('click', '.editor-block', event => {
       if ($(event.target).hasClass('editor-block')) {
@@ -294,12 +339,15 @@ class Editor {
         console.log("Focusing " + $(event.target).children('.editor-text').id);
       }
     });
-    $(this.id).on('click', '.editor-image-container', event => {
-      if ($(event.target).hasClass('editor-image-container')) {
+    $(this.id).on('click', '.col.editor-image-container', event => {
+      if ($(event.currentTarget).hasClass('editor-image-container')) {
         event.stopPropagation();
         event.preventDefault();
-        $(event.target).children('.editor-text').focus();
-        console.log("Focusing " + $(event.target).children('.editor-text').id);
+        let textid = $(event.currentTarget).children('.editor-text')[0].id;
+        let blockid = Number(textid.split('-')[1]);
+        let subid = Number(textid.split('-')[2]);
+        this.getQuill(blockid, subid).focus();
+        console.log("Focusing " + textid);
       }
     });
     $(this.id).on('focus', '.editor-text', event => {
@@ -355,32 +403,31 @@ class Editor {
     if (!this.hasFocus) return;
     let id = this.getSelection().block;
     switch (event.key) {
-      case 'l':
+      /*case 'l':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({list: !this.getCurrentFormat().list});
+          this.setFormatAtSelection({ list: !this.getCurrentFormat().list });
         }
-        break;
-      case 'b':
+        break;*/
+      /*case 'b':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({bold: !this.getCurrentFormat().bold});
+          this.setFormatAtSelection({ bold: !this.getCurrentFormat().bold });
         }
-        break;
-      case 'h':
+        break;*/
+      /*case 'h':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
           let current = this.getCurrentFormat().title;
-          if (current === 'none') current = null;
-          let formats = [null, 'h1', 'h2', 'h3', 'h4'];
+          let formats = ['none', 'h1', 'h2', 'h3', 'h4'];
           let index = formats.indexOf(current) + 1;
           if (index === formats.length) index = 0;
           this.setFormatAtSelection({title: formats[index]});
         }
-        break;
+        break;*/
       case '+':
         if (event.ctrlKey) {
           event.stopPropagation();
@@ -409,14 +456,14 @@ class Editor {
           $(container).css('font-size', `${Utils.pointToPixel(size - 1)}px`);
         }
         break;
-      case 'i':
+      /*case 'i':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
-          this.setFormatAtSelection({picture: !this.getCurrentFormat().picture});
+          this.setFormatAtSelection({ pictureRight: !this.getCurrentFormat().pictureRight });
         }
-        break;
-      case 'ArrowUp':
+        break;*/
+      /*case 'ArrowUp':
         if (event.ctrlKey) {
           event.stopPropagation();
           event.preventDefault();
@@ -429,7 +476,7 @@ class Editor {
           event.preventDefault();
           this.moveBlockDown(id);
         }
-        break;
+        break;*/
       case 'Backspace':
         let s = this.getSelection();
         if (s.range.index === 0 && id !== 0) {
@@ -633,8 +680,9 @@ class Editor {
       let listChanged = oldFormat.list !== this.format.list;
       let frameChanged = oldFormat.frame !== this.format.frame;
       let colorChanged = oldFormat.color !== this.format.color;
-      let pictureChanged = oldFormat.picture !== this.format.picture;
-      if (boldChanged || titleChanged || listChanged || frameChanged || colorChanged || pictureChanged) {
+      let pictureLeftChanged = oldFormat.pictureLeft !== this.format.pictureLeft;
+      let pictureRightChanged = oldFormat.pictureRight !== this.format.pictureRight
+      if (boldChanged || titleChanged || listChanged || frameChanged || colorChanged || pictureLeftChanged || pictureRightChanged) {
         this.dispatchCurrentFormatChanged(this.format);
       }
     }
@@ -644,7 +692,8 @@ class Editor {
     let format = {};
     format.frame = $('#blc-' + blockIndex).hasClass('frame');
     format.blockType = $('#blc-' + blockIndex).hasClass('text-block') ? 'default' : ($('#blc-' + blockIndex).hasClass('image-block') ? 'images' : 'unknown');
-    format.picture = $('#img-' + blockIndex).parent().is(':visible');
+    format.pictureLeft = $('#img-' + blockIndex + '-0').parent().is(':visible');
+    format.pictureRight = $('#img-' + blockIndex + '-1').parent().is(':visible');
     return format;
   }
 
@@ -663,7 +712,7 @@ class Editor {
     format.bold = Utils.isNullOrUndefined(quillFormat.bold) ? false : quillFormat.bold;
     format.list = Utils.isNullOrUndefined(quillFormat.list) ? false : quillFormat.list;
     format.indent = Utils.isNullOrUndefined(quillFormat.indent) ? 0 : quillFormat.indent;
-    format.title = Utils.isNullOrUndefined(quillFormat.header) ? false : quillFormat.header;
+    format.title = Utils.isNullOrUndefined(quillFormat.header) ? 'none' : (quillFormat.header === false ? 'none' : 'h' + quillFormat.header);
     format.color = Utils.isNullOrUndefined(quillFormat.color) ? '#000000' : quillFormat.color;
     format.wrap = Utils.isNullOrUndefined(quillFormat.wrap) ? 'normal' : quillFormat.wrap;
 
@@ -682,16 +731,17 @@ class Editor {
    * Create the instance of quill in the element with the given selector.
    * @param {String} selector - Selector to get the element. The first matching element will be chosen.
    */
-  createQuill (selector) {
+  createQuill (selector, placeholder = 'Tapez le texte ici...') {
     let element = $(selector)[0];
     let options = {
+      formats: ['bold', 'list', 'header', 'color', 'wrap'],
       modules: {
         toolbar: false,
         keyboard: {
           bindings: this.bindings
         }
       },
-      placeholder: 'Tapez le texte ici...',
+      placeholder: placeholder,
       theme: 'snow'
     };
     element.quill = new Quill(element, options);
@@ -785,7 +835,9 @@ class Editor {
       $('#txt-' + (index + 1)).focus();
     }
     this.createQuill('#txt-' + (index + 1));
-    this.setImage('#img-' + (index + 1), 'img/placeholder.png');
+    this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
+    this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
+    this.hideBlockImage(index + 1, 0);
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -803,6 +855,7 @@ class Editor {
       $('#txt-' + (index + 1) + '-0').focus();
     }
     this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
+    this.createQuill('#txt-' + (index + 1) + '-0', 'Tapez la légende ici...');
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -821,7 +874,9 @@ class Editor {
       $('#txt-' + (index)).focus();
     }
     this.createQuill('#txt-' + index);
-    this.setImage('#img-' + (index), 'img/placeholder.png');
+    this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
+    this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
+    this.hideBlockImage(index, 0);
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -836,9 +891,10 @@ class Editor {
     $('#blc-' + index).before(this.newImageBlockString(index));
     this.refreshAllBlockID();
     if (focus) {
-      $('#txt-' + (index) + '-1').focus();
+      $('#txt-' + (index) + '-0').focus();
     }
     this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
+    this.createQuill('#txt-' + index + '-0', 'Tapez la légende ici...');
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -901,7 +957,9 @@ class Editor {
       $('#txt-' + id).focus();
     }
     this.createQuill('#txt-' + id);
-    this.setImage('#img-' + id, 'img/placeholder.png');
+    this.setImage('#img-' + id + '-0', 'img/placeholder.png');
+    this.setImage('#img-' + id + '-1', 'img/placeholder.png');
+    this.hideBlockImage(id, 0);
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -912,6 +970,7 @@ class Editor {
     let id = this.blockCount;
     $(this.id).append(this.newImageBlockString(id));
     this.setImage('#img-' + id + '-0', 'img/placeholder.png');
+    this.createQuill('#txt-' + id + '-0', 'Tapez la légende ici...');
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -958,6 +1017,7 @@ class Editor {
       let selector = '#img-' + blockID + '-';
       $(selector + imgID).parent().before(this.newImageInImageBlockString(blockID, imgID));
       this.refreshAllBlockID();
+      this.createQuill('#txt-' + blockID + '-' + (imgID), 'Tapez la légende ici...');
       setTimeout(() => {
         this.setImage(selector + imgID, 'img/placeholder.png');
         $('#txt-' + blockID + '-' + imgID).focus();
@@ -980,6 +1040,7 @@ class Editor {
       let selector = '#img-' + blockID + '-';
       $(selector + imgID).parent().after(this.newImageInImageBlockString(blockID, imgID + 1));
       this.refreshAllBlockID();
+      this.createQuill('#txt-' + blockID + '-' + (imgID + 1), 'Tapez la légende ici...');
       setTimeout(() => {
         this.setImage(selector + (imgID + 1), 'img/placeholder.png');
         $('#txt-' + blockID + '-' + (imgID + 1)).focus();
@@ -1000,6 +1061,7 @@ class Editor {
       }
       let selector = '#img-' + id + '-' + lastImg;
       $(selector).parent().after(this.newImageInImageBlockString(id, lastImg + 1));
+      this.createQuill('#txt-' + id + '-' + (lastImg + 1), 'Tapez la légende ici...');
       setTimeout(() => {
         this.setImage('#img-' + id + '-' + (lastImg + 1), 'img/placeholder.png');
         $('#txt-' + id + '-' + (lastImg + 1)).focus();
@@ -1065,8 +1127,8 @@ class Editor {
    * Get the number of images within a block.
    */
   getImageCountInBlock (id) {
-    if ($('#blc-' + id).hasClass('media')) {
-      return 1;
+    if ($('#blc-' + id).hasClass('text-block')) {
+      return 2;
     } else {
       return $('#blc-' + id).children('.row').children('.col').length;
     }
@@ -1119,7 +1181,7 @@ class Editor {
           if (!Utils.isNullOrUndefined(item.attributes.header)) {
             let j = result.length - 2;
             while (j >= 0 && result[j] !== '\n') {
-              if (Utils.isNullOrUndefined(result[j]).text) {
+              if (Utils.isNullOrUndefined(result[j].text)) {
                 result[j] = {text: result[j], style: 'h' + item.attributes.header};
               } else {
                 result[j].style = 'h' + item.attributes.header;
@@ -1157,12 +1219,15 @@ class Editor {
    * @return {string} HTML string of the new block.
    */
   newBlockString (id, text) {
-    return `<div id="blc-${id}" class="editor-block text-block media" style="font-size: 14pt;">` +
-             `<div id="txt-${id}" class="editor-text media-body align-self-center">` +
+    return `<div id="blc-${id}" class="editor-block text-block" style="font-size: 14pt;">` +
+             `<div class="editor-image-container left-image" style="width:100px">` +
+                `<img id="img-${id}-0" class="editor-image align-self-center hoverable"/>` +
+             `</div>` +
+             `<div id="txt-${id}" class="editor-text align-self-center">` +
                 `<div>${text}</div>` +
              `</div>` +
-             `<div class="editor-image-container" style="width:100px">` +
-                `<img id="img-${id}" class="editor-image align-self-center hoverable"/>` +
+             `<div class="editor-image-container right-image" style="width:100px">` +
+                `<img id="img-${id}-1" class="editor-image align-self-center hoverable"/>` +
              `</div>` +
            `</div>`;
   }
@@ -1189,7 +1254,7 @@ class Editor {
   newImageInImageBlockString (id, imgID) {
     return `<div class="col editor-image-container">` +
       `<img id="img-${id}-${imgID}" class="editor-image align-self-center hoverable px-auto"/>` +
-      `<div id="txt-${id}-${imgID}" class="editor-text align-self-center" contenteditable="true"></div>` +
+      `<div id="txt-${id}-${imgID}" class="editor-text align-self-center" style="width: auto;"></div>` +
     `</div>`;
   }
 
@@ -1202,7 +1267,8 @@ class Editor {
   changeBlockID (oldID, newID) {
     $('#blc-' + oldID).attr('id', 'blc-' + newID);
     $('#txt-' + oldID).attr('id', 'txt-' + newID);
-    $('#img-' + oldID).attr('id', 'img-' + newID);
+    $('#img-' + oldID + '-0').attr('id', 'img-' + newID + '-0');
+    $('#img-' + oldID + '-1').attr('id', 'img-' + newID + '-1');
   }
 
   /**
@@ -1213,7 +1279,8 @@ class Editor {
       $(this).attr('id', 'blc-' + index);
       if ($(this).hasClass('text-block')) {
         $(this).find('.editor-text').attr('id', 'txt-' + index);
-        $(this).find('.editor-image').attr('id', 'img-' + index);
+        $(this).find('.left-image .editor-image').attr('id', 'img-' + index + '-0');
+        $(this).find('.right-image .editor-image').attr('id', 'img-' + index + '-1');
       } else if ($(this).hasClass('image-block')) {
         $(this).find('.editor-text').each(function (subIndex) {
           $(this).attr('id', 'txt-' + index + '-' + subIndex);
@@ -1253,8 +1320,7 @@ class Editor {
         this.getQuill(currentSelection.block).format('bold', format.bold);
       }
       if (typeof (format.list) !== 'undefined' && format.list !== list) {
-        let l = format.list === 'bullet' ? true : format.list;
-        this.getQuill(currentSelection.block).format('list', l);
+        this.getQuill(currentSelection.block).format('list', format.list);
       }
       if (typeof (format.indent) !== 'undefined' && format.indent !== indent) {
         this.getQuill(currentSelection.block).format('indent', format.indent);
@@ -1278,12 +1344,18 @@ class Editor {
   setBlockFormat (blockID, format) {
     let oldFormat = this.getBlockFormat(blockID);
     let frame = oldFormat.frame;
-    let picture = oldFormat.picture;
-    if (typeof (format.frame) !== 'undefined' && format.frame !== frame) {
+    let lp = Utils.isNullOrUndefined(format.pictureLeft) ? format.pictureL : format.pictureLeft;
+    let leftPicture = oldFormat.pictureLeft;
+    let rp = Utils.isNullOrUndefined(format.pictureRight) ? format.picture : format.pictureRight;
+    let rightPicture = oldFormat.pictureRight;
+    if (!Utils.isNullOrUndefined(format.frame) && format.frame !== frame) {
       this.setBlockFrameVisibility(blockID, format.frame);
     }
-    if (typeof (format.picture) !== 'undefined' && format.picture !== picture) {
-      this.setBlockImageVisibility(blockID, format.picture);
+    if (!Utils.isNullOrUndefined(rp) && rp !== rightPicture) {
+      this.setBlockImageVisibility(blockID, rp, 1);
+    }
+    if (!Utils.isNullOrUndefined(lp) && lp !== leftPicture) {
+      this.setBlockImageVisibility(blockID, lp, 0);
     }
     this.updateFormat();
   }
@@ -1291,27 +1363,30 @@ class Editor {
   /**
    * Hide the image associated to the given blockID.
    * @param {int} blockID - The index of the block containing the image.
+   * @param {int} imageID - The id of the image. 0 For left, 1 for right.
    */
-  hideBlockImage (blockID) {
-    $('#img-' + blockID).parent().hide();
+  hideBlockImage (blockID, imageID) {
+    $('#img-' + blockID + '-' + imageID).parent().hide();
   }
 
   /**
    * Show the image associated to the given blockID.
    * @param {int} blockID - The index of the block containing the image.
+   * @param {int} imageID - The id of the image. 0 For left, 1 for right.
    */
-  showBlockImage (blockID) {
-    $('#img-' + blockID).parent().show();
+  showBlockImage (blockID, imageID) {
+    $('#img-' + blockID + '-' + imageID).parent().show();
   }
 
   /**
    * Set the visibility of the image associated to the given blockID.
    * @param {int} blockID - The index of the block containing the image.
    * @param {boolean} visibility - The visibility of the image.
+   * @param {int} imageID - The id of the image. 0 For left, 1 for right.
    */
-  setBlockImageVisibility (blockID, visibility) {
-    if (visibility) this.showBlockImage(blockID);
-    else this.hideBlockImage(blockID);
+  setBlockImageVisibility (blockID, visibility, imageID) {
+    if (visibility) this.showBlockImage(blockID, imageID);
+    else this.hideBlockImage(blockID, imageID);
   }
 
   /**
@@ -1347,7 +1422,11 @@ class Editor {
    * @param {int} requestedWidth - Width of the resulting image.
    */
   async setImage (selector, src, requestedWidth) {
+    if (src === '') src = './img/placeholder.png';
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
+    if ($('.text-block ' + selector).length > 0) {
+      requestedWidth = 100;
+    }
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
       let res = src.match(/image_proxy\.php\?url=(https?:\/\/.+$)/);
@@ -1377,8 +1456,8 @@ class Editor {
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
-    img.onerror = () => {
-      alert("Erreur lors du chargement de l'image.");
+    img.onerror = (e) => {
+      alert("Erreur lors du chargement de l'image." + e);
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
     img.src = src;
@@ -1681,10 +1760,10 @@ class Editor {
           object.blocks.push({
             type: 'default',
             content: this.getQuill(i).getContents(),
-            image: $('#img-' + i)[0].dataURL,
+            images: [this.getImageElement(i, 0).dataURL, this.getImageElement(i, 1).dataURL],
             options: {
-              leftPicture: false,
-              rightPicture: format.picture,
+              leftPicture: format.pictureLeft,
+              rightPicture: format.pictureRight,
               frame: format.frame
             }
           });
@@ -1734,11 +1813,18 @@ class Editor {
             this.getQuill(i).setContents(json.blocks[i].content);
           }
           setTimeout(() => {
-            this.setImage('#img-' + i, json.blocks[i].image);
+            if (json.meta.version < 3) {
+              this.setImage('#img-' + i + '-1', json.blocks[i].image);
+            } else {
+              this.setImage('#img-' + i + '-0', json.blocks[i].images[0]);
+              this.setImage('#img-' + i + '-1', json.blocks[i].images[1]);
+            }
             if (json.meta.version >= 1) {
-              this.setBlockFormat(i, {frame: json.blocks[i].options.frame, picture: json.blocks[i].options.rightPicture});
-              //if (!json.blocks[i].options.rightPicture) $('#img-' + i).hide();
-              //if (json.blocks[i].options.frame) $('#blc-' + i).addClass('frame');
+              this.setBlockFormat(i, {
+                frame: json.blocks[i].options.frame,
+                pictureRight: json.blocks[i].options.rightPicture,
+                pictureLeft: json.blocks[i].options.leftPicture
+              });
             }
           }, 250);
           break;

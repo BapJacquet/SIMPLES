@@ -408,8 +408,6 @@ function activeTool(tool, value) {
 
 function triggerPseudoMouseenter( decal ) {
   $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
-  //$(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
-  //$("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
 // show hide analysis panel and move block palette accordingly
@@ -1018,7 +1016,6 @@ $("#toolbarBottomMask").hover( function () {
 //////////////////////////////////////////
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-
   // hover  block
     $(".editor-block").css("background-color", "white");
     $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
@@ -1067,19 +1064,17 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    //triggerPseudoMouseenter(0);
-    $(".img-txt-widget").css("display", "none");
+    //
   });
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
     triggerPseudoMouseenter(0);
-    $(".img-txt-widget").css("display", "none");
   });
 
   // page LEAVE
   $("#page").on("mouseleave", function ( ev ) {
-    $(".img-txt-widget").css("display", "none");
+    //
   });
 
   // page ENTER
@@ -1090,7 +1085,6 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-    //triggerPseudoMouseenter(0);
     $(".img-txt-widget").css("display", "none");
   });
 
@@ -1109,8 +1103,12 @@ $("#toolbarBottomMask").hover( function () {
   //  update palette activeBlocId
   $("#page").on("mousemove", function (ev) {
     var mouseY = ev.pageY;
+    var mouseX = ev.pageX;
     var target = ev.target;
 
+    if ( $("#blc-0").offset().left > mouseX + 2 ) {
+      $(".img-txt-widget").css("display", "none");
+    }
     $(".editor-block").each( function (index) {
       var blockTop = $(this).offset().top;
       var blockHeight = $(this).height();
@@ -1119,12 +1117,13 @@ $("#toolbarBottomMask").hover( function () {
           let oldBlocId = activeBlocId;
           activeBlocId = Number($(this).attr("id").split("-")[1]);
           if ( oldBlocId != activeBlocId ) {
-            $(".img-txt-widget").css("display", "none");
             $("#blc-" + oldBlocId).css("background-color", "white");
             $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
+            $("#blockCmd").find("span").text(activeBlocId + 1);
+            triggerPseudoMouseenter(0);
           }
-          $("#blockCmd").find("span").text(activeBlocId + 1);
-          triggerPseudoMouseenter(0);
+          //$("#blockCmd").find("span").text(activeBlocId + 1);
+          //triggerPseudoMouseenter(0);
         }
       }
     });
@@ -1255,7 +1254,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
       $(".img-txt-widget").css("display", "none");
   });
-
+/////////////
   $("#page").on("mouseenter", ".img-txt-widget.img-right", function (ev) {
     $(".img-txt-widget.img-right").css("display", "block");
   });
@@ -1275,14 +1274,14 @@ $("#toolbarBottomMask").hover( function () {
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
     activeTool("pictureL", true);
-    $(".imgL-txt-widget").css("display", "none");
+    $(".img-txt-widget.img-left").css("display", "none");
     $(".block-new.img-txt-widget.img-left").css("display", "none");
   });
 
   $("#page").on("click", ".img-right", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureRight: true});
     activeTool("picture", true);
-    $(".img-txt-widget").css("display", "none");
+    $(".img-txt-widget.img-right").css("display", "none");
     $(".block-new.img-txt-widget.img-right").css("display", "none");
   });
 
@@ -1338,7 +1337,7 @@ $("#toolbarBottomMask").hover( function () {
       $(this).css("border", "2px solid rgba(0, 0, 0, 0)");
       $(".img-widget").css("display", "none");
   });
-////
+/////////
   $("#page").on("mouseenter", ".img-widget", function (ev) {
 
     var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");

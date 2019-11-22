@@ -27,17 +27,23 @@ class Converter {
       let content = '';
       switch (blockFormat.blockType) {
         case 'default':
-          if (blockFormat.picture) {
-            content += `<div class="lefttext">${editor.getTextElement(i).innerHTML}</div>`;
-            console.log(editor.getTextElement(i).dataURL)
-            content += `<div class="rightpicture"><img src="${editor.getImageElement(i).dataURL}"></img></div>`;
+          if (blockFormat.pictureRight && blockFormat.pictureLeft) {
+            content += `<div class="leftpicture"><img src="${editor.getImageElement(i, 0).dataURL}"></img></div>`;
+            content += `<div class="middletext">${editor.getTextElement(i).children[0].innerHTML}</div>`;
+            content += `<div class="rightpicture"><img src="${editor.getImageElement(i, 1).dataURL}"></img></div>`;
+          } else if (!blockFormat.pictureRight && blockFormat.pictureLeft) {
+            content += `<div class="leftpicture"><img src="${editor.getImageElement(i, 0).dataURL}"></img></div>`;
+            content += `<div class="righttext">${editor.getTextElement(i).children[0].innerHTML}</div>`;
+          } else if (blockFormat.pictureRight && !blockFormat.pictureLeft) {
+            content += `<div class="lefttext">${editor.getTextElement(i).children[0].innerHTML}</div>`;
+            content += `<div class="rightpicture"><img src="${editor.getImageElement(i, 1).dataURL}"></img></div>`;
           } else {
-            content = `<div class="fulltext">${editor.getTextElement(i).innerHTML}</div>`;
+            content = `<div class="fulltext">${editor.getTextElement(i).children[0].innerHTML}</div>`;
           }
           break;
         case 'images':
           for (let c = 0; c < editor.getImageCountInBlock(i); c++) {
-            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).innerHTML}</div>`;
+            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).children[0].innerHTML}</div>`;
           }
           blockStyle = 'grid-template-columns:' + times(' 1fr', editor.getImageCountInBlock(i)) + ';';
           break;
@@ -55,8 +61,10 @@ class Converter {
     style += '.leftpicture {grid-column: 1 / span 1; width: 100px; align-self: center;}';
     style += '.rightpicture {grid-column: 3 / span 1; width: 100px; align-self: center;}';
     style += '.image {display: block; max-width: 100%; height: auto; margin: auto;}';
+    style += '.ql-wrap-nowrap {white-space: nowrap; display: inline-block;}'
     style += 'p {margin: 0;}';
-    style += 'h1,h2,h3,h4,h5 {margin: 0;}';
+    style += 'h1 {text-align: center;}'
+    style += 'h2,h3,h4,h5 {margin: 0;}';
     let styleContainer = `<style type="text/css">${style}</style>`;
     let container = `<html><head>${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
     return container;
@@ -84,19 +92,27 @@ class Converter {
       };
       switch (blockFormat.blockType) {
         case 'default': {
-          let content = [[{
-            text: editor.getStyledText(i),
-            margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 0, 0]
-          }]];
-          if (blockFormat.picture) {
+          let content = [[]];
+          if (blockFormat.pictureLeft) {
             content[0].push({
-              image: editor.getImageElement(i).dataURL,
+              image: editor.getImageElement(i, 0).dataURL,
               width: Utils.pixelToPoint(100),
-              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i), blockElement).top), 0, 0]
+              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i, 0), blockElement).top), 0, 0]
+            });
+          }
+          content[0].push({
+            text: editor.getStyledText(i),
+            margin: [5, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 5, 1]
+          });
+          if (blockFormat.pictureRight) {
+            content[0].push({
+              image: editor.getImageElement(i, 1).dataURL,
+              width: Utils.pixelToPoint(100),
+              margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i, 1), blockElement).top), 0, 0]
             });
           }
           blockDefinition.table = {
-            widths: blockFormat.picture ? ['*', 'auto'] : ['*'],
+            widths: blockFormat.pictureRight ? (blockFormat.pictureLeft ? ['auto', '*', 'auto'] : ['*', 'auto']) : (blockFormat.pictureLeft ? ['auto', '*'] : ['*']),
             body: content
           };
           break;

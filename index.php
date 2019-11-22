@@ -445,6 +445,7 @@
 	<script type="text/javascript" src="extensions.js"></script>
 	<script type="text/javascript" src="converter.js"></script>
 	<script type="text/javascript" src="w3color.js"></script>
+	<script type="text/javascript" src="clock.js"></script>
 
 	<!-- jQuery ready -->
 	<script src="index.js"></script>

@@ -621,6 +621,17 @@ $("#editor").on("click", ".editor-image", function(ev) {
   });
 });
 
+// click on time button
+$("#imgButtonTime").on("click", function () {
+  let time = prompt("Tapez l'heure (exemple: 14h30)");
+  if ( time ) {
+    $("#imageClickModal").modal('hide');
+    let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+    editor.setImage(imageId, drawClock(time.split("h")[0], time.split("h")[1]));
+    triggerPseudoMouseenter(0);
+  }
+});
+
 // trigger input file tag in image dialog
 $("#imgButtonFromDisk").on("click", function () {
   $("#imgFromDisk").trigger("click");
@@ -628,7 +639,7 @@ $("#imgButtonFromDisk").on("click", function () {
 
 // input file tag in image dialog: Read file from disk, send to editor
 $("#imgFromDisk").on("change", function (e) {
-  var file = e.target.files[0];
+  let file = e.target.files[0];
   if ( !file || (!file.type.match(/image.*/)) ) {
     $("#imageClickModal .close").trigger("click");
     return;
@@ -636,7 +647,7 @@ $("#imgFromDisk").on("change", function (e) {
   var reader = new FileReader();
   reader.onload = function(e) {
     $("#imageClickModal .close").trigger("click");
-    var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+    let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
     $("#imgFromDisk").val(""); // force value to be seen as new
   };
@@ -645,8 +656,8 @@ $("#imgFromDisk").on("change", function (e) {
 
 // send image url OR keyword to editor
 $("#imageClickModal").find("#modalFind").on("click", function (ev) {
-  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-  var urlOrKeyword = $("#imageClickModal").find("#image-url").val();
+  let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  let urlOrKeyword = $("#imageClickModal").find("#image-url").val();
   if ( urlOrKeyword ) {
     if ( urlOrKeyword.match(/^https?:\/\//) ) {
       $("#imageClickModal").modal('hide');
@@ -676,8 +687,8 @@ $("#imageClickModal").find("#image-url").on("keyup", function(ev) {
 
 // send web image to editor
 $("#imageClickModal").on("click", ".web-img", function (ev) {
-  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-  var url = $(ev.target).attr("src");
+  let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  let url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
   $(".loader").show();
   $("#imageClickModal").find("#image-url").val(null);
@@ -1392,6 +1403,7 @@ $("#toolbarBottomMask").hover( function () {
       }
     }
     $(".img-widget").css("display", "none");
+    setTimeout( function () { $(".img-widget").css("display", "none"); }, 300);
   });
 
 /////////////////////////////////////////  D I V E R S

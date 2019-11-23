@@ -623,6 +623,7 @@ $("#editor").on("click", ".editor-image", function(ev) {
 
 // draw clock
 $("#imageClickModal2").on('show.bs.modal', function (e) {
+  $("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
   let clock = new Clock("#imageClickModal2 #clock-canvas");
   clock.set(12, 0, {"strict": true});
 });

@@ -621,6 +621,23 @@ $("#editor").on("click", ".editor-image", function(ev) {
   });
 });
 
+// draw clock
+$("#imageClickModal2").on('show.bs.modal', function (e) {
+  let clock = new Clock("#imageClickModal2 #clock-canvas");
+  clock.set(12, 0, {"strict": true});
+});
+$("#imageClickModal2 #hour-input, #imageClickModal2 #minutes-input, #imageClickModal2-check").on("blur", function () {
+  let hour = $("#imageClickModal2 #hour-input").val();
+  let minutes = $("#imageClickModal2 #minutes-input").val();
+  let strict;
+  if ( $("#imageClickModal2-check").attr("checked") ) strict = false;
+  else strict = true;
+  $("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
+  let clock = new Clock("#imageClickModal2 #clock-canvas");
+  clock.set(hour, minutes, {"strict": strict});
+});
+
+
 // click on time button
 $("#imgButtonTimeOK").on("click", function () {
   $("#imageClickModal2").modal('hide');

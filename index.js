@@ -627,7 +627,7 @@ $("#imageClickModal2").on('show.bs.modal', function (e) {
   let clock = new Clock("#imageClickModal2 #clock-canvas");
   clock.set(12, 0, {"strict": true});
 });
-$("#imageClickModal2 #hour-input, #imageClickModal2 #minutes-input, #imageClickModal2-check").on("blur", function () {
+$("#imageClickModal2 #hour-input, #imageClickModal2 #minutes-input, #imageClickModal2-check").on("change", function () {
   let hour = $("#imageClickModal2 #hour-input").val();
   let minutes = $("#imageClickModal2 #minutes-input").val();
   let strict;

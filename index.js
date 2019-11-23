@@ -629,8 +629,8 @@ $("#imgButtonTimeOK").on("click", function () {
   let hour = $("#imageClickModal2 #hour-input").val();
   let minutes = $("#imageClickModal2 #minutes-input").val();
   let strict;
-  if ( $("#imageClickModal2-check").attr("checked") ) strict = true;
-  else strict = false;
+  if ( $("#imageClickModal2-check").attr("checked") ) strict = false;
+  else strict = true;
   editor.setImage(imageId, drawClock(hour, minutes, {"strict": strict}));
   triggerPseudoMouseenter(0);
 });

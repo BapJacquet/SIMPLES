@@ -417,7 +417,7 @@
 						<span  id="inputGroup-sizing-sm" class="form-control">Afficher une heure stricte</span>
 					  <div class="input-group-prepend">
 					    <div class="input-group-text">
-					      <input id="imageClickModal2-check" type="checkbox">
+					      <input id="imageClickModal2-check" type="checkbox" checked>
 					    </div>
 					  </div>
 					</div>

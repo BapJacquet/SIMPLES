@@ -622,14 +622,22 @@ $("#editor").on("click", ".editor-image", function(ev) {
 });
 
 // click on time button
-$("#imgButtonTime").on("click", function () {
-  let time = prompt("Tapez l'heure (exemple: 14h30)");
-  if ( time ) {
-    $("#imageClickModal").modal('hide');
-    let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-    editor.setImage(imageId, drawClock(time.split("h")[0], time.split("h")[1]));
-    triggerPseudoMouseenter(0);
-  }
+$("#imgButtonTimeOK").on("click", function () {
+  $("#imageClickModal2").modal('hide');
+  $("#imageClickModal").modal('hide');
+  let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  let hour = $("#imageClickModal2 #hour-input").val();
+  let minutes = $("#imageClickModal2 #minutes-input").val();
+  let strict;
+  if ( $("#imageClickModal2-check").attr("checked") ) strict = true;
+  else strict = false;
+  editor.setImage(imageId, drawClock(hour, minutes, {"strict": strict}));
+  triggerPseudoMouseenter(0);
+});
+// checkbox time strict
+$("#imageClickModal2-check").on("click", function () {
+  if ( $(this).attr("checked") ) $(this).removeAttr("checked");
+  else $(this).attr("checked", "checked");
 });
 
 // trigger input file tag in image dialog

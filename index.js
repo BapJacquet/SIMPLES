@@ -621,18 +621,19 @@ $("#editor").on("click", ".editor-image", function(ev) {
   });
 });
 //////////////////  C L O C K
+var clock = new Clock("#imageClickModal2 #clock-canvas");
 // draw clock
 function updateModalClock () {
   let hour = $("#imageClickModal2 #hour-input").val();
   let minutes = $("#imageClickModal2 #minutes-input").val();
-  let strict = ( $("#imageClickModal2-check").attr("checked") ) ? true : false;
-  $("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
-  let clock = new Clock("#imageClickModal2 #clock-canvas");
-  clock.set(hour, minutes, {"strict": strict});
+  let strict = $("#imageClickModal2-check").prop("checked");
+  //$("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
+  //let clock = new Clock("#imageClickModal2 #clock-canvas");
+  clock.set(hour, minutes, strict);
 }
 // clock events
 $("#imageClickModal2").on('show.bs.modal', function (e) {
-  $("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
+  //$("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
   updateModalClock();
 });
 
@@ -654,7 +655,7 @@ $("#imgButtonTimeOK").on("click", function () {
   let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   let hour = $("#imageClickModal2 #hour-input").val();
   let minutes = $("#imageClickModal2 #minutes-input").val();
-  let strict = ( $("#imageClickModal2-check").attr("checked") ) ? true : false;
+  let strict = $("#imageClickModal2-check").prop("checked");
   editor.setImage(imageId, drawClock(hour, minutes, {"strict": strict}));
   triggerPseudoMouseenter(0);
 });

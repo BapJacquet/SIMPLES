@@ -400,6 +400,11 @@
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         </div><div class="container"></div>
         <div class="modal-body">
+
+					<div class="input-group input-group-sm mb-3" style="left:-24px;">
+						<canvas id="clock-canvas" ></canvas>
+					</div>
+
 					<div class="input-group input-group-sm mb-3">
 
 	  				<div class="input-group-prepend">

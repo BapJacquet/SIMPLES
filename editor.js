@@ -29,8 +29,12 @@ class Editor {
     this.registerEvents();
   }
 
+  /**
+   * Get the keyboard bindings for the editor.
+   * @return {object} Object containing all bindings.
+   */
   get bindings () {
-    let bindings = {
+    return {
       list: {
         key: 'l',
         shortKey: true,
@@ -127,7 +131,6 @@ class Editor {
         }
       }
     };
-    return bindings;
   }
 
   /**

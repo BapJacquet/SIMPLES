@@ -46,14 +46,14 @@ class Editor {
         key: 'f',
         shortKey: true,
         handler: () => {
-          this.setFormatAtSelection({frame: !this.getCurrentFormat().frame});
+          this.setFormatAtSelection({ frame: !this.getCurrentFormat().frame });
         }
       },
       bold: {
         key: 'B',
         shortKey: true,
         handler: () => {
-          this.setFormatAtSelection({bold: !this.getCurrentFormat().bold});
+          this.setFormatAtSelection({ bold: !this.getCurrentFormat().bold });
         }
       },
       title: {
@@ -61,11 +61,11 @@ class Editor {
         shortKey: true,
         handler: () => {
           console.log('test');
-          let list = ['none', 'h1', 'h2', 'h3', 'h4'];
-          let t = this.getCurrentFormat().title;
-          let index = list.indexOf(t);
-          let newT = index < list.length - 1 ? list[index + 1] : list[0];
-          this.setFormatAtSelection({title: newT});
+          const list = ['none', 'h1', 'h2', 'h3', 'h4'];
+          const t = this.getCurrentFormat().title;
+          const index = list.indexOf(t);
+          const newT = index < list.length - 1 ? list[index + 1] : list[0];
+          this.setFormatAtSelection({ title: newT });
         }
       },
       pictureRight: {

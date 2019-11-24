@@ -401,8 +401,8 @@
         </div><div class="container"></div>
         <div class="modal-body">
 
-					<div class="input-group input-group-sm mb-3" style="left:-24px;">
-						<canvas id="clock-canvas" ></canvas>
+					<div class="input-group input-group-sm mb-3">
+						<canvas id="clock-canvas" width="150" height="150" class="mx-auto"></canvas>
 					</div>
 
 					<div class="input-group input-group-sm mb-3">

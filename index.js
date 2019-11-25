@@ -620,6 +620,17 @@ $("#editor").on("click", ".editor-image", function(ev) {
     $(".loader").hide();
   });
 });
+
+// click on time button...
+$("#imgButtonTime").on("click", function () {
+  $("#imageClickModal2").modal();
+});
+
+// click on date button...
+$("#imgButtonDate").on("click", function () {
+  simplesAlert("En chantier!");
+});
+
 //////////////////  C L O C K
 var clock = new Clock("#imageClickModal2 #clock-canvas");
 // draw clock

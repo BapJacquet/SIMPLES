@@ -359,9 +359,9 @@
       <div class="modal-body">
 				<label class="col-form-label">Choisir&nbsp;</label>
 				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary">un fichier sur l'ordinateur</button>
-				<!-- <button id="imgButtonTime" type="button" class="btn btn-secondary">une heure</button> -->
-				<a data-toggle="modal" href="#imageClickModal2" class="btn btn-primary">une heure</a>
-				<button id="imgButtonDay" type="button" class="btn btn-secondary">une date</button>
+				<button id="imgButtonTime" type="button" class="btn btn-secondary">une heure</button>
+				<!--<a data-toggle="modal" href="#imageClickModal2" class="btn btn-primary">une heure</a>-->
+				<button id="imgButtonDate" type="button" class="btn btn-secondary">une date</button>
 				<br/>	<br/>
         <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
 					<div class="custom-file">

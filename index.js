@@ -631,17 +631,18 @@ function updateModalClock () {
   //let clock = new Clock("#imageClickModal2 #clock-canvas");
   clock.set(hour, minutes, strict);
 }
-// clock events
+// clock dialog opening
 $("#imageClickModal2").on('show.bs.modal', function (e) {
   //$("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
   updateModalClock();
 });
 
+// hour or minutes change
 $("#imageClickModal2 #hour-input, #imageClickModal2 #minutes-input").on("change", function (e) {
   updateModalClock();
 });
 
-// checkbox time strict
+// checkbox time strict click
 $("#imageClickModal2-check").on("click", function () {
   if ( $(this).attr("checked") ) $(this).removeAttr("checked");
   else $(this).attr("checked", "checked");

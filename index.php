@@ -348,7 +348,7 @@
 <!--                         			 D I A L O G S  -->
 <!-- image dialog -->
 <div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title">Choisir une image</h1>
@@ -359,7 +359,8 @@
       <div class="modal-body">
 				<label class="col-form-label">Choisir&nbsp;</label>
 				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary">un fichier sur l'ordinateur</button>
-				<button id="imgButtonHour" type="button" class="btn btn-secondary">une heure</button>
+				<!-- <button id="imgButtonTime" type="button" class="btn btn-secondary">une heure</button> -->
+				<a data-toggle="modal" href="#imageClickModal2" class="btn btn-primary">une heure</a>
 				<button id="imgButtonDay" type="button" class="btn btn-secondary">une date</button>
 				<br/>	<br/>
         <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
@@ -390,7 +391,50 @@
     </div>
   </div>
 </div>  <!-- end image dialog -->
+<!--   															image	modal in modal    -->
+<div id="imageClickModal2" class="modal fade" style="background-color:rgb(64,64,64,0.5)">
+		<div class="modal-dialog modal-sm modal-dialog-centered" data-backdrop="static">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Choisir une heure</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div><div class="container"></div>
+        <div class="modal-body">
 
+					<div class="input-group input-group-sm mb-3">
+						<canvas id="clock-canvas" width="150" height="150" class="mx-auto"></canvas>
+					</div>
+
+					<div class="input-group input-group-sm mb-3">
+
+	  				<div class="input-group-prepend">
+	    				<span class="input-group-text">Heure</span>
+	  				</div>
+	  				<input id="hour-input" type="number" value="0" min="0" max="23" class="form-control" aria-label="Sizing example input">
+
+						<div class="input-group-prepend" style="padding-left:10px;">
+	    				<span class="input-group-text">Minutes</span>
+	  				</div>
+	  				<input id="minutes-input" type="number" value="0" min="0" max="59" class="form-control" aria-label="Sizing example input">
+
+					</div>
+					<div class="input-group mb-3">
+						<span  id="inputGroup-sizing-sm" class="form-control">Afficher une heure stricte</span>
+					  <div class="input-group-prepend">
+					    <div class="input-group-text">
+					      <input id="imageClickModal2-check" type="checkbox" checked>
+					    </div>
+					  </div>
+					</div>
+
+        </div>
+        <div class="modal-footer">
+          <a href="#" data-dismiss="modal" class="btn">Annuler</a>
+          <button id="imgButtonTimeOK" type="button" class="btn btn-secondary">Choisir</button>
+        </div>
+      </div>
+    </div>
+</div>
 <!--  confirm dialog -->
 <div id="confirmDialog" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">
@@ -445,6 +489,7 @@
 	<script type="text/javascript" src="extensions.js"></script>
 	<script type="text/javascript" src="converter.js"></script>
 	<script type="text/javascript" src="w3color.js"></script>
+	<script type="text/javascript" src="clock.js"></script>
 
 	<!-- jQuery ready -->
 	<script src="index.js"></script>

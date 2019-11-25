@@ -45,6 +45,15 @@
   /* cursor: text; */
 }
 
+.editor-block.image-block .editor-text {
+  text-align: center;
+}
+
+.editor-block.image-block .editor-text .ql-editor{
+  display: inline-block;
+  min-width: 14pt;
+}
+
 .editor-block.text-block {
   display: grid;
   grid-template-columns: auto 1fr auto;

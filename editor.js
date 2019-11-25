@@ -29,8 +29,12 @@ class Editor {
     this.registerEvents();
   }
 
+  /**
+   * Get the keyboard bindings for the editor.
+   * @return {object} Object containing all bindings.
+   */
   get bindings () {
-    let bindings = {
+    return {
       list: {
         key: 'l',
         shortKey: true,
@@ -42,14 +46,14 @@ class Editor {
         key: 'f',
         shortKey: true,
         handler: () => {
-          this.setFormatAtSelection({frame: !this.getCurrentFormat().frame});
+          this.setFormatAtSelection({ frame: !this.getCurrentFormat().frame });
         }
       },
       bold: {
         key: 'B',
         shortKey: true,
         handler: () => {
-          this.setFormatAtSelection({bold: !this.getCurrentFormat().bold});
+          this.setFormatAtSelection({ bold: !this.getCurrentFormat().bold });
         }
       },
       title: {
@@ -57,11 +61,11 @@ class Editor {
         shortKey: true,
         handler: () => {
           console.log('test');
-          let list = ['none', 'h1', 'h2', 'h3', 'h4'];
-          let t = this.getCurrentFormat().title;
-          let index = list.indexOf(t);
-          let newT = index < list.length - 1 ? list[index + 1] : list[0];
-          this.setFormatAtSelection({title: newT});
+          const list = ['none', 'h1', 'h2', 'h3', 'h4'];
+          const t = this.getCurrentFormat().title;
+          const index = list.indexOf(t);
+          const newT = index < list.length - 1 ? list[index + 1] : list[0];
+          this.setFormatAtSelection({ title: newT });
         }
       },
       pictureRight: {
@@ -106,7 +110,7 @@ class Editor {
               this.getQuill(s.block).deleteText(s.range.index - 1, 1);
             }
             this.splitBlock(s.block, s.range.index - 1);
-            this.select(s.block + 1, 0);
+            this.select(s.block + 1, null, 0);
             return false;
           }
           return true;
@@ -127,7 +131,6 @@ class Editor {
         }
       }
     };
-    return bindings;
   }
 
   /**
@@ -228,13 +231,19 @@ class Editor {
   getSelection () {
     for (let i = 0; i < this.blockCount; i++) {
       switch (this.getBlockFormat(i).blockType) {
-        case 'default':
-          let s = this.getQuill(i).getSelection();
+        case 'default': {
+          const s = this.getQuill(i).getSelection();
           if (!Utils.isNullOrUndefined(s)) {
-            return {block: i, range: s};
+            return { block: i, subBlock: undefined, range: s };
           }
           break;
-        case 'images':
+        } case 'images':
+          for (let j = 0; j < this.getImageCountInBlock; j++) {
+            const s = this.getQuill(i, j).getSelection();
+            if (!Utils.isNullOrUndefined(s)) {
+              return { block: i, subBlock: j, range: s };
+            }
+          }
           break;
       }
     }
@@ -350,6 +359,7 @@ class Editor {
         console.log("Focusing " + textid);
       }
     });
+    //$(this.id).parent().on('click', event => {if (!this.hasFocus) this.restoreSelection();})
     $(this.id).on('focus', '.editor-text', event => {
       setTimeout(() => this.updateFormat(), 1);
     });
@@ -360,7 +370,7 @@ class Editor {
         $(event.target).children('.editor-text').focus();
       }
     });
-    $(this.id).on('blur', '.editor-text', event => { this.onBlur(event); });
+    //$(this.id).on('focuslost', event => { this.onBlur(event); });
     $(this.id).on('click', '.editor-text', event => {
       setTimeout(() => this.updateFormat(), 1);
     });
@@ -383,16 +393,11 @@ class Editor {
    * @param {Event} event - Event to handle.
    */
   onBlur (event) {
-    /*let caller = event.target;
-    console.log(caller);
-    console.log(caller.id);
-    let id = parseInt(caller.id.substring(4));
-    console.log(id + ' has lost focus.');
-    this.lastBlock = id;*/
-    this.lastSelection = this.getSelection();
-    this.lastBlock = this.lastSelection.block;
-    console.log(this.lastSelection);
-    //this.updateFormat();
+    /*let interval = setInterval(() => {
+      if (!this.hasFocus) {
+        this.restoreSelection();
+      }
+    }, 250);*/
   }
 
   /**
@@ -402,6 +407,7 @@ class Editor {
   onKeyDown (event) {
     if (!this.hasFocus) return;
     let id = this.getSelection().block;
+    let subid = this.getSelection().subBlock;
     switch (event.key) {
       /*case 'l':
         if (event.ctrlKey) {
@@ -479,13 +485,13 @@ class Editor {
         break;*/
       case 'Backspace':
         let s = this.getSelection();
-        if (s.range.index === 0 && id !== 0) {
+        if (s.range.index === 0 && id !== 0 && this.getBlockFormat(id).blockType === 'default' && this.getBlockFormat(id - 1).blockType === 'default') {
           event.stopPropagation();
           event.preventDefault();
           let l = this.getBlockLength(id - 1);
           this.mergeBlocks(id - 1, id, 1);
           if (l > 0) {
-            this.select(id - 1, l - 1);
+            this.select(id - 1, null, l - 1);
           }
         }
         break;
@@ -507,20 +513,7 @@ class Editor {
    * Restore the selection to what it was last.
    */
   restoreSelection () {
-    let sel = this.getSelection();
-    let oldRange = sel.getRangeAt(0);
-    if (this.getBlockIndexFromElement(oldRange.startContainer) === -1) {
-      // The selection is not already in a block, so restore the last one.
-      let range = document.createRange();
-      if (this.lastSelection != null) {
-        range.setStart(this.lastSelection.startContainer, this.lastSelection.startOffset);
-        range.setEnd(this.lastSelection.endContainer, this.lastSelection.endOffset);
-      }
-      sel.removeAllRanges();
-      sel.addRange(range);
-    } else {
-      $(oldRange.startContainer).focus();
-    }
+    this.select(this.lastSelection.block, this.lastSelection.subBlock, this.lastSelection.range.index, this.lastSelection.range.length);
   }
 
   /**
@@ -745,6 +738,20 @@ class Editor {
       theme: 'snow'
     };
     element.quill = new Quill(element, options);
+    element.quill.on('selection-change', (range, oldRange, source) => {
+      console.log(oldRange);
+      if (range === null && oldRange !== null && !this.hasFocus) {
+        const split = element.id.split('-');
+        let blockID = Number(split[1]);
+        let subID;
+        if (split.length > 2) {
+          subID = Number(split[2]);
+        }
+        this.lastBlock = blockID;
+        this.lastSelection = {block: blockID, subBlock: subID, range: oldRange};
+        this.dispatchFocusLost(this.lastSelection);
+      }
+    });
   }
 
   /**
@@ -1137,33 +1144,35 @@ class Editor {
   /**
    * Get the text content of the block with the given id.
    * @param {int} id - ID of the block to extract text from.
+   * @param {int} subBlockID - ID of the sub block.
    * @return {string} The extracted text.
    */
-  getRawTextContent (id) {
+  getRawTextContent (id, subBlockID) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
     if (this.getBlockFormat(id).blockType !== 'default') return '';
-    return this.getQuill(id).getText();
+    return this.getQuill(id, subBlockID).getText();
   }
 
   /**
    * Get the Quill Delta of the block with the given id.
    * @param {int} id - ID of the block to get the delta of.
+   * @param {int} subBlockID - ID of the sub block.
    * @return {JSONObject} The delta.
    */
-  getDelta (id) {
+  getDelta (id, subBlockID) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
-    return this.getQuill(id).getContents();
+    return this.getQuill(id, subBlockID).getContents();
   }
 
   /**
    * Get the Styled text of the block with the given id.
    * @param {int} id - ID of the block to get the Styled text from.
+   * @param {int} subBlockID - ID of the sub block.
    * @return {JSONObject} The styled text.
    */
-  getStyledText (id) {
+  getStyledText (id, subBlockID) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
-    if (this.getBlockFormat(id).blockType !== 'default') return [];
-    let delta = this.getQuill(id).getContents();
+    let delta = this.getQuill(id, subBlockID).getContents();
     let result = [];
     for (let i = 0; i < delta.ops.length; i++) {
       let item = delta.ops[i];
@@ -1206,10 +1215,11 @@ class Editor {
   /**
    * Get the length of the text content of the block with the given id.
    * @param {Number} id - ID of the block.
+   * @param {Number} subBlockID - ID of the sub block.
    * @return {Number} The number of characters in this block.
    */
-  getBlockLength (id) {
-    return this.getRawTextContent(id).length;
+  getBlockLength (id, subBlockID) {
+    return this.getRawTextContent(id, subBlockID).length;
   }
 
   /**
@@ -1511,7 +1521,7 @@ class Editor {
   }
 
   restoreSavedSelection () {
-    this.select(this.savedSelection.block, this.savedSelection.index, this.savedSelection.length);
+    this.select(this.savedSelection.block, this.savedSelection.subBlock, this.savedSelection.index, this.savedSelection.length);
   }
 
   /**
@@ -1532,11 +1542,12 @@ class Editor {
   /**
    * Sets the selection in the editor.
    * @param {int} blockIndex - Index of the block.
+   * @param {int} subIndex - Index of the sub-block.
    * @param {int} startIndex - Start index of the selection.
    * @param {int} length - (optional) length of the selection;
    */
-  select (blockIndex, startIndex, length = 0) {
-    this.getQuill(blockIndex).setSelection(startIndex, length);
+  select (blockIndex, subIndex, startIndex, length = 0) {
+    this.getQuill(blockIndex, subIndex).setSelection(startIndex, length);
   }
 
   /**
@@ -1546,14 +1557,27 @@ class Editor {
    */
   selectFirst (text, word = false) {
     let offset = -1;
-    let patt = new RegExp('(?:^|[^a-zA-Z0-9éèêîïû])(' + text + ')(?:[^a-zA-Z0-9éèêîïû]|$)');
+    const patt = new RegExp('(?:^|[^a-zA-Z0-9éèêîïû])(' + text + ')(?:[^a-zA-Z0-9éèêîïû]|$)');
     for (let i = 0; i < this.blockCount; i++) {
-      let matches = this.getQuill(i).getText().match(patt);
-      if (matches != null) {
-        offset = matches.index;
-        offset += matches[0].search(matches[1]);
-        this.select(i, offset, text.length);
-        break;
+      switch (this.getBlockFormat(i).blockType) {
+        case 'default': {
+          const matches = this.getQuill(i).getText().match(patt);
+          if (matches != null) {
+            offset = matches.index;
+            offset += matches[0].search(matches[1]);
+            this.select(i, null, offset, text.length);
+            return;
+          }
+          break;
+        } case 'images':
+          for (let j = 0; j < this.getImageCountInBlock(i); j++) {
+            const matches = this.getQuill(i, j).getText().match(patt);
+            if (matches != null) {
+              offset = matches.index;
+              offset += matches[0].search(matches[1]);
+              this.select(i, j, offset, text.length);
+            }
+          }
       }
     }
   }
@@ -1564,20 +1588,34 @@ class Editor {
    * @param {int} startBlock - (Optional) The block id to start searching in.
    * @param {int} startIndex - (Optional) The index to start searching from.
    */
-  selectNextMatch (pattern, startBlock = null, startIndex = null) {
+  selectNextMatch (pattern, startBlock = null, startSubBlock = null, startIndex = null) {
     let sel = this.getSelection();
     startBlock = startBlock == null ? (this.hasFocus ? sel.block : 0) : startBlock;
+    startSubBlock = startSubBlock == null ? (this.hasFocus ? sel.subBlock : 0) : startSubBlock;
     startIndex = startIndex == null ? (this.hasFocus ? sel.range.index + sel.range.length : 0) : startIndex;
     let offset = -1;
     for (let i = startBlock; i < this.blockCount; i++) {
       if (this.getBlockFormat(i).blockType === 'default') {
+        startSubBlock = 0;
         let index = i === startBlock ? startIndex : 0;
         pattern.lastIndex = index;
         let matches = pattern.exec(this.getRawTextContent(i));
         if (matches != null) {
           offset = matches.index;
-          this.select(i, offset, matches[0].length);
+          this.select(i, null, offset, matches[0].length);
           return;
+        }
+      } else {
+        for (let j = startSubBlock; j < this.getImageCountInBlock(i); j++) {
+          startSubBlock = 0;
+          let index = i === startBlock ? (j === startSubBlock ? startIndex : 0) : 0;
+          pattern.lastIndex = index;
+          let matches = pattern.exec(this.getRawTextContent(i, j));
+          if (matches != null) {
+            offset = matches.index;
+            this.select(i, j, offset, matches[0].length);
+            return;
+          }
         }
       }
     }
@@ -1972,6 +2010,22 @@ class Editor {
         blockid: 'blc-' + id,
         textid: 'txt-' + id,
         imageid: 'img-' + id
+      },
+      bubbles: false,
+      cancelable: false
+    });
+    console.log(e);
+    $(this.id).get(0).dispatchEvent(e);
+  }
+
+  /**
+   * Send an event telling that the editor has lost focus.
+   * @param {object} lastSelection - The last selection of the editor.
+   */
+  dispatchFocusLost (lastSelection) {
+    let e = new CustomEvent('focuslost', {
+      detail: {
+        lastSelection: lastSelection
       },
       bubbles: false,
       cancelable: false

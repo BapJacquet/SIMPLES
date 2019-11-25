@@ -408,8 +408,6 @@ function activeTool(tool, value) {
 
 function triggerPseudoMouseenter( decal ) {
   $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
-  //$(".editor-text").css("border", "1px solid rgba(0, 0, 0, 0)");
-  //$("#txt-" + String(activeBlocId + decal)).css("border", "1px solid rgba(0, 0, 0, 0.15)");
 }
 
 // show hide analysis panel and move block palette accordingly
@@ -622,6 +620,46 @@ $("#editor").on("click", ".editor-image", function(ev) {
     $(".loader").hide();
   });
 });
+//////////////////  C L O C K
+var clock = new Clock("#imageClickModal2 #clock-canvas");
+// draw clock
+function updateModalClock () {
+  let hour = $("#imageClickModal2 #hour-input").val();
+  let minutes = $("#imageClickModal2 #minutes-input").val();
+  let strict = $("#imageClickModal2-check").prop("checked");
+  //$("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
+  //let clock = new Clock("#imageClickModal2 #clock-canvas");
+  clock.set(hour, minutes, strict);
+}
+// clock dialog opening
+$("#imageClickModal2").on('show.bs.modal', function (e) {
+  //$("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
+  updateModalClock();
+});
+
+// hour or minutes change
+$("#imageClickModal2 #hour-input, #imageClickModal2 #minutes-input").on("change", function (e) {
+  updateModalClock();
+});
+
+// checkbox time strict click
+$("#imageClickModal2-check").on("click", function () {
+  if ( $(this).attr("checked") ) $(this).removeAttr("checked");
+  else $(this).attr("checked", "checked");
+  updateModalClock();
+});
+
+// click on time button
+$("#imgButtonTimeOK").on("click", function () {
+  $("#imageClickModal2").modal('hide');
+  $("#imageClickModal").modal('hide');
+  let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  let hour = $("#imageClickModal2 #hour-input").val();
+  let minutes = $("#imageClickModal2 #minutes-input").val();
+  let strict = $("#imageClickModal2-check").prop("checked");
+  editor.setImage(imageId, drawClock(hour, minutes, {"strict": strict}));
+  triggerPseudoMouseenter(0);
+});
 
 // trigger input file tag in image dialog
 $("#imgButtonFromDisk").on("click", function () {
@@ -630,7 +668,7 @@ $("#imgButtonFromDisk").on("click", function () {
 
 // input file tag in image dialog: Read file from disk, send to editor
 $("#imgFromDisk").on("change", function (e) {
-  var file = e.target.files[0];
+  let file = e.target.files[0];
   if ( !file || (!file.type.match(/image.*/)) ) {
     $("#imageClickModal .close").trigger("click");
     return;
@@ -638,7 +676,7 @@ $("#imgFromDisk").on("change", function (e) {
   var reader = new FileReader();
   reader.onload = function(e) {
     $("#imageClickModal .close").trigger("click");
-    var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+    let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
     $("#imgFromDisk").val(""); // force value to be seen as new
   };
@@ -647,8 +685,8 @@ $("#imgFromDisk").on("change", function (e) {
 
 // send image url OR keyword to editor
 $("#imageClickModal").find("#modalFind").on("click", function (ev) {
-  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-  var urlOrKeyword = $("#imageClickModal").find("#image-url").val();
+  let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  let urlOrKeyword = $("#imageClickModal").find("#image-url").val();
   if ( urlOrKeyword ) {
     if ( urlOrKeyword.match(/^https?:\/\//) ) {
       $("#imageClickModal").modal('hide');
@@ -678,8 +716,8 @@ $("#imageClickModal").find("#image-url").on("keyup", function(ev) {
 
 // send web image to editor
 $("#imageClickModal").on("click", ".web-img", function (ev) {
-  var imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
-  var url = $(ev.target).attr("src");
+  let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
+  let url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
   $(".loader").show();
   $("#imageClickModal").find("#image-url").val(null);
@@ -1018,7 +1056,6 @@ $("#toolbarBottomMask").hover( function () {
 //////////////////////////////////////////
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-
   // hover  block
     $(".editor-block").css("background-color", "white");
     $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
@@ -1067,19 +1104,17 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    //triggerPseudoMouseenter(0);
-    $(".img-txt-widget").css("display", "none");
+    //
   });
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
     triggerPseudoMouseenter(0);
-    $(".img-txt-widget").css("display", "none");
   });
 
   // page LEAVE
   $("#page").on("mouseleave", function ( ev ) {
-    $(".img-txt-widget").css("display", "none");
+    //
   });
 
   // page ENTER
@@ -1090,7 +1125,6 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // .editor-block  LEAVE
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
-    //triggerPseudoMouseenter(0);
     $(".img-txt-widget").css("display", "none");
   });
 
@@ -1109,8 +1143,12 @@ $("#toolbarBottomMask").hover( function () {
   //  update palette activeBlocId
   $("#page").on("mousemove", function (ev) {
     var mouseY = ev.pageY;
+    var mouseX = ev.pageX;
     var target = ev.target;
 
+    if ( $("#blc-0").offset().left > mouseX + 2 ) {
+      $(".img-txt-widget").css("display", "none");
+    }
     $(".editor-block").each( function (index) {
       var blockTop = $(this).offset().top;
       var blockHeight = $(this).height();
@@ -1119,12 +1157,13 @@ $("#toolbarBottomMask").hover( function () {
           let oldBlocId = activeBlocId;
           activeBlocId = Number($(this).attr("id").split("-")[1]);
           if ( oldBlocId != activeBlocId ) {
-            $(".img-txt-widget").css("display", "none");
             $("#blc-" + oldBlocId).css("background-color", "white");
             $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
+            $("#blockCmd").find("span").text(activeBlocId + 1);
+            triggerPseudoMouseenter(0);
           }
-          $("#blockCmd").find("span").text(activeBlocId + 1);
-          triggerPseudoMouseenter(0);
+          //$("#blockCmd").find("span").text(activeBlocId + 1);
+          //triggerPseudoMouseenter(0);
         }
       }
     });
@@ -1255,7 +1294,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#editor").on("mouseleave", ".editor-block", function (ev) {
       $(".img-txt-widget").css("display", "none");
   });
-
+/////////////
   $("#page").on("mouseenter", ".img-txt-widget.img-right", function (ev) {
     $(".img-txt-widget.img-right").css("display", "block");
   });
@@ -1275,14 +1314,14 @@ $("#toolbarBottomMask").hover( function () {
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
     activeTool("pictureL", true);
-    $(".imgL-txt-widget").css("display", "none");
+    $(".img-txt-widget.img-left").css("display", "none");
     $(".block-new.img-txt-widget.img-left").css("display", "none");
   });
 
   $("#page").on("click", ".img-right", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureRight: true});
     activeTool("picture", true);
-    $(".img-txt-widget").css("display", "none");
+    $(".img-txt-widget.img-right").css("display", "none");
     $(".block-new.img-txt-widget.img-right").css("display", "none");
   });
 
@@ -1338,7 +1377,7 @@ $("#toolbarBottomMask").hover( function () {
       $(this).css("border", "2px solid rgba(0, 0, 0, 0)");
       $(".img-widget").css("display", "none");
   });
-////
+/////////
   $("#page").on("mouseenter", ".img-widget", function (ev) {
 
     var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
@@ -1393,6 +1432,7 @@ $("#toolbarBottomMask").hover( function () {
       }
     }
     $(".img-widget").css("display", "none");
+    setTimeout( function () { $(".img-widget").css("display", "none"); }, 300);
   });
 
 /////////////////////////////////////////  D I V E R S

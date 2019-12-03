@@ -1068,8 +1068,8 @@ $("#toolbarBottomMask").hover( function () {
 // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
   // hover  block
-    $(".editor-block").css("background-color", "white");
-    $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
+    //$(".editor-block").css("background-color", "white");
+    //$("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
 
   // enable .block-move-up
     if ( activeBlocId == 0 ) {
@@ -1095,14 +1095,14 @@ $("#toolbarBottomMask").hover( function () {
 
     //  palette move
     var offset = $(this).offset();
-    var left = $("#page").offset().left + 8; // + 15;
+    var left = $("#page").offset().left +  798; // 8;
     offset.left = left;
     var top = offset.top;
     var height = $(this).height();
     var commandHeight = $("#blockCmd").height();
     var decal = 0;
     if ( $("#blc-" + String(activeBlocId)).hasClass("frame") ) decal = 5;
-    //top = top + ((height - commandHeight) /2 + decal); // centered palette
+    top = top + ((height - commandHeight) /2 + decal); // centered palette
     var decalPalette = 5;
     top = top + decal - decalPalette; // top aligned palette
     offset.top = top;
@@ -1165,16 +1165,16 @@ $("#toolbarBottomMask").hover( function () {
       var blockHeight = $(this).height();
       if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
         if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
+
           let oldBlocId = activeBlocId;
           activeBlocId = Number($(this).attr("id").split("-")[1]);
           if ( oldBlocId != activeBlocId ) {
-            $("#blc-" + oldBlocId).css("background-color", "white");
-            $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
+            //$("#blc-" + oldBlocId).css("background-color", "white");
+            //$("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
             $("#blockCmd").find("span").text(activeBlocId + 1);
             triggerPseudoMouseenter(0);
           }
-          //$("#blockCmd").find("span").text(activeBlocId + 1);
-          //triggerPseudoMouseenter(0);
+          
         }
       }
     });
@@ -1282,13 +1282,14 @@ $("#toolbarBottomMask").hover( function () {
 
 // .img-txt-widget
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
+    let blockMiddle = $(this).height() /2 - 19;
     if ( $(this).find(".editor-text").next().css("display") == "none" ) {
       $(".img-txt-widget.img-right").css("display", "block");
       $(".img-txt-widget.img-right").attr("data-true-imageID", $(this).attr("id"));
       $(".img-txt-widget.img-right").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
       widgetOffset.left += $(this).width() - 40;
-      widgetOffset.top -= 30;
+      widgetOffset.top += blockMiddle; /* -= 30; */
       $(".img-txt-widget.img-right").offset(widgetOffset);
     }
     if ( $(this).find(".editor-text").prev().css("display") == "none" ) {
@@ -1297,7 +1298,7 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-txt-widget.img-left").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
       let widgetOffset = $(this).offset();
       widgetOffset.left -= 0;
-      widgetOffset.top -= 30;
+      widgetOffset.top += blockMiddle; /* -= 30; */
       $(".img-txt-widget.img-left").offset(widgetOffset);
     }
   });

@@ -161,6 +161,12 @@
   height: 37px;
 }
 
+.block-delete-right,
+.block-delete-left {
+  width: 35px;
+  height: 35px;
+}
+
 .img-widget img,
 .img-txt-widget img {
   -webkit-user-select: none;
@@ -172,7 +178,7 @@
   top: 1px;
 }
 
-.img-txt-widget img {
+.block-new img {
   left: 4px;
   top: 4px;
 }
@@ -208,14 +214,17 @@
   z-index: 1000;
 }
 
-/*
-.img-widget.block-delete img {
-  position: relative;
-  pointer-events: none;
-  left: 10px;
-  top: 2px;
+.img-txt-widget.block-delete-left,
+.img-txt-widget.block-delete-right {
+  border-color: red;
 }
-*/
+
+.img-txt-widget.block-delete-left:hover,
+.img-txt-widget.block-delete-right:hover {
+  background-color: #fbb;
+  border-color: #fbb;
+  z-index: 1000;
+}
 
 /*                           P A L E T T E  */
 

@@ -1216,13 +1216,13 @@ $("#toolbarBottomMask").hover( function () {
     $(`#blc-${activeBlocId}`).css("background-color", "white");
   });
 
-  // block-move hover
-  $(".block-move-up, .block-move-down").hover( function () {
+  //  insertBlock & block-move  hover
+  $("#blockCmd .block-move-up, #blockCmd .block-move-down, #blockCmd .block-new-up,  #blockCmd .block-new2-up, #blockCmd .block-new-down, #blockCmd .block-new2-down").hover( function () {
     $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
   }, function () {
       $(".editor-block").css("background-color", "white");
   });
-
+////////////////////////
   //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
     editor.insertBlockBefore( activeBlocId, "", true);
@@ -1323,33 +1323,6 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 
-
-// .img-txt-widget
-  $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    //
-  });
-
-
-  $("#editor").on("mouseleave", ".editor-block", function (ev) {
-      //
-  });
-////////////////////////////////////
-
-  $("#page").on("mouseenter", ".img-txt-widget.img-right", function (ev) {
-    //$(".img-txt-widget.img-right").css("display", "block");
-  });
-
-  $("#page").on("mouseleave", ".img-txt-widget.img-right", function (ev) {
-    //$(".img-txt-widget.img-right").css("display", "none");
-  });
-
-  $("#page").on("mouseenter", ".img-txt-widget.img-left", function (ev) {
-    //$(".img-txt-widget.img-left").css("display", "block");
-  });
-
-  $("#page").on("mouseleave", ".img-txt-widget.img-left", function (ev) {
-    //$(".img-txt-widget.img-left").css("display", "none");
-  });
 
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
@@ -1472,7 +1445,7 @@ $("#toolbarBottomMask").hover( function () {
       }
     }
     $(".img-widget, .block-delete-right, .block-delete-left").css("display", "none");
-    
+
   });
 
 

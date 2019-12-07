@@ -1278,10 +1278,10 @@ $("#toolbarBottomMask").hover( function () {
     editor.moveBlockDown(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      //blockArrayEnter();
-      $(`#blc-${activeBlocId}`).css("background-color", "white");
-      $(`#blc-${activeBlocId + 1}`).css("background-color", "#bfb");
-    }, 100);
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "white");
+      blockArrayLeave();
+      //$(`#blc-${activeBlocId}`).css("background-color", "#bfb");
+    }, 500);
   });
 
 //  moveBlockUp
@@ -1289,10 +1289,10 @@ $("#toolbarBottomMask").hover( function () {
     editor.moveBlockUp(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      //blockArrayEnter();
-      $(`#blc-${activeBlocId}`).css("background-color", "white");
-      $(`#blc-${activeBlocId - 1}`).css("background-color", "#bfb");
-    }, 100);
+      $(`#blc-${activeBlocId - 1}`).css("background-color", "white");
+      blockArrayLeave();
+      //$(`#blc-${activeBlocId - 1}`).css("background-color", "#bfb");
+    }, 500);
   });
 
 ///////////////////////////////

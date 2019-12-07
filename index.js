@@ -1280,8 +1280,7 @@ $("#toolbarBottomMask").hover( function () {
     setTimeout( function () {
       $(`#blc-${activeBlocId + 1}`).css("background-color", "white");
       blockArrayLeave();
-      //$(`#blc-${activeBlocId}`).css("background-color", "#bfb");
-    }, 500);
+    }, 250);
   });
 
 //  moveBlockUp
@@ -1291,8 +1290,7 @@ $("#toolbarBottomMask").hover( function () {
     setTimeout( function () {
       $(`#blc-${activeBlocId - 1}`).css("background-color", "white");
       blockArrayLeave();
-      //$(`#blc-${activeBlocId - 1}`).css("background-color", "#bfb");
-    }, 500);
+    }, 250);
   });
 
 ///////////////////////////////

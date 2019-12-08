@@ -35,7 +35,7 @@ function readFile(ev) {
     editor.load(JSON.parse(previousDocContent));
     $("#openFileInput").val(""); // force value to be seen as new
     setTimeout( function () {
-      blockArrayEnter(); // palette position
+      blockArrayLeave(); // palette position
     }, 150);
   };
   reader.readAsText(file);
@@ -771,7 +771,7 @@ $("#imgButtonTimeOK").on("click", function () {
   let minutes = $("#imageClickModal2 #minutes-input").val();
   let strict = $("#imageClickModal2-check").prop("checked");
   editor.setImage(imageId, drawClock(hour, minutes, {"strict": strict}));
-  blockArrayEnter();
+  flagImageDialogEnd = true; // avoid bad block highlight
 });
 
 // trigger input file tag in image dialog
@@ -791,6 +791,7 @@ $("#imgFromDisk").on("change", function (e) {
     $("#imageClickModal .close").trigger("click");
     let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
+    flagImageDialogEnd = true; // avoid bad block highlight
     $("#imgFromDisk").val(""); // force value to be seen as new
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
@@ -804,7 +805,7 @@ $("#imageClickModal").find("#modalFind").on("click", function (ev) {
     if ( urlOrKeyword.match(/^https?:\/\//) ) {
       $("#imageClickModal").modal('hide');
       editor.setImage(imageId, urlOrKeyword);
-      blockArrayEnter();
+      flagImageDialogEnd = true; // avoid bad block highlight
     }
     else {
       $(".loader").show();
@@ -832,6 +833,10 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   let url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
+  // avoid bad block highlight
+  flagImageDialogEnd = true;
+  blockArrayLeave();
+
   $(".loader").show();
   $("#imageClickModal").find("#image-url").val(null);
   $("#imageClickModal .close").trigger("click");
@@ -863,19 +868,15 @@ $("#editor").on("dragover", ".editor-image", function(e) {
       // url
       var url = ev.dataTransfer.getData('text/uri-list');
       editor.setImage(imageId, url);
-      setTimeout(function() {
-        blockArrayEnter();
-      }, 15);
+      flagImageDialogEnd = true; // avoid bad block highlight
     }
     else {
       // file
       var reader = new FileReader();
       reader.onload = function(e2) {
-          var imageSrc = e2.target.result;
-          editor.setImage(imageId, imageSrc);
-          setTimeout(function() {
-            blockArrayEnter();
-          }, 15);
+        var imageSrc = e2.target.result;
+        editor.setImage(imageId, imageSrc);
+        flagImageDialogEnd = true; // avoid bad block highlight
       };
     reader.readAsDataURL(file); // reading the file data.
   }
@@ -1338,13 +1339,16 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////
 // .img-widget
   $("#editor").on("mouseenter", ".editor-image", function (ev) {
+    if ( flagImageDialogEnd ) { // avoid bad block highlight
+      flagImageDialogEnd = false;
+      blockArrayLeave();
+      return;
+    }
     $(this).css("border", "2px solid #4b4");
     $(".img-widget.block-delete").attr("data-true-imageID", $(this).attr("id"));
     $(".img-widget.block-delete").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
     $(".img-widget.block-delete").attr("data-image-id", ($(this).attr("id")).split("-")[2]);
-/*
 
-*/
     if ( $(this).parent().hasClass("col") ) { // image block
       $(".img-widget").css("display", "block");
 
@@ -1627,7 +1631,7 @@ var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
 
-
+var flagImageDialogEnd = false;
 
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();

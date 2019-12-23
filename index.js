@@ -448,7 +448,8 @@ function blockArrayEnter() {
         $(".img-txt-widget.block-delete-left").attr("data-block-id", (leftImage.attr("id")).split("-")[1]);
         $(".img-txt-widget.block-delete-left").attr("data-image-id", (leftImage.attr("id")).split("-")[2]);
         widgetOffset = iBlock.find(".left-image").offset();
-        widgetOffset.left += iBlock.find(".left-image").width() - 19;
+        //widgetOffset.left += iBlock.find(".left-image").width() - 19;
+        widgetOffset.left += -19; // widget on image top left
         widgetOffset.top += -16;
         $(".img-txt-widget.block-delete-left").offset(widgetOffset);
 
@@ -868,7 +869,7 @@ $("#editor").on("dragover", ".editor-image", function(e) {
       // url
       var url = ev.dataTransfer.getData('text/uri-list');
       editor.setImage(imageId, url);
-      flagImageDialogEnd = true; // avoid bad block highlight
+      flagImageDialogEnd = true; // avoid wrong block highlight
     }
     else {
       // file

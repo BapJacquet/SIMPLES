@@ -406,13 +406,17 @@ function activeTool(tool, value) {
   moveCursor(tool, value, false);
 }
 
+///////////////////////////////////////////////   verify block widget highlight
+/*
+setInterval( function () {
+  if ( flagImageDialogEnd ) return;
+  blockArrayEnter();
+}, 200);
+*/
 ///////////////////////////////////////////////   blockArrayLeave
 function blockArrayLeave() {
-    var iBlock = $(`#blc-${activeBlocId}`);
-
-  // image text widgets
-  $(".img-txt-widget").css("display", "none");
   $("#blockCmd").css("display", "none");
+  $(".img-txt-widget").css("display", "none");
   $(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
 }
 ///////////////////////////////////////////////   blockArrayEnter
@@ -1199,7 +1203,7 @@ $("#toolbarBottomMask").hover( function () {
       }
       noBlock = true;
     }
-    console.log(noBlock);
+    //console.log(noBlock);
     if ( noBlock ) {
       //if ( activeBlocId != oldBlocId ) {
         if ( target.id == "page" || target.id == "page-container" ) blockArrayLeave();
@@ -1354,7 +1358,8 @@ $("#toolbarBottomMask").hover( function () {
       $(".img-widget").css("display", "block");
 
       let widgetOffset = $(ev.target).offset();
-      widgetOffset.left += $(this).width() - 14;
+      //widgetOffset.left += $(this).width() - 14;
+      widgetOffset.left += $(this).width() /2 - 15; // center widget
       widgetOffset.top += -16;
       $(".img-widget.block-delete").offset(widgetOffset);
 
@@ -1435,6 +1440,12 @@ $("#toolbarBottomMask").hover( function () {
         editor.moveImageLeft(blockID, imageID);
       else if ( $(this).hasClass("block-move-right"))
         editor.moveImageRight(blockID, imageID);
+
+      setTimeout( function () {
+        $(".img-widget").css("display", "none");
+        $(".editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
+      }, 300);
+
     }
     // text block
     else {

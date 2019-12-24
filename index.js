@@ -425,7 +425,9 @@ function blockArrayEnter() {
 
     $("#blockCmd").css("display", "block");
     $(".img-txt-widget").css("display", "none");
+    //$(iBlock).find(".img-txt-widget").css("display", "none");
     $(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
+    //$(iBlock).find(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
 
     if ( iBlock.hasClass("text-block") ) {
       // image text widgets
@@ -776,7 +778,7 @@ $("#imgButtonTimeOK").on("click", function () {
   let minutes = $("#imageClickModal2 #minutes-input").val();
   let strict = $("#imageClickModal2-check").prop("checked");
   editor.setImage(imageId, drawClock(hour, minutes, {"strict": strict}));
-  flagImageDialogEnd = true; // avoid bad block highlight
+  flagImageDialogEnd = true; // avoid wrong block highlight
 });
 
 // trigger input file tag in image dialog
@@ -796,7 +798,7 @@ $("#imgFromDisk").on("change", function (e) {
     $("#imageClickModal .close").trigger("click");
     let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
-    flagImageDialogEnd = true; // avoid bad block highlight
+    flagImageDialogEnd = true; // avoid wrong block highlight
     $("#imgFromDisk").val(""); // force value to be seen as new
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
@@ -810,7 +812,7 @@ $("#imageClickModal").find("#modalFind").on("click", function (ev) {
     if ( urlOrKeyword.match(/^https?:\/\//) ) {
       $("#imageClickModal").modal('hide');
       editor.setImage(imageId, urlOrKeyword);
-      flagImageDialogEnd = true; // avoid bad block highlight
+      flagImageDialogEnd = true; // avoid wrong block highlight
     }
     else {
       $(".loader").show();
@@ -838,9 +840,8 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   let url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
-  // avoid bad block highlight
-  flagImageDialogEnd = true;
-  blockArrayLeave();
+  flagImageDialogEnd = true; // avoid wrong block highlight
+  //blockArrayLeave();
 
   $(".loader").show();
   $("#imageClickModal").find("#image-url").val(null);
@@ -1327,7 +1328,7 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 
-
+// click text block image widget
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
     activeTool("pictureL", true);
@@ -1342,10 +1343,10 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////
 // .img-widget
   $("#editor").on("mouseenter", ".editor-image", function (ev) {
-    if ( flagImageDialogEnd ) { // avoid bad block highlight
+    if ( flagImageDialogEnd ) { // avoid wrong block highlight
       flagImageDialogEnd = false;
       blockArrayLeave();
-      return;
+      //return;
     }
     $(this).css("border", "2px solid #4b4");
     $(".img-widget.block-delete").attr("data-true-imageID", $(this).attr("id"));

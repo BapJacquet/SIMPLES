@@ -453,7 +453,7 @@ function blockArrayEnter() {
         $(".img-txt-widget.block-delete-left").attr("data-image-id", (leftImage.attr("id")).split("-")[2]);
         widgetOffset = iBlock.find(".left-image").offset();
         //widgetOffset.left += iBlock.find(".left-image").width() - 19;
-        widgetOffset.left += -19; // widget on image top left
+        widgetOffset.left += iBlock.find(".left-image").width() /2 -19; // widget centered
         widgetOffset.top += -16;
         $(".img-txt-widget.block-delete-left").offset(widgetOffset);
 
@@ -478,7 +478,7 @@ function blockArrayEnter() {
        $(".img-txt-widget.block-delete-right").attr("data-block-id", (rightImage.attr("id")).split("-")[1]);
        $(".img-txt-widget.block-delete-right").attr("data-image-id", (rightImage.attr("id")).split("-")[2]);
        widgetOffset = iBlock.find(".right-image").offset();
-       widgetOffset.left += iBlock.find(".right-image").width() - 19;
+       widgetOffset.left += iBlock.find(".right-image").width() /2 - 19; // widget centered
        widgetOffset.top += -16;
        $(".img-txt-widget.block-delete-right").offset(widgetOffset);
 
@@ -1331,15 +1331,13 @@ $("#toolbarBottomMask").hover( function () {
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
     activeTool("pictureL", true);
-    $(".img-txt-widget.img-left").css("display", "none");
-    $(".block-new.img-txt-widget.img-left").css("display", "none");
+    blockArrayEnter();
   });
 
   $("#page").on("click", ".img-right", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureRight: true});
     activeTool("picture", true);
-    $(".img-txt-widget.img-right").css("display", "none");
-    $(".block-new.img-txt-widget.img-right").css("display", "none");
+    blockArrayEnter();
   });
 ////////////////////////////////////////
 // .img-widget
@@ -1457,9 +1455,8 @@ $("#toolbarBottomMask").hover( function () {
         activeTool("picture", false);
         editor.setBlockFormat(blockID, {pictureRight: false});
       }
+      blockArrayEnter();
     }
-    $(".img-widget, .block-delete-right, .block-delete-left").css("display", "none");
-
   });
 
 

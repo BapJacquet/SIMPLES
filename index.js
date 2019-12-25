@@ -455,7 +455,7 @@ function blockArrayEnter() {
         $(".img-txt-widget.block-delete-left").attr("data-image-id", (leftImage.attr("id")).split("-")[2]);
         widgetOffset = iBlock.find(".left-image").offset();
         //widgetOffset.left += iBlock.find(".left-image").width() - 19;
-        widgetOffset.left += iBlock.find(".left-image").width() /2 -19; // widget centered
+        widgetOffset.left += iBlock.find(".left-image").width() /2 -17; // widget centered
         widgetOffset.top += -16;
         $(".img-txt-widget.block-delete-left").offset(widgetOffset);
 
@@ -466,7 +466,7 @@ function blockArrayEnter() {
          $(".img-txt-widget.img-right").attr("data-true-imageID", $(iBlock).attr("id"));
          $(".img-txt-widget.img-right").attr("data-block-id", ($(iBlock).attr("id")).split("-")[1]);
          widgetOffset = iBlock.offset();
-         widgetOffset.left += $(iBlock).width() + 20;
+         widgetOffset.left += $(iBlock).width() + 34;
          widgetOffset.top += blockMiddle;
          $(".img-txt-widget.img-right").offset(widgetOffset);
      }
@@ -480,7 +480,7 @@ function blockArrayEnter() {
        $(".img-txt-widget.block-delete-right").attr("data-block-id", (rightImage.attr("id")).split("-")[1]);
        $(".img-txt-widget.block-delete-right").attr("data-image-id", (rightImage.attr("id")).split("-")[2]);
        widgetOffset = iBlock.find(".right-image").offset();
-       widgetOffset.left += iBlock.find(".right-image").width() /2 - 19; // widget centered
+       widgetOffset.left += iBlock.find(".right-image").width() /2 - 17; // widget centered
        widgetOffset.top += -16;
        $(".img-txt-widget.block-delete-right").offset(widgetOffset);
 

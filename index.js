@@ -62,7 +62,7 @@ function setLexique3Progress(event){
  * Display the result of the analysis.
  * in the "Analyse" panel.
  */
-function displayAnalysisResults(event){
+/*function displayAnalysisResults(event){
   // Ajoute les résultats à la page d'analyse.
   let complexWords = event.detail.complexWords;
   analysisContent.innerHTML = "";
@@ -86,7 +86,7 @@ function displayAnalysisResults(event){
   } else {
     analysisContent.insertAdjacentHTML('beforeend',`<div class="alert alert-success" role="alert">Les mots semblent simples !</div>`);
   }
-}
+}*/
 
 function description (frequency) {
   switch (frequency) {
@@ -143,6 +143,62 @@ function refreshPageScale(){
   page.style.transform = scaleFunction;
 }
 
+function showRule(rule) {
+  let tab = '', color = 'black';
+  switch (rule.priority) {
+    case 3: tab = 'main'; break;
+    case 2: tab = 'veryImportant'; break;
+    case 1: tab = 'important'; break;
+  }
+  let regexp;
+  if(!Utils.isNullOrUndefined(rule.success)) {
+    color = rule.success ? 'green': 'red';
+    regexp = rule.success ? null : rule.info.focusPattern;
+  }
+  let appendedContent = rule.info.append || '';
+  regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick=\"editor.selectNextMatch(" + regexp.toString() + ");\"><i class='fas fa-search'></i></button>";
+  $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div><div>${rule.rule}</div>${appendedContent}</div>${regexp}</li>`);
+  $(`#analysis-${tab}-content ul li`).hide();
+}
+
+function displayAnalysisResults(result) {
+  // Mise à jour des scores.
+  $('#mainRules').text(result.mainRulesSuccess);
+  $('#veryImportantRules').text(result.veryImportantRulesSuccess);
+  $('#importantRules').text(result.importantRulesSuccess);
+  $('.score').text(result.score);
+  // Ajout des items dans les différentes catégories.
+  // Draw errors first.
+  for (let i = 0; i < result.rules.length; i++) {
+    if(Utils.isNullOrUndefined(result.rules[i].success)) continue;
+    if(result.rules[i].success) continue;
+    showRule(result.rules[i])
+  }
+  // Draw undefined next.
+  for (let i = 0; i < result.rules.length; i++) {
+    if(!Utils.isNullOrUndefined(result.rules[i].success)) continue;
+    showRule(result.rules[i])
+  }
+  // Draw successful last.
+  for (let i = 0; i < result.rules.length; i++) {
+    if(Utils.isNullOrUndefined(result.rules[i].success)) continue;
+    if(!result.rules[i].success) continue;
+    showRule(result.rules[i])
+  }
+  // Animations pour faire apparaitre les items.
+  $('#analysis-main-content ul li').each(function(index, element) {
+    setTimeout(() => {$(this).show(150)}, index * 150);
+  });
+  $('#analysis-veryImportant-content ul li').each(function(index, element) {
+    setTimeout(() => {$(this).show(150)}, index * 150);
+  });
+  $('#analysis-important-content ul li').each(function(index, element) {
+    setTimeout(() => {$(this).show(150)}, index * 150);
+  });
+
+  $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
+  $('[data-toggle="popover"]').popover();
+}
 /**
  * When Verify Button is clicked
  * Start the analysis.
@@ -153,44 +209,20 @@ function onVerifyClick(){
   $('#analysis-veryImportant-content>ul').html('');
   $('#analysis-important-content>ul').html('');
   $('.score').text('?')
-  checkFalcQuality(editor).then(function (result) {
-    // Mise à jour des scores.
-    $('#mainRules').text(result.mainRulesSuccess);
-    $('#veryImportantRules').text(result.veryImportantRulesSuccess);
-    $('#importantRules').text(result.importantRulesSuccess);
-    $('.score').text(result.score);
-    // Ajout des items dans les différentes catégories.
-    for (let i = 0; i < result.rules.length; i++) {
-      let tab = '', color = 'black';
-      switch (result.rules[i].priority) {
-        case 3: tab = 'main'; break;
-        case 2: tab = 'veryImportant'; break;
-        case 1: tab = 'important'; break;
-      }
-      let regexp;
-      if(!Utils.isNullOrUndefined(result.rules[i].success)) {
-        color = result.rules[i].success ? 'green': 'red';
-        regexp = result.rules[i].success ? null : result.rules[i].info.focusPattern;
-      }
-      let appendedContent = result.rules[i].info.append || '';
-      regexp = Utils.isNullOrUndefined(regexp) ? '' : "<button type='button' data-toggle='tooltip' data-placement='left' title='Trouver dans le document' class='ruleButton' onclick=\"editor.selectNextMatch(" + regexp.toString() + ");\"><i class='fas fa-search'></i></button>";
-      $(`#analysis-${tab}-content ul`).append(`<li style="color: ${color}"><div><div>${result.rules[i].rule}</div>${appendedContent}</div>${regexp}</li>`);
-      $(`#analysis-${tab}-content ul li`).hide();
-    }
-    // Animations pour faire apparaitre les items.
-    $('#analysis-main-content ul li').each(function(index, element) {
-      setTimeout(() => {$(this).show(150)}, index * 150);
-    });
-    $('#analysis-veryImportant-content ul li').each(function(index, element) {
-      setTimeout(() => {$(this).show(150)}, index * 150);
-    });
-    $('#analysis-important-content ul li').each(function(index, element) {
-      setTimeout(() => {$(this).show(150)}, index * 150);
-    });
+  checkFalcQuality(editor).then((result) => displayAnalysisResults(result));
+}
 
-    $('[data-toggle="tooltip"]').tooltip({delay: {"show": 1000, "hide": 100}});
-    $('[data-toggle="popover"]').popover();
-  });
+/**
+ * When Verify Button is clicked
+ * Start the analysis.
+ */
+function onVerifyBlockClick(){
+  //analyzeAllEditorContent();
+  $('#analysis-main-content>ul').html('');
+  $('#analysis-veryImportant-content>ul').html('');
+  $('#analysis-important-content>ul').html('');
+  $('.score').text('?')
+  checkFalcQualityForBlock(editor, editor.lastBlock).then((result) => displayAnalysisResults(result));
 }
 
 /**
@@ -535,7 +567,9 @@ function blockArrayEnter() {
 // show hide analysis panel and move block palette accordingly
 function analysisPanelShowHide(showHide, timeOut) {
   $("#blockCmd").hide(50);
-  $("#analysisPanel")[showHide](timeOut);
+  $("#analysisContentPanel")[showHide](timeOut);
+  $(".analysis-expander-icon.fa-chevron-left")[showHide](0);
+  $(".analysis-expander-icon.fa-chevron-right")[showHide === 'show' ? 'hide' : 'show'](0);
   setTimeout( function () {
       $("#blockCmd").show(50);
       $("#blc-" + String(activeBlocId)).trigger("mouseenter");
@@ -597,18 +631,42 @@ $(document).ready(function () {
   $("#lexique3-connection").css("display", "none");
 
 // click on verify button and open panel if closed
-  $("#verify-button").on("click", function () {
+  $(".full-analysis-button").on("click", function () {
       $(this).blur();
-      if ($("#analysisPanel").is(':visible')) {
-        analysisPanelShowHide("hide", 200);
-        $("#verify-button").removeClass('active');
-        $("#analysis-content input").popover('hide');
+      if ($("#analysisContentPanel").is(':visible')) {
+        //analysisPanelShowHide("hide", 200);
+        onVerifyClick();
       } else {
         analysisPanelShowHide("show", 200);
         $("#verify-button").addClass('active');
-        //onVerifyClick();
+        onVerifyClick();
       }
   } );
+
+  // click on verify button and open panel if closed
+    $(".block-analysis-button").on("click", function () {
+        $(this).blur();
+        if ($("#analysisContentPanel").is(':visible')) {
+          //analysisPanelShowHide("hide", 200);
+          onVerifyBlockClick();
+        } else {
+          analysisPanelShowHide("show", 200);
+          $("#verify-button").addClass('active');
+          onVerifyBlockClick();
+        }
+    } );
+
+    $("#analysisExpanderButton").on("click", function () {
+        $(this).blur();
+        if ($("#analysisContentPanel").is(':visible')) {
+          analysisPanelShowHide("hide", 200);
+          $("#verify-button").removeClass('active');
+          $("#analysis-content input").popover('hide');
+        } else {
+          analysisPanelShowHide("show", 200);
+          $("#verify-button").addClass('active');
+        }
+    } );
 
   $("#redo-analyse").on("click", function () {
     $(this).blur();

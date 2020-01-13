@@ -301,33 +301,33 @@
 
 				<div id="content">
 					<div id="page-container">
+						<div id="blockCmd"><!-- Block command palette -->
+							<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
+								<img src="img/delete-black.png">
+							</div>
+							<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
+								<img src="img/carat-d-black.png">
+							</div>
+							<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
+								<img src="img/carat-u-black.png">
+							</div>
+							<div class="block-number" contenteditable="false">
+								<span>1</span>
+							</div>
+							<div class="block-new2-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE au dessus">
+								<img src="img/mini-mount.png">
+							</div>
+							<div class="block-new2-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE en dessous">
+								<img src="img/mini-mount.png">
+							</div>
+						</div><!-- Fin block command palette -->
 						<div id="page">
-							<div id="blockCmd"><!-- Block command palette -->
-								<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
-									<img src="img/plus-black.png">
-								</div>
-								<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
-									<img src="img/delete-black.png">
-								</div>
-								<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
-									<img src="img/plus-black.png">
-								</div>
-								<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
-									<img src="img/carat-d-black.png">
-								</div>
-								<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
-									<img src="img/carat-u-black.png">
-								</div>
-								<div class="block-number" contenteditable="false">
-									<span>1</span>
-								</div>
-								<div class="block-new2-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE au dessus">
-									<img src="img/mini-mount.png">
-								</div>
-								<div class="block-new2-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE en dessous">
-									<img src="img/mini-mount.png">
-								</div>
-							</div><!-- Fin block command palette -->
 							<!-- Image widgets -->
 										<!---->
 										<!-- img-txt-widget -->
@@ -337,11 +337,16 @@
 							<div class="block-new img-txt-widget img-left"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à gauche">
 								<img src="img/mini-mount.png">
 							</div>
-										<!-- img-widget & img-txt-widget -->
-							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+							<div class="block-delete-left img-txt-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+								<img src="img/delete-black.png">
+							</div>
+							<div class="block-delete-right img-txt-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
 								<img src="img/delete-black.png">
 							</div>
 										<!-- img-widget -->
+							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+								<img src="img/delete-black.png">
+							</div>
 							<div class="block-new-right img-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
 								<img src="img/mini-mount.png">
 							</div>

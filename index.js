@@ -35,7 +35,7 @@ function readFile(ev) {
     editor.load(JSON.parse(previousDocContent));
     $("#openFileInput").val(""); // force value to be seen as new
     setTimeout( function () {
-      triggerPseudoMouseenter(0); // palette position
+      blockArrayLeave(); // palette position
     }, 150);
   };
   reader.readAsText(file);
@@ -323,7 +323,7 @@ function moveCursor(tool, val, anim) {
 }
 /*
 /////////////////////////////////////////////////////////////////
-//                                            hide toolbar block
+//                                            hide toolbar block (UNUSED)
 function hideToolbarBlock(blockId) {
   // $("#color").animate({"opacity": "0"}, 150); $("#title").animate({"left": "-400"}, 150);
   var left0 = TOOLBAR_BLOCK_LEFT[blockId];
@@ -438,10 +438,132 @@ function activeTool(tool, value) {
   moveCursor(tool, value, false);
 }
 
-function triggerPseudoMouseenter( decal ) {
-  $("#blc-" + String(activeBlocId + decal)).trigger("mouseenter");
+///////////////////////////////////////////////   verify block widget highlight
+/*
+setInterval( function () {
+  if ( flagImageDialogEnd ) return;
+  blockArrayEnter();
+}, 200);
+*/
+///////////////////////////////////////////////   blockArrayLeave
+function blockArrayLeave() {
+  $("#blockCmd").css("display", "none");
+  $(".img-txt-widget").css("display", "none");
+  $(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
 }
+///////////////////////////////////////////////   blockArrayEnter
+function blockArrayEnter() {
+    var iBlock = $(`#blc-${activeBlocId}`);
 
+    $("#blockCmd").css("display", "block");
+    $(".img-txt-widget").css("display", "none");
+    //$(iBlock).find(".img-txt-widget").css("display", "none");
+    $(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
+    //$(iBlock).find(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
+
+    if ( iBlock.hasClass("text-block") ) {
+      // image text widgets
+      var widgetOffset;
+      var blockMiddle = $(iBlock).height() /2 - 19;
+
+      if ( iBlock.find(".left-image").css("display") == "none" ) { // left image hidden
+         $(".img-txt-widget.img-left").css("display", "block");
+         $(".img-txt-widget.img-left").attr("data-true-imageID", $(iBlock).attr("id"));
+         $(".img-txt-widget.img-left").attr("data-block-id", ($(iBlock).attr("id")).split("-")[1]);
+         widgetOffset = iBlock.offset();
+         widgetOffset.left -= 65;
+         widgetOffset.top += blockMiddle;
+         $(".img-txt-widget.img-left").offset(widgetOffset);
+      }
+
+      else {                                                  // left image visible
+        let leftImage = iBlock.find(".left-image").find(".editor-image");
+        leftImage.css("border", "2px solid #4b4");
+
+        $(".img-txt-widget.block-delete-left").css("display", "block");
+
+        $(".img-txt-widget.block-delete-left").attr("data-true-imageID", leftImage.attr("id"));
+        $(".img-txt-widget.block-delete-left").attr("data-block-id", (leftImage.attr("id")).split("-")[1]);
+        $(".img-txt-widget.block-delete-left").attr("data-image-id", (leftImage.attr("id")).split("-")[2]);
+        widgetOffset = iBlock.find(".left-image").offset();
+        //widgetOffset.left += iBlock.find(".left-image").width() - 19;
+        widgetOffset.left += iBlock.find(".left-image").width() /2 -17; // widget centered
+        widgetOffset.top += -16;
+        $(".img-txt-widget.block-delete-left").offset(widgetOffset);
+
+      }
+
+     if ( iBlock.find(".right-image").css("display") == "none" ) { // right image hidden
+         $(".img-txt-widget.img-right").css("display", "block");
+         $(".img-txt-widget.img-right").attr("data-true-imageID", $(iBlock).attr("id"));
+         $(".img-txt-widget.img-right").attr("data-block-id", ($(iBlock).attr("id")).split("-")[1]);
+         widgetOffset = iBlock.offset();
+         widgetOffset.left += $(iBlock).width() + 34;
+         widgetOffset.top += blockMiddle;
+         $(".img-txt-widget.img-right").offset(widgetOffset);
+     }
+     else {                                                     // right image visible
+       let rightImage = iBlock.find(".right-image").find(".editor-image");
+       rightImage.css("border", "2px solid #4b4");
+
+       $(".img-txt-widget.block-delete-right").css("display", "block");
+
+       $(".img-txt-widget.block-delete-right").attr("data-true-imageID", rightImage.attr("id"));
+       $(".img-txt-widget.block-delete-right").attr("data-block-id", (rightImage.attr("id")).split("-")[1]);
+       $(".img-txt-widget.block-delete-right").attr("data-image-id", (rightImage.attr("id")).split("-")[2]);
+       widgetOffset = iBlock.find(".right-image").offset();
+       widgetOffset.left += iBlock.find(".right-image").width() /2 - 17; // widget centered
+       widgetOffset.top += -16;
+       $(".img-txt-widget.block-delete-right").offset(widgetOffset);
+
+    }
+
+  }
+
+  //                        palette widget activation
+  // enable .block-move-up
+    if ( activeBlocId == 0 ) {
+      $("#blockCmd").find(".block-move-up").css({"opacity": 0.3, "pointer-events": "none"});
+    }
+    else {
+      $("#blockCmd").find(".block-move-up").css({"opacity": 1, "pointer-events": "initial"});
+    }
+  // enable .block-move-down
+    if ( $(iBlock).next().length == 0 ) {
+      $("#blockCmd").find(".block-move-down").css({"opacity": 0.3, "pointer-events": "none"});
+    }
+    else {
+      $("#blockCmd").find(".block-move-down").css({"opacity": 1, "pointer-events": "initial"});
+    }
+  // enable .block-delete
+    if ( $(iBlock).siblings().length == 0 ) { // only 1 block
+      $("#blockCmd").find(".block-delete").css({"opacity": 0.3, "pointer-events": "none"});
+    }
+    else {
+      $("#blockCmd").find(".block-delete").css({"opacity": 1, "pointer-events": "initial"});
+    }
+
+    //                                palette move
+    var offset = $(iBlock).offset();
+    var left = $("#page").offset().left +  798; // 8;
+    offset.left = left;
+    var top = offset.top;
+    var height = $(iBlock).height();
+    var commandHeight = $("#blockCmd").height();
+    var decal = 0;
+    if ( $("#blc-" + String(activeBlocId)).hasClass("frame") ) decal = 5;
+    top = top + ((height - commandHeight) /2 + decal); // centered palette
+    var decalPalette = 5;
+    top = top + decal - decalPalette; // top aligned palette
+    offset.top = top;
+
+    $("#blockCmd").css({"opacity": 1});
+    $("#blockCmd").offset(offset);
+    //$("#blockCmd").animate({"top": offset.top, "left": offset.left}, 100);
+}
+/////////////////////////////////  E N D  blockArrayEnter()
+
+///////////////////////////////////////////////////////////
 // show hide analysis panel and move block palette accordingly
 function analysisPanelShowHide(showHide, timeOut) {
   $("#blockCmd").hide(50);
@@ -553,16 +675,6 @@ $(document).ready(function () {
 
 // Après méditations de Seb (Rempli le reste de l'écran avec la partie centrale de l'éditeur)
   $(window).on("load resize", function() {
-    /*let grid = $(".box");
-    let h = window.innerHeight;
-    let remaining = h;
-    for(let i = 0; i < grid.get(0).childNodes.length; i++){
-      let n = grid.get(0).childNodes[i];
-      if(n.classList && !n.classList.contains('hbox')){
-        remaining -= $(n).outerHeight();
-      }
-    }
-    */
     var remaining = window.innerHeight;
     $(".box").children().each( function () {
       if (this.classList && !this.classList.contains('hbox')){
@@ -589,7 +701,7 @@ $(document).ready(function () {
     // $(".hcollapsible").css("background-color", "#6c757d");
 
     setTimeout( function () {
-      triggerPseudoMouseenter(0);
+      blockArrayEnter();
     }, 15);
 
   } );
@@ -599,7 +711,7 @@ $(document).ready(function () {
 $("#editor").on("blockcreated", function (ev) {
   activeBlocId = ev.detail.intid;
   $("#blockCmd").find("span").text(activeBlocId + 1);
-  triggerPseudoMouseenter(0);
+  blockArrayEnter();
 });
 
 ///////////////////////////////////////////////////
@@ -612,7 +724,7 @@ $("#editor").on("blockdestroyed", function (ev) {
   }
   else activeBlocId = oldBlock;
   $("#blockCmd").find("span").text(activeBlocId + 1);
-  triggerPseudoMouseenter(0);
+  blockArrayEnter();
 });
 
 ////////////////////////////////////////////////////
@@ -696,13 +808,10 @@ function updateModalClock () {
   let hour = $("#imageClickModal2 #hour-input").val();
   let minutes = $("#imageClickModal2 #minutes-input").val();
   let strict = $("#imageClickModal2-check").prop("checked");
-  //$("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
-  //let clock = new Clock("#imageClickModal2 #clock-canvas");
   clock.set(hour, minutes, strict);
 }
 // clock dialog opening
 $("#imageClickModal2").on('show.bs.modal', function (e) {
-  //$("#imageClickModal2 #clock-canvas").parent().html("<canvas id='clock-canvas'></canvas>");
   updateModalClock();
 });
 
@@ -727,7 +836,7 @@ $("#imgButtonTimeOK").on("click", function () {
   let minutes = $("#imageClickModal2 #minutes-input").val();
   let strict = $("#imageClickModal2-check").prop("checked");
   editor.setImage(imageId, drawClock(hour, minutes, {"strict": strict}));
-  triggerPseudoMouseenter(0);
+  flagImageDialogEnd = true; // avoid wrong block highlight
 });
 
 // trigger input file tag in image dialog
@@ -747,6 +856,7 @@ $("#imgFromDisk").on("change", function (e) {
     $("#imageClickModal .close").trigger("click");
     let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
     editor.setImage(imageId, e.target.result);
+    flagImageDialogEnd = true; // avoid wrong block highlight
     $("#imgFromDisk").val(""); // force value to be seen as new
   };
   reader.readAsDataURL(file);     // ou readAsText(file);
@@ -760,7 +870,7 @@ $("#imageClickModal").find("#modalFind").on("click", function (ev) {
     if ( urlOrKeyword.match(/^https?:\/\//) ) {
       $("#imageClickModal").modal('hide');
       editor.setImage(imageId, urlOrKeyword);
-      triggerPseudoMouseenter(0);
+      flagImageDialogEnd = true; // avoid wrong block highlight
     }
     else {
       $(".loader").show();
@@ -788,6 +898,9 @@ $("#imageClickModal").on("click", ".web-img", function (ev) {
   let imageId = $("#imageClickModal").find("#imgFromDisk").attr("data-id");
   let url = $(ev.target).attr("src");
   editor.setImage(imageId, url);
+  flagImageDialogEnd = true; // avoid wrong block highlight
+  //blockArrayLeave();
+
   $(".loader").show();
   $("#imageClickModal").find("#image-url").val(null);
   $("#imageClickModal .close").trigger("click");
@@ -819,19 +932,15 @@ $("#editor").on("dragover", ".editor-image", function(e) {
       // url
       var url = ev.dataTransfer.getData('text/uri-list');
       editor.setImage(imageId, url);
-      setTimeout(function() {
-        triggerPseudoMouseenter(0);
-      }, 15);
+      flagImageDialogEnd = true; // avoid wrong block highlight
     }
     else {
       // file
       var reader = new FileReader();
       reader.onload = function(e2) {
-          var imageSrc = e2.target.result;
-          editor.setImage(imageId, imageSrc);
-          setTimeout(function() {
-            triggerPseudoMouseenter(0);
-          }, 15);
+        var imageSrc = e2.target.result;
+        editor.setImage(imageId, imageSrc);
+        flagImageDialogEnd = true; // avoid bad block highlight
       };
     reader.readAsDataURL(file); // reading the file data.
   }
@@ -981,7 +1090,7 @@ $("#toolbarBottomMask").hover( function () {
       toolClick(e, this);
       $(this).trigger("mouseleave");
       setTimeout( function () {
-        triggerPseudoMouseenter(0);
+        blockArrayEnter();
       }, 15);
     }
   } );
@@ -1057,42 +1166,6 @@ $("#toolbarBottomMask").hover( function () {
     dragIsOn = false;
   });
 
-   /* wheel  ** UNUSED **
-  $(document).on("wheel", function (ev) {
-    if ( !ev.shiftKey ) return;
-    if ( ev.originalEvent.wheelDeltaX > 0 ) $(".arrow-l").trigger("mousedown");
-    else $(".arrow-r").trigger("mousedown");
-  });
-  */
-
-/*
- * toolbar scroll button ** UNUSED **
-
-  $(".arrow-l, .arrow-r").on("touchstart mousedown", function(e) {
-  //  $(".arrow-l, .arrow-r").on(" pointerdown ", function(e) {
-    if( mousedownID == -1 )  //anti loops!
-      mousedownID = setInterval(function() {
-        var offset = $("#toolbarlist").offset();
-        var decal = 0;
-        if ( $(e.target).hasClass("arrow-r") ) {
-          if ( offset.left < TOOLBAR_DRAG_RANGE ) decal = 8;
-        }
-        else {
-          if ( offset.left > -TOOLBAR_DRAG_RANGE ) decal = -8;
-        }
-        $("#toolbarlist").css({"top": 0, "left": offset.left + decal});
-      }, 25);
-  });
-*/
-/*
-  $(".arrow-l, .arrow-r").on("mouseup mouseout touchend", function() {
-  // $(".arrow-l, .arrow-r").on("pointerup pointerout ", function() {
-    if( mousedownID != -1 ) {  // stop if exists
-      clearInterval(mousedownID);
-      mousedownID=-1;
-    }
-  });
-*/
 
 //  editor requires toolbar update
   $('#editor').on('currentformatchanged', function(e) {
@@ -1112,64 +1185,19 @@ $("#toolbarBottomMask").hover( function () {
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
 
-
-// hide #blockCmd & text border
-  $("#page, #page-container").on("click", function ( ev ) {
-    if (ev.target.id == "page" || ev.target.id == "page-container" ) {
-      $("#blockCmd").css("opacity", 0);
-      $(".img-txt-widget").css("display", "none");
-      // $("#editor").find(".editor-text").css("border",0); // end focusing text
-    }
-    $("#blc-" + activeBlocId).css("background-color", "white");
-  });
-//////////////////////////////////////////
-// editor-block   ENTER
+  //////////////////////////////////////////
+  // editor-block   ENTER
   $("#editor").on("mouseenter", ".editor-block", function (ev) {
-  // hover  block
-    $(".editor-block").css("background-color", "white");
-    $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
-
-  // enable .block-move-up
-    if ( activeBlocId == 0 ) {
-      $("#blockCmd").find(".block-move-up").css({"opacity": 0.3, "pointer-events": "none"});
-    }
-    else {
-      $("#blockCmd").find(".block-move-up").css({"opacity": 1, "pointer-events": "initial"});
-    }
-  // enable .block-move-down
-    if ( $(this).next().length == 0 ) {
-      $("#blockCmd").find(".block-move-down").css({"opacity": 0.3, "pointer-events": "none"});
-    }
-    else {
-      $("#blockCmd").find(".block-move-down").css({"opacity": 1, "pointer-events": "initial"});
-    }
-  // enable .block-delete
-    if ( $(this).siblings().length == 0 ) { // only 1 block
-      $("#blockCmd").find(".block-delete").css({"opacity": 0.3, "pointer-events": "none"});
-    }
-    else {
-      $("#blockCmd").find(".block-delete").css({"opacity": 1, "pointer-events": "initial"});
-    }
-
-    //  palette move
-    var offset = $(this).offset();
-    var left = $("#page").offset().left + 8; // + 15;
-    offset.left = left;
-    var top = offset.top;
-    var height = $(this).height();
-    var commandHeight = $("#blockCmd").height();
-    var decal = 0;
-    if ( $("#blc-" + String(activeBlocId)).hasClass("frame") ) decal = 5;
-    //top = top + ((height - commandHeight) /2 + decal); // centered palette
-    var decalPalette = 5;
-    top = top + decal - decalPalette; // top aligned palette
-    offset.top = top;
-
-    $("#blockCmd").css({"opacity": 1});
-    $("#blockCmd").offset(offset);
-    //$("#blockCmd").animate({"top": offset.top, "left": offset.left}, 100);
+    //
   });
 
+  //////////////////////////////////////////
+  // .editor-block  LEAVE
+  $("#editor").on("mouseleave", ".editor-block", function (ev) {
+    //
+  });
+
+  //////////////////////////////////////////
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
@@ -1178,12 +1206,12 @@ $("#toolbarBottomMask").hover( function () {
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
-    triggerPseudoMouseenter(0);
+    blockArrayEnter();
   });
 
   // page LEAVE
   $("#page").on("mouseleave", function ( ev ) {
-    //
+    //blockArrayLeave();
   });
 
   // page ENTER
@@ -1191,61 +1219,80 @@ $("#toolbarBottomMask").hover( function () {
     //
   });
 
-  //////////////////////////////////////////
-  // .editor-block  LEAVE
-  $("#editor").on("mouseleave", ".editor-block", function (ev) {
-    $(".img-txt-widget").css("display", "none");
-  });
-
-/*
-  //////////////////////////////////////////
-  // update #blockCmd & .img-txt-widget from keyboard
-  $("#editor").on("keyup", ".editor-block", function (ev) {
-    //triggerPseudoMouseenter(0); // update #blockCmd disabled
-    if ( $(".img-txt-widget").css("display") == "block") {
-      //$(".editor-text").trigger("mouseenter"); // update .img-txt-widget disabled
+// keyboard enter and del keys
+  $("#editor").on("keyup", ".text-block", function(ev) {
+    if (ev.keyCode === 13 || (ev.keyCode === 8) ) {
+      // ev.preventDefault();
+      blockArrayEnter();
     }
   });
-*/
 
-  ///////////////////////////////
+  ///////////////////////////////      M O U S E M O V E
   //  update palette activeBlocId
-  $("#page").on("mousemove", function (ev) {
+  $("#page, #page-container").on("mousemove", function (ev) {
+    var target = ev.target;
+    if ( target.id == "blockCmd" || $(target).parent("#blockCmd").length == 1 ) return;
+
     var mouseY = ev.pageY;
     var mouseX = ev.pageX;
-    var target = ev.target;
+    var noBlock = false;
+    var oldBlocId = activeBlocId;
+    var nbBlocks = $(".editor-block").length;
 
-    if ( $("#blc-0").offset().left > mouseX + 2 ) {
-      $(".img-txt-widget").css("display", "none");
-    }
-    $(".editor-block").each( function (index) {
-      var blockTop = $(this).offset().top;
-      var blockHeight = $(this).height();
+    for ( let i = 0; i < nbBlocks; i++ ) {
+      let iBlock = $(`#blc-${i}`);
+      let blockTop = iBlock.offset().top;
+      let blockHeight = iBlock.height();
       if ( mouseY > blockTop && mouseY < blockTop + blockHeight ) {
-        if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
-          let oldBlocId = activeBlocId;
-          activeBlocId = Number($(this).attr("id").split("-")[1]);
-          if ( oldBlocId != activeBlocId ) {
-            $("#blc-" + oldBlocId).css("background-color", "white");
-            $("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
+        //if ( target.id == "page" || $(target).hasClass("editor-block") || $(target).closest(".editor-block").length == 1 )  {
+        activeBlocId = Number(iBlock.attr("id").split("-")[1]);
+
+          //if ( oldBlocId != activeBlocId ) {
+
+            //$("#blc-" + oldBlocId).css("background-color", "white");
+            //$("#blc-" + activeBlocId).css("background-color", "#f6f6f6");
             $("#blockCmd").find("span").text(activeBlocId + 1);
-            triggerPseudoMouseenter(0);
-          }
-          //$("#blockCmd").find("span").text(activeBlocId + 1);
-          //triggerPseudoMouseenter(0);
-        }
+            blockArrayEnter();
+
+          //}
+
+        //}
+        noBlock = false;
+        break;
       }
-    });
+      noBlock = true;
+    }
+    //console.log(noBlock);
+    if ( noBlock ) {
+      //if ( activeBlocId != oldBlocId ) {
+        if ( target.id == "page" || target.id == "page-container" ) blockArrayLeave();
+      //}
+    }
+
   });
 
 /////////////////////////////////////  B L O C K   C O M M A N D S
 
+  // block-delete hover
+  $(".block-delete").hover( function () {
+    if ( $(this).hasClass("img-widget") ) return;
+    $(`#blc-${activeBlocId}`).css("background-color", "#fbb");
+  }, function () {
+    $(`#blc-${activeBlocId}`).css("background-color", "white");
+  });
 
+  //  insertBlock & block-move  hover
+  $("#blockCmd .block-move-up, #blockCmd .block-move-down, #blockCmd .block-new-up,  #blockCmd .block-new2-up, #blockCmd .block-new-down, #blockCmd .block-new2-down").hover( function () {
+    $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
+  }, function () {
+      $(".editor-block").css("background-color", "white");
+  });
+////////////////////////
   //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
-      triggerPseudoMouseenter(0);
+      blockArrayEnter();
     }, 15);
   });
 
@@ -1253,7 +1300,7 @@ $("#toolbarBottomMask").hover( function () {
   $("#blockCmd .block-new2-up").on("click", function (ev) {
     editor.insertImageBlockBefore( activeBlocId, true);
     setTimeout( function () {
-      triggerPseudoMouseenter(0);
+      blockArrayEnter();
     }, 15);
   });
 
@@ -1262,7 +1309,7 @@ $("#toolbarBottomMask").hover( function () {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
-        triggerPseudoMouseenter(0);
+        blockArrayEnter();
       }, 15);
     });
 
@@ -1271,7 +1318,7 @@ $("#toolbarBottomMask").hover( function () {
       editor.insertImageBlockAfter( activeBlocId, true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
-        triggerPseudoMouseenter(0);
+        blockArrayEnter();
       }, 15);
     });
 
@@ -1287,7 +1334,7 @@ $("#toolbarBottomMask").hover( function () {
         activeBlocId--;
         $("#blockCmd").find("span").text(activeBlocId + 1);
       }
-      triggerPseudoMouseenter(0);
+      blockArrayEnter();
     }, 150);
   });
 
@@ -1296,8 +1343,9 @@ $("#toolbarBottomMask").hover( function () {
     editor.moveBlockDown(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      triggerPseudoMouseenter(0);
-    }, 300);
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "white");
+      blockArrayLeave();
+    }, 250);
   });
 
 //  moveBlockUp
@@ -1305,8 +1353,9 @@ $("#toolbarBottomMask").hover( function () {
     editor.moveBlockUp(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      triggerPseudoMouseenter(0);
-    }, 300);
+      $(`#blc-${activeBlocId - 1}`).css("background-color", "white");
+      blockArrayLeave();
+    }, 250);
   });
 
 ///////////////////////////////
@@ -1337,77 +1386,40 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 
-
-// .img-txt-widget
-  $("#editor").on("mouseenter", ".editor-block", function (ev) {
-    if ( $(this).find(".editor-text").next().css("display") == "none" ) {
-      $(".img-txt-widget.img-right").css("display", "block");
-      $(".img-txt-widget.img-right").attr("data-true-imageID", $(this).attr("id"));
-      $(".img-txt-widget.img-right").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
-      let widgetOffset = $(this).offset();
-      widgetOffset.left += $(this).width() - 40;
-      widgetOffset.top -= 30;
-      $(".img-txt-widget.img-right").offset(widgetOffset);
-    }
-    if ( $(this).find(".editor-text").prev().css("display") == "none" ) {
-      $(".img-txt-widget.img-left").css("display", "block");
-      $(".img-txt-widget.img-left").attr("data-true-imageID", $(this).attr("id"));
-      $(".img-txt-widget.img-left").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
-      let widgetOffset = $(this).offset();
-      widgetOffset.left -= 0;
-      widgetOffset.top -= 30;
-      $(".img-txt-widget.img-left").offset(widgetOffset);
-    }
-  });
-
-  $("#editor").on("mouseleave", ".editor-block", function (ev) {
-      $(".img-txt-widget").css("display", "none");
-  });
-/////////////
-  $("#page").on("mouseenter", ".img-txt-widget.img-right", function (ev) {
-    $(".img-txt-widget.img-right").css("display", "block");
-  });
-
-  $("#page").on("mouseleave", ".img-txt-widget.img-right", function (ev) {
-    $(".img-txt-widget.img-right").css("display", "none");
-  });
-
-  $("#page").on("mouseenter", ".img-txt-widget.img-left", function (ev) {
-    $(".img-txt-widget.img-left").css("display", "block");
-  });
-
-  $("#page").on("mouseleave", ".img-txt-widget.img-left", function (ev) {
-    $(".img-txt-widget.img-left").css("display", "none");
-  });
-
+// click text block image widget
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
     activeTool("pictureL", true);
-    $(".img-txt-widget.img-left").css("display", "none");
-    $(".block-new.img-txt-widget.img-left").css("display", "none");
+    blockArrayEnter();
   });
 
   $("#page").on("click", ".img-right", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureRight: true});
     activeTool("picture", true);
-    $(".img-txt-widget.img-right").css("display", "none");
-    $(".block-new.img-txt-widget.img-right").css("display", "none");
+    blockArrayEnter();
   });
-
+////////////////////////////////////////
 // .img-widget
   $("#editor").on("mouseenter", ".editor-image", function (ev) {
+    if ( flagImageDialogEnd ) { // avoid wrong block highlight
+      flagImageDialogEnd = false;
+      blockArrayLeave();
+      //return;
+    }
     $(this).css("border", "2px solid #4b4");
-    $(".img-widget").css("display", "block");
     $(".img-widget.block-delete").attr("data-true-imageID", $(this).attr("id"));
     $(".img-widget.block-delete").attr("data-block-id", ($(this).attr("id")).split("-")[1]);
     $(".img-widget.block-delete").attr("data-image-id", ($(this).attr("id")).split("-")[2]);
 
-    let widgetOffset = $(ev.target).offset();
-    widgetOffset.left += $(this).width() - 14;
-    widgetOffset.top += -16;
-    $(".img-widget.block-delete").offset(widgetOffset);
-
     if ( $(this).parent().hasClass("col") ) { // image block
+      $(".img-widget").css("display", "block");
+
+      let widgetOffset = $(ev.target).offset();
+      //widgetOffset.left += $(this).width() - 14;
+      widgetOffset.left += $(this).width() /2 - 15; // center widget
+      widgetOffset.top += -16;
+      $(".img-widget.block-delete").offset(widgetOffset);
+
       var decal = $(this).height() /40;
       widgetOffset = $(ev.target).offset();
       widgetOffset.left += $(this).width() - 14;
@@ -1436,17 +1448,14 @@ $("#toolbarBottomMask").hover( function () {
         $(".img-widget.block-move-left").css("display", "none");
       }
     }
-    else {  // text block
-      $(".img-widget").css("display", "none");
-      $(".img-widget.block-delete").css("display", "block");
-    }
   });
 ////
-  $("#editor").on("mouseleave", ".editor-image", function (ev) {
+  $("#editor").on("mouseleave", ".image-block .editor-image", function (ev) {
       $(this).css("border", "2px solid rgba(0, 0, 0, 0)");
       $(".img-widget").css("display", "none");
   });
-/////////
+/////////////////
+///////////////////  enter img-widget
   $("#page").on("mouseenter", ".img-widget", function (ev) {
 
     var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
@@ -1465,14 +1474,14 @@ $("#toolbarBottomMask").hover( function () {
 
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
   });
-  ////
+  /////////
   $("#page").on("mouseleave", ".img-widget", function (ev) {
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid rgba(0, 0, 0, 0)");
     $(".img-widget").css("display", "none");
   });
-
-// image actions
-  $("#page").on("click", ".img-widget", function (ev) {
+/////////////////////////////
+//              image actions
+  $("#page").on("click", ".img-widget, .block-delete-right, .block-delete-left", function (ev) {
     var trueImageID = "#" + $(".img-widget.block-delete").attr("data-true-imageID");
     var blockID = Number($(".img-widget.block-delete").attr("data-block-id"));
     var imageID = Number($(".img-widget.block-delete").attr("data-image-id"));
@@ -1488,6 +1497,12 @@ $("#toolbarBottomMask").hover( function () {
         editor.moveImageLeft(blockID, imageID);
       else if ( $(this).hasClass("block-move-right"))
         editor.moveImageRight(blockID, imageID);
+
+      setTimeout( function () {
+        $(".img-widget").css("display", "none");
+        $(".editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
+      }, 300);
+
     }
     // text block
     else {
@@ -1499,22 +1514,19 @@ $("#toolbarBottomMask").hover( function () {
         activeTool("picture", false);
         editor.setBlockFormat(blockID, {pictureRight: false});
       }
+      blockArrayEnter();
     }
-    $(".img-widget").css("display", "none");
-    setTimeout( function () { $(".img-widget").css("display", "none"); }, 300);
   });
+
+
 
 /////////////////////////////////////////  D I V E R S
 
-/* focusing editor.text TEST
-  $("#editor").on("click", ".editor-text" , function(ev) {
-    $("#editor").find(".editor-text").css("border",0);
-    $(this).css("border","1px solid gray");
-  }); */
-
 // resize & focus
   $( window ).on("resize focus", function () {
-    triggerPseudoMouseenter(0);
+    blockArrayLeave();
+    //$("#blockCmd, .img-widget, .img-txt-widget").css("display","none");
+
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
     $("#toolbarlist").css({"left": move});
     if ( TOOLBAR_WIDTH < $(body).width() + LOGO_DECAL) {
@@ -1591,9 +1603,10 @@ $("#toolbarBottomMask").hover( function () {
   analysisPanelShowHide("hide", 0);
   setTimeout(function () {
     initToolbar();
-    $("#blc-0").trigger("mouseenter");
+    //$("#blc-0").trigger("mouseenter");
+    //$(".img-widget, .img-txt-widget").css("display", "none");
     $( window ).trigger("resize");
-    $(".img-txt-widget").css("display", "none");
+    $("#blockCmd").css("display", "none");
     $('body').css({"visibility":"visible"});
   }, 200);
   /*
@@ -1686,7 +1699,7 @@ var stanfordConnection = document.getElementById('stanford-connection');
 var lexique3Connection = document.getElementById('lexique3-connection');
 var lexique3Progress = document.getElementById('lexique3-progress');
 
-
+var flagImageDialogEnd = false;
 
 // Appelle la fonction pour le zoom dés le début.
 //refreshPageScale();

@@ -463,6 +463,17 @@ function analyzeAllEditorContent () {
 }
 
 /**
+ * Analyzes one block.
+ */
+function analyzeAllEditorContent () {
+  let array = [];
+  for (let i = 0; i < editor.blockCount; i++) {
+    array.push(editor.getRawTextContent(i));
+  }
+  analyzeText(array.join('\n'));
+}
+
+/**
  * Begins the analysis of the given text.
  * @param {string} text - Text to analyze.
  */
@@ -785,6 +796,59 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
     }
   }
   console.log(result);
+  return result;
+}
+
+async function checkFalcQualityForBlock (editor, blockid) {
+  dispatchProgressChanged(0);
+  const rawTextContent = [];
+  const sentencesTokens = [];
+  const fullStyledContent = [];
+  rawTextContent.push(editor.getRawTextContent(blockid));
+  if (pings.Stanford.usable) sentencesTokens.push(await getTokens(rawTextContent[0]));
+  fullStyledContent.push(editor.getStyledText(blockid));
+
+  let checkedTokens = 0;
+  let tokensCount = 0;
+
+  if (sentencesTokens.length > 0) {
+    for(let i = 0; i < sentencesTokens[0].sentences.length; i++) {
+      tokensCount += sentencesTokens[0].sentences[i].tokens.length;
+    }
+  }
+
+  let complexWords = [];
+  const checkedWords = [];
+
+  if (sentencesTokens.length > 0) {
+    for (let s = 0; s < sentencesTokens[0].sentences.length; s++) {
+      const cw = await checkTokensComplexity(sentencesTokens[0].sentences[s].tokens, checkedWords);
+      complexWords = complexWords.concat(cw);
+      checkedTokens += sentencesTokens[0].sentences[s].tokens.length;
+      dispatchProgressChanged(((checkedTokens) * 100) / tokensCount);
+    }
+  }
+
+  const result = {
+    rules: await checkRules({ raw: rawTextContent, complexWords: complexWords, tokens: sentencesTokens, styled: fullStyledContent })
+  };
+  let mainRules = 0;
+  let veryImportantRules = 0;
+  let importantRules = 0;
+  for (let i = 0; i < result.rules.length; i++) {
+    if (result.rules[i].priority === 3 && result.rules[i].success) {
+      mainRules++;
+    } else if (result.rules[i].priority === 2 && result.rules[i].success) {
+      veryImportantRules++;
+    } else if (result.rules[i].priority === 1 && result.rules[i].success) {
+      importantRules++;
+    }
+  }
+  result.mainRulesSuccess = mainRules;
+  result.veryImportantRulesSuccess = veryImportantRules;
+  result.importantRulesSuccess = importantRules;
+
+  result.score = Math.round(((mainRules * 3 + veryImportantRules * 2 + importantRules) / (15 * 3 + 4 + 30)) * 100);
   return result;
 }
 

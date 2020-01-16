@@ -438,8 +438,8 @@ li.nav-item {
   margin-left: 100px;
   margin-top: 2px;
   border-bottom: 1px solid #b6b4b6;
-  height: 36px;
-  display:grid;
+  /* height: 36px; */
+  display: grid;
   grid-template-columns: 1fr auto;
 }
 

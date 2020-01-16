@@ -221,7 +221,7 @@ function onVerifyBlockClick(){
   $('#analysis-main-content>ul').html('');
   $('#analysis-veryImportant-content>ul').html('');
   $('#analysis-important-content>ul').html('');
-  $('.score').text('?')
+  $('.score').text('?');
   checkFalcQualityForBlock(editor, editor.lastBlock).then((result) => displayAnalysisResults(result));
 }
 
@@ -1535,7 +1535,7 @@ $("#toolbarBottomMask").hover( function () {
     else {
       $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
     }
-    if ( TOOLBAR_WIDTH < $(body).width() - LOGO_DECAL) {
+    if ( TOOLBAR_WIDTH < $(body).width()  + TOOLBAR_DECAL_RIGHT ) {
       $("#logoLirec").css("visibility","visible");
     }
     else {
@@ -1671,8 +1671,8 @@ const FRAME_INIT = false;
 const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
 
-const TOOLBAR_WIDTH = 900; /* 790; /* 870; /* 840; */
-const TOOLBAR_DECAL_RIGHT = -20; /* 35; /* 40; /* 30; /* 22 */
+const TOOLBAR_WIDTH = 900;
+const TOOLBAR_DECAL_RIGHT = 90;
 const LOGO_DECAL = 80; /* 65; */
 const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";

@@ -640,6 +640,9 @@ $(document).ready(function () {
         analysisPanelShowHide("show", 200);
         $("#verify-button").addClass('active');
         onVerifyClick();
+        setTimeout( function () {
+          blockArrayEnter();
+        }, 205);
       }
   } );
 
@@ -653,6 +656,9 @@ $(document).ready(function () {
           analysisPanelShowHide("show", 200);
           $("#verify-button").addClass('active');
           onVerifyBlockClick();
+          setTimeout( function () {
+            blockArrayEnter();
+          }, 205);
         }
     } );
 
@@ -666,6 +672,9 @@ $(document).ready(function () {
           analysisPanelShowHide("show", 200);
           $("#verify-button").addClass('active');
         }
+        setTimeout( function () {
+          blockArrayEnter();
+        }, 205);
     } );
 
   $("#redo-analyse").on("click", function () {

@@ -43,7 +43,7 @@ class Converter {
           break;
         case 'images':
           for (let c = 0; c < editor.getImageCountInBlock(i); c++) {
-            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).children[0].innerHTML}</div>`;
+            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).innerHTML}</div>`;
           }
           blockStyle = 'grid-template-columns:' + times(' 1fr', editor.getImageCountInBlock(i)) + ';';
           break;
@@ -51,7 +51,7 @@ class Converter {
       blocks += `<div class="${blockClasses}" style="${blockStyle}">${content}</div>`;
     }
     let style = '.lirec-container {font-size: 14pt; font-family: Arial; max-width: 600px; margin: auto;}';
-    style += '.default-block {display: grid; grid-template-columns: 100px 1fr 100px;}';
+    style += '.default-block {display: grid; grid-template-columns: 100px 1fr 100px; margin-bottom: 1em; margin-top: 1em;}';
     style += '.images-block {display: grid;}';
     style += '.frame {border: 4pt solid black; border-thickness: 4pt}';
     style += '.fulltext {grid-column: 1 / span 3;}';

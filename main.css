@@ -217,6 +217,7 @@ button span {
   min-height: 29.7cm;
   background: #fff;
   margin: auto;
+  /* margin-left: 0; */
   border-radius: 3px;
   padding: 1in;
 }
@@ -328,7 +329,7 @@ button span {
 #analysisExpanderButton {
   background-color: #009940;
   color: white;
-  border-radius: 0px 15px 15px 0px;
+  border-radius: 0px 35px 35px 0px; 
   border: solid 0px transparent;
   font-size: 40px;
 }

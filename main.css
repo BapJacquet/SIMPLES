@@ -217,6 +217,7 @@ button span {
   min-height: 29.7cm;
   background: #fff;
   margin: auto;
+  /* margin-left: 0; */
   border-radius: 3px;
   padding: 1in;
 }
@@ -293,7 +294,7 @@ button span {
 .hbox {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr;
   /*flex-flow: row;*/
   height: 100%;
   width: 100%;
@@ -312,13 +313,57 @@ button span {
 }*/
 
 #analysisPanel {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  height: 100%;
+}
+
+#analysisSidebar {
+  background-color: #009940;
+}
+
+#analysisExpander {
+  border-left: solid 1px #009940;
+}
+
+#analysisExpanderButton {
+  background-color: #009940;
+  color: white;
+  border-radius: 0px 35px 35px 0px; 
+  border: solid 0px transparent;
+  font-size: 40px;
+}
+
+#analysisExpanderButton:hover {
+  background-color: #00B960;
+}
+
+.sidebar-button {
+  display: block;
+  height: 75px;
+  width: 75px;
+  background-color: #009940;
+  color: white;
+  font-size: 40px;
+  border: 1px solid transparent;
+}
+
+.sidebar-button:hover {
+  background-color: #00B960;
+  color: white;
+  border: 1px solid white;
+}
+
+#analysisContentPanel {
   background-color: #f6f6f6;
   width: 30vw;
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
-  border-left: 3px solid #f6f6f6;
-  border-left: 1px solid #ccc;
+  grid-template-rows: auto auto 1fr;
+  border-top: solid 5px #009940;
+  overflow-y: hidden;
+  /*border-left: 3px solid #f6f6f6;
+  border-right: 1px solid #ccc;*/
   /* border: 5px solid #009940;
   border-radius: 20px; */
 
@@ -394,8 +439,8 @@ li.nav-item {
   margin-left: 100px;
   margin-top: 2px;
   border-bottom: 1px solid #b6b4b6;
-  height: 36px;
-  display:grid;
+  /* height: 36px; */
+  display: grid;
   grid-template-columns: 1fr auto;
 }
 

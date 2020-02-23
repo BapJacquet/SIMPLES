@@ -578,7 +578,8 @@ async function checkTokensComplexity (tokens, checkedWords) {
       }
       switch (frequencyToText(word.frequency)) {
         case 'inconnu': case 'très rare': case 'rare': case 'commun':
-          word.dictionary = await getInternauteEntry(word.lemma || word.text);
+          word.dictionary = await getGoogleEntry(word.lemma || word.text);
+          //word.dictionary = await getInternauteEntry(word.lemma || word.text);
           complexWords.push(word);
           break;
       }
@@ -693,7 +694,7 @@ function createCORSRequest (method, url, async = true) {
 async function getGoogleEntry (word) {
   let response;
   try {
-    response = await $.get('https://googledictionaryapi.eu-gb.mybluemix.net/', {define: encodeURIComponent(word), lang: 'fr'});
+    response = await $.get(`https://api.dictionaryapi.dev/api/v1/entries/fr/${encodeURIComponent(word)}`);
   } catch (e) {
     console.log("Error: " + e.message);
     return {meanings: []};

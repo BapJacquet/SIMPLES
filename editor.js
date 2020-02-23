@@ -845,6 +845,7 @@ class Editor {
     this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
     this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
     this.hideBlockImage(index + 1, 0);
+    this.hideBlockImage(index + 1, 1);
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -884,6 +885,7 @@ class Editor {
     this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
     this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
     this.hideBlockImage(index, 0);
+    this.hideBlockImage(index, 1);
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -967,6 +969,7 @@ class Editor {
     this.setImage('#img-' + id + '-0', 'img/placeholder.png');
     this.setImage('#img-' + id + '-1', 'img/placeholder.png');
     this.hideBlockImage(id, 0);
+    this.hideBlockImage(id, 1);
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -1432,7 +1435,8 @@ class Editor {
    * @param {int} requestedWidth - Width of the resulting image.
    */
   async setImage (selector, src, requestedWidth) {
-    if (src === '') src = './img/placeholder.png';
+    //if (src === '') src = './img/placeholder.png';
+    if (src === '') this.hideBlockImage(Number(selector.split('-')[1], Number(selector.split('-')[2])));
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     if ($('.text-block ' + selector).length > 0) {
       requestedWidth = 100;

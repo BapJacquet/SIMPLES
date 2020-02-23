@@ -6,6 +6,54 @@
 
 class Converter {
   /**
+   * Fills the editor with the content of the given string, clearing any
+   * previous content.
+   * @param {Editor} editor - The editor to put the content into.
+   * @param {string} string - The string content to insert.
+   */
+  static fromTxt (editor, string) {
+    editor.clear();
+    const lines = string.split('\n');
+    let currentBlockContent = '';
+    let blockId = 0;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] === '') {
+        if (blockId === 0) {
+          editor.setTextAt(0, 0, 0, currentBlockContent);
+        } else {
+          editor.addBlock(currentBlockContent);
+        }
+        blockId++;
+        currentBlockContent = '';
+      } else {
+        currentBlockContent += currentBlockContent === '' ? lines[i] : '\n' + lines[i];
+      }
+    }
+  }
+
+  /**
+   * Create the TXT string from the content of the given editor.
+   * @param {Editor} editor - The editor to draw the content from.
+   * @return {string} The resulting text string.
+   */
+  static async toTxt (editor) {
+    let result = "";
+    for (let i = 0; i < editor.blockCount; i++) {
+      let blockFormat = editor.getBlockFormat(i);
+      switch (blockFormat.blockType) {
+        case 'default':
+          result += editor.getRawTextContent(i);
+          break;
+        case 'images':
+          result += "[Les blocs images ne peuvent pas être exportés en fichiers texte]\n";
+          break;
+      }
+      result += "\n";
+    }
+    return result;
+  }
+
+  /**
    * Create the HTML code from the content of the given editor.
    * @param {Editor} editor - The editor to draw the content from.
    * @return {string} The resulting HTML string.

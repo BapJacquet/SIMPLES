@@ -845,6 +845,7 @@ class Editor {
     this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
     this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
     this.hideBlockImage(index + 1, 0);
+    this.hideBlockImage(index + 1, 1);
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -884,6 +885,7 @@ class Editor {
     this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
     this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
     this.hideBlockImage(index, 0);
+    this.hideBlockImage(index, 1);
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -967,6 +969,7 @@ class Editor {
     this.setImage('#img-' + id + '-0', 'img/placeholder.png');
     this.setImage('#img-' + id + '-1', 'img/placeholder.png');
     this.hideBlockImage(id, 0);
+    this.hideBlockImage(id, 1);
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -1432,7 +1435,11 @@ class Editor {
    * @param {int} requestedWidth - Width of the resulting image.
    */
   async setImage (selector, src, requestedWidth) {
-    if (src === '') src = './img/placeholder.png';
+    //if (src === '') src = './img/placeholder.png';
+    if (src === '') {
+      this.hideBlockImage(Number(selector.split('-')[1], Number(selector.split('-')[2])));
+      return;
+    }
     if ($(selector).length === 0) throw new Error(`There is no element matching selector "${selector}"`);
     if ($('.text-block ' + selector).length > 0) {
       requestedWidth = 100;
@@ -1454,13 +1461,17 @@ class Editor {
       if (typeof (requestedWidth) !== 'number') {
         requestedWidth = img.naturalWidth;
       }
-      let canvas = this.hiddenCanvas;
-      let scale = img.naturalWidth / requestedWidth;
-      canvas.width = img.naturalWidth / scale;
-      canvas.height = img.naturalHeight / scale;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      img.dataURL = canvas.toDataURL('image/png');
+      try {
+        let canvas = this.hiddenCanvas;
+        let scale = img.naturalWidth / requestedWidth;
+        canvas.width = img.naturalWidth / scale;
+        canvas.height = img.naturalHeight / scale;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.dataURL = canvas.toDataURL('image/png');
+      } catch (ex) {
+        alert("Erreur lors chargement de l'image. Elle ne sera pas exporté.")
+      }
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
@@ -1471,6 +1482,7 @@ class Editor {
       this.dispatchImageLoaded(Number(selector.substring(5)));
     };
     img.src = src;
+    this.showBlockImage(Number(selector.split('-')[1]), Number(selector.split('-')[2]));
   }
 
   /**

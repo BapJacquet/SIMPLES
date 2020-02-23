@@ -142,7 +142,7 @@ var rules = [
     text: 'Expliquez&nbsp;clairement les&nbsp;mots&nbsp;difficiles au&nbsp;moment où&nbsp;ils&nbsp;sont&nbsp;utilisés.',
     test: function (data) { return {result: undefined, info: {}}; }},
   {priority: 3,
-    text: "Utilisez&nbsp;toujours une&nbsp;police&nbsp;d'écriture facile&nbsp;à&nbsp;lire&nbsp;: Arial&nbsp;14.",
+    text: "Utilisez&nbsp;toujours une&nbsp;police&nbsp;d'écriture facile&nbsp;à&nbsp;lire comme&nbsp;Arial&nbsp;14.",
     test: function (data) { return {result: true, info: {}}; }},
   {priority: 3,
     text: "N'utilisez&nbsp;jamais une&nbsp;écriture&nbsp;trop&nbsp;claire ou&nbsp;en&nbsp;couleur qui&nbsp;ne&nbsp;s'imprime&nbsp;pas&nbsp;bien.",
@@ -189,10 +189,10 @@ var rules = [
     test: function (data) { return {result: undefined, info: {}}; }},
   // Très importantes
   {priority: 2,
-    text: 'Utilisez le même mot pour parler de la même chose.',
+    text: 'Utilisez&nbsp;le&nbsp;même&nbsp;mot pour&nbsp;parler&nbsp;de&nbsp;la&nbsp;même&nbsp;chose.',
     test: function (data) { return {result: undefined, info: {}}; }},
   {priority: 2,
-    text: 'Parlez&nbsp;directement&nbspaux&nbspgens. Utilisez&nbspdes&nbspmots&nbsp;comme&nbsp;"vous".',
+    text: 'Parlez&nbsp;directement&nbsp;aux&nbsp;gens. Utilisez&nbsp;des&nbsp;mots&nbsp;comme&nbsp;"vous".',
     test: function (data) {
       let positivePattern = /\b(?:vous|tu|je)\b/gmi;
       let negativePattern = /\b(?:il|elle|on|ils|elles|nous)\b/gmi;
@@ -578,7 +578,8 @@ async function checkTokensComplexity (tokens, checkedWords) {
       }
       switch (frequencyToText(word.frequency)) {
         case 'inconnu': case 'très rare': case 'rare': case 'commun':
-          word.dictionary = await getInternauteEntry(word.lemma || word.text);
+          word.dictionary = await getGoogleEntry(word.lemma || word.text);
+          //word.dictionary = await getInternauteEntry(word.lemma || word.text);
           complexWords.push(word);
           break;
       }
@@ -614,7 +615,7 @@ async function checkLexique3 (word) {
   const pos = convertPos(word.pos, 'Lexique3');
   console.log(text + '  ' + pos);
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  const data = await $.ajax('./lexique3_multi.php', {
+  const data = await $.ajax('https://sioux.univ-paris8.fr/simples/lexique3_multi.php', {
     data: {
       word: text,
       pos: pos
@@ -693,7 +694,7 @@ function createCORSRequest (method, url, async = true) {
 async function getGoogleEntry (word) {
   let response;
   try {
-    response = await $.get('https://googledictionaryapi.eu-gb.mybluemix.net/', {define: encodeURIComponent(word), lang: 'fr'});
+    response = await $.get(`https://api.dictionaryapi.dev/api/v1/entries/fr/${encodeURIComponent(word)}`);
   } catch (e) {
     console.log("Error: " + e.message);
     return {meanings: []};
@@ -849,7 +850,17 @@ async function checkFalcQualityForBlock (editor, blockid) {
   result.importantRulesSuccess = importantRules;
 
   result.score = Math.round(((mainRules * 3 + veryImportantRules * 2 + importantRules) / (15 * 3 + 4 + 30)) * 100);
+
   return result;
+}
+
+function createAnalysisLog (analysisResults) {
+  let result = ";Score Total; " + analysisResults.score + "\n";
+  result += "Règle;Remplie;Score\n";
+  for (let i = 0; i < analysisResults.rules.length; i++) {
+    result += `${analysisResults.rules[i].rule.replace(/&nbsp;/g, ' ').replace(/\n/g,' ')};${analysisResults.rules[i].success ? 'oui' : 'non'};${analysisResults.rules[i].success ? analysisResults.rules[i].priority : 0}\n`;
+  }
+  return '\ufeff' + result; // Add UTF-8
 }
 
 async function checkFalcQuality (editor) {

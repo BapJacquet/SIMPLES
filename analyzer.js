@@ -615,7 +615,7 @@ async function checkLexique3 (word) {
   const pos = convertPos(word.pos, 'Lexique3');
   console.log(text + '  ' + pos);
   // Lance la requète pour rechercher les informations pour le mot et sa fonction.
-  const data = await $.ajax('./lexique3_multi.php', {
+  const data = await $.ajax('https://sioux.univ-paris8.fr/simples/lexique3_multi.php', {
     data: {
       word: text,
       pos: pos

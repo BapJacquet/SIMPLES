@@ -222,7 +222,7 @@ function onVerifyBlockClick(){
   $('#analysis-veryImportant-content>ul').html('');
   $('#analysis-important-content>ul').html('');
   $('.score').text('?');
-  checkFalcQualityForBlock(editor, editor.lastBlock).then((result) => displayAnalysisResults(result));
+  checkFalcQualityForBlock(editor, editor.activeBlockId).then((result) => displayAnalysisResults(result));
 }
 
 /**

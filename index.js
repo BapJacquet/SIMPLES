@@ -1303,6 +1303,7 @@ $("#toolbarBottomMask").hover( function () {
     editor.insertImageBlockBefore( activeBlocId, true);
     setTimeout( function () {
       blockArrayEnter();
+      loadImageDialog("#img-" + activeBlocId + "-0");
     }, 15);
   });
 
@@ -1321,6 +1322,7 @@ $("#toolbarBottomMask").hover( function () {
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
         blockArrayEnter();
+        loadImageDialog("#img-" + activeBlocId + "-0");
       }, 15);
     });
 

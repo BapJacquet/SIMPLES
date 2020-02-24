@@ -361,6 +361,7 @@ button span {
   display: grid;
   grid-template-rows: auto auto 1fr;
   border-top: solid 5px #009940;
+  border-bottom: 8px solid rgb(0, 153, 64);
   overflow-y: hidden;
   /*border-left: 3px solid #f6f6f6;
   border-right: 1px solid #ccc;*/

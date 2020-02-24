@@ -323,13 +323,13 @@ button span {
 }
 
 #analysisExpander {
-  border-left: solid 1px #009940;
+  border-left: solid 6px #009940;
 }
 
 #analysisExpanderButton {
   background-color: #009940;
   color: white;
-  border-radius: 0px 35px 35px 0px; 
+  border-radius: 0px 35px 35px 0px;
   border: solid 0px transparent;
   font-size: 40px;
 }

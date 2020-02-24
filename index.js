@@ -788,16 +788,9 @@ function displayWebImages(imgURLs) {
 }  // end displayWebImages
 //------------------------
 
-// image dialog opening from editor block
+// image dialog opening from editor block image
 $("#editor").on("click", ".editor-image", function(ev) {
-  $(".loader").show();
-  $("#imageClickModal").find("#imgFromDisk").attr("data-id", "#" + ev.target.id);
-  $("#imageClickModal").find("#image-url").val(null);
-  getImagesSuggestions(activeBlocId).then(function (result) {
-    displayWebImages(result);
-    $("#imageClickModal").modal();
-    $(".loader").hide();
-  });
+  loadImageDialog("#" + ev.target.id);
 });
 
 // click on time button...
@@ -1395,17 +1388,30 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 
-// click text block image widget
+function loadImageDialog (imageId) {
+  $(".loader").show();
+  $("#imageClickModal").find("#imgFromDisk").attr("data-id", imageId );
+  $("#imageClickModal").find("#image-url").val(null);
+  getImagesSuggestions(activeBlocId).then(function (result) {
+    displayWebImages(result);
+    $("#imageClickModal").modal();
+    $(".loader").hide();
+  });
+}
+
+// click text block add image widget
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
     activeTool("pictureL", true);
     blockArrayEnter();
+    loadImageDialog("#img-" + activeBlocId + "-0");
   });
 
   $("#page").on("click", ".img-right", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureRight: true});
     activeTool("picture", true);
     blockArrayEnter();
+    loadImageDialog("#img-" + activeBlocId + "-1");
   });
 ////////////////////////////////////////
 // .img-widget
@@ -1498,10 +1504,14 @@ $("#toolbarBottomMask").hover( function () {
     if ( $(trueImageID).parent().hasClass("col") ) {
       if ( $(this).hasClass("block-delete") )
         editor.removeImageInBlock(blockID, imageID);
-      else if ( $(this).hasClass("block-new-right"))
+      else if ( $(this).hasClass("block-new-right")) {
         editor.insertImageInBlockAfter(blockID, imageID);
-      else if ( $(this).hasClass("block-new-left"))
+        loadImageDialog("#img-" + blockID + "-" + String(imageID + 1));
+      }
+      else if ( $(this).hasClass("block-new-left")) {
         editor.insertImageInBlockBefore(blockID, imageID);
+        loadImageDialog("#img-" + blockID + "-" + imageID);
+      }
       else if ( $(this).hasClass("block-move-left"))
         editor.moveImageLeft(blockID, imageID);
       else if ( $(this).hasClass("block-move-right"))

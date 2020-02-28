@@ -172,7 +172,7 @@ var rules = [
   {priority: 3,
     text: 'Commencez&nbsp;toujours une&nbsp;nouvelle&nbsp;phrase sur&nbsp;une&nbsp;nouvelle&nbsp;ligne.',
     test: function (data) {
-      let pattern = /(?<=[\.\?\!])[^\n\.\?\!]+[\.\?\!]?/gm;
+      let pattern = /[\.\?\!][^\n\.\?\!]+[\.\?\!]?/gm;
       let result = true;
       for (let i = 0; i < data.raw.length; i++) {
         if (!Utils.isNullOrUndefined(data.raw[i].match(pattern))) {

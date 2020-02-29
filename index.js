@@ -1545,7 +1545,7 @@ function loadImageDialog (imageId) {
 
 // resize & focus
   $( window ).on("resize focus", function () {
-    blockArrayLeave();
+    blockArrayEnter();
     //$("#blockCmd, .img-widget, .img-txt-widget").css("display","none");
 
     var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;

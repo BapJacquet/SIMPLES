@@ -665,16 +665,17 @@ $(document).ready(function () {
     $("#analysisExpanderButton").on("click", function () {
         $(this).blur();
         if ($("#analysisContentPanel").is(':visible')) {
-          analysisPanelShowHide("hide", 200);
+          analysisPanelShowHide("hide", 150);
           $("#verify-button").removeClass('active');
           $("#analysis-content input").popover('hide');
         } else {
-          analysisPanelShowHide("show", 200);
+          analysisPanelShowHide("show", 150);
           $("#verify-button").addClass('active');
         }
         setTimeout( function () {
+          $(window).trigger("resize");
           blockArrayEnter();
-        }, 205);
+        }, 155);
     } );
 
   $("#redo-analyse").on("click", function () {
@@ -693,6 +694,15 @@ $(document).ready(function () {
     $('.hbox').css({"max-height": remaining + "px", "margin": "0px"});
     //$('.hbox').css("margin", "0px");
     $('.box').css("overflow", "hidden");
+
+    let cmdWidth = $("#blockCmd").width() + 8;
+    if ( $("#page").outerWidth(true) < $("#page").outerWidth() + cmdWidth ) {
+      $("#page").css("margin-left", 0);
+    }
+    else {
+      let marginLeft = ($("#page").outerWidth(true) - $("#page").outerWidth()) /2 - cmdWidth /2;
+      $("#page").css("margin-left", marginLeft + "px");
+    }
   });
 
 // à méditer pour Baptiste
@@ -1693,7 +1703,7 @@ const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
 
 const TOOLBAR_WIDTH = 900;
-const TOOLBAR_DECAL_RIGHT = 90;
+const TOOLBAR_DECAL_RIGHT = 50; // 90;
 const LOGO_DECAL = 80; /* 65; */
 const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";

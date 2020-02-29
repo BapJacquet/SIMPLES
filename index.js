@@ -1557,8 +1557,8 @@ function loadImageDialog (imageId) {
   $( window ).on("resize focus", function () {
     blockArrayEnter();
     //$("#blockCmd, .img-widget, .img-txt-widget").css("display","none");
-
-    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
+    var panel = ($("#analysisPanel").width() - $("#analysisSidebar").width() - $("#analysisExpander").width()) /2;
+    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT + panel;
     $("#toolbarlist").css({"left": move});
     if ( TOOLBAR_WIDTH < $(body).width() + LOGO_DECAL) {
       $("#toolbarScrollBar").css({"background-color": "white"});
@@ -1566,7 +1566,7 @@ function loadImageDialog (imageId) {
     else {
       $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
     }
-    if ( TOOLBAR_WIDTH < $(body).width()  + TOOLBAR_DECAL_RIGHT ) {
+    if ( TOOLBAR_WIDTH < $(body).width()  + TOOLBAR_DECAL_RIGHT + panel ) {
       $("#logoLirec").css("visibility","visible");
     }
     else {

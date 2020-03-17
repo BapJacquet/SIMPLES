@@ -105,6 +105,7 @@
 				</div>
 
 				<div>
+					<button id="versionbutton" type="button" data-title="Accès anticipé" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div>Cette&nbsp;version&nbsp;de&nbsp;LIREC est&nbsp;une&nbsp;version&nbsp;incomplète mise&nbsp;à&nbsp;disposition pour&nbsp;aider&nbsp;à&nbsp;luter contre&nbsp;l'épidémie de&nbsp;COV-19.</div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i> COV-19</button>
 					<button id="pingbutton" type="button" data-title="Connexion" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><div id='pingers' style='width:400px;'>Un instant...<div></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i></button>
 				</div>
 

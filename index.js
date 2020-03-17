@@ -243,6 +243,69 @@ function onODTClick(){
   });
 }
 
+function loadImageDialog (imageId) {
+  $(".loader").show();
+  $("#imageClickModal").find("#imgFromDisk").attr("data-id", imageId );
+  $("#imageClickModal").find("#image-url").val(null);
+  getImagesSuggestions(activeBlocId).then(function (result) {
+    displayWebImages(result);
+    $("#imageClickModal").modal();
+    $(".loader").hide();
+  });
+}
+
+////////////////////////////////////////////////////
+//                               image modal dialog
+
+//----------------------------------
+// display web images in the image modal dialog
+function displayWebImages(imgURLs) {
+  /* imgURLs syntax:
+  { arassaac: ["img1","img2"]
+  sclera: ["img1","img2","img3"]
+  serchText: ["mot1 mot2"]}
+  */
+  $("#imageClickModal").find(".modal-images").html(""); // clear images
+  var keywords = imgURLs.searchText;
+  if ( keywords ) {
+    $("#imageClickModal").find("#image-url").val(keywords); // keywords
+    $("#image-url").attr("data-val", keywords);
+  }
+  else {
+    $("#imageClickModal").find("#image-url").val($("#image-url").attr("data-val"));
+  }
+  var arasaac = imgURLs.arasaac;
+  if ( arasaac.length ) {
+    for (let i = 0; i < arasaac.length; i++) {
+      let imgTag = '<img src="' + arasaac[i] + '" class="web-img">';
+      $("#imageClickModal").find(".arasaac").append(imgTag);
+    }
+    $("#imageClickModal").find(".arasaac-lab").css("display", "inline-block");
+  }
+  else $("#imageClickModal").find(".arasaac-lab").css("display", "none");
+
+  var sclera = imgURLs.sclera;
+  if ( sclera.length ) {
+    for (let i = 0; i < sclera.length; i++) {
+      let imgTag = '<img src="' + sclera[i] + '" class="web-img">';
+      $("#imageClickModal").find(".sclera").append(imgTag);
+    }
+    $("#imageClickModal").find(".sclera-lab").css("display", "inline-block");
+  }
+  else $("#imageClickModal").find(".sclera-lab").css("display", "none");
+
+  var qwant = imgURLs.qwant;
+  if ( qwant.length ) {
+    for (let i = 0; i < qwant.length; i++) {
+      let imgTag = '<img src="' + qwant[i] + '" class="web-img">';
+      $("#imageClickModal").find(".qwant").append(imgTag);
+    }
+    $("#imageClickModal").find(".qwant-lab").css("display", "inline-block");
+  }
+  else $("#imageClickModal").find(".qwant-lab").css("display", "none");
+}  // end displayWebImages
+//------------------------
+
 // ******************************************** T O O L B A R
 
 function initToolbar() {                 // tool cursor initial values
@@ -393,6 +456,12 @@ function sendtoEditor(tool, val) {
   dataObj = {};
   dataObj[tool] = v;
   editor.setFormatAtSelection(dataObj);
+  if ( tool == "pictureL" && v ) {
+    loadImageDialog("#img-" + editor.activeBlockId + "-0");
+  }
+  else if ( tool == "picture" && v ) {
+    loadImageDialog("#img-" + editor.activeBlockId + "-1");
+  }
 }
 
 /////////////////////////////////////////////////////////////////
@@ -665,16 +734,17 @@ $(document).ready(function () {
     $("#analysisExpanderButton").on("click", function () {
         $(this).blur();
         if ($("#analysisContentPanel").is(':visible')) {
-          analysisPanelShowHide("hide", 200);
+          analysisPanelShowHide("hide", 150);
           $("#verify-button").removeClass('active');
           $("#analysis-content input").popover('hide');
         } else {
-          analysisPanelShowHide("show", 200);
+          analysisPanelShowHide("show", 150);
           $("#verify-button").addClass('active');
         }
         setTimeout( function () {
+          $(window).trigger("resize");
           blockArrayEnter();
-        }, 205);
+        }, 155);
     } );
 
   $("#redo-analyse").on("click", function () {
@@ -693,6 +763,15 @@ $(document).ready(function () {
     $('.hbox').css({"max-height": remaining + "px", "margin": "0px"});
     //$('.hbox').css("margin", "0px");
     $('.box').css("overflow", "hidden");
+
+    let cmdWidth = $("#blockCmd").width() + 8;
+    if ( $("#page").outerWidth(true) < $("#page").outerWidth() + cmdWidth ) {
+      $("#page").css("margin-left", 0);
+    }
+    else {
+      let marginLeft = ($("#page").outerWidth(true) - $("#page").outerWidth()) /2 - cmdWidth /2;
+      $("#page").css("margin-left", marginLeft + "px");
+    }
   });
 
 // à méditer pour Baptiste
@@ -736,57 +815,6 @@ $("#editor").on("blockdestroyed", function (ev) {
   blockArrayEnter();
 });
 
-////////////////////////////////////////////////////
-//                               image modal dialog
-
-//----------------------------------
-// display web images in the image modal dialog
-function displayWebImages(imgURLs) {
-  /* imgURLs syntax:
-  { arassaac: ["img1","img2"]
-  sclera: ["img1","img2","img3"]
-  serchText: ["mot1 mot2"]}
-  */
-  $("#imageClickModal").find(".modal-images").html(""); // clear images
-  var keywords = imgURLs.searchText;
-  if ( keywords ) {
-    $("#imageClickModal").find("#image-url").val(keywords); // keywords
-    $("#image-url").attr("data-val", keywords);
-  }
-  else {
-    $("#imageClickModal").find("#image-url").val($("#image-url").attr("data-val"));
-  }
-  var arasaac = imgURLs.arasaac;
-  if ( arasaac.length ) {
-    for (let i = 0; i < arasaac.length; i++) {
-      let imgTag = '<img src="' + arasaac[i] + '" class="web-img">';
-      $("#imageClickModal").find(".arasaac").append(imgTag);
-    }
-    $("#imageClickModal").find(".arasaac-lab").css("display", "inline-block");
-  }
-  else $("#imageClickModal").find(".arasaac-lab").css("display", "none");
-
-  var sclera = imgURLs.sclera;
-  if ( sclera.length ) {
-    for (let i = 0; i < sclera.length; i++) {
-      let imgTag = '<img src="' + sclera[i] + '" class="web-img">';
-      $("#imageClickModal").find(".sclera").append(imgTag);
-    }
-    $("#imageClickModal").find(".sclera-lab").css("display", "inline-block");
-  }
-  else $("#imageClickModal").find(".sclera-lab").css("display", "none");
-
-  var qwant = imgURLs.qwant;
-  if ( qwant.length ) {
-    for (let i = 0; i < qwant.length; i++) {
-      let imgTag = '<img src="' + qwant[i] + '" class="web-img">';
-      $("#imageClickModal").find(".qwant").append(imgTag);
-    }
-    $("#imageClickModal").find(".qwant-lab").css("display", "inline-block");
-  }
-  else $("#imageClickModal").find(".qwant-lab").css("display", "none");
-}  // end displayWebImages
-//------------------------
 
 // image dialog opening from editor block image
 $("#editor").on("click", ".editor-image", function(ev) {
@@ -1390,17 +1418,6 @@ $("#toolbarBottomMask").hover( function () {
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 
-function loadImageDialog (imageId) {
-  $(".loader").show();
-  $("#imageClickModal").find("#imgFromDisk").attr("data-id", imageId );
-  $("#imageClickModal").find("#image-url").val(null);
-  getImagesSuggestions(activeBlocId).then(function (result) {
-    displayWebImages(result);
-    $("#imageClickModal").modal();
-    $(".loader").hide();
-  });
-}
-
 // click text block add image widget
   $("#page").on("click", ".img-left", function (ev) {
     editor.setBlockFormat(activeBlocId, {pictureLeft: true});
@@ -1545,10 +1562,10 @@ function loadImageDialog (imageId) {
 
 // resize & focus
   $( window ).on("resize focus", function () {
-    blockArrayLeave();
+    blockArrayEnter();
     //$("#blockCmd, .img-widget, .img-txt-widget").css("display","none");
-
-    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT;
+    var panel = ($("#analysisPanel").width() - $("#analysisSidebar").width() - $("#analysisExpander").width()) /2;
+    var move = ($(body).width() - TOOLBAR_WIDTH) /2 + TOOLBAR_DECAL_RIGHT + panel;
     $("#toolbarlist").css({"left": move});
     if ( TOOLBAR_WIDTH < $(body).width() + LOGO_DECAL) {
       $("#toolbarScrollBar").css({"background-color": "white"});
@@ -1556,7 +1573,7 @@ function loadImageDialog (imageId) {
     else {
       $("#toolbarScrollBar").css({"background-color": TOOL_BACK_COLOR});
     }
-    if ( TOOLBAR_WIDTH < $(body).width()  + TOOLBAR_DECAL_RIGHT ) {
+    if ( TOOLBAR_WIDTH < $(body).width()  + TOOLBAR_DECAL_RIGHT + panel ) {
       $("#logoLirec").css("visibility","visible");
     }
     else {
@@ -1693,7 +1710,7 @@ const PICTUREL_INIT = false;
 const PICTURE_INIT = true;
 
 const TOOLBAR_WIDTH = 900;
-const TOOLBAR_DECAL_RIGHT = 90;
+const TOOLBAR_DECAL_RIGHT = 50; // 90;
 const LOGO_DECAL = 80; /* 65; */
 const TOOL_BACK_COLOR = "#e0e0e0"; // "#f0f0f0";
 const COLOR_GREEN = "#006700"; // "#009940"; // "#2ea35f";

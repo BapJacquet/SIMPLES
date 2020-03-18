@@ -124,6 +124,7 @@ class Converter {
    * @return {makePdfDocument} The resulting pdf.
    */
   static async toPdf (editor) {
+    simplesAlert("En chantier");
     let margin = 72;
     let docDefinition = {
       content: [],
@@ -192,7 +193,7 @@ class Converter {
               width: Utils.pixelToPoint($(img).width()),
               margin: [Utils.pixelToPoint(Utils.getRelativeOffset(img, editor.getTextElement(i, c)).left), 0, 0, 0]
             });
-            content[1].push(editor.getTextElement(i, c).textContent);
+            content[1].push({ text: editor.getTextElement(i, c).textContent, alignment: 'center' });
           }
           blockDefinition.table = {
             widths: widths,
@@ -213,6 +214,7 @@ class Converter {
    * @return {Blob} The resulting archive.
    */
   static async toDocx (editor) {
+    simplesAlert("En chantier");
     let zip = new JSZip();
     let word = zip.folder('word');
     let props = zip.folder('docProps');
@@ -239,6 +241,7 @@ class Converter {
    * @return {Blob} The resulting archive.
    */
   static async toOdt (editor) {
+    simplesAlert("En chantier");
     let templateData = await JSZipUtils.getBinaryContent('./converters/template.odt');
     let templateZip = await JSZip.loadAsync(templateData);
 

@@ -105,7 +105,7 @@
 				</div>
 
 				<div>
-					<button id="versionbutton" type="button" data-title="Accès anticipé" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec est&nbsp;mise&nbsp;à&nbsp;disposition pour&nbsp;faciliter la&nbsp;simplification&nbsp;d'informations liées&nbsp;au&nbsp;COV-19.</p><p>Toutes&nbsp;les&nbsp;fonctionnalités ne&nbsp;sont&nbsp;pas&nbsp;disponibles.</p><p>Voir&nbsp;la&nbsp;rubrique&nbsp;Aide.</p></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i> COV-19</button>
+					<button id="versionbutton" type="button" data-title="Accès anticipé" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec est&nbsp;mise&nbsp;à&nbsp;disposition pour&nbsp;faciliter la&nbsp;simplification&nbsp;d'informations liées&nbsp;au&nbsp;Covid-19.</p><p>Toutes&nbsp;les&nbsp;fonctionnalités ne&nbsp;sont&nbsp;pas&nbsp;disponibles.</p><p>Voir&nbsp;la&nbsp;rubrique&nbsp;Aide.</p></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i> Covid-19</button>
 					<button id="pingbutton" type="button" data-title="Connexion" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><div id='pingers' style='width:400px;'>Un instant...<div></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i></button>
 				</div>
 

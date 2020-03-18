@@ -56,4 +56,8 @@ class Utils {
   static stringEndsWith (string, suffix) {
     return string.indexOf(suffix, this.length - suffix.length) !== -1;
   }
+
+  static pxToNumber (string) {
+    return Number(string.replace('px', ''));
+  }
 }

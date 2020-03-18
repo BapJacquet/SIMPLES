@@ -445,6 +445,16 @@ li.nav-item {
   grid-template-columns: 1fr auto;
 }
 
+#versionbutton {
+  background: #c10000;
+  border: 0px solid #c10000;
+  border-radius: 25px;
+  font-size: 14pt;
+  cursor: pointer;
+  margin: 5px 1em;
+  color: white;
+}
+
 #pingbutton {
   background: transparent;
   border: 0px solid;

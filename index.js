@@ -1661,7 +1661,7 @@ $("#toolbarBottomMask").hover( function () {
 
 // user
 //debugger;
-if ( localStorage.user == undefined || localStorage.user != "ok" ) askUserName();
+//if ( localStorage.user == undefined || localStorage.user != "ok" ) askUserName();
 //else window.location = window.location.href.split(".")[0] + ".php";
 
 

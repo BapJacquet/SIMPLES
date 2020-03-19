@@ -502,7 +502,7 @@
 <div id="helpAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog .modal-xl" role="document">
     <div class="modal-content">
-			<iframe src="help.htm"></iframe>
+			<iframe src="help.htm" height="600"></iframe>
     </div>
   </div>
 </div>  <!-- end help alert -->

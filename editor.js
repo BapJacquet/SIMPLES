@@ -221,6 +221,7 @@ class Editor {
    * @return {Quill} The quill of this block.
    */
   getQuill (id, subid) {
+    if (Utils.isNullOrUndefined(this.getTextElement(id, subid))) return null;
     return this.getTextElement(id, subid).quill;
   }
 
@@ -486,12 +487,20 @@ class Editor {
       case 'Backspace':
         let s = this.getSelection();
         if (s.range.index === 0 && id !== 0 && this.getBlockFormat(id).blockType === 'default' && this.getBlockFormat(id - 1).blockType === 'default') {
+          if (Utils.isNullOrUndefined(this.getQuill(id))) return;
           event.stopPropagation();
           event.preventDefault();
-          let l = this.getBlockLength(id - 1);
-          this.mergeBlocks(id - 1, id, 1);
-          if (l > 0) {
-            this.select(id - 1, null, l - 1);
+          let format = this.getQuill(id).getFormat();
+          if (format.list === 'bullet' || format.list === 'ordered') {
+            this.setFormatAtSelection({ list: false });
+            break;
+          }
+          if (event.ctrlKey) { // If control key is pressed, try to merge blocks.
+            let l = this.getBlockLength(id - 1);
+            this.mergeBlocks(id - 1, id, 1);
+            if (l > 0) {
+              this.select(id - 1, null, l - 1);
+            }
           }
         }
         break;
@@ -1175,6 +1184,7 @@ class Editor {
    */
   getStyledText (id, subBlockID) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (Utils.isNullOrUndefined(this.getQuill(id, subBlockID))) return [];
     let delta = this.getQuill(id, subBlockID).getContents();
     let result = [];
     for (let i = 0; i < delta.ops.length; i++) {

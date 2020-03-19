@@ -124,20 +124,36 @@ class Converter {
    * @return {makePdfDocument} The resulting pdf.
    */
   static async toPdf (editor) {
+    simplesAlert("En chantier");
+    let margin = 72;
     let docDefinition = {
       content: [],
       styles: editor.styles,
       defaultStyle: editor.defaultStyle,
-      pageMargins: [72, 72, 72, 72] // 72 = 1 inch
+      footer: function (currentPage, pageCount) {
+        if (pageCount > 1) return { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, alignment: 'right', margin: [0, 0, margin, 0] };
+        else return '';
+      },
+      pageMargins: [margin, margin, margin, margin] // 96 = 1 inch
     };
-
+    let contentLength = 1123 - docDefinition.pageMargins[1] - docDefinition.pageMargins[3];
+    let bottomY = docDefinition.pageMargins[1];
     for (let i = 0; i < editor.blockCount; i++) {
       let blockElement = editor.getBlockElement(i);
       let blockFormat = editor.getBlockFormat(i);
+      bottomY += Utils.pxToNumber($(blockElement).css("margin-top"));
+      bottomY += Utils.pxToNumber($(blockElement).css("height"));
       let blockDefinition = {
         layout: blockFormat.frame ? 'frame' : 'noBorders',
         margin: [0, 4]
       };
+      if (bottomY > contentLength) {
+        blockDefinition.pageBreak = 'before';
+        bottomY = docDefinition.pageMargins[1];
+      } else {
+        bottomY += Utils.pxToNumber($(blockElement).css("margin-bottom"));
+      }
+
       switch (blockFormat.blockType) {
         case 'default': {
           let content = [[]];
@@ -177,7 +193,7 @@ class Converter {
               width: Utils.pixelToPoint($(img).width()),
               margin: [Utils.pixelToPoint(Utils.getRelativeOffset(img, editor.getTextElement(i, c)).left), 0, 0, 0]
             });
-            content[1].push(editor.getTextElement(i, c).textContent);
+            content[1].push({ text: editor.getTextElement(i, c).textContent, alignment: 'center' });
           }
           blockDefinition.table = {
             widths: widths,
@@ -198,6 +214,7 @@ class Converter {
    * @return {Blob} The resulting archive.
    */
   static async toDocx (editor) {
+    simplesAlert("En chantier");
     let zip = new JSZip();
     let word = zip.folder('word');
     let props = zip.folder('docProps');
@@ -224,6 +241,7 @@ class Converter {
    * @return {Blob} The resulting archive.
    */
   static async toOdt (editor) {
+    simplesAlert("En chantier");
     let templateData = await JSZipUtils.getBinaryContent('./converters/template.odt');
     let templateZip = await JSZip.loadAsync(templateData);
 

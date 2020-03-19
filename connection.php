@@ -8,8 +8,8 @@ $clientIP = $_SERVER["REMOTE_ADDR"];
 $version = $_POST["version"];
 $user = $_POST["user"];
 //echo $version; exit;
-if ( $user == 'lutins' ) $user = 'ok';
-else $user ='unknown';
+/* if ( $user == 'lutins' ) */ $user = 'ok';
+/* else $user ='unknown'; */
 
 $query = "INSERT INTO Connection (`user`, `clientIP`, `date`, `time`, `version`) VALUES ('$user', '$clientIP', '$date', '$time', '$version')";
 $result = $base->query($query);

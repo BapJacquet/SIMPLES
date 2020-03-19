@@ -221,6 +221,7 @@ class Editor {
    * @return {Quill} The quill of this block.
    */
   getQuill (id, subid) {
+    if (Utils.isNullOrUndefined(this.getTextElement(id, subid))) return null;
     return this.getTextElement(id, subid).quill;
   }
 
@@ -1175,6 +1176,7 @@ class Editor {
    */
   getStyledText (id, subBlockID) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (Utils.isNullOrUndefined(this.getQuill(id, subBlockID))) return [];
     let delta = this.getQuill(id, subBlockID).getContents();
     let result = [];
     for (let i = 0; i < delta.ops.length; i++) {

@@ -493,7 +493,7 @@ class Editor {
           let format = this.getQuill(id).getFormat();
           if (format.list === 'bullet' || format.list === 'ordered') {
             this.setFormatAtSelection({ list: false });
-            break;;
+            break;
           }
           if (event.ctrlKey) { // If control key is pressed, try to merge blocks.
             let l = this.getBlockLength(id - 1);

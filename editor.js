@@ -1257,20 +1257,25 @@ class Editor {
     let inOrderedList = false;
     for (let i = 0; i < result2.length; i++) {
       if ((!inBulletList && result2[i].list === 'bullet') || (!inOrderedList && result2[i].list === 'ordered')) {
-        result2[i].list = undefined;
         if (result2[i].list === 'bullet') {
+          result2[i].list = undefined;
           result3.push({ ul: [result2[i]], margin: [1.5 * Utils.pointToPixel(14), 0, 0, 0] });
           inBulletList = true;
           inOrderedList = false;
         } else {
+          result2[i].list = undefined;
           result3.push({ ol: [result2[i]], margin: [1.5 * Utils.pointToPixel(14), 0, 0, 0] });
           inOrderedList = true;
           inBulletList = false;
         }
       } else if ((inBulletList && result2[i].list === 'bullet') || (inOrderedList && result2[i].list === 'ordered')) {
-        result2[i].list = undefined;
-        if (result2[i].list === 'bullet') result3[result3.length - 1].ul.push(result2[i]);
-        else result3[result3.length - 1].ol.push(result2[i]);
+        if (result2[i].list === 'bullet') {
+          result2[i].list = undefined;
+          esult3[result3.length - 1].ul.push(result2[i]);
+        } else {
+          result2[i].list = undefined;
+          result3[result3.length - 1].ol.push(result2[i]);
+        }
       } else if (result2[i].list !== 'bullet' && result2[i].list !== 'ordered' && result2[i] !== '\n') {
         inBulletList = false;
         inOrderedList = false;

@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<?php
+// Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
+$version = "0.03.26.0";
+?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html charset=utf-8" />
@@ -37,8 +41,8 @@
 
 	<link href="//cdn.quilljs.com/latest/quill.snow.css" rel="stylesheet">
 
-  <link rel="stylesheet" type="text/css" href="main.css"/>
-	<link rel="stylesheet" type="text/css" href="editor.css"/>
+  <link rel="stylesheet" type="text/css" href="main.css?v=<?= $version ?>"/>
+	<link rel="stylesheet" type="text/css" href="editor.css?v=<?= $version ?>"/>
 </head>
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -105,6 +109,7 @@
 				</div>
 
 				<div>
+					<button id="versionnumberbutton" type="button" data-title="Version de LIREC" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec date&nbsp;du&nbsp;<?=preg_split("/\./", $version)[2] ?>/<?= preg_split("/\./", $version)[1] ?>/202<?= preg_split("/\./", $version)[0]?>" data-placement="top">v<?= $version ?></button>
 					<button id="versionbutton" type="button" data-title="Accès anticipé" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec est&nbsp;mise&nbsp;à&nbsp;disposition pour&nbsp;faciliter la&nbsp;simplification&nbsp;d'informations liées&nbsp;au&nbsp;Covid-19.</p><p>Toutes&nbsp;les&nbsp;fonctionnalités ne&nbsp;sont&nbsp;pas&nbsp;disponibles.</p><p>Voir&nbsp;la&nbsp;rubrique&nbsp;Aide.</p></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i> Covid-19</button>
 					<button id="pingbutton" type="button" data-title="Connexion" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><div id='pingers' style='width:400px;'>Un instant...<div></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i></button>
 				</div>
@@ -502,22 +507,22 @@
 <div id="helpAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog .modal-xl" role="document">
     <div class="modal-content">
-			<iframe src="help.htm" height="600"></iframe>
+			<iframe src="help.htm?v=<?= $version ?>" height="600"></iframe>
     </div>
   </div>
 </div>  <!-- end help alert -->
 
 	<!-- Initialize Simples Editor -->
-	<script type="text/javascript" src="editor.js"></script>
-	<script type="text/javascript" src="analyzer.js"></script>
-	<script type="text/javascript" src="animator.js"></script>
-	<script type="text/javascript" src="utils.js"></script>
-	<script type="text/javascript" src="extensions.js"></script>
-	<script type="text/javascript" src="converter.js"></script>
-	<script type="text/javascript" src="w3color.js"></script>
-	<script type="text/javascript" src="clock.js"></script>
+	<script type="text/javascript" src="editor.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="analyzer.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="animator.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="utils.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="extensions.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="converter.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="w3color.?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="clock.js?v=<?= $version ?>"></script>
 
 	<!-- jQuery ready -->
-	<script src="index.js"></script>
+	<script src="index.js?v=<?= $version ?>"></script>
 </body>
 </html>

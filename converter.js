@@ -124,7 +124,6 @@ class Converter {
    * @return {makePdfDocument} The resulting pdf.
    */
   static async toPdf (editor) {
-    simplesAlert("En chantier");
     let margin = 72;
     let docDefinition = {
       content: [],
@@ -164,8 +163,9 @@ class Converter {
               margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i, 0), blockElement).top), 0, 0]
             });
           }
+          console.log(editor.getStyledText(i));
           content[0].push({
-            text: editor.getStyledText(i),
+            stack: editor.getStyledText(i),
             margin: [5, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 5, 1]
           });
           if (blockFormat.pictureRight) {

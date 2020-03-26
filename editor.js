@@ -1684,9 +1684,11 @@ class Editor {
    * Select the next occurence of the given pattern.
    * @param {RegExp} pattern - Pattern to search for.
    * @param {int} startBlock - (Optional) The block id to start searching in.
+   * @param {int} startSubBlock - (Optional) The sub block id to start searching in.
    * @param {int} startIndex - (Optional) The index to start searching from.
+   * @param {boolean} loop - (Optional) If the search should loop back to the start.
    */
-  selectNextMatch (pattern, startBlock = null, startSubBlock = null, startIndex = null) {
+  selectNextMatch (pattern, startBlock = null, startSubBlock = null, startIndex = null, loop = true) {
     let sel = this.getSelection();
     startBlock = startBlock == null ? (this.hasFocus ? sel.block : 0) : startBlock;
     startSubBlock = startSubBlock == null ? (this.hasFocus ? sel.subBlock : 0) : startSubBlock;
@@ -1717,7 +1719,7 @@ class Editor {
         }
       }
     }
-    if (startBlock !== 0 || startIndex !== 0) this.selectNextMatch(pattern, 0, 0);
+    if (loop && (startBlock !== 0 || startIndex !== 0)) this.selectNextMatch(pattern, 0, 0, 0, false);
   }
 
   /**

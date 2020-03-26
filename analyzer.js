@@ -125,6 +125,10 @@ var rules = [
       let appendedContent = '';
       for(let cm of data.complexWords) {
         let synonyms = '';
+        let color = '#333333';
+        if (cm.frequency < 5) color = '#c10000';
+        else if (cm.frequency < 10) color = '#c16700';
+        else if (cm.frequency < 20) color = '#006700';
         let content = `<p>${description(frequencyToText(cm.frequency))}</p>`;
         if (cm.dictionary.meanings.length > 0) {
           for (let j = 0; j < cm.dictionary.meanings[0].synonyms.length; j++) {
@@ -134,7 +138,7 @@ var rules = [
         }
         let popover = `data-html="true" data-boundary="viewport" data-placement="auto" data-trigger="hover" data-toggle="popover" title='${frequencyToText(cm.frequency)}' data-content="${content}"`;
 
-        appendedContent += `<button type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
+        appendedContent += `<button style="background: ${color}; border-color: ${color};" type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
       }
       return {result: data.complexWords.length === 0, info: {append: '<div>' + appendedContent + '</div>'}};
     }},

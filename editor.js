@@ -1271,7 +1271,7 @@ class Editor {
       } else if ((inBulletList && result2[i].list === 'bullet') || (inOrderedList && result2[i].list === 'ordered')) {
         if (result2[i].list === 'bullet') {
           result2[i].list = undefined;
-          esult3[result3.length - 1].ul.push(result2[i]);
+          result3[result3.length - 1].ul.push(result2[i]);
         } else {
           result2[i].list = undefined;
           result3[result3.length - 1].ol.push(result2[i]);

@@ -1204,9 +1204,20 @@ class Editor {
             let j = result.length - 2;
             while (j >= 0 && result[j] !== '\n') {
               if (Utils.isNullOrUndefined(result[j].text)) {
-                result[j] = {text: result[j], style: 'h' + item.attributes.header};
+                result[j] = { text: result[j], style: 'h' + item.attributes.header };
               } else {
                 result[j].style = 'h' + item.attributes.header;
+              }
+              j--;
+            }
+          }
+          if (!Utils.isNullOrUndefined(item.attributes.list)) {
+            let j = result.length - 2;
+            while (j >= 0 && result[j] !== '\n') {
+              if (Utils.isNullOrUndefined(result[j].text)) {
+                result[j] = { text: result[j], list: item.attributes.list };
+              } else {
+                result[j].list = item.attributes.list;
               }
               j--;
             }
@@ -1217,12 +1228,72 @@ class Editor {
             if (s > 0) {
               result.push('\n');
             }
-            if (split[s] !== '') result.push({text: split[s], bold: item.attributes.bold, color: item.attributes.color});
+            if (split[s] !== '') result.push({ text: split[s], bold: item.attributes.bold, color: item.attributes.color });
           }
         }
       }
     }
-    return result;
+
+    // collapse lines
+    const result2 = [];
+    let merging = false;
+    for (let i = 0; i < result.length; i++) {
+      if (i + 1 < result.length && result[i] !== '\n' && result[i + 1] !== '\n' && merging === false) {
+        merging = true;
+        result2.push({ text: [result[i]], list: result[i].list });
+      } else if (result[i] === '\n') {
+        result2.push('\n');
+        merging = false;
+      } else if (merging === true) {
+        result2[result2.length - 1].text.push(result[i]);
+      } else {
+        result2.push(result[i]);
+      }
+    }
+
+    // list pass
+    const result3 = [];
+    let inBulletList = false;
+    let inOrderedList = false;
+    for (let i = 0; i < result2.length; i++) {
+      if ((!inBulletList && result2[i].list === 'bullet') || (!inOrderedList && result2[i].list === 'ordered')) {
+        result2[i].list = undefined;
+        if (result2[i].list === 'bullet') {
+          result3.push({ ul: [result2[i]], margin: [1.5 * Utils.pointToPixel(14), 0, 0, 0] });
+          inBulletList = true;
+          inOrderedList = false;
+        } else {
+          result3.push({ ol: [result2[i]], margin: [1.5 * Utils.pointToPixel(14), 0, 0, 0] });
+          inOrderedList = true;
+          inBulletList = false;
+        }
+      } else if ((inBulletList && result2[i].list === 'bullet') || (inOrderedList && result2[i].list === 'ordered')) {
+        result2[i].list = undefined;
+        if (result2[i].list === 'bullet') result3[result3.length - 1].ul.push(result2[i]);
+        else result3[result3.length - 1].ol.push(result2[i]);
+      } else if (result2[i].list !== 'bullet' && result2[i].list !== 'ordered' && result2[i] !== '\n') {
+        inBulletList = false;
+        inOrderedList = false;
+        result3.push(result2[i]);
+      } else if (!inBulletList && !inOrderedList) {
+        //result3.push(result2[i]);
+      }
+    }
+
+    console.log(result3);
+    /*let fresult = [];
+    let inOrderedList = false;
+    let inBulletList = false;
+    lastIndex = 0;
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].list === 'bullet') {
+        if (inBulletList) {
+          fresult[lastIndex].push(result[i]);
+        }
+      }
+    }*/
+
+    return result3;
   }
 
   /**

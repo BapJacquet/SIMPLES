@@ -445,13 +445,23 @@ li.nav-item {
   grid-template-columns: 1fr auto;
 }
 
+#versionnumberbutton {
+  background: #333333;
+  border: 0px solid #333333;
+  border-radius: 25px;
+  font-size: 14pt;
+  cursor: pointer;
+  margin: 5px;
+  color: white;
+}
+
 #versionbutton {
   background: #c10000;
   border: 0px solid #c10000;
   border-radius: 25px;
   font-size: 14pt;
   cursor: pointer;
-  margin: 5px 1em;
+  margin: 5px;
   color: white;
 }
 

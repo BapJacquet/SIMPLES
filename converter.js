@@ -165,7 +165,7 @@ class Converter {
           }
           console.log(editor.getStyledText(i));
           content[0].push({
-            text: editor.getStyledText(i),
+            stack: editor.getStyledText(i),
             margin: [5, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 5, 1]
           });
           if (blockFormat.pictureRight) {

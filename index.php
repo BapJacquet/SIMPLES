@@ -519,7 +519,7 @@ $version = "0.03.26.2";
 	<script type="text/javascript" src="utils.js?v=<?= $version ?>"></script>
 	<script type="text/javascript" src="extensions.js?v=<?= $version ?>"></script>
 	<script type="text/javascript" src="converter.js?v=<?= $version ?>"></script>
-	<script type="text/javascript" src="w3color.?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="w3color.js?v=<?= $version ?>"></script>
 	<script type="text/javascript" src="clock.js?v=<?= $version ?>"></script>
 
 	<!-- jQuery ready -->

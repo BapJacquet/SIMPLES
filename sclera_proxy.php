@@ -26,6 +26,6 @@ try {
 
   echo json_encode($output);
 } catch (Throwable $ex) {
-  echo "{error:2, errorText: 'Something went very wrong: ",$ex->getMessage(),"'}";
+  echo "{error:2, errorText: \"Something went very wrong: ",$ex->getMessage(),"\"}";
 }
 ?>

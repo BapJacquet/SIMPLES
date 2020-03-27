@@ -125,6 +125,10 @@ var rules = [
       let appendedContent = '';
       for(let cm of data.complexWords) {
         let synonyms = '';
+        let color = '#333333';
+        if (cm.frequency < 5) color = '#c10000';
+        else if (cm.frequency < 10) color = '#c16700';
+        else if (cm.frequency < 20) color = '#006700';
         let content = `<p>${description(frequencyToText(cm.frequency))}</p>`;
         if (cm.dictionary.meanings.length > 0) {
           for (let j = 0; j < cm.dictionary.meanings[0].synonyms.length; j++) {
@@ -134,7 +138,7 @@ var rules = [
         }
         let popover = `data-html="true" data-boundary="viewport" data-placement="auto" data-trigger="hover" data-toggle="popover" title='${frequencyToText(cm.frequency)}' data-content="${content}"`;
 
-        appendedContent += `<button type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
+        appendedContent += `<button style="background: ${color}; border-color: ${color};" type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
       }
       return {result: data.complexWords.length === 0, info: {append: '<div>' + appendedContent + '</div>'}};
     }},
@@ -751,7 +755,7 @@ async function getImagesSuggestions (blockIndex) {
 
 async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: true, qwant: true }) {
   console.log('Checking images for: ' + keyword);
-  const result = { arasaac: [], sclera: [], qwant: [], searchText: keyword };
+  const result = { arasaac: [], sclera: [], qwant: [], google: [], searchText: keyword };
   if (keyword) {
     if (options.arasaac) {
       console.log('Trying on ARASAAC...')
@@ -771,10 +775,29 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
       }
     }
     if (options.sclera) {
-      // TODO add.
+      console.log('Trying on SCLERA...');
+      try {
+        // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
+        const response = await $.ajax('./sclera_proxy.php', {
+          data: {
+            q: keyword
+          },
+          dataType: 'json',
+          timeout: 5000
+        });
+        const items = response;
+        console.log('Found ' + items.length + ' pictograms.');
+        for (const r in items) {
+          result.sclera.push(items[r]);
+        }
+      } catch (ex) {
+        console.log('Failed to get images from SCLERA.');
+        console.log(ex);
+      }
     }
     if (options.qwant) {
       console.log('Trying on QWANT...');
+      let qwanted = false;
       try {
         // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
         const response = await $.ajax('./qwant_proxy.php', {
@@ -790,9 +813,31 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
         for (const r in items) {
           result.qwant.push(items[r].media);
         }
+        qwanted = true;
       } catch (ex) {
         console.log('Failed to get images from QWANT.');
         console.log(ex);
+      }
+      if (!qwanted) {
+        console.log('Trying to get them from Google instead.');
+        try {
+          // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
+          const response = await $.ajax('./google_images_proxy.php', {
+            data: {
+              q: keyword + ' pictogramme'
+            },
+            dataType: 'json',
+            timeout: 5000
+          });
+          const items = response[0];
+          console.log('Found ' + items.length + ' pictograms.');
+          for (const r in items) {
+            result.google.push(items[r]);
+          }
+        } catch (ex) {
+          console.log('Failed to get images from Google.');
+          console.log(ex);
+        }
       }
     }
   }

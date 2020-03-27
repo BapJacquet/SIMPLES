@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.03.26.2";
+$version = "0.03.27.1";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -411,12 +411,14 @@ $version = "0.03.26.2";
 				<label class="col-form-label arasaac-lab"><strong>Arasaac</strong></label>
 				<div class="modal-images arasaac  flex-nowrap">
 				</div>
-				<br>
 				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
 				<div class="modal-images sclera flex-nowrap">
 				</div>
 				<label class="col-form-label qwant-lab"><strong>Qwant</strong></label>
 				<div class="modal-images qwant flex-nowrap">
+				</div>
+				<label class="col-form-label google-lab"><strong>Google</strong></label>
+				<div class="modal-images google flex-nowrap">
 				</div>
       </div>
     </div>

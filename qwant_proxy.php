@@ -1,5 +1,5 @@
 <?php
-header ("Content-type: text/json");
+header ("Content-type: text/plain");
 
 $q = isset($_GET['q']) ? $_GET['q'] : null;
 if(!$q) {

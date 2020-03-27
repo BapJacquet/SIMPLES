@@ -775,7 +775,25 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
       }
     }
     if (options.sclera) {
-      // TODO add.
+      console.log('Trying on SCLERA...');
+      try {
+        // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
+        const response = await $.ajax('./sclera_proxy.php', {
+          data: {
+            q: keyword
+          },
+          dataType: 'json',
+          timeout: 5000
+        });
+        const items = response;
+        console.log('Found ' + items.length + ' pictograms.');
+        for (const r in items) {
+          result.sclera.push(items[r]);
+        }
+      } catch (ex) {
+        console.log('Failed to get images from SCLERA.');
+        console.log(ex);
+      }
     }
     if (options.qwant) {
       console.log('Trying on QWANT...');
@@ -788,7 +806,7 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
             q: keyword + ' pictogramme'
           },
           dataType: 'json',
-          timeout: 10000
+          timeout: 5000
         });
         const items = response.data.result.items;
         console.log('Found ' + items.length + ' pictograms.');
@@ -809,7 +827,7 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
               q: keyword + ' pictogramme'
             },
             dataType: 'json',
-            timeout: 40000
+            timeout: 5000
           });
           const items = response[0];
           console.log('Found ' + items.length + ' pictograms.');

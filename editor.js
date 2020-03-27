@@ -1535,10 +1535,10 @@ class Editor {
       let res = src.match(/image_proxy\.php\?url=(https?:\/\/.+$)/);
       if (res) {
         // For when we're moving an image already within the editor.
-        src = './image_proxy.php?url=' + res[1];
+        src = './image_proxy.php?url=' + encodeURIComponent(res[1]);
       } else {
         // Ensure cross domain images are displayed.
-        src = './image_proxy.php?url=' + src;
+        src = './image_proxy.php?url=' + encodeURIComponent(src);
       }
     }
     var img = $(selector)[0];
@@ -1561,11 +1561,11 @@ class Editor {
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-      this.dispatchImageLoaded(Number(selector.substring(5)));
+      this.dispatchImageLoaded(Number(selector.split('-')[1]));
     };
     img.onerror = (e) => {
       alert("Erreur lors du chargement de l'image." + e);
-      this.dispatchImageLoaded(Number(selector.substring(5)));
+      this.dispatchImageLoaded(Number(selector.split('-')[1]));
     };
     img.src = src;
     this.showBlockImage(Number(selector.split('-')[1]), Number(selector.split('-')[2]));

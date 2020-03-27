@@ -303,6 +303,16 @@ function displayWebImages(imgURLs) {
     $("#imageClickModal").find(".qwant-lab").css("display", "inline-block");
   }
   else $("#imageClickModal").find(".qwant-lab").css("display", "none");
+
+  var google = imgURLs.google;
+  if ( google.length ) {
+    for (let i = 0; i < google.length; i++) {
+      let imgTag = '<img src="' + google[i] + '" class="web-img">';
+      $("#imageClickModal").find(".google").append(imgTag);
+    }
+    $("#imageClickModal").find(".google-lab").css("display", "inline-block");
+  }
+  else $("#imageClickModal").find(".google-lab").css("display", "none");
 }  // end displayWebImages
 //------------------------
 

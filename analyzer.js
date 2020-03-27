@@ -755,7 +755,7 @@ async function getImagesSuggestions (blockIndex) {
 
 async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: true, qwant: true }) {
   console.log('Checking images for: ' + keyword);
-  const result = { arasaac: [], sclera: [], qwant: [], searchText: keyword };
+  const result = { arasaac: [], sclera: [], qwant: [], google: [], searchText: keyword };
   if (keyword) {
     if (options.arasaac) {
       console.log('Trying on ARASAAC...')
@@ -779,6 +779,7 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
     }
     if (options.qwant) {
       console.log('Trying on QWANT...');
+      let qwanted = false;
       try {
         // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
         const response = await $.ajax('./qwant_proxy.php', {
@@ -787,16 +788,38 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
             q: keyword + ' pictogramme'
           },
           dataType: 'json',
-          timeout: 5000
+          timeout: 10000
         });
         const items = response.data.result.items;
         console.log('Found ' + items.length + ' pictograms.');
         for (const r in items) {
           result.qwant.push(items[r].media);
         }
+        qwanted = true;
       } catch (ex) {
         console.log('Failed to get images from QWANT.');
         console.log(ex);
+      }
+      if (!qwanted) {
+        console.log('Trying to get them from Google instead.');
+        try {
+          // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
+          const response = await $.ajax('./google_images_proxy.php', {
+            data: {
+              q: keyword + ' pictogramme'
+            },
+            dataType: 'json',
+            timeout: 40000
+          });
+          const items = response[0];
+          console.log('Found ' + items.length + ' pictograms.');
+          for (const r in items) {
+            result.google.push(items[r]);
+          }
+        } catch (ex) {
+          console.log('Failed to get images from Google.');
+          console.log(ex);
+        }
       }
     }
   }

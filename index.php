@@ -411,12 +411,14 @@ $version = "0.03.26.4";
 				<label class="col-form-label arasaac-lab"><strong>Arasaac</strong></label>
 				<div class="modal-images arasaac  flex-nowrap">
 				</div>
-				<br>
 				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
 				<div class="modal-images sclera flex-nowrap">
 				</div>
 				<label class="col-form-label qwant-lab"><strong>Qwant</strong></label>
 				<div class="modal-images qwant flex-nowrap">
+				</div>
+				<label class="col-form-label google-lab"><strong>Google</strong></label>
+				<div class="modal-images google flex-nowrap">
 				</div>
       </div>
     </div>

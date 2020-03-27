@@ -19,13 +19,14 @@ class Animator {
     let rate = startHeight / duration;
     let id = setInterval(frame, 5);
     function frame () {
-      if ($(element).outerHeight() <= 0) {
+      if ($(element).outerHeight() <= 0 || duration <= 0) {
         clearInterval(id);
         if (callback !== null) callback();
       } else {
         let h = $(element).outerHeight();
         $(element).outerHeight(h - rate);
       }
+      duration--;
     }
   }
 

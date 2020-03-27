@@ -1257,20 +1257,25 @@ class Editor {
     let inOrderedList = false;
     for (let i = 0; i < result2.length; i++) {
       if ((!inBulletList && result2[i].list === 'bullet') || (!inOrderedList && result2[i].list === 'ordered')) {
-        result2[i].list = undefined;
         if (result2[i].list === 'bullet') {
+          result2[i].list = undefined;
           result3.push({ ul: [result2[i]], margin: [1.5 * Utils.pointToPixel(14), 0, 0, 0] });
           inBulletList = true;
           inOrderedList = false;
         } else {
+          result2[i].list = undefined;
           result3.push({ ol: [result2[i]], margin: [1.5 * Utils.pointToPixel(14), 0, 0, 0] });
           inOrderedList = true;
           inBulletList = false;
         }
       } else if ((inBulletList && result2[i].list === 'bullet') || (inOrderedList && result2[i].list === 'ordered')) {
-        result2[i].list = undefined;
-        if (result2[i].list === 'bullet') result3[result3.length - 1].ul.push(result2[i]);
-        else result3[result3.length - 1].ol.push(result2[i]);
+        if (result2[i].list === 'bullet') {
+          result2[i].list = undefined;
+          result3[result3.length - 1].ul.push(result2[i]);
+        } else {
+          result2[i].list = undefined;
+          result3[result3.length - 1].ol.push(result2[i]);
+        }
       } else if (result2[i].list !== 'bullet' && result2[i].list !== 'ordered' && result2[i] !== '\n') {
         inBulletList = false;
         inOrderedList = false;
@@ -1530,10 +1535,10 @@ class Editor {
       let res = src.match(/image_proxy\.php\?url=(https?:\/\/.+$)/);
       if (res) {
         // For when we're moving an image already within the editor.
-        src = './image_proxy.php?url=' + res[1];
+        src = './image_proxy.php?url=' + encodeURIComponent(res[1]);
       } else {
         // Ensure cross domain images are displayed.
-        src = './image_proxy.php?url=' + src;
+        src = './image_proxy.php?url=' + encodeURIComponent(src);
       }
     }
     var img = $(selector)[0];
@@ -1556,11 +1561,11 @@ class Editor {
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
       // alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-      this.dispatchImageLoaded(Number(selector.substring(5)));
+      this.dispatchImageLoaded(Number(selector.split('-')[1]));
     };
     img.onerror = (e) => {
       alert("Erreur lors du chargement de l'image." + e);
-      this.dispatchImageLoaded(Number(selector.substring(5)));
+      this.dispatchImageLoaded(Number(selector.split('-')[1]));
     };
     img.src = src;
     this.showBlockImage(Number(selector.split('-')[1]), Number(selector.split('-')[2]));
@@ -1679,9 +1684,11 @@ class Editor {
    * Select the next occurence of the given pattern.
    * @param {RegExp} pattern - Pattern to search for.
    * @param {int} startBlock - (Optional) The block id to start searching in.
+   * @param {int} startSubBlock - (Optional) The sub block id to start searching in.
    * @param {int} startIndex - (Optional) The index to start searching from.
+   * @param {boolean} loop - (Optional) If the search should loop back to the start.
    */
-  selectNextMatch (pattern, startBlock = null, startSubBlock = null, startIndex = null) {
+  selectNextMatch (pattern, startBlock = null, startSubBlock = null, startIndex = null, loop = true) {
     let sel = this.getSelection();
     startBlock = startBlock == null ? (this.hasFocus ? sel.block : 0) : startBlock;
     startSubBlock = startSubBlock == null ? (this.hasFocus ? sel.subBlock : 0) : startSubBlock;
@@ -1712,7 +1719,7 @@ class Editor {
         }
       }
     }
-    if (startBlock !== 0 || startIndex !== 0) this.selectNextMatch(pattern, 0, 0);
+    if (loop && (startBlock !== 0 || startIndex !== 0)) this.selectNextMatch(pattern, 0, 0, 0, false);
   }
 
   /**

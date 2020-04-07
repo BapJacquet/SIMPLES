@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.04.02.0";
+$version = "0.04.07.2";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>

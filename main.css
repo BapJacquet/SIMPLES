@@ -496,7 +496,7 @@ li.nav-item {
   height: 80px;
   width: 80px;
   left: 0; /* -1px; */
-  top: 10px; /* 9px; */
+  top: 15px; /* 9px; */
   /* transform: rotate(-20deg); */
 }
 

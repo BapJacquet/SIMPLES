@@ -127,30 +127,37 @@ class Converter {
     let margin = 72;
     let docDefinition = {
       content: [],
+      pageSize: 'A4',
       styles: editor.styles,
       defaultStyle: editor.defaultStyle,
       footer: function (currentPage, pageCount) {
         if (pageCount > 1) return { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, alignment: 'right', margin: [0, 0, margin, 0] };
         else return '';
       },
+      pageBreakBefore: function(currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
+        return false;
+      },
       pageMargins: [margin, margin, margin, margin] // 96 = 1 inch
     };
-    let contentLength = 1123 - docDefinition.pageMargins[1] - docDefinition.pageMargins[3];
+    let contentLength = 1300 - docDefinition.pageMargins[1] - docDefinition.pageMargins[3];
     let bottomY = docDefinition.pageMargins[1];
     for (let i = 0; i < editor.blockCount; i++) {
       let blockElement = editor.getBlockElement(i);
       let blockFormat = editor.getBlockFormat(i);
-      bottomY += Utils.pxToNumber($(blockElement).css("margin-top"));
-      bottomY += Utils.pxToNumber($(blockElement).css("height"));
+      let blockHeight = 0;
+      blockHeight += Utils.pxToNumber($(blockElement).css("margin-top"));
+      blockHeight += Utils.pxToNumber($(blockElement).css("height"));
       let blockDefinition = {
         layout: blockFormat.frame ? 'frame' : 'noBorders',
         margin: [0, 4]
       };
-      if (bottomY > contentLength) {
+      console.log(blockHeight);
+      if (bottomY + blockHeight > contentLength) {
+        console.log("Pagebreak because Y (" + (bottomY+blockHeight) + ") would be greater than " + contentLength);
         blockDefinition.pageBreak = 'before';
-        bottomY = docDefinition.pageMargins[1];
+        bottomY = docDefinition.pageMargins[1] + blockHeight + Utils.pxToNumber($(blockElement).css("margin-bottom"));
       } else {
-        bottomY += Utils.pxToNumber($(blockElement).css("margin-bottom"));
+        bottomY += blockHeight + Utils.pxToNumber($(blockElement).css("margin-bottom"));
       }
 
       switch (blockFormat.blockType) {
@@ -163,7 +170,7 @@ class Converter {
               margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i, 0), blockElement).top), 0, 0]
             });
           }
-          console.log(editor.getStyledText(i));
+          //console.log(editor.getStyledText(i));
           content[0].push({
             stack: editor.getStyledText(i),
             margin: [5, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 5, 1]

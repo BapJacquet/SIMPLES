@@ -1172,6 +1172,8 @@ $("#toolbarBottomMask").hover( function () {
    * toolbar scrollbar
    */
    $("#toolbarScrollBar").on("mousedown", function (ev) {
+    if ( $("#toolbarScrollBar").css("background-color") == "rgb(255, 255, 255)" )
+          return; // scroolbar hidden
      dragIsOn = true;
      dragMouseX0 = ev.clientX;
    });
@@ -1569,6 +1571,23 @@ $("#toolbarBottomMask").hover( function () {
 
 
 /////////////////////////////////////////  D I V E R S
+// toolbarlist click don't unsel text block
+/*  $("#toolbarlist").on("click", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+  });
+*/
+  document.addEventListener('mousedown', function (e) {
+    if ( ( e.target.id == "toolbarScrollBar" &&  $("#toolbarScrollBar").css("background-color") == "rgb(255, 255, 255)" ) ||
+          e.target.id == "toolbar" ||
+          e.target.id == "toolbarBottomMask" ||
+          e.target.id == "toolbarlist") {
+      e.stopPropagation();
+      e.preventDefault();
+      console.log("Don't unsel text: " + e.target.id);
+      return false;
+    }
+  }, false);
 
 // resize & focus
   $( window ).on("resize focus", function () {

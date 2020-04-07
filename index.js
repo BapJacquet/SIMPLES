@@ -1569,6 +1569,19 @@ $("#toolbarBottomMask").hover( function () {
 
 
 /////////////////////////////////////////  D I V E R S
+// toolbarlist click don't unsel text block
+/*  $("#toolbarlist").on("click", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+  });
+*/
+  document.addEventListener('click', function (e) {
+    if ( e.target.id == "toolbarlist") {
+      e.stopPropagation();
+      e.preventDefault();
+      return false;
+    }
+  }, false);
 
 // resize & focus
   $( window ).on("resize focus", function () {

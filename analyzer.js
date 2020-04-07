@@ -708,13 +708,17 @@ async function getGoogleEntry (word) {
   };
   for (let i = 0; i < response.length; i++) {
     let type = Object.keys(response[i].meaning)[0];
-    for (let j = 0; j < response[i].meaning[type].definitions.length; j++) {
-      result.meanings.push({
-        type: type,
-        definition: response[i].meaning[type].definitions[j].definition,
-        example: response[i].meaning[type].definitions[j].example,
-        synonyms: response[i].meaning[type].definitions[j].synonyms
-      });
+    if (!Utils.isNullOrUndefined(response[i].meaning[type].definitions)) {
+      for (let j = 0; j < response[i].meaning[type].definitions.length; j++) {
+        result.meanings.push({
+          type: type,
+          definition: response[i].meaning[type].definitions[j].definition,
+          example: response[i].meaning[type].definitions[j].example,
+          synonyms: response[i].meaning[type].definitions[j].synonyms
+        });
+      }
+    } else {
+      console.log("Error: No definition found.");
     }
   }
   return result;

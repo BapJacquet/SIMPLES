@@ -1172,6 +1172,8 @@ $("#toolbarBottomMask").hover( function () {
    * toolbar scrollbar
    */
    $("#toolbarScrollBar").on("mousedown", function (ev) {
+    if ( $("#toolbarScrollBar").css("background-color") == "rgb(255, 255, 255)" )
+          return; // scroolbar hidden
      dragIsOn = true;
      dragMouseX0 = ev.clientX;
    });
@@ -1576,7 +1578,8 @@ $("#toolbarBottomMask").hover( function () {
   });
 */
   document.addEventListener('mousedown', function (e) {
-    if (  e.target.id == "toolbar" ||
+    if ( ( e.target.id == "toolbarScrollBar" &&  $("#toolbarScrollBar").css("background-color") == "rgb(255, 255, 255)" ) ||
+          e.target.id == "toolbar" ||
           e.target.id == "toolbarBottomMask" ||
           e.target.id == "toolbarlist") {
       e.stopPropagation();

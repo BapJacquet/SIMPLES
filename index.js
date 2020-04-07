@@ -1575,10 +1575,13 @@ $("#toolbarBottomMask").hover( function () {
     e.preventDefault();
   });
 */
-  document.addEventListener('click', function (e) {
-    if ( e.target.id == "toolbarlist") {
+  document.addEventListener('mousedown', function (e) {
+    if (  e.target.id == "toolbar" ||
+          e.target.id == "toolbarBottomMask" ||
+          e.target.id == "toolbarlist") {
       e.stopPropagation();
       e.preventDefault();
+      console.log("Don't unsel text: " + e.target.id);
       return false;
     }
   }, false);

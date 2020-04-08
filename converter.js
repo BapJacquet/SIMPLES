@@ -114,7 +114,7 @@ class Converter {
     style += 'h1 {text-align: center;}'
     style += 'h2,h3,h4,h5 {margin: 0;}';
     let styleContainer = `<style type="text/css">${style}</style>`;
-    let container = `<html><head>${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
+    let container = `<html><head><meta http-equiv="content-type" content="text/html charset=utf-8" />${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
     return container;
   }
 

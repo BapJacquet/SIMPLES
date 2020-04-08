@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.04.08.0";
+$version = "0.04.08.1";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -104,6 +104,7 @@ $version = "0.04.08.0";
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
 							<a id="aideItem" class="dropdown-item" href="#">Aide...</a>
+							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto.html" target="_blank">Exemple</a>
 				    </div>
 				  </div>
 				</div>

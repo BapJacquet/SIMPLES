@@ -91,7 +91,7 @@ class Converter {
           break;
         case 'images':
           for (let c = 0; c < editor.getImageCountInBlock(i); c++) {
-            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).innerHTML}</div>`;
+            content += `<div><img class="image" src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).children[0].innerHTML}</div>`;
           }
           blockStyle = 'grid-template-columns:' + times(' 1fr', editor.getImageCountInBlock(i)) + ';';
           break;

@@ -91,7 +91,7 @@ class Converter {
           break;
         case 'images':
           for (let c = 0; c < editor.getImageCountInBlock(i); c++) {
-            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).innerHTML}</div>`;
+            content += `<div><img class="image" src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).children[0].innerHTML}</div>`;
           }
           blockStyle = 'grid-template-columns:' + times(' 1fr', editor.getImageCountInBlock(i)) + ';';
           break;
@@ -114,7 +114,7 @@ class Converter {
     style += 'h1 {text-align: center;}'
     style += 'h2,h3,h4,h5 {margin: 0;}';
     let styleContainer = `<style type="text/css">${style}</style>`;
-    let container = `<html><head>${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
+    let container = `<html><head><meta http-equiv="content-type" content="text/html charset=utf-8" />${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
     return container;
   }
 

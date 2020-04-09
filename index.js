@@ -528,11 +528,16 @@ setInterval( function () {
 function blockArrayLeave() {
   $("#blockCmd").css("display", "none");
   $(".img-txt-widget").css("display", "none");
-  $(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
+  //.text-block .editor-image
+  $(".editor-block").css("border", "2px solid rgba(0, 0, 0, 0)");
 }
 ///////////////////////////////////////////////   blockArrayEnter
 function blockArrayEnter() {
     var iBlock = $(`#blc-${activeBlocId}`);
+
+    $(".editor-block").css("border-left", "2px solid rgba(0, 0, 0, 0)");
+    //iBlock.css("border-left", "2px solid #4fBe46"); 
+    iBlock.css("border-left", "2px solid gray");
 
     $("#blockCmd").css("display", "block");
     $(".img-txt-widget").css("display", "none");

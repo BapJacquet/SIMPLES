@@ -528,16 +528,14 @@ setInterval( function () {
 function blockArrayLeave() {
   $("#blockCmd").css("display", "none");
   $(".img-txt-widget").css("display", "none");
-  //.text-block .editor-image
-  $(".editor-block").css("border", "2px solid rgba(0, 0, 0, 0)");
+  $(".text-block .editor-image").css("border", "2px solid rgba(0, 0, 0, 0)");
 }
 ///////////////////////////////////////////////   blockArrayEnter
 function blockArrayEnter() {
     var iBlock = $(`#blc-${activeBlocId}`);
 
-    $(".editor-block").css("border-left", "2px solid rgba(0, 0, 0, 0)");
-    //iBlock.css("border-left", "2px solid #4fBe46"); 
-    iBlock.css("border-left", "2px solid gray");
+    //$(".editor-block").css("border-left", "2px solid rgba(0, 0, 0, 0)");
+    // iBlock.css("border-left", "2px solid gray");
 
     $("#blockCmd").css("display", "block");
     $(".img-txt-widget").css("display", "none");
@@ -699,6 +697,21 @@ function confirmDialog(title, body, action) {
     $("#simplesAlert").modal("show");
   }
 
+// change text selection
+  function selectTextElement(el) {
+    //return;
+    if (window.getSelection && document.createRange) {
+        var sel = window.getSelection();
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (document.selection && document.body.createTextRange) {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.select();
+    }
+  }
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
@@ -1358,6 +1371,7 @@ $("#toolbarBottomMask").hover( function () {
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
         blockArrayEnter();
+        selectTextElement($(`#blc-${activeBlocId} p`).get(0));
       }, 15);
     });
 

@@ -534,9 +534,6 @@ function blockArrayLeave() {
 function blockArrayEnter() {
     var iBlock = $(`#blc-${activeBlocId}`);
 
-    //$(".editor-block").css("border-left", "2px solid rgba(0, 0, 0, 0)");
-    // iBlock.css("border-left", "2px solid gray");
-
     $("#blockCmd").css("display", "block");
     $(".img-txt-widget").css("display", "none");
     //$(iBlock).find(".img-txt-widget").css("display", "none");
@@ -1359,6 +1356,7 @@ $("#toolbarBottomMask").hover( function () {
 
   //  insertImageBlockBefore
   $("#blockCmd .block-new2-up").on("click", function (ev) {
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
     editor.insertImageBlockBefore( activeBlocId, true);
     setTimeout( function () {
       blockArrayEnter();
@@ -1380,6 +1378,7 @@ $("#toolbarBottomMask").hover( function () {
 
   // insertImageBlockAfter
     $("#blockCmd .block-new2-down").on("click", function (ev) {
+      $(`#blc-${activeBlocId}`).css("background-color", "#fff");
       editor.insertImageBlockAfter( activeBlocId, true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
@@ -1406,6 +1405,7 @@ $("#toolbarBottomMask").hover( function () {
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
     editor.moveBlockDown(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
@@ -1416,6 +1416,7 @@ $("#toolbarBottomMask").hover( function () {
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
     editor.moveBlockUp(activeBlocId);
     // wait for animation ending
     setTimeout( function () {

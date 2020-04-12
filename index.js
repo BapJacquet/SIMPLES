@@ -1261,17 +1261,17 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    //
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
   });
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
     blockArrayEnter();
+    $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
   });
 
   // page LEAVE
   $("#page").on("mouseleave", function ( ev ) {
-    //blockArrayLeave();
   });
 
   // page ENTER
@@ -1338,20 +1338,21 @@ $("#toolbarBottomMask").hover( function () {
     if ( $(this).hasClass("img-widget") ) return;
     $(`#blc-${activeBlocId}`).css("background-color", "#fbb");
   }, function () {
-    $(`#blc-${activeBlocId}`).css("background-color", "white");
+    $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
   });
 
   //  insertBlock & block-move  hover
   $("#blockCmd .block-move-up, #blockCmd .block-move-down, #blockCmd .block-new-up,  #blockCmd .block-new2-up, #blockCmd .block-new-down, #blockCmd .block-new2-down").hover( function () {
     $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
-  }, function () {
-      $(".editor-block").css("background-color", "white");
+  //}, function () {
+  //    $(".editor-block").css("background-color", "white");
   });
 ////////////////////////
   //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "#fff");
       blockArrayEnter();
     }, 15);
   });
@@ -1370,6 +1371,8 @@ $("#toolbarBottomMask").hover( function () {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
+        $(`#blc-${activeBlocId - 1}`).css("background-color", "#fff");
+        $(`#blc-${activeBlocId}`).css("background-color", "#fff");
         blockArrayEnter();
         selectTextElement($(`#blc-${activeBlocId} p`).get(0));
       }, 15);
@@ -1539,10 +1542,11 @@ $("#toolbarBottomMask").hover( function () {
 
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
   });
-  /////////
+  /////////  leave img-widget
   $("#page").on("mouseleave", ".img-widget", function (ev) {
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid rgba(0, 0, 0, 0)");
     $(".img-widget").css("display", "none");
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
   });
 /////////////////////////////
 //              image actions

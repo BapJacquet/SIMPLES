@@ -666,7 +666,7 @@ function confirmDialog(title, body, action) {
   $("#confirmDialog .modal-title").text(title);
   $("#confirmDialog .modal-body p").text(body);
   $("#confirmDialog").attr("data-action", action);
-  if ( action == "newFile" || action == "loadFile" ) {
+  if ( action == "newFile" || action == "loadFile" || action == "openExemple" || action == "openTuto") {
     var saved;
     editor.saveAsync().then(function (val) {
       if ( pageEmpty() ) saved = true;
@@ -1037,7 +1037,14 @@ $("#importFile").on("click", function () {
   simplesAlert("En chantier!");
   //  confirmDialog("Importer un document", "Effacer la page actuelle", "loadFile");
 });
-
+// Ouvrir exemple...
+$("#openExemple").on("click", function () {
+  confirmDialog("Ouvrir un exemple", "Effacer la page actuelle", "openExemple");
+});
+// Ouvrir le tuto...
+$("#openTuto").on("click", function () {
+  confirmDialog("Ouvrir le tuto", "Effacer la page actuelle", "openTuto");
+});
 /////////////////////  write file
 $(".write-file").on("click", function () {
   // Exporter au format PDF...
@@ -1351,6 +1358,7 @@ $("#toolbarBottomMask").hover( function () {
     setTimeout( function () {
       $(`#blc-${activeBlocId + 1}`).css("background-color", "#fff");
       blockArrayEnter();
+      selectTextElement($(`#blc-${activeBlocId} p`).get(0));
     }, 15);
   });
 
@@ -1651,6 +1659,36 @@ $("#toolbarBottomMask").hover( function () {
     else if ( action == "loadFile" ) { // Fichier/Ouvrir...
       $("#openFileInput").attr("accept", ".smp");
       $("#openFileInput").trigger("click");
+    }
+    else if ( action == "openExemple") { // Charger exemple lirec
+      console.log("openExemple");
+      $.ajax({
+        'url': 'readTutoTarget.php',
+        'type': 'post',
+        'complete': function(xhr, result) {
+          previousDocContent = xhr.responseText;
+          editor.load(JSON.parse(previousDocContent));
+          $("#openFileInput").val(""); // force value to be seen as new
+          setTimeout( function () {
+            blockArrayLeave(); // palette position
+          }, 150);
+        }
+      });
+    }
+    else if ( action == "openTuto") { // Charger tuto lirec
+      console.log("openTuto");
+      $.ajax({
+        'url': 'readTuto.php',
+        'type': 'post',
+        'complete': function(xhr, result) {
+          previousDocContent = xhr.responseText;
+          editor.load(JSON.parse(previousDocContent));
+          $("#openFileInput").val(""); // force value to be seen as new
+          setTimeout( function () {
+            blockArrayLeave(); // palette position
+          }, 150);
+        }
+      });
     }
   });
 

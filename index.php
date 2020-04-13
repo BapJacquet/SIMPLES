@@ -110,8 +110,8 @@ $version = "0.04.08.1";
 							<div class="dropdown-divider"></div>
 							<!--<a class="dropdown-item" href="tuto_target.smp" download>Télécharger un exemple au format Lirec (.smp)...</a>
 							<a class="dropdown-item" href="tuto.smp" download>Télécharger le tutoriel au format Lirec (.smp)...</a>-->
-							<a id="openExemple" class="read-file dropdown-item" href="#">Ouvrir l'exemple du tutoriel dans Lirec...</a>
-							<a id="openTuto" class="read-file dropdown-item" href="#">Ouvrir le tutoriel dans Lirec...</a>
+							<a id="openExemple" class="read-file dropdown-item" href="#">Ouvrir l'exemple du tutoriel dans Lirec</a>
+							<a id="openTuto" class="read-file dropdown-item" href="#">Ouvrir le tutoriel dans Lirec</a>
 				    </div>
 				  </div>
 				</div>

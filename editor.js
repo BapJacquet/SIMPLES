@@ -724,9 +724,9 @@ class Editor {
   /**
    * Clear all blocks of the document.
    */
-  clear () {
+  clear (fullClear = false) {
     $('.editor-block').remove();
-    this.addBlock('', true);
+    if (!fullClear) this.addBlock('', true);
   }
 
   /**
@@ -1946,14 +1946,12 @@ class Editor {
       throw new Error('Data was generated with a more recent version of LIREC. It cannot be loaded.');
     }
 
-    this.clear();
+    this.clear(true);
 
     for (let i = 0; i < json.blocks.length; i++) {
       switch (json.blocks[i].type) {
         case 'default':
-          if (i > 0) { // Clearing always leaves an empty block. No need to add it.
-            this.addBlock();
-          }
+          this.addBlock();
           if (json.meta.version < 2) {
             this.getQuill(i).clipboard.dangerouslyPasteHTML(json.blocks[i].content);
           } else {
@@ -1976,12 +1974,7 @@ class Editor {
           }, 250);
           break;
         case 'images':
-          if (i === 0) { // Clearing always leaves an empty block. We need to replace it.
-            this.insertImageBlockBefore(0);
-            this.removeBlockAt(1, { focusID: 0, focusSubID: 0, instant: true });
-          } else {
-            this.addImageBlock();
-          }
+          this.addImageBlock();
           for (let img = 0; img < json.blocks[i].images.length; img++) {
             if (img > 0) {
               this.addImageInBlock(i);

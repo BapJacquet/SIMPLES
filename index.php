@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.04.07.2";
+$version = "0.04.08.1";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -104,6 +104,14 @@ $version = "0.04.07.2";
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
 							<a id="aideItem" class="dropdown-item" href="#">Aide...</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto_lirec.pdf" target="_blank">Tutoriel (PDF)</a>
+							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto.html" target="_blank">Tutoriel (HTML)</a>
+							<div class="dropdown-divider"></div>
+							<!--<a class="dropdown-item" href="tuto_target.smp" download>Télécharger un exemple au format Lirec (.smp)...</a>
+							<a class="dropdown-item" href="tuto.smp" download>Télécharger le tutoriel au format Lirec (.smp)...</a>-->
+							<a id="openExemple" class="read-file dropdown-item" href="#">Ouvrir l'exemple du tutoriel dans Lirec</a>
+							<a id="openTuto" class="read-file dropdown-item" href="#">Ouvrir le tutoriel dans Lirec</a>
 				    </div>
 				  </div>
 				</div>

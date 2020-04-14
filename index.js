@@ -666,7 +666,7 @@ function confirmDialog(title, body, action) {
   $("#confirmDialog .modal-title").text(title);
   $("#confirmDialog .modal-body p").text(body);
   $("#confirmDialog").attr("data-action", action);
-  if ( action == "newFile" || action == "loadFile" ) {
+  if ( action == "newFile" || action == "loadFile" || action == "openExemple" || action == "openTuto") {
     var saved;
     editor.saveAsync().then(function (val) {
       if ( pageEmpty() ) saved = true;
@@ -693,7 +693,6 @@ function confirmDialog(title, body, action) {
     $("#simplesAlert i").addClass('fas ' + icon);
     $("#simplesAlert").modal("show");
   }
-
 
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
@@ -1022,7 +1021,14 @@ $("#importFile").on("click", function () {
   simplesAlert("En chantier!");
   //  confirmDialog("Importer un document", "Effacer la page actuelle", "loadFile");
 });
-
+// Ouvrir exemple...
+$("#openExemple").on("click", function () {
+  confirmDialog("Ouvrir un exemple", "Effacer la page actuelle", "openExemple");
+});
+// Ouvrir le tuto...
+$("#openTuto").on("click", function () {
+  confirmDialog("Ouvrir le tuto", "Effacer la page actuelle", "openTuto");
+});
 /////////////////////  write file
 $(".write-file").on("click", function () {
   // Exporter au format PDF...
@@ -1243,17 +1249,17 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    //
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
   });
 
   // blockCmd ENTER
   $("#blockCmd").on("mouseenter", function (ev) {
     blockArrayEnter();
+    $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
   });
 
   // page LEAVE
   $("#page").on("mouseleave", function ( ev ) {
-    //blockArrayLeave();
   });
 
   // page ENTER
@@ -1320,26 +1326,28 @@ $("#toolbarBottomMask").hover( function () {
     if ( $(this).hasClass("img-widget") ) return;
     $(`#blc-${activeBlocId}`).css("background-color", "#fbb");
   }, function () {
-    $(`#blc-${activeBlocId}`).css("background-color", "white");
+    $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
   });
 
   //  insertBlock & block-move  hover
   $("#blockCmd .block-move-up, #blockCmd .block-move-down, #blockCmd .block-new-up,  #blockCmd .block-new2-up, #blockCmd .block-new-down, #blockCmd .block-new2-down").hover( function () {
     $(`#blc-${activeBlocId}`).css("background-color", "#bfb");
-  }, function () {
-      $(".editor-block").css("background-color", "white");
+  //}, function () {
+  //    $(".editor-block").css("background-color", "white");
   });
 ////////////////////////
   //  insertBlockBefore
   $("#blockCmd .block-new-up").on("click", function (ev) {
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "#fff");
       blockArrayEnter();
     }, 15);
   });
 
   //  insertImageBlockBefore
   $("#blockCmd .block-new2-up").on("click", function (ev) {
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
     editor.insertImageBlockBefore( activeBlocId, true);
     setTimeout( function () {
       blockArrayEnter();
@@ -1352,12 +1360,15 @@ $("#toolbarBottomMask").hover( function () {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
+        $(`#blc-${activeBlocId - 1}`).css("background-color", "#fff");
+        $(`#blc-${activeBlocId}`).css("background-color", "#fff");
         blockArrayEnter();
       }, 15);
     });
 
   // insertImageBlockAfter
     $("#blockCmd .block-new2-down").on("click", function (ev) {
+      $(`#blc-${activeBlocId}`).css("background-color", "#fff");
       editor.insertImageBlockAfter( activeBlocId, true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
@@ -1384,6 +1395,7 @@ $("#toolbarBottomMask").hover( function () {
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
     editor.moveBlockDown(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
@@ -1394,6 +1406,7 @@ $("#toolbarBottomMask").hover( function () {
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
     editor.moveBlockUp(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
@@ -1520,10 +1533,11 @@ $("#toolbarBottomMask").hover( function () {
 
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid #4b4");
   });
-  /////////
+  /////////  leave img-widget
   $("#page").on("mouseleave", ".img-widget", function (ev) {
     $("#" + $(".img-widget.block-delete").attr("data-true-imageid")).css("border", "2px solid rgba(0, 0, 0, 0)");
     $(".img-widget").css("display", "none");
+    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
   });
 /////////////////////////////
 //              image actions
@@ -1627,6 +1641,36 @@ $("#toolbarBottomMask").hover( function () {
     else if ( action == "loadFile" ) { // Fichier/Ouvrir...
       $("#openFileInput").attr("accept", ".smp");
       $("#openFileInput").trigger("click");
+    }
+    else if ( action == "openExemple") { // Charger exemple lirec
+      console.log("openExemple");
+      $.ajax({
+        'url': 'readTutoTarget.php',
+        'type': 'post',
+        'complete': function(xhr, result) {
+          previousDocContent = xhr.responseText;
+          editor.load(JSON.parse(previousDocContent));
+          $("#openFileInput").val(""); // force value to be seen as new
+          setTimeout( function () {
+            blockArrayLeave(); // palette position
+          }, 150);
+        }
+      });
+    }
+    else if ( action == "openTuto") { // Charger tuto lirec
+      console.log("openTuto");
+      $.ajax({
+        'url': 'readTuto.php',
+        'type': 'post',
+        'complete': function(xhr, result) {
+          previousDocContent = xhr.responseText;
+          editor.load(JSON.parse(previousDocContent));
+          $("#openFileInput").val(""); // force value to be seen as new
+          setTimeout( function () {
+            blockArrayLeave(); // palette position
+          }, 150);
+        }
+      });
     }
   });
 

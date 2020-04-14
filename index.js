@@ -1596,7 +1596,8 @@ $("#toolbarBottomMask").hover( function () {
           e.target.id == "toolbar" ||
           e.target.id == "toolbarBottomMask" ||
           e.target.id == "toolbarlist" ||
-          $(`#${e.target.id}`).hasClass("tool-cursor") ) {
+          ( e.target.src && e.target.src.match(/arrow-/) ) ||
+          ( e.target.id && $(`#${e.target.id}`).hasClass("tool-cursor") ) ) {
       e.stopPropagation();
       e.preventDefault();
       console.log("Don't unsel text: " + e.target.id);

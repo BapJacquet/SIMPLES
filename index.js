@@ -1381,7 +1381,7 @@ $("#toolbarBottomMask").hover( function () {
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
-    editor.removeBlockAt(activeBlocId, activeBlocId);
+    editor.removeBlockAt(activeBlocId, { focusID: activeBlocId });
     // wait for animation ending
     setTimeout( function () {
       // palette update when removing last (but not only) block

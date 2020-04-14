@@ -694,22 +694,6 @@ function confirmDialog(title, body, action) {
     $("#simplesAlert").modal("show");
   }
 
-// change text selection
-  function selectTextElement(el) {
-    //return;
-    if (window.getSelection && document.createRange) {
-        var sel = window.getSelection();
-        var range = document.createRange();
-        range.selectNodeContents(el);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (document.selection && document.body.createTextRange) {
-        var textRange = document.body.createTextRange();
-        textRange.moveToElementText(el);
-        textRange.select();
-    }
-  }
-
 ////////////////////////////////////////////////  Fin F U N C T I O N S
 
 //*********************************************************************
@@ -1358,7 +1342,6 @@ $("#toolbarBottomMask").hover( function () {
     setTimeout( function () {
       $(`#blc-${activeBlocId + 1}`).css("background-color", "#fff");
       blockArrayEnter();
-      selectTextElement($(`#blc-${activeBlocId} p`).get(0));
     }, 15);
   });
 
@@ -1380,7 +1363,6 @@ $("#toolbarBottomMask").hover( function () {
         $(`#blc-${activeBlocId - 1}`).css("background-color", "#fff");
         $(`#blc-${activeBlocId}`).css("background-color", "#fff");
         blockArrayEnter();
-        selectTextElement($(`#blc-${activeBlocId} p`).get(0));
       }, 15);
     });
 

@@ -820,12 +820,12 @@ class Editor {
         // There is only one block. Clear it instead of removing it.
         $('#txt-0').empty();
         this.setImage('#img-0', 'img/placeholder.png');
-        $('#txt-0').focus();
+        this.select(0, null, 0, 0);
       } else {
         // There will be at least one block remaining.
         let element = $('#blc-' + id)[0];
         if (typeof (focusID) === 'number') {
-          $('#txt-' + focusID).focus();
+          this.select(focusID, null, 0, 0);
         }
         Animator.collapse(element, duration, () => {
           $(element).remove();
@@ -847,10 +847,10 @@ class Editor {
 
     $('#blc-' + index).after(this.newBlockString(index + 1, text));
     this.refreshAllBlockID();
-    if (focus) {
-      $('#txt-' + (index + 1)).focus();
-    }
     this.createQuill('#txt-' + (index + 1));
+    if (focus) {
+      this.select(index + 1, null, 0, 0);
+    }
     this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
     this.setImage('#img-' + (index + 1) + '-1', 'img/placeholder.png');
     this.hideBlockImage(index + 1, 0);
@@ -868,11 +868,11 @@ class Editor {
 
     $('#blc-' + index).after(this.newImageBlockString(index + 1));
     this.refreshAllBlockID();
-    if (focus) {
-      $('#txt-' + (index + 1) + '-0').focus();
-    }
     this.setImage('#img-' + (index + 1) + '-0', 'img/placeholder.png');
     this.createQuill('#txt-' + (index + 1) + '-0', 'Tapez la légende ici...');
+    if (focus) {
+      this.select(index + 1, 0, 0, 0);
+    }
     this.dispatchBlockCreatedEvent(index + 1);
   }
 
@@ -887,10 +887,10 @@ class Editor {
 
     $('#blc-' + index).before(this.newBlockString(index, text));
     this.refreshAllBlockID();
-    if (focus) {
-      $('#txt-' + (index)).focus();
-    }
     this.createQuill('#txt-' + index);
+    if (focus) {
+      this.select(index, null, 0, 0);
+    }
     this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
     this.setImage('#img-' + (index) + '-1', 'img/placeholder.png');
     this.hideBlockImage(index, 0);
@@ -908,11 +908,11 @@ class Editor {
 
     $('#blc-' + index).before(this.newImageBlockString(index));
     this.refreshAllBlockID();
-    if (focus) {
-      $('#txt-' + (index) + '-0').focus();
-    }
     this.setImage('#img-' + (index) + '-0', 'img/placeholder.png');
     this.createQuill('#txt-' + index + '-0', 'Tapez la légende ici...');
+    if (focus) {
+      this.select(index, 0, 0, 0);
+    }
     this.dispatchBlockCreatedEvent(index);
   }
 
@@ -971,10 +971,10 @@ class Editor {
   addBlock (text, focus) {
     let id = this.blockCount;
     $(this.id).append(this.newBlockString(id, text));
-    if (focus) {
-      $('#txt-' + id).focus();
-    }
     this.createQuill('#txt-' + id);
+    if (focus) {
+      this.select(id, null, 0, 0);
+    }
     this.setImage('#img-' + id + '-0', 'img/placeholder.png');
     this.setImage('#img-' + id + '-1', 'img/placeholder.png');
     this.hideBlockImage(id, 0);

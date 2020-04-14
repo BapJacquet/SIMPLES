@@ -628,7 +628,7 @@ class Editor {
         break;
       case 8: // Return
         if (this.getTextContent(id).length === 0 && id !== 0) {
-          this.removeBlockAt(id, id - 1);
+          this.removeBlockAt(id, { focusID: id - 1 });
         }
         break;
     }
@@ -724,9 +724,9 @@ class Editor {
   /**
    * Clear all blocks of the document.
    */
-  clear () {
+  clear (fullClear = false) {
     $('.editor-block').remove();
-    this.addBlock('', true);
+    if (!fullClear) this.addBlock('', true);
   }
 
   /**
@@ -804,16 +804,19 @@ class Editor {
     }
     dr.ops = dr.ops.concat(d2.ops);
     this.getQuill(first).setContents(dr);
-    this.removeBlockAt(last, first, duration);
+    this.removeBlockAt(last, { focusID: first, duration: duration });
   }
 
   /**
    * Remove the block with the given ID and switch focus to a new id.
    * @param {int} id - ID of the block to remove.
-   * @param {int} focusID - ID of the block that will get the focus.
+   * @param {Object} options - Options.
    */
-  removeBlockAt (id, focusID = id + 1, duration = 250) {
+  removeBlockAt (id, options = { focusID: id + 1, duration: 250, instant: false }) {
     if (typeof (id) !== 'number') throw new Error(`Param "id" should be a number but was ${typeof (id)}!`);
+    if (Utils.isNullOrUndefined(options.focusID)) options.focusID = id + 1;
+    if (Utils.isNullOrUndefined(options.duration)) options.duration = 250;
+    if (Utils.isNullOrUndefined(options.instant)) options.false = 250;
 
     if (!this.dispatchBlockDestroyEvent(id).defaultPrevented) {
       if (id === 0 && this.blockCount === 1) {
@@ -824,14 +827,20 @@ class Editor {
       } else {
         // There will be at least one block remaining.
         let element = $('#blc-' + id)[0];
-        if (typeof (focusID) === 'number') {
-          this.select(focusID, null, 0, 0);
+        if (typeof (options.focusID) === 'number') {
+          this.select(options.focusID, options.focusSubID, 0, 0);
         }
-        Animator.collapse(element, duration, () => {
+        if (options.instant) {
           $(element).remove();
           this.refreshAllBlockID();
           this.dispatchBlockDestroyedEvent(id);
-        });
+        } else {
+          Animator.collapse(element, options.duration, () => {
+            $(element).remove();
+            this.refreshAllBlockID();
+            this.dispatchBlockDestroyedEvent(id);
+          });
+        }
       }
     }
   }
@@ -1937,14 +1946,12 @@ class Editor {
       throw new Error('Data was generated with a more recent version of LIREC. It cannot be loaded.');
     }
 
-    this.clear();
+    this.clear(true);
 
     for (let i = 0; i < json.blocks.length; i++) {
       switch (json.blocks[i].type) {
         case 'default':
-          if (i > 0) { // Clearing always leaves an empty block. No need to add it.
-            this.addBlock();
-          }
+          this.addBlock();
           if (json.meta.version < 2) {
             this.getQuill(i).clipboard.dangerouslyPasteHTML(json.blocks[i].content);
           } else {
@@ -1967,12 +1974,7 @@ class Editor {
           }, 250);
           break;
         case 'images':
-          if (i === 0) { // Clearing always leaves an empty block. We need to replace it.
-            this.insertImageBlockBefore(0);
-            this.removeBlockAt(1);
-          } else {
-            this.addImageBlock();
-          }
+          this.addImageBlock();
           for (let img = 0; img < json.blocks[i].images.length; img++) {
             if (img > 0) {
               this.addImageInBlock(i);

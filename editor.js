@@ -817,18 +817,27 @@ class Editor {
     if (Utils.isNullOrUndefined(options.focusID)) options.focusID = id + 1;
     if (Utils.isNullOrUndefined(options.duration)) options.duration = 250;
     if (Utils.isNullOrUndefined(options.instant)) options.false = 250;
+    if (id === options.focusID) throw new Error('Option "focusID" cannot be the same as param "id". You cannot focus the block you are removing.');
 
     if (!this.dispatchBlockDestroyEvent(id).defaultPrevented) {
       if (id === 0 && this.blockCount === 1) {
         // There is only one block. Clear it instead of removing it.
         $('#txt-0').empty();
         this.setImage('#img-0', 'img/placeholder.png');
-        this.select(0, null, 0, 0);
+        try {
+          this.select(0, null, 0, 0);
+        } catch (ex) {
+          console.error('Cannot select block 0.');
+        }
       } else {
         // There will be at least one block remaining.
         let element = $('#blc-' + id)[0];
         if (typeof (options.focusID) === 'number') {
-          this.select(options.focusID, options.focusSubID, 0, 0);
+          try {
+            this.select(options.focusID, options.focusSubID, 0, 0);
+          } catch (ex) {
+            console.error(`Cannot select block ${options.focusID} with subBlock ${options.focusSubID}.`);
+          }
         }
         if (options.instant) {
           $(element).remove();

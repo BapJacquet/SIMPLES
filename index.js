@@ -1595,7 +1595,8 @@ $("#toolbarBottomMask").hover( function () {
     if ( ( e.target.id == "toolbarScrollBar" &&  $("#toolbarScrollBar").css("background-color") == "rgb(255, 255, 255)" ) ||
           e.target.id == "toolbar" ||
           e.target.id == "toolbarBottomMask" ||
-          e.target.id == "toolbarlist") {
+          e.target.id == "toolbarlist" ||
+          $(`#${e.target.id}`).hasClass("tool-cursor") ) {
       e.stopPropagation();
       e.preventDefault();
       console.log("Don't unsel text: " + e.target.id);

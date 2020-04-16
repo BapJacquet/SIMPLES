@@ -19,7 +19,7 @@ class Editor {
    */
   constructor (id) {
     this.id = id;
-    this.fileVersion = 3;
+    this.fileVersion = 4;
     this.format = null;
     this.initializeStyles();
     this.initializeQuill();
@@ -239,7 +239,7 @@ class Editor {
           }
           break;
         } case 'images':
-          for (let j = 0; j < this.getImageCountInBlock; j++) {
+          for (let j = 0; j < this.getImageCountInBlock(i); j++) {
             const s = this.getQuill(i, j).getSelection();
             if (!Utils.isNullOrUndefined(s)) {
               return { block: i, subBlock: j, range: s };
@@ -708,9 +708,10 @@ class Editor {
     if (Utils.isNullOrUndefined(selection)) {
       return {};
     }
-    let quillFormat = this.getQuill(selection.block).getFormat(selection.index, selection.length);
 
     let format = this.getBlockFormat(selection.block);
+    let quillFormat = this.getQuill(selection.block, selection.subBlock).getFormat(selection.index, selection.length);
+
     format.bold = Utils.isNullOrUndefined(quillFormat.bold) ? false : quillFormat.bold;
     format.list = Utils.isNullOrUndefined(quillFormat.list) ? false : quillFormat.list;
     format.indent = Utils.isNullOrUndefined(quillFormat.indent) ? 0 : quillFormat.indent;
@@ -1420,8 +1421,9 @@ class Editor {
       $('#txt-' + this.lastBlock).focus();
     }
     let currentSelection = this.getSelection();
-    let currentFormat = this.getQuill(currentSelection.block).getFormat();
     if (!Utils.isNullOrUndefined(currentSelection)) {
+      let quill = this.getQuill(currentSelection.block, currentSelection.subBlock);
+      let currentFormat = quill.getFormat();
       let bold = currentFormat.bold;
       let list = currentFormat.list;
       let title = currentFormat.title;
@@ -1431,25 +1433,27 @@ class Editor {
       if (typeof (format.title) !== 'undefined' && title !== format.title) {
         let t = format.title;
         if (t === 'none') t = null;
-        this.getQuill(currentSelection.block).format('header', t);
+        quill.format('header', t);
       }
       if (typeof (format.bold) !== 'undefined' && format.bold !== bold) {
-        this.getQuill(currentSelection.block).format('bold', format.bold);
+        quill.format('bold', format.bold);
       }
       if (typeof (format.list) !== 'undefined' && format.list !== list) {
-        this.getQuill(currentSelection.block).format('list', format.list);
+        quill.format('list', format.list);
       }
       if (typeof (format.indent) !== 'undefined' && format.indent !== indent) {
-        this.getQuill(currentSelection.block).format('indent', format.indent);
+        quill.format('indent', format.indent);
       }
       if (typeof (format.color) !== 'undefined' && format.color !== color) {
-        this.getQuill(currentSelection.block).format('color', format.color);
+        quill.format('color', format.color);
       }
       if (typeof (format.wrap) !== 'undefined' && format.wrap !== wrap) {
         let w = format.wrap === 'normal' ? null : format.wrap;
-        this.getQuill(currentSelection.block).format('wrap', w);
+        quill.format('wrap', w);
       }
       this.setBlockFormat(currentSelection.block, format);
+    } else {
+      console.error("There was no selection. Can't set format at selection.")
     }
   }
 
@@ -1928,7 +1932,7 @@ class Editor {
           let imagesCount = this.getImageCountInBlock(i);
           let images = [];
           for (let img = 0; img < imagesCount; img++) {
-            images.push({image: $('#img-' + i + '-' + img)[0].dataURL, text: $('#txt-' + i + '-' + img)[0].innerHTML});
+            images.push({image: $('#img-' + i + '-' + img)[0].dataURL, caption: this.getQuill(i, img).getContents()});
           }
           object.blocks.push({
             type: 'images',
@@ -1988,7 +1992,11 @@ class Editor {
             if (img > 0) {
               this.addImageInBlock(i);
             }
-            $('#txt-' + i + '-' + img)[0].innerHTML = json.blocks[i].images[img].text;
+            if (json.meta.version < 4) {
+              this.getQuill(i, img).clipboard.dangerouslyPasteHTML(json.blocks[i].images[img].text);
+            } else {
+              this.getQuill(i, img).setContents(json.blocks[i].images[img].caption);
+            }
             setTimeout(() => {
               this.setImage('#img-' + i + '-' + img, json.blocks[i].images[img].image);
             }, 250);

@@ -200,7 +200,7 @@ class Converter {
               width: Utils.pixelToPoint($(img).width()),
               margin: [Utils.pixelToPoint(Utils.getRelativeOffset(img, editor.getTextElement(i, c)).left), 0, 0, 0]
             });
-            content[1].push({ text: editor.getTextElement(i, c).textContent, alignment: 'center' });
+            content[1].push({ stack: editor.getStyledText(i, c), alignment: 'center' });
           }
           blockDefinition.table = {
             widths: widths,

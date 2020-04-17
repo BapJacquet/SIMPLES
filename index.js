@@ -1225,11 +1225,6 @@ $("#toolbarBottomMask").hover( function () {
     //console.log(window.getSelection().getRangeAt(0).toString());
   } );
 
-  // ouverture port 9000
-  $.ajax({
-    'url': "https://sioux.univ-paris8.fr/standfordNLP/StandfordOpen.php"
-  });
-
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
 

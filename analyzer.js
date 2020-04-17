@@ -23,7 +23,7 @@ var pings = {
     usable: true
   },
   Stanford: {
-    url: 'http://sioux.univ-paris8.fr:9000',
+    url: 'http://51.91.138.70:9000',
     latency: 0,
     usable: true
   }
@@ -54,7 +54,7 @@ async function pingAll () {
   $('#pingers').html(s);
 }
 
-var pingClock = setInterval(pingAll, 5000)
+var pingClock = setInterval(pingAll, 10000)
 
 async function ping (object) {
   var start = $.now();
@@ -484,7 +484,7 @@ function analyzeAllEditorContent () {
 function analyzeText (text) {
   dispatchProgressChanged(0);
 
-  var request = createCORSRequest('POST', 'http://sioux.univ-paris8.fr:9000/');
+  var request = createCORSRequest('POST', 'http://51.91.138.70:9000/');
   // var request = createCORSRequest("POST", 'localhost:9000/');
   request.onreadystatechange = async function () {
     if (request.readyState === 4) {
@@ -973,7 +973,7 @@ async function checkFalcQuality (editor) {
 async function getTokens (text) {
   return $.ajax({
     type: 'POST',
-    url: 'http://sioux.univ-paris8.fr:9000/',
+    url: 'http://51.91.138.70:9000',
     data: text,
     dataType: 'json',
     async: false

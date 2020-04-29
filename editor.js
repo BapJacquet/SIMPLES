@@ -1579,6 +1579,9 @@ class Editor {
         img.dataURL = canvas.toDataURL('image/png');
       } catch (ex) {
         alert("Erreur lors chargement de l'image. Elle ne sera pas exporté.")
+        setTimeout(() => {
+          img.src = 'img/placeholder.png';
+        }, 1)
       }
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);

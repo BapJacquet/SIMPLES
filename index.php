@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.04.23.0";
+$version = "0.04.29.0";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -103,7 +103,7 @@ $version = "0.04.23.0";
 				      Aide
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-							<a id="aideItem" class="dropdown-item" href="#">Aide...</a>
+							<a id="aideItem" class="dropdown-item" href="#">Informations sur Lirec</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto_lirec.pdf" target="_blank">Tutoriel (PDF)</a>
 							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto.html" target="_blank">Tutoriel (HTML)</a>

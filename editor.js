@@ -1552,6 +1552,7 @@ class Editor {
     if ($('.text-block ' + selector).length > 0) {
       requestedWidth = 100;
     }
+    if (Utils.containsEncodedComponents(src)) src = decodeURIComponent(src);
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
       let res = src.match(/image_proxy\.php\?url=(https?:\/\/.+$)/);

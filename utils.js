@@ -22,6 +22,11 @@ class Utils {
     return (px * 25.4) / 96;
   }
 
+  static containsEncodedComponents (x) {
+    // ie ?,=,&,/ etc
+    return (decodeURI(x) !== decodeURIComponent(x));
+  }
+
   static getRelativeOffset (element, relativeTo = $(element).parent().get(0)) {
     let elem = $(element);
     let eOffset = elem.offset();

@@ -1581,7 +1581,7 @@ class Editor {
         alert("Erreur lors chargement de l'image. Elle ne sera pas exporté.")
         setTimeout(() => {
           img.src = 'img/placeholder.png';
-        }, 1)
+        }, 1);
       }
       // var dataURL = canvas.toDataURL("image/png");
       // console.log(dataURL);
@@ -1590,6 +1590,9 @@ class Editor {
     };
     img.onerror = (e) => {
       alert("Erreur lors du chargement de l'image." + e);
+      setTimeout(() => {
+        img.src = 'img/placeholder.png';
+      }, 1);
       this.dispatchImageLoaded(Number(selector.split('-')[1]));
     };
     img.src = src;

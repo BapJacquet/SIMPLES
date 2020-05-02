@@ -1554,7 +1554,7 @@ class Editor {
     }
     //console.log(src);
     if (src.match(/^https?:\/\//)) {
-      let res = src.match(/image_proxy\.php\?url=(https?:\/\/.+$)/);
+      let res = src.match(/image_proxy\.php\?url=(https?%3A%2F%2F.+$)/);
       if (res) {
         // For when we're moving an image already within the editor.
         src = './image_proxy.php?url=' + encodeURIComponent(res[1]);

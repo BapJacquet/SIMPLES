@@ -17,9 +17,9 @@
 </head>
 <body style="margin-left:3%;margin-right:3%">
 <br />
-<div><img src="img/LUTINLOGO.jpg" width="180px" /></div>
+<div><img src="img/LUTINLOGO.jpg" /></div>
 <h4 style="color: gray">Le FALC c'est simple</h4>
-<h4	style="color: gray">&nbsp;avec&nbsp;&nbsp;&nbsp;<img src="img/SimpLES_black.png" width="160px"></h4>
+<h4	style="color: gray">&nbsp;avec&nbsp;&nbsp;&nbsp;<img src="img/lirec-black_BgLight74.png" /"></h4>
 <form role="form" action="read_q_access.php">
 <!-- <br />
 <button type="submit" class="btn btn-success"> Téléchager les questionnaires</button>

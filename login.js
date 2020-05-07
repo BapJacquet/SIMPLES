@@ -41,7 +41,7 @@ $('#modal-user-name').on( 'hidden.bs.modal', function (e) {
         }
         else {
           localStorage.user = 'ok';
-          window.location = xhr.responseText;
+          window.location = window.location.href;
         }
       }
     }
@@ -61,6 +61,7 @@ $("#modal-user-name .ok").on("click", function () {
 });
 
 }); // ******************************************************  F I N   R E A D Y
-
+// user
+//debugger;
 if ( localStorage.user == undefined || localStorage.user != "ok" ) askUserName();
-else window.location = "http://sioux.univ-paris8.fr/simples/index.php";
+else window.location = window.location.href + "index.php";

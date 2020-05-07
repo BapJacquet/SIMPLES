@@ -1,19 +1,30 @@
 <!DOCTYPE html>
+<?php
+// Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
+$version = "0.05.03.3";
+?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html charset=utf-8" />
 	<meta name="viewport" content="width=device-width,  initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0">
-	<title>SimpLEs</title>
+	<title>Lirec</title>
 
   <!-- === HTML to PDF ===-->
 	<script src="./html2canvas.min.js"></script>
   <script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.60/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.60/vfs_fonts.js"></script>
+
+	<!-- === ZIP ===-->
+	<script src="./jszip-utils.min.js"></script>
+	<script src="./jszip.min.js"></script>
 
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 	<!-- jQuery library -->
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.rawgit.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
   <!-- Popper -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<!-- Latest compiled JavaScript -->
@@ -30,8 +41,8 @@
 
 	<link href="//cdn.quilljs.com/latest/quill.snow.css" rel="stylesheet">
 
-  <link rel="stylesheet" type="text/css" href="main.css"/>
-	<link rel="stylesheet" type="text/css" href="editor.css"/>
+  <link rel="stylesheet" type="text/css" href="main.css?v=<?= $version ?>"/>
+	<link rel="stylesheet" type="text/css" href="editor.css?v=<?= $version ?>"/>
 </head>
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -43,7 +54,7 @@
 	<div>
 		<div class="box">
 			<div id="header">
-			<img id="logoLirec" src="img/lirec-black74.png" alt="LIREC Logo" />
+				<img id="logoLirec" src="img/lirec-black_BgLight74.png" alt="LIREC Logo" />
 			</div>
 			<!-- 												M E N U B A R -->
 			<div id="main-menubar">
@@ -61,6 +72,7 @@
 							<div class="dropdown-divider"></div>
 							<a id="importFile" class="read-file dropdown-item" href="#">Importer...</a>
 							<a id="exportFilePDF" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
+							<a id="exportFileODT" class="write-file dropdown-item" href="#">Exporter au format ODT...</a>
 							<a id="exportFileHTML" class="write-file dropdown-item" href="#">Exporter au format HTML...</a>
 				    </div>
 				  </div>
@@ -91,9 +103,23 @@
 				      Aide
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-							<a id="aideItem" class="dropdown-item" href="#">Aide...</a>
+							<a id="aideItem" class="dropdown-item" href="#">Informations sur Lirec</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto_lirec.pdf" target="_blank">Tutoriel (PDF)</a>
+							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto.html" target="_blank">Tutoriel (HTML)</a>
+							<div class="dropdown-divider"></div>
+							<!--<a class="dropdown-item" href="tuto_target.smp" download>Télécharger un exemple au format Lirec (.smp)...</a>
+							<a class="dropdown-item" href="tuto.smp" download>Télécharger le tutoriel au format Lirec (.smp)...</a>-->
+							<a id="openExemple" class="read-file dropdown-item" href="#">Ouvrir l'exemple du tutoriel dans Lirec</a>
+							<a id="openTuto" class="read-file dropdown-item" href="#">Ouvrir le tutoriel dans Lirec</a>
 				    </div>
 				  </div>
+				</div>
+
+				<div>
+					<button id="versionnumberbutton" type="button" data-title="Version de LIREC" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec date&nbsp;du&nbsp;<?=preg_split("/\./", $version)[2] ?>/<?= preg_split("/\./", $version)[1] ?>/202<?= preg_split("/\./", $version)[0]?>" data-placement="top">v<?= $version ?></button>
+					<button id="versionbutton" type="button" data-title="Accès anticipé" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec est&nbsp;mise&nbsp;à&nbsp;disposition pour&nbsp;faciliter la&nbsp;simplification&nbsp;d'informations liées&nbsp;au&nbsp;Covid-19.</p><p>Toutes&nbsp;les&nbsp;fonctionnalités ne&nbsp;sont&nbsp;pas&nbsp;disponibles.</p><p>Voir&nbsp;la&nbsp;rubrique&nbsp;Aide.</p></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i> Covid-19</button>
+					<button id="pingbutton" type="button" data-title="Connexion" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><div id='pingers' style='width:400px;'>Un instant...<div></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i></button>
 				</div>
 
 				<!-- hidden input for file dialog -->
@@ -155,7 +181,15 @@
 						<div  id="bullet-cursor" class="tool-cursor">
 							<img src="img/arrow-u-black.png" />
 						</div>
-						<div id="tool-limit-bullet" class="tool-limit">|</div>
+					</div>
+
+					<div id="number">
+						<div id="number-caption" class="caption">numéro</div>
+						<div class="tool-frame-bullet number-true check"><img src="img/numberTrue.png" /></div>
+						<div  id="number-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+						<div id="tool-limit-number" class="tool-limit">|</div>
 					</div>
 
 					<div id="frame">
@@ -164,6 +198,18 @@
 						<div  id="frame-cursor" class="tool-cursor">
 							<img src="img/arrow-u-black.png" />
 						</div>
+					</div>
+
+					<div id="pictureL">
+						<div id="pictureL-caption" class="caption">images</div>
+						<div class="tool-frame-bullet pictureL-true check"><img src="img/pictureLTrue.png" /></div>
+						<div  id="pictureL-cursor" class="tool-cursor">
+							<img src="img/arrow-u-black.png" />
+						</div>
+					</div>
+
+					<div id="pictureText">
+						<img src="img/pictureText.png" />
 					</div>
 
 					<div id="picture">
@@ -183,9 +229,10 @@
 					<img id="img-arrow-l" src="img/carat-l-white.png">
 				</div>
 
-				<span id="analyze" class="simples-span" >
+				<!--span id="analyze" class="simples-span" >
 					<button id="verify-button" type="button" class="simples-button">Analyse</button>
-				</span>
+				</span-->
+				<div><div id="toolMask"></div></div>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
 					<img id="img-arrow-r" src="img/carat-r-white.png">
@@ -197,55 +244,134 @@
 			<div><div id="toolbarBottomMask"></div></div>
 			<div><div id="toolbarScrollBar"></div></div>
 
+
 			<!--															E D I T O R  -->
 			<div class="hbox">
+				<div id="analysisPanel">
+					<div id="analysisSidebar">
+						<button type="button" class="sidebar-button full-analysis-button" data-toggle="tooltip" title="Faire l'analyse de tout le document." data-boundary="viewport" data-placement="right">
+							<i style="position: relative; top: 10px; left: -10px" class="fas fa-file-alt"></i>
+							<span style="position: relative; top: -60px; left: 20px; font-size: 24px;"><i class="fas fa-search"></i></span>
+						</button>
+						<button type="button" class="sidebar-button block-analysis-button" data-toggle="tooltip" title="Faire l'analyse du bloc selectionné." data-boundary="viewport" data-placement="right">
+							<i style="position: relative; top: 10px; left: -10px" class="fas fa-file-invoice"></i>
+							<span style="position: relative; top: -60px; left: 20px; font-size: 24px;"><i class="fas fa-search"></i></span>
+						</button>
+					</div>
+					<div id="analysisContentPanel">
+						<!--div class="analysis-header">
+							<button id="redo-analyse" type="button">Faire l'analyse</button>
+						</div-->
+						<div class="analysiscontainer">
+							<div id="stanford-connection"></div>
+							<div class="alert alert-light" role="alert" id="lexique3-connection">
+								<div>Un instant... : </div>
+								<div class="progress">
+									<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="0"
+									aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
+										0%
+									</div>
+								</div>
+							</div>
+							<div class="score" data-toggle="tooltip" title="Il faut un score d'au moins 80 pour pouvoir être considéré comme du FALC, avec au moins 14 règles prioritaires, 2 très importantes et 15 importantes.">?</div>
+						</div>
+						<div>
+							<ul class="nav nav-tabs nav-justified rulesScores" role="tablist">
+								<li class="nav-item">
+									<a class="nav-link active" id="mainTab" data-toggle="tab" href="#analysis-main-content" role="tab">
+										<p>Prioritaires</p>
+										<p><span id="mainRules"></span><span> sur 15</span></p>
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="veryImportantTab" data-toggle="tab" href="#analysis-veryImportant-content" role="tab">
+										<p>Très Importantes</p>
+										<p><span id="veryImportantRules"></span><span> sur 4</span></p>
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="importantTab" data-toggle="tab" href="#analysis-important-content" role="tab">
+										<p>Importantes</p>
+										<p><span id="importantRules"></span><span> sur 30</span></p>
+									</a>
+								</li>
+							</ul>
+						</div>
+						<!-- <p>Résultats de l'analyze :</p> -->
+						<div id="analysis-content" class="tab-content">
+							<div id="analysis-main-content" class="tab-pane fade show active" role="tabpanel" aria-labelledby="mainTab"><ul></ul></div>
+							<div id="analysis-veryImportant-content" class="tab-pane fade" role="tabpanel" aria-labelledby="veryImportantTab"><ul></ul></div>
+							<div id="analysis-important-content" class="tab-pane fade" role="tabpanel" aria-labelledby="importantTab"><ul></ul></div>
+						</div>
+					</div>
+					<div id="analysisExpander" class="d-flex align-items-center">
+						<button id="analysisExpanderButton">
+							<i class="analysis-expander-icon fas fa-chevron-right"></i>
+							<i style="display: none;" class="analysis-expander-icon fas fa-chevron-left"></i>
+						</button>
+					</div>
+				</div>
+
+
 				<div id="content">
 					<div id="page-container">
+						<div id="blockCmd"><!-- Block command palette -->
+							<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
+								<img src="img/delete-black.png">
+							</div>
+							<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
+								<img src="img/plus-black.png">
+							</div>
+							<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
+								<img src="img/carat-d-black.png">
+							</div>
+							<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
+								<img src="img/carat-u-black.png">
+							</div>
+							<div class="block-number" contenteditable="false">
+								<span>1</span>
+							</div>
+							<div class="block-new2-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE au dessus">
+								<img src="img/mini-mount.png">
+							</div>
+							<div class="block-new2-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE en dessous">
+								<img src="img/mini-mount.png">
+							</div>
+						</div><!-- Fin block command palette -->
 						<div id="page">
-							<div id="blockCmd"><!-- Block command palette -->
-								<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
-									<img src="img/plus-black.png">
-								</div>
-								<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
-									<img src="img/delete-black.png">
-								</div>
-								<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
-									<img src="img/plus-black.png">
-								</div>
-								<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
-									<img src="img/carat-d-black.png">
-								</div>
-								<div class="block-move-up"  data-toggle="tooltip" data-placement="right" title="Faire monter le bloc">  <!--  block up -->
-									<img src="img/carat-u-black.png">
-								</div>
-								<div class="block-number" contenteditable="false">
-									<span>1</span>
-								</div>
-								<div class="block-new2-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE au dessus">
-									<img src="img/mini-mount.png">
-								</div>
-								<div class="block-new2-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc IMAGE en dessous">
-									<img src="img/mini-mount.png">
-								</div>
-							</div><!-- Fin block command palette -->
 							<!-- Image widgets -->
+										<!---->
+										<!-- img-txt-widget -->
+							<div class="block-new img-txt-widget img-right"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
+								<img src="img/mini-mount.png">
+							</div>
+							<div class="block-new img-txt-widget img-left"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à gauche">
+								<img src="img/mini-mount.png">
+							</div>
+							<div class="block-delete-left img-txt-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+								<img src="img/delete-black.png">
+							</div>
+							<div class="block-delete-right img-txt-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
+								<img src="img/delete-black.png">
+							</div>
+										<!-- img-widget -->
 							<div class="block-delete img-widget" data-toggle="tooltip" data-placement="right" title="" data-original-title="Supprimer l'image">
 								<img src="img/delete-black.png">
 							</div>
 							<div class="block-new-right img-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image à droite">
-								<img src="img/plus-black.png">
+								<img src="img/mini-mount.png">
 							</div>
 							<div class="block-new-left img-widget"  data-toggle="tooltip" data-placement="left" title="Ajouter une image à gauche">
-								<img src="img/plus-black.png">
+								<img src="img/mini-mount.png">
 							</div>
 							<div class="block-move-right img-widget"  data-toggle="tooltip" data-placement="right" title="Dépacer l'image à droite">
 								<img src="img/carat-r-black.png">
 							</div>
 							<div class="block-move-left img-widget"  data-toggle="tooltip" data-placement="left" title="Dépacer l'image à gauche">
 								<img src="img/carat-l-black.png">
-							</div>
-							<div class="block-new img-txt-widget"  data-toggle="tooltip" data-placement="right" title="Ajouter une image">
-								<img src="img/mini-mount.png">
 							</div>
 							<!-- Fin image widgets -->
 							<!-- Editor container -->
@@ -254,52 +380,28 @@
 						</div>
 					</div>
 				</div>
-				<button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button>
-				<div class="hcollapsible-content">
-					<button id="redo-analyse" type="button">Refaire l'analyse</button>
-					<div id="stanford-connection"></div>
-					<div class="alert alert-light" role="alert" id="lexique3-connection">
-						<div>Lexique3 : </div>
-						<div class="progress">
-							<div class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
-							aria-valuemin="0" aria-valuemax="100" id="lexique3-progress" style="width:0%">
-								0%
-							</div>
-						</div>
-					</div>
-					<div class="score">90</div>
-  				<!-- <p>Résultats de l'analyze :</p> -->
-					<div id="analysis-content"></div>
-					<button class="collapsible">Règles prioritaires</button>
-					<div class="collapsible-content">
-	  				<p>Résultats de l'analyze</p>
-					</div>
-					<button class="collapsible">Règles très importantes</button>
-					<div class="collapsible-content">
-	  				<p>Résultats de l'analyze</p>
-					</div>
-					<button class="collapsible">Règles importantes</button>
-					<div class="collapsible-content">
-	  				<p>Résultats de l'analyze</p>
-					</div>
-				</div>
+				<!--button class="hcollapsible" style="display: none"><div class="rotate">Montrer&nbsp;l'analyse</div></button-->
 			</div>  <!-- end editor -->
 	</div>
 </div>
 <!--                         			 D I A L O G S  -->
 <!-- image dialog -->
 <div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title">Choisir une image</h3>
+        <h1 class="modal-title">Choisir une image</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary btn-block">Choisir un fichier sur l'ordinateur</button>
-				<br>
+				<label class="col-form-label">Choisir&nbsp;</label>
+				<button id="imgButtonFromDisk" type="button" class="btn btn-secondary">un fichier sur l'ordinateur</button>
+				<button id="imgButtonTime" type="button" class="btn btn-secondary">une heure</button>
+				<!--<a data-toggle="modal" href="#imageClickModal2" class="btn btn-primary">une heure</a>-->
+				<button id="imgButtonDate" type="button" class="btn btn-secondary">une date</button>
+				<br/>	<br/>
         <div class="input-group mb-3" style="display:none;"> <!-- triggered -->
 					<div class="custom-file">
 						<input id="imgFromDisk" type="file" class="custom-file-input btn btn-info">
@@ -308,27 +410,72 @@
         </div>
 				<label class="col-form-label">Entrer une URL ou des mots-clés</label>
 				<div class="input-group mb-3">
-					<input  id="image-url" type="text" class="form-control">
+					<input  id="image-url" type="text" class="form-control" data-val="">
 					<div class="input-group-append">
-						<button id="modalFind" type="button" class="btn btn-secondary">Chercher</button>
+						<button id="modalFind" type="button" class="btn btn-success">Chercher</button>
 					</div>
 				</div>
 				<!-- modal-images -->
 				<label class="col-form-label arasaac-lab"><strong>Arasaac</strong></label>
 				<div class="modal-images arasaac  flex-nowrap">
 				</div>
-				<br>
 				<label class="col-form-label sclera-lab"><strong>Sclera</strong></label>
 				<div class="modal-images sclera flex-nowrap">
 				</div>
 				<label class="col-form-label qwant-lab"><strong>Qwant</strong></label>
 				<div class="modal-images qwant flex-nowrap">
 				</div>
+				<label class="col-form-label google-lab"><strong>Google</strong></label>
+				<div class="modal-images google flex-nowrap">
+				</div>
       </div>
     </div>
   </div>
 </div>  <!-- end image dialog -->
+<!--   															image	modal in modal    -->
+<div id="imageClickModal2" class="modal fade" style="background-color:rgb(64,64,64,0.5)">
+		<div class="modal-dialog modal-sm modal-dialog-centered" data-backdrop="static">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Choisir une heure</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div><div class="container"></div>
+        <div class="modal-body">
 
+					<div class="input-group input-group-sm mb-3">
+						<canvas id="clock-canvas" width="150" height="150" class="mx-auto"></canvas>
+					</div>
+
+					<div class="input-group input-group-sm mb-3">
+
+	  				<div class="input-group-prepend">
+	    				<span class="input-group-text">Heure</span>
+	  				</div>
+	  				<input id="hour-input" type="number" value="0" min="0" max="23" class="form-control" aria-label="Sizing example input">
+
+						<div class="input-group-prepend" style="padding-left:10px;">
+	    				<span class="input-group-text">Minutes</span>
+	  				</div>
+	  				<input id="minutes-input" type="number" value="0" min="0" max="59" class="form-control" aria-label="Sizing example input">
+
+					</div>
+					<div class="input-group mb-3">
+						<span  id="inputGroup-sizing-sm" class="form-control">Afficher une heure stricte</span>
+					  <div class="input-group-prepend">
+					    <div class="input-group-text">
+					      <input id="imageClickModal2-check" type="checkbox" checked>
+					    </div>
+					  </div>
+					</div>
+
+        </div>
+        <div class="modal-footer">
+          <a href="#" data-dismiss="modal" class="btn">Annuler</a>
+          <button id="imgButtonTimeOK" type="button" class="btn btn-secondary">Choisir</button>
+        </div>
+      </div>
+    </div>
+</div>
 <!--  confirm dialog -->
 <div id="confirmDialog" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">
@@ -357,6 +504,8 @@
 					 <i class="fas fa-hammer"></i>
 				</span>
       </div>
+			<div class="modal-body">
+      </div>
       <div class="modal-footer">
 				<button type="button" class="ok btn btn-secondary" data-dismiss="modal">Ok</button>
       </div>
@@ -368,18 +517,22 @@
 <div id="helpAlert" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog .modal-xl" role="document">
     <div class="modal-content">
-			<iframe src="help.htm"></iframe>
+			<iframe src="help.htm?v=<?= $version ?>" height="600"></iframe>
     </div>
   </div>
 </div>  <!-- end help alert -->
 
 	<!-- Initialize Simples Editor -->
-	<script type="text/javascript" src="editor.js"></script>
-	<script type="text/javascript" src="analyzer.js"></script>
-	<script type="text/javascript" src="animator.js"></script>
-	<script type="text/javascript" src="utils.js"></script>
+	<script type="text/javascript" src="editor.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="analyzer.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="animator.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="utils.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="extensions.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="converter.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="w3color.js?v=<?= $version ?>"></script>
+	<script type="text/javascript" src="clock.js?v=<?= $version ?>"></script>
 
 	<!-- jQuery ready -->
-	<script src="index.js"></script>
+	<script src="index.js?v=<?= $version ?>"></script>
 </body>
 </html>

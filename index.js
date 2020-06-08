@@ -172,12 +172,12 @@ function displayAnalysisResults(result) {
   for (let i = 0; i < result.rules.length; i++) {
     if(Utils.isNullOrUndefined(result.rules[i].success)) continue;
     if(result.rules[i].success) continue;
-    showRule(result.rules[i])
+    showRule(result.rules[i]);
   }
   // Draw undefined next.
   for (let i = 0; i < result.rules.length; i++) {
     if(!Utils.isNullOrUndefined(result.rules[i].success)) continue;
-    showRule(result.rules[i])
+    showRule(result.rules[i]);
   }
   // Draw successful last.
   for (let i = 0; i < result.rules.length; i++) {
@@ -701,14 +701,29 @@ function confirmDialog(title, body, action) {
 // ********************************************************** R E A D Y
 $(document).ready(function () {
 
-  // Evenements qui viennent de analyser.js
+// Evenements qui viennent de analyser.js
   $("body").on("progresschanged", setLexique3Progress);
   $("body").on("analysisstatuschanged", setStatus);
   $("body").on("analysiscompleted", displayAnalysisResults);
 
   $("#lexique3-connection").css("display", "none");
 
-// click on verify button and open panel if closed
+// click on #result-export button
+$("#result-export").on("click", function () {
+
+    // export result here...
+
+});
+
+// click on speech button
+  $("#speech-button").on("click", function () {
+    $("#speech-button").css("background-color","#bc000d");
+
+    // start voice recording here...
+
+  });
+
+// click on full-analysis-buttonand open panel if closed
   $(".full-analysis-button").on("click", function () {
       $(this).blur();
       if ($("#analysisContentPanel").is(':visible')) {
@@ -716,7 +731,7 @@ $(document).ready(function () {
         onVerifyClick();
       } else {
         analysisPanelShowHide("show", 200);
-        $("#verify-button").addClass('active');
+        $("#speech-button").addClass('active');
         onVerifyClick();
         setTimeout( function () {
           blockArrayEnter();
@@ -724,7 +739,7 @@ $(document).ready(function () {
       }
   } );
 
-  // click on verify button and open panel if closed
+  // click on block-analysis-button and open panel if closed
     $(".block-analysis-button").on("click", function () {
         $(this).blur();
         if ($("#analysisContentPanel").is(':visible')) {
@@ -732,7 +747,7 @@ $(document).ready(function () {
           onVerifyBlockClick();
         } else {
           analysisPanelShowHide("show", 200);
-          $("#verify-button").addClass('active');
+          $("#speech-button").addClass('active');
           onVerifyBlockClick();
           setTimeout( function () {
             blockArrayEnter();
@@ -744,11 +759,9 @@ $(document).ready(function () {
         $(this).blur();
         if ($("#analysisContentPanel").is(':visible')) {
           analysisPanelShowHide("hide", 150);
-          $("#verify-button").removeClass('active');
           $("#analysis-content input").popover('hide');
         } else {
           analysisPanelShowHide("show", 150);
-          $("#verify-button").addClass('active');
         }
         setTimeout( function () {
           $(window).trigger("resize");

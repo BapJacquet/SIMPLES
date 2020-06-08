@@ -222,16 +222,13 @@ $version = "0.05.03.3";
 
 				</div>  <!-- fin toolbarlist -->
 
+				<!-- 	SPEECH BUTTON  -->
+				<span class="speech-span" >
+					<button id="speech-button" type="button" data-toggle="tooltip" data-placement="bottom" title="Cliquez ici puis dictez votre texte">
+						<img src="img/micro-white-g.png">
+					</button>
+				</span>
 
-				<!-- 	VERIFY BUTTON + logo + scroll toolbar  &nbsp;  -->
-
-				<div class="arrows arrow-l"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
-					<img id="img-arrow-l" src="img/carat-l-white.png">
-				</div>
-
-				<!--span id="analyze" class="simples-span" >
-					<button id="verify-button" type="button" class="simples-button">Analyse</button>
-				</span-->
 				<div><div id="toolMask"></div></div>
 
 				<div class="arrows arrow-r"  data-toggle="tooltip" data-placement="top" title="Défilement barre d'outils">  <!-- scroll toolbar -->
@@ -275,6 +272,7 @@ $version = "0.05.03.3";
 							</div>
 							<div class="score" data-toggle="tooltip" title="Il faut un score d'au moins 80 pour pouvoir être considéré comme du FALC, avec au moins 14 règles prioritaires, 2 très importantes et 15 importantes.">?</div>
 						</div>
+						<button id="result-export" data-toggle="tooltip" data-placement="bottom" title="Enregistrer le résultat de l'analyse dans un fichier">Enregistrer l'analyse</button>
 						<div>
 							<ul class="nav nav-tabs nav-justified rulesScores" role="tablist">
 								<li class="nav-item">

@@ -225,7 +225,7 @@ $version = "0.05.03.3";
 				<!-- 	SPEECH BUTTON  -->
 				<span class="speech-span" >
 					<button id="speech-button" type="button" data-toggle="tooltip" data-placement="bottom" title="Cliquez ici puis dictez votre texte">
-						<img src="img/micro-white-g.png">
+						<img src="img/speecker-g.png">
 					</button>
 				</span>
 

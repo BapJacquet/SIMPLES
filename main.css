@@ -888,7 +888,7 @@ li.nav-item {
   top: 17px;
   left: -13px;
   transition: top 0.3s;
-  border: 8px solid hsla(160, 100%, 30%, 1);
+  border: 6px solid hsla(160, 100%, 30%, 1);
   border-radius: 35px;
   cursor: pointer;
   width: 66px;
@@ -898,18 +898,16 @@ li.nav-item {
   font-size: 26px;
   font-weight: 500;
 }
-/*
-#speech-button.active {
-  top: 20px;
-  transition: top 0.3s;
-  height: 75px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-*/
 
 #speech-button:hover {
   background-color: #00b960;
+}
+
+#speech-button img {
+  position: relative;
+  top: -3px;
+  left: -8px;
+  width: 55px;
 }
 
 /* images dialog */

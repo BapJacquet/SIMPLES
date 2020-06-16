@@ -1258,7 +1258,7 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
   });
 
   // blockCmd ENTER
@@ -1349,14 +1349,14 @@ $("#toolbarBottomMask").hover( function () {
   $("#blockCmd .block-new-up").on("click", function (ev) {
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
-      $(`#blc-${activeBlocId + 1}`).css("background-color", "#fff");
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "");
       blockArrayEnter();
     }, 15);
   });
 
   //  insertImageBlockBefore
   $("#blockCmd .block-new2-up").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
     editor.insertImageBlockBefore( activeBlocId, true);
     setTimeout( function () {
       blockArrayEnter();
@@ -1369,15 +1369,15 @@ $("#toolbarBottomMask").hover( function () {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
-        $(`#blc-${activeBlocId - 1}`).css("background-color", "#fff");
-        $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+        $(`#blc-${activeBlocId - 1}`).css("background-color", "");
+        $(`#blc-${activeBlocId}`).css("background-color", "");
         blockArrayEnter();
       }, 15);
     });
 
   // insertImageBlockAfter
     $("#blockCmd .block-new2-down").on("click", function (ev) {
-      $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+      $(`#blc-${activeBlocId}`).css("background-color", "");
       editor.insertImageBlockAfter( activeBlocId, true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
@@ -1404,22 +1404,22 @@ $("#toolbarBottomMask").hover( function () {
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
     editor.moveBlockDown(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      $(`#blc-${activeBlocId + 1}`).css("background-color", "white");
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "");
       blockArrayLeave();
     }, 250);
   });
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
     editor.moveBlockUp(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      $(`#blc-${activeBlocId - 1}`).css("background-color", "white");
+      $(`#blc-${activeBlocId - 1}`).css("background-color", "");
       blockArrayLeave();
     }, 250);
   });

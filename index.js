@@ -162,6 +162,7 @@ function showRule(rule) {
 }
 
 function displayAnalysisResults(result) {
+  $("#result-export")[0].analysisResults = result;
   // Mise à jour des scores.
   $('#mainRules').text(result.mainRulesSuccess);
   $('#veryImportantRules').text(result.veryImportantRulesSuccess);
@@ -710,18 +711,26 @@ $(document).ready(function () {
 
 // click on #result-export button
 $("#result-export").on("click", function () {
-
-    // export result here...
-
+  const results = $("#result-export")[0].analysisResults;
+  if (!Utils.isNullOrUndefined(results)) {
+    writeFile(createAnalysisLog(results), "resultats analyse.csv", "text/csv");
+  } else {
+    alert("Commencez une analyse avant de vouloir l'enregistrer.");
+  }
 });
 
 // click on speech button
   $("#speech-button").on("click", function () {
-    if ( editor.hasFocus ) {
-      $("#speech-button").css("background-color","#bc000d");
-
-      // start voice recording here...
-    }
+    editor.focus();
+    $("#speech-button").addClass('listening');
+    Speech.instance.listen().then((text) => {
+      $("#speech-button").removeClass('listening');
+      if (text !== '') {
+        editor.setTextAtSelection(text);
+      } else {
+        alert("Je n'ai rien entendu.");
+      }
+    });
   });
 
 // click on full-analysis-buttonand open panel if closed

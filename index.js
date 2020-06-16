@@ -172,12 +172,12 @@ function displayAnalysisResults(result) {
   for (let i = 0; i < result.rules.length; i++) {
     if(Utils.isNullOrUndefined(result.rules[i].success)) continue;
     if(result.rules[i].success) continue;
-    showRule(result.rules[i])
+    showRule(result.rules[i]);
   }
   // Draw undefined next.
   for (let i = 0; i < result.rules.length; i++) {
     if(!Utils.isNullOrUndefined(result.rules[i].success)) continue;
-    showRule(result.rules[i])
+    showRule(result.rules[i]);
   }
   // Draw successful last.
   for (let i = 0; i < result.rules.length; i++) {
@@ -701,14 +701,30 @@ function confirmDialog(title, body, action) {
 // ********************************************************** R E A D Y
 $(document).ready(function () {
 
-  // Evenements qui viennent de analyser.js
+// Evenements qui viennent de analyser.js
   $("body").on("progresschanged", setLexique3Progress);
   $("body").on("analysisstatuschanged", setStatus);
   $("body").on("analysiscompleted", displayAnalysisResults);
 
   $("#lexique3-connection").css("display", "none");
 
-// click on verify button and open panel if closed
+// click on #result-export button
+$("#result-export").on("click", function () {
+
+    // export result here...
+
+});
+
+// click on speech button
+  $("#speech-button").on("click", function () {
+    if ( editor.hasFocus ) {
+      $("#speech-button").css("background-color","#bc000d");
+
+      // start voice recording here...
+    }
+  });
+
+// click on full-analysis-buttonand open panel if closed
   $(".full-analysis-button").on("click", function () {
       $(this).blur();
       if ($("#analysisContentPanel").is(':visible')) {
@@ -716,7 +732,7 @@ $(document).ready(function () {
         onVerifyClick();
       } else {
         analysisPanelShowHide("show", 200);
-        $("#verify-button").addClass('active');
+        $("#speech-button").addClass('active');
         onVerifyClick();
         setTimeout( function () {
           blockArrayEnter();
@@ -724,7 +740,7 @@ $(document).ready(function () {
       }
   } );
 
-  // click on verify button and open panel if closed
+  // click on block-analysis-button and open panel if closed
     $(".block-analysis-button").on("click", function () {
         $(this).blur();
         if ($("#analysisContentPanel").is(':visible')) {
@@ -732,7 +748,7 @@ $(document).ready(function () {
           onVerifyBlockClick();
         } else {
           analysisPanelShowHide("show", 200);
-          $("#verify-button").addClass('active');
+          $("#speech-button").addClass('active');
           onVerifyBlockClick();
           setTimeout( function () {
             blockArrayEnter();
@@ -744,11 +760,9 @@ $(document).ready(function () {
         $(this).blur();
         if ($("#analysisContentPanel").is(':visible')) {
           analysisPanelShowHide("hide", 150);
-          $("#verify-button").removeClass('active');
           $("#analysis-content input").popover('hide');
         } else {
           analysisPanelShowHide("show", 150);
-          $("#verify-button").addClass('active');
         }
         setTimeout( function () {
           $(window).trigger("resize");
@@ -1244,7 +1258,7 @@ $("#toolbarBottomMask").hover( function () {
   //////////////////////////////////////////
   // blockCmd LEAVE
   $("#blockCmd").on("mouseleave", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
   });
 
   // blockCmd ENTER
@@ -1335,14 +1349,14 @@ $("#toolbarBottomMask").hover( function () {
   $("#blockCmd .block-new-up").on("click", function (ev) {
     editor.insertBlockBefore( activeBlocId, "", true);
     setTimeout( function () {
-      $(`#blc-${activeBlocId + 1}`).css("background-color", "#fff");
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "");
       blockArrayEnter();
     }, 15);
   });
 
   //  insertImageBlockBefore
   $("#blockCmd .block-new2-up").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
     editor.insertImageBlockBefore( activeBlocId, true);
     setTimeout( function () {
       blockArrayEnter();
@@ -1355,15 +1369,15 @@ $("#toolbarBottomMask").hover( function () {
       editor.insertBlockAfter( activeBlocId, "", true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
-        $(`#blc-${activeBlocId - 1}`).css("background-color", "#fff");
-        $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+        $(`#blc-${activeBlocId - 1}`).css("background-color", "");
+        $(`#blc-${activeBlocId}`).css("background-color", "");
         blockArrayEnter();
       }, 15);
     });
 
   // insertImageBlockAfter
     $("#blockCmd .block-new2-down").on("click", function (ev) {
-      $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+      $(`#blc-${activeBlocId}`).css("background-color", "");
       editor.insertImageBlockAfter( activeBlocId, true);
       setTimeout( function () {
         $("#blockCmd").find("span").text(activeBlocId + 1);
@@ -1390,22 +1404,22 @@ $("#toolbarBottomMask").hover( function () {
 
 //  moveBlockDown
   $("#blockCmd .block-move-down").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
     editor.moveBlockDown(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      $(`#blc-${activeBlocId + 1}`).css("background-color", "white");
+      $(`#blc-${activeBlocId + 1}`).css("background-color", "");
       blockArrayLeave();
     }, 250);
   });
 
 //  moveBlockUp
   $("#blockCmd .block-move-up").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "#fff");
+    $(`#blc-${activeBlocId}`).css("background-color", "");
     editor.moveBlockUp(activeBlocId);
     // wait for animation ending
     setTimeout( function () {
-      $(`#blc-${activeBlocId - 1}`).css("background-color", "white");
+      $(`#blc-${activeBlocId - 1}`).css("background-color", "");
       blockArrayLeave();
     }, 250);
   });

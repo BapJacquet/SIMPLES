@@ -124,6 +124,15 @@ class Converter {
    * @return {makePdfDocument} The resulting pdf.
    */
   static async toPdf (editor) {
+    let styles = {
+      h1: {},
+      h2: {},
+      h3: {},
+      h4: {}
+    };
+    let defaultStyle = {};
+    // TODO convert theme to styles.
+
     let margin = 72;
     let docDefinition = {
       content: [],

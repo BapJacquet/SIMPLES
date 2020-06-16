@@ -88,7 +88,7 @@ $version = "0.05.03.3";
 				  </div>
 					<div class="btn-group" role="group">
 				    <button id="btnResources" type="button" class="main-menu btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				      Resources
+				      Ressources
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
 				      <a id="importDic" class="dropdown-item read-file" href="#">Importer un dictionnaire...</a>

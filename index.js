@@ -162,6 +162,7 @@ function showRule(rule) {
 }
 
 function displayAnalysisResults(result) {
+  $("#result-export")[0].analysisResults = result;
   // Mise à jour des scores.
   $('#mainRules').text(result.mainRulesSuccess);
   $('#veryImportantRules').text(result.veryImportantRulesSuccess);
@@ -710,9 +711,12 @@ $(document).ready(function () {
 
 // click on #result-export button
 $("#result-export").on("click", function () {
-
-    // export result here...
-
+  const results = $("#result-export")[0].analysisResults;
+  if (!Utils.isNullOrUndefined(results)) {
+    writeFile(createAnalysisLog(results), "resultats analyse.csv", "text/csv");
+  } else {
+    alert("Commencez une analyse avant de vouloir l'enregistrer.");
+  }
 });
 
 // click on speech button

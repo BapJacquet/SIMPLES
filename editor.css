@@ -44,6 +44,10 @@
   width: 100%;
 }
 
+.editor-block.selected {
+  background-color: #bfb;
+}
+
 .editor-block.image-block .editor-text {
   text-align: center;
 }

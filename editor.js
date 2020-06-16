@@ -254,6 +254,30 @@ class Editor {
    * Create the default styles.
    */
   initializeStyles () {
+    this.defaultTheme = {
+      h1: {
+        'text-align': 'center',
+        'font-size': '28pt'
+      },
+      h2: {
+        'font-size': '20pt'
+      },
+      h3: {
+        'font-size': '18pt'
+      },
+      h4: {
+        'font-size': '16pt'
+      },
+      p: {
+        'text-align': 'left',
+        'font-size': '14pt'
+      },
+      frame: {
+        'border-color': 'black',
+        'border-width': '4pt'
+      }
+    }
+    this.defaultTheme.default = this.defaultTheme.p;
     this.defaultStyle = {
       fontSize: 14,
       alignment: 'left'
@@ -728,6 +752,7 @@ class Editor {
   clear (fullClear = false) {
     $('.editor-block').remove();
     if (!fullClear) this.addBlock('', true);
+    this.setTheme(null);
   }
 
   /**
@@ -1918,7 +1943,8 @@ class Editor {
       meta: {
         version: this.fileVersion
       },
-      blocks: []
+      blocks: [],
+      theme: this.theme
     };
     for (let i = 0; i < this.blockCount; i++) {
       let format = this.getBlockFormat(i);
@@ -1949,7 +1975,6 @@ class Editor {
           break;
       }
     }
-
     return object;
   }
 
@@ -2010,6 +2035,9 @@ class Editor {
           }
       }
     }
+    if (!Utils.isNullOrUndefined(json.theme)) {
+      this.setTheme(json.theme);
+    }
   }
 
   /**
@@ -2046,6 +2074,37 @@ class Editor {
     } else {
       return '<!-- CASE WITHOUT BOOTSTRAP -->';
     }
+  }
+
+  /**
+   * Set the theme for the document.
+   * @param {Object} theme - The description of the theme, or null.
+   */
+  setTheme (theme) {
+    if (Utils.isNullOrUndefined(theme)) theme = this.defaultTheme;
+    this.theme = theme;
+    let style = '';
+    if ($(this.id + ' style').length > 0) {
+      $(this.id + ' style').remove();
+    }
+    style += this.toCSS('h1', theme.h1);
+    style += this.toCSS('h2', theme.h2);
+    style += this.toCSS('h3', theme.h3);
+    style += this.toCSS('h4', theme.h4);
+    style += this.toCSS('p', theme.p);
+    style += this.toCSS('', theme.default);
+    style += this.toCSS('.frame', theme.frame);
+    $(`<style>${style}</style>`).appendTo(this.id);
+  }
+
+  toCSS (selector, object) {
+    if (Utils.isNullOrUndefined(object)) return '';
+    let css = this.id + ' ' + selector + ' {';
+    for (const k of Object.keys(object)) {
+      css += k + ': ' + object[k] + ';';
+    }
+    css += '}';
+    return css;
   }
 
   /**

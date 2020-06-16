@@ -717,11 +717,16 @@ $("#result-export").on("click", function () {
 
 // click on speech button
   $("#speech-button").on("click", function () {
-    if ( editor.hasFocus ) {
-      $("#speech-button").css("background-color","#bc000d");
-
-      // start voice recording here...
-    }
+    editor.focus();
+    $("#speech-button").addClass('listening');
+    Speech.instance.listen().then((text) => {
+      $("#speech-button").removeClass('listening');
+      if (text !== '') {
+        editor.setTextAtSelection(text);
+      } else {
+        alert("Je n'ai rien entendu.");
+      }
+    });
   });
 
 // click on full-analysis-buttonand open panel if closed

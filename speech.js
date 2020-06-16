@@ -3,7 +3,7 @@ class Speech {
    * @constructor
    * @param {string} id - The DOM ID of the editor element.
    */
-  constructor () {
+  constructor (id) {
     try {
       var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       this.recognition = new SpeechRecognition();
@@ -14,11 +14,11 @@ class Speech {
         console.log("Voice recognition activated.");
         this.utterance = "";
       };
-      this.recognition.onspeechend = () => {
-        console.log("Voice was quiet for a while.");
+      this.recognition.onend = () => {
+        console.log("End of voice recognition.");
         setTimeout(_ => {
           this.isListening = false;
-        }, 100);
+        }, 1);
       };
       this.recognition.onerror = () => {
         console.log("No speech was detected.");
@@ -28,6 +28,7 @@ class Speech {
         let transcript = event.results[current][0].transcript;
         console.log(transcript);
         this.utterance = transcript;
+        this.isListening = false;
       };
     } catch (e) {
       console.error(e); // No speech recognition available.
@@ -61,3 +62,5 @@ class Speech {
     window.speechSynthesis.speak(speech);
   }
 }
+
+Speech.instance = new Speech('#speech-button');

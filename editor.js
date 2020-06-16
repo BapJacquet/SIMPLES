@@ -177,6 +177,21 @@ class Editor {
     }
   }
 
+  focus () {
+    if (!this.hasFocus) {
+      if (!Utils.isNullOrUndefined(this.lastSelection)) {
+        this.restoreSelection();
+      } else {
+        switch (this.getBlockFormat(0).blockType) {
+          case 'default':
+            this.select(0, null, 0, 0); break;
+          case 'images':
+            this.select(0, 0, 0, 0); break;
+        }
+      }
+    }
+  }
+
   /**
    * Get the block with the given ID.
    * @param {int} id - The ID of the block.
@@ -1637,6 +1652,14 @@ class Editor {
     length = startIndex + length > maxLength ? maxLength - startIndex : length;
     this.getQuill(blockIndex).deleteText(startIndex, length);
     this.getQuill(blockIndex).insertText(startIndex, text);
+  }
+
+  setTextAtSelection (text) {
+    if (!this.hasFocus) {
+      this.focus();
+    }
+    const s = this.getSelection();
+    this.setTextAt(s.block, s.range.index, s.range.length, text);
   }
 
   /**

@@ -717,10 +717,11 @@ $("#result-export").on("click", function () {
 
 // click on speech button
   $("#speech-button").on("click", function () {
-    $("#speech-button").css("background-color","#bc000d");
+    if ( editor.hasFocus ) {
+      $("#speech-button").css("background-color","#bc000d");
 
-    // start voice recording here...
-
+      // start voice recording here...
+    }
   });
 
 // click on full-analysis-buttonand open panel if closed

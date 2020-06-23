@@ -383,8 +383,181 @@ $version = "0.06.16.0";
 	</div>
 </div>
 <!--                         			 D I A L O G S  -->
+
+<!-- preferences dialog -->
+<div id="prefDialog" class="modal fade" tabindex="-1" role="dialog" >
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document" data-backdrop="static">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title">Préférences</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+				<div class="container">
+
+					<div class="row">					<!-- TEXTE -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1 pref-TEXTE">TEXTE</span>
+				    </div>
+				  </div>
+					<br />
+				  <div class="row">					<!-- taille -->
+				    <div class="col-3">
+				      <span class="pref-col1-n2">Taille</span>
+				    </div>
+				    <div class="col-2">
+				      <input id="pref-text-size" type="number" value="14" min="10" max="18" class="pref-h-size form-control">
+				    </div>
+				  </div>
+					<hr>
+
+					<div class="row">					<!-- TITRES -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1">TITRE</span>
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h1.png />
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h2.png />
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h3.png />
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h4.png />
+				    </div>
+					</div>
+					<div class="row">					<!-- taille -->
+				    <div class="col-3">
+				      <span class="pref-col1-n2">Taille</span>
+				    </div>
+				    <div class="col-2">
+				      <input id="pref-h1-size" type="number" value="28" min="20" max="34" class="pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <input id="pref-h2-size" type="number" value="22" min="16" max="26" class="pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <input id="pref-h3-size" type="number" value="18" min="14" max="24" class="pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <input id="pref-h4-size" type="number" value="16" min="12" max="22" class="pref-h-size form-control">
+				    </div>
+				  </div>
+					<br/>
+					<div class="row">					<!-- gras -->
+				    <div class="col-3">
+				      <span class="pref-col1-n2">Gras</span>
+				    </div>
+				    <div class="col-2">
+				      <div id="pref-h1-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h2-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h3-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h4-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+							</div>
+				    </div>
+				  </div>
+					<br/>
+					<div class="row">					<!-- couleur -->
+				    <div class="col-3">
+				      <span class="pref-col1-n2">Couleur</span>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h1-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h2-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h3-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h1-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color" />
+							</div>
+						</div>
+				  </div>
+					<hr>
+
+					<div class="row">					<!-- CADRE -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1">CADRE</span>
+				    </div>
+						<div class="col-2">
+							<span class="pref-col1-n2">bordure</span>
+				    </div>
+						<div class="col-2">
+							<span class="pref-col1-n2">couleur</span>
+				    </div>
+						<div class="col-2">
+							<span class="pref-col1-n2">fond</span>
+				    </div>
+						<div class="col-2">
+							<span class="pref-col1-n2">arrondi</span>
+				    </div>
+					</div>
+					<div class="row">					<!-- valeurs -->
+				    <div class="col-3">
+				      &nbsp;
+				    </div>
+				    <div class="col-2">
+				      <input id="pref-frame-size" type="number" value="28" min="20" max="34" class="pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <div id="pref-frame-color">
+								<div id="pref-h2-color">
+									<img src="img/pref/pref-black.png" class="pref-h-color" />
+								</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-frame-back">
+								<div id="pref-h2-color">
+									<img src="img/pref/pref-black.png" class="pref-h-color" />
+								</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <input id="pref-frame-radius" type="number" value="16" min="12" max="22" class="pref-h-size form-control">
+				    </div>
+				  </div>
+
+
+				</div>
+			</div>
+
+			<div class="modal-footer">
+			   <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+			   <button type="button" class="btn btn-success">Enregistrer</button>
+			 </div>
+    </div>
+	 </div>
+</div> <!-- END preferences dialog -->
+
 <!-- image dialog -->
-<div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" >
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content">
       <div class="modal-header">

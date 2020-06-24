@@ -960,7 +960,7 @@ li.nav-item {
   margin-left: -50px;
 }
 
-/* preference dialog */
+/*               preference dialog */
 .pref-h-size {
   width: 100px;
   padding-left: 35px;
@@ -988,14 +988,24 @@ li.nav-item {
   font-weight: 600;
 }
 
-.pref-TEXTE {
+.pref-top5 {
   position: relative;
-  top: 16px;
+  top: 5px;
 }
 
-.pref-container {
-  max-width: 960px !important;
+.text-center {
+  text-align: center;
 }
+
+.text-right {
+  text-align: right;
+}
+
+.pref-color {
+  position: relative;
+  left: -4px;
+}
+
 
 
 /*             ...suite #content

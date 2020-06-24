@@ -389,7 +389,7 @@ $version = "0.06.16.0";
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title">Préférences</h1>
+        <h1 class="modal-title">Préférences du Thème</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -399,16 +399,69 @@ $version = "0.06.16.0";
 
 					<div class="row">					<!-- TEXTE -->
 				    <div class="col-3">
-				      <span class="pref-col1-n1 pref-TEXTE">TEXTE</span>
+				      <span class="pref-col1-n1">TEXTE</span>
+				    </div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Taille</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 color-custom">Couleur</span>
+						</div>
+				  </div>
+				  <div class="row">					<!-- valeurs -->
+				    <div class="col-3">
+				    </div>
+				    <div class="col-2">      				<!-- taille -->
+				      <input id="pref-text-size" type="number" value="14" min="10" max="18" class="pref-h-size form-control">
+				    </div>
+						<div class="col-2">    					<!-- couleur -->
+				      <div id="pref-text-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+							</div>
 				    </div>
 				  </div>
-					<br />
-				  <div class="row">					<!-- taille -->
+					<hr>
+
+					<div class="row">					<!-- CADRE -->
 				    <div class="col-3">
-				      <span class="pref-col1-n2">Taille</span>
+				      <span class="pref-col1-n1">CADRE</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Bordure</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Couleur</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Fond</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Arrondi</span>
+				    </div>
+					</div>
+					<div class="row">					<!-- valeurs -->
+				    <div class="col-3">
+				      &nbsp;
 				    </div>
 				    <div class="col-2">
-				      <input id="pref-text-size" type="number" value="14" min="10" max="18" class="pref-h-size form-control">
+				      <input id="pref-frame-size" type="number" value="28" min="20" max="34" class="pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <div id="pref-frame-color">
+								<div id="pref-h2-color">
+									<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-frame-back">
+								<div id="pref-h2-color">
+									<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <input id="pref-frame-radius" type="number" value="16" min="12" max="22" class="pref-h-size form-control">
 				    </div>
 				  </div>
 					<hr>
@@ -432,7 +485,7 @@ $version = "0.06.16.0";
 					</div>
 					<div class="row">					<!-- taille -->
 				    <div class="col-3">
-				      <span class="pref-col1-n2">Taille</span>
+				      <span class="pref-col1-n2 pref-top5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Taille</span>
 				    </div>
 				    <div class="col-2">
 				      <input id="pref-h1-size" type="number" value="28" min="20" max="34" class="pref-h-size form-control">
@@ -450,7 +503,7 @@ $version = "0.06.16.0";
 					<br/>
 					<div class="row">					<!-- gras -->
 				    <div class="col-3">
-				      <span class="pref-col1-n2">Gras</span>
+				      <span class="pref-col1-n2 text-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gras</span>
 				    </div>
 				    <div class="col-2">
 				      <div id="pref-h1-bold">
@@ -476,72 +529,28 @@ $version = "0.06.16.0";
 					<br/>
 					<div class="row">					<!-- couleur -->
 				    <div class="col-3">
-				      <span class="pref-col1-n2">Couleur</span>
+				      <span class="pref-col1-n2 text-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Couleur</span>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h1-color">
-								<img src="img/pref/pref-black.png" class="pref-h-color" />
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h2-color">
-								<img src="img/pref/pref-black.png" class="pref-h-color" />
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h3-color">
-								<img src="img/pref/pref-black.png" class="pref-h-color" />
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h1-color">
-								<img src="img/pref/pref-black.png" class="pref-h-color" />
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
 							</div>
 						</div>
-				  </div>
-					<hr>
-
-					<div class="row">					<!-- CADRE -->
-				    <div class="col-3">
-				      <span class="pref-col1-n1">CADRE</span>
-				    </div>
-						<div class="col-2">
-							<span class="pref-col1-n2">bordure</span>
-				    </div>
-						<div class="col-2">
-							<span class="pref-col1-n2">couleur</span>
-				    </div>
-						<div class="col-2">
-							<span class="pref-col1-n2">fond</span>
-				    </div>
-						<div class="col-2">
-							<span class="pref-col1-n2">arrondi</span>
-				    </div>
-					</div>
-					<div class="row">					<!-- valeurs -->
-				    <div class="col-3">
-				      &nbsp;
-				    </div>
-				    <div class="col-2">
-				      <input id="pref-frame-size" type="number" value="28" min="20" max="34" class="pref-h-size form-control">
-				    </div>
-						<div class="col-2">
-				      <div id="pref-frame-color">
-								<div id="pref-h2-color">
-									<img src="img/pref/pref-black.png" class="pref-h-color" />
-								</div>
-							</div>
-				    </div>
-						<div class="col-2">
-				      <div id="pref-frame-back">
-								<div id="pref-h2-color">
-									<img src="img/pref/pref-black.png" class="pref-h-color" />
-								</div>
-							</div>
-				    </div>
-						<div class="col-2">
-				      <input id="pref-frame-radius" type="number" value="16" min="12" max="22" class="pref-h-size form-control">
-				    </div>
 				  </div>
 
 

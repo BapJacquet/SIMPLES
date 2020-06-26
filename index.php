@@ -74,6 +74,8 @@ $version = "0.06.16.0";
 							<a id="exportFilePDF" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
 							<a id="exportFileODT" class="write-file dropdown-item" href="#">Exporter au format ODT...</a>
 							<a id="exportFileHTML" class="write-file dropdown-item" href="#">Exporter au format HTML...</a>
+							<div class="dropdown-divider"></div>
+							<a id="preferences" class="preferences dropdown-item" href="#">Préférences du thème...</a>
 				    </div>
 				  </div>
 					<div class="btn-group" role="group">
@@ -386,8 +388,8 @@ $version = "0.06.16.0";
 
 <!-- preferences dialog -->
 <div id="prefDialog" class="modal fade" tabindex="-1" role="dialog" >
-  <div class="modal-dialog modal-xl modal-dialog-centered" role="document" data-backdrop="static">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" data-backdrop="static">
+    <div class="modal-content" style="max-width: 800px!important; min-width: 800px!important">
       <div class="modal-header">
         <h1 class="modal-title">Préférences du Thème</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -405,7 +407,7 @@ $version = "0.06.16.0";
 							<span class="pref-col1-n2 ">Taille</span>
 						</div>
 						<div class="col-2 text-center">
-							<span class="pref-col1-n2 color-custom">Couleur</span>
+							<span class="pref-col1-n2 ">Couleur</span>
 						</div>
 				  </div>
 				  <div class="row">					<!-- valeurs -->
@@ -417,6 +419,8 @@ $version = "0.06.16.0";
 						<div class="col-2">    					<!-- couleur -->
 				      <div id="pref-text-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<!--<button id="pref-text-colorplus-btn" type="button" class="btn pref-color-button color-custom" data-img="img/pref/pref-colorplus.png"></button>-->
+								<div id="pref-text-colorplus-btn" class="pref-color-button color-custom" data-img="img/pref/pref-colorplus.png"></div>
 							</div>
 				    </div>
 				  </div>
@@ -448,16 +452,14 @@ $version = "0.06.16.0";
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-color">
-								<div id="pref-h2-color">
-									<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								</div>
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<button type="button" class="btn pref-color-button color-custom" data-img="img/pref/pref-colorplus.png"></button>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-back">
-								<div id="pref-h2-color">
-									<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								</div>
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<button type="button" class="btn pref-color-button  color-custom" data-img="img/pref/pref-colorplus.png"></button>
 							</div>
 				    </div>
 						<div class="col-2">
@@ -534,21 +536,25 @@ $version = "0.06.16.0";
 						<div class="col-2">
 				      <div id="pref-h1-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h2-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h3-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h1-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 						</div>
 				  </div>

@@ -1078,6 +1078,10 @@ $(".write-file").on("click", function () {
   }
 //  else writeFile( "contenu du fichier", "mon fichier.txt", "text/plain");
 });
+// Ouvrir préférences...
+$("#preferences").on("click", function () {
+  $("#prefDialog").modal("show");
+});
 
 ////////////////////////////////// edit menu
 
@@ -1189,7 +1193,8 @@ $("#toolbarBottomMask").hover( function () {
 
     },
     hide: function(tinycolor) {
-      $(".color-custom").css("color", tinycolor);
+      $("#" + prefColorplusButton).css("color", tinycolor);
+      //$(".color-custom").css("color", tinycolor);
       sendtoEditor("color", tinycolor);
     },
     change: function() {
@@ -1247,6 +1252,15 @@ $("#toolbarBottomMask").hover( function () {
     //console.log(window.getSelection().toString());
     //console.log(window.getSelection().getRangeAt(0).toString());
   } );
+
+  ////////////////////// PREFERENCES
+  // pref-color
+    $(".pref-color-button").on("click", function(e) {
+      prefColorplusButton = e.target.id;
+      let img = $(this).attr("data-img");
+      $(this).prev().attr("src", img);
+    });
+
 
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S
@@ -1815,6 +1829,8 @@ var activeTools = {}; // tools present state
 var mousedownID = -1;
 var dragIsOn = false;
 var dragMouseX;
+
+var prefColorplusButton;
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc

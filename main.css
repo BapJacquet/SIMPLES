@@ -1006,6 +1006,20 @@ li.nav-item {
   left: -4px;
 }
 
+.pref-color-button {
+  position: relative;
+  height: 40px;
+  width: 22px;
+  top: -40px;
+  left: 85px;
+  border-radius: 0.25rem;
+}
+
+.pref-color-button:hover {
+  border: 2px solid #bbb;
+}
+
+
 
 
 /*             ...suite #content

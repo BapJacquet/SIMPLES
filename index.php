@@ -75,7 +75,7 @@ $version = "0.06.16.0";
 							<a id="exportFileODT" class="write-file dropdown-item" href="#">Exporter au format ODT...</a>
 							<a id="exportFileHTML" class="write-file dropdown-item" href="#">Exporter au format HTML...</a>
 							<div class="dropdown-divider"></div>
-							<a id="preferences" class="preferences dropdown-item" href="#">Préférences du thème...</a>
+							<a id="preferences" class="preferences dropdown-item" href="#">Préférences du document...</a>
 				    </div>
 				  </div>
 					<div class="btn-group" role="group">
@@ -391,14 +391,15 @@ $version = "0.06.16.0";
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content" style="max-width: 800px!important; min-width: 800px!important">
       <div class="modal-header">
-        <h1 class="modal-title">Préférences du Thème</h1>
+        <h1 class="modal-title">Préférences du Document</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-				<div class="container">
+				<div id="color-select" class="color-custom-plus" data-img="" data-place=""></div> <!-- bouton de selection de la couleur -->
 
+				<div class="container">
 					<div class="row">					<!-- TEXTE -->
 				    <div class="col-3">
 				      <span class="pref-col1-n1">TEXTE</span>
@@ -419,8 +420,6 @@ $version = "0.06.16.0";
 						<div class="col-2">    					<!-- couleur -->
 				      <div id="pref-text-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<!--<button id="pref-text-colorplus-btn" type="button" class="btn pref-color-button color-custom" data-img="img/pref/pref-colorplus.png"></button>-->
-								<div id="pref-text-colorplus-btn" class="pref-color-button color-custom" data-img="img/pref/pref-colorplus.png"></div>
 							</div>
 				    </div>
 				  </div>
@@ -453,13 +452,11 @@ $version = "0.06.16.0";
 						<div class="col-2">
 				      <div id="pref-frame-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<button type="button" class="btn pref-color-button color-custom" data-img="img/pref/pref-colorplus.png"></button>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-back">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<button type="button" class="btn pref-color-button  color-custom" data-img="img/pref/pref-colorplus.png"></button>
 							</div>
 				    </div>
 						<div class="col-2">
@@ -536,25 +533,21 @@ $version = "0.06.16.0";
 						<div class="col-2">
 				      <div id="pref-h1-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h2-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h3-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 				    </div>
 						<div class="col-2">
-				      <div id="pref-h1-color">
+				      <div id="pref-h4-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<button type="button" class="btn pref-color-button  color-custom"></button>
 							</div>
 						</div>
 				  </div>
@@ -565,7 +558,7 @@ $version = "0.06.16.0";
 
 			<div class="modal-footer">
 			   <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-			   <button type="button" class="btn btn-success">Enregistrer</button>
+			   <button id="record-pref" type="button" class="btn btn-success">Enregistrer</button>
 			 </div>
     </div>
 	 </div>
@@ -626,7 +619,7 @@ $version = "0.06.16.0";
           <h4 class="modal-title">Choisir une heure</h4>
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         </div><div class="container"></div>
-        <div class="modal-body">
+        <div id="pref-body" class="modal-body">
 
 					<div class="input-group input-group-sm mb-3">
 						<canvas id="clock-canvas" width="150" height="150" class="mx-auto"></canvas>

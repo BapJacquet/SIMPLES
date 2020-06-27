@@ -1019,6 +1019,22 @@ li.nav-item {
   border: 2px solid #bbb;
 }
 
+#color-select {
+  position: relative;
+  height: 44px;
+  width: 25px;
+  border-radius: 0.25rem;
+  visibility: hidden;
+  border: 2px solid #aaa;
+  z-index: 2000;
+}
+
+/*
+#color-select:hover {
+  border: 2px solid #aaa;
+}
+*/
+
 
 
 

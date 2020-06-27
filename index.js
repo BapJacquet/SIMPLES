@@ -1372,6 +1372,14 @@ $("#toolbarBottomMask").hover( function () {
       newPreferences = {};
     });
 
+  // num imput value
+    $(".num-pref").on("change", function (ev) {
+      let elem = $(this).attr("id").split("-")[1] + "-" +
+                  $(this).attr("id").split("-")[2];
+      let value = $(this).val();
+      newPreferences[elem] = value;
+    });
+
 
   ////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////// B L O C K S

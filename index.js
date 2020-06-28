@@ -1222,16 +1222,14 @@ $("#toolbarBottomMask").hover( function () {
     beforeShow: function () {
     },
     hide: function(tinycolor) {
-      //$("#" + prefColorplusButton).css("color", tinycolor);
-      //$(".color-custom").css("color", tinycolor);
-      //$("#color-select").attr("data-color", tinycolor);
     },
     change: function(tinycolor) {
       let color = tinycolor.toHexString();
       let place = $(this).attr("data-place");
       let elem = place.split("-")[1];
       newPreferences[elem] = color;
-      $("#color-select").css("border-color", color);
+      //$(`.color-plus.${place}`).css("color", color);
+      $(`#${place} div`).css("color", color);
     }
   });
 
@@ -1347,6 +1345,14 @@ $("#toolbarBottomMask").hover( function () {
 
   // click color-select button
     $("#color-select").on("click", function (ev) {
+      $("#color-select").animate({
+        height: 47
+      }, 200, function() {
+        $("#color-select").animate({
+          height: 44
+        }, 50);
+      });
+
       let img = $(this).attr("data-img");
       let place = $(this).attr("data-place");
       let color = $(this).attr("data-color");

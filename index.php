@@ -391,15 +391,16 @@ $version = "0.06.16.0";
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content" style="max-width: 800px!important; min-width: 800px!important">
       <div class="modal-header">
-        <h1 class="modal-title">Préférences du Document</h1>
+        <h1 class="modal-title no-text-sel">Préférences du Document</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-				<div id="color-select" class="color-custom-plus" data-img="" data-place=""></div> <!-- bouton de selection de la couleur -->
+				<!-- bouton de selection de la couleur -->
+				<div id="color-select" class="color-custom-plus" data-img="" data-place=""></div>
 
-				<div class="container">
+				<div class="container no-text-sel">
 					<div class="row">					<!-- TEXTE -->
 				    <div class="col-3">
 				      <span class="pref-col1-n1">TEXTE</span>
@@ -420,6 +421,7 @@ $version = "0.06.16.0";
 						<div class="col-2">    					<!-- couleur -->
 				      <div id="pref-text-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
 							</div>
 				    </div>
 				  </div>
@@ -452,11 +454,13 @@ $version = "0.06.16.0";
 						<div class="col-2">
 				      <div id="pref-frame-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-back">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
 							</div>
 				    </div>
 						<div class="col-2">
@@ -533,21 +537,25 @@ $version = "0.06.16.0";
 						<div class="col-2">
 				      <div id="pref-h1-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h2-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h3-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h4-color">
 								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
 							</div>
 						</div>
 				  </div>

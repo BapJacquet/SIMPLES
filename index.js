@@ -1368,7 +1368,7 @@ $("#toolbarBottomMask").hover( function () {
     });
 
   // hide color showPalette
-    $(".pref-bold, .pref-color, input").on("mouseenter", function (ev) {
+    $(".pref-bold, .pref-color, .num-pref").on("mouseenter", function (ev) {
       $(".color-custom-plus").spectrum("hide");
     });
 

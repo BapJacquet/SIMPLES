@@ -559,7 +559,41 @@ $version = "0.06.16.0";
 							</div>
 						</div>
 				  </div>
+					<hr>
 
+					<div class="row">					<!-- MARGE -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1">MARGE</span>
+				    </div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Gauche</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Droite</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Haut</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Bas</span>
+						</div>
+				  </div>
+				  <div class="row">					<!-- valeurs -->
+				    <div class="col-3">
+				    </div>
+				    <div class="col-2">      				<!-- gauche -->
+				      <input id="pref-margin-left" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">      				<!-- droite -->
+				      <input id="pref-margin-right" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">      				<!-- haut -->
+				      <input id="pref-margin-top" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">      				<!-- bas -->
+				      <input id="pref-margin-bottom" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+				  </div>
 
 				</div>
 			</div>

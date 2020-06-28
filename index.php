@@ -510,22 +510,22 @@ $version = "0.06.16.0";
 				    </div>
 				    <div class="col-2">
 				      <div id="pref-h1-bold">
-								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+								<img src="img/pref/pref-thin.png" class="pref-h-bold  pref-bold" />
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h2-bold">
-								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+								<img src="img/pref/pref-thin.png" class="pref-h-bold  pref-bold" />
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h3-bold">
-								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+								<img src="img/pref/pref-thin.png" class="pref-h-bold  pref-bold" />
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-h4-bold">
-								<img src="img/pref/pref-thin.png" class="pref-h-bold" />
+								<img src="img/pref/pref-thin.png" class="pref-h-bold pref-bold" />
 							</div>
 				    </div>
 				  </div>

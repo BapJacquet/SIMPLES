@@ -1364,6 +1364,11 @@ $("#toolbarBottomMask").hover( function () {
   // unsel color-select button
     $(".row").on("mouseenter", function (ev) {
       $("#color-select").css("visibility", "hidden");
+      //$(".color-custom-plus").spectrum("hide");
+    });
+
+  // hide color showPalette
+    $(".pref-bold, .pref-color, input").on("mouseenter", function (ev) {
       $(".color-custom-plus").spectrum("hide");
     });
 
@@ -1374,7 +1379,7 @@ $("#toolbarBottomMask").hover( function () {
     });
 
   // after hidding modal
-    $("#prefDialog").on('hidden.bs.modal', function (e) {
+    $("#prefDialog").on("hidden.bs.modal", function (e) {
       newPreferences = {};
     });
 

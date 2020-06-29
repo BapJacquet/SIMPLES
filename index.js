@@ -1346,10 +1346,10 @@ $("#toolbarBottomMask").hover( function () {
   // click color-select button
     $("#color-select").on("click", function (ev) {
       $("#color-select").animate({
-        height: 47
+        height: 43
       }, 200, function() {
         $("#color-select").animate({
-          height: 44
+          height: 40
         }, 50);
       });
 

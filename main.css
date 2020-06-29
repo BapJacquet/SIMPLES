@@ -1016,16 +1016,16 @@ li.nav-item {
 }
 
 .pref-color-button:hover {
-  border: 2px solid #bbb;
+  border: 2px solid #444;
 }
 
 #color-select {
   position: relative;
-  height: 44px;
+  height: 40px;
   width: 25px;
   border-radius: 0.25rem;
   visibility: hidden;
-  border: 2px solid #aaa;
+  border: 2px solid black;
   z-index: 2000;
   cursor: pointer;
 }
@@ -1045,16 +1045,6 @@ li.nav-item {
   -moz-user-select: none;
   user-select: none;
 }
-
-/*
-.color-plus:hover {
-  cursor: pointer;
-}
-
--webkit-user-select: none;
--moz-user-select: none;
-user-select: none;
-*/
 
 
 

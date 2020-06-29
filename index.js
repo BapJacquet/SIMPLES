@@ -1200,39 +1200,6 @@ $("#toolbarBottomMask").hover( function () {
     }
   });
 
-  /////////// color palette for colorplus pref
-  $(".color-custom-plus").spectrum({
-    chooseText: "choisir",
-    cancelText: "annuler",
-    hideAfterPaletteSelect:true,
-    color: "#ECC",
-    showInput: false,
-    showInitial: true,
-    showPalette: true,
-    showSelectionPalette: true,
-    palette: [],
-    maxSelectionSize: 6,
-    preferredFormat: "hex",
-    localStorageKey: "spectrum",
-    clickoutFiresChange: false,
-    move: function (color) {
-    },
-    show: function () {
-    },
-    beforeShow: function () {
-    },
-    hide: function(tinycolor) {
-    },
-    change: function(tinycolor) {
-      let color = tinycolor.toHexString();
-      let place = $(this).attr("data-place");
-      let elem = place.split("-")[1];
-      newPreferences[elem] = color;
-      //$(`.color-plus.${place}`).css("color", color);
-      $(`#${place} div`).css("color", color);
-    }
-  });
-
 
   /**
    * toolbar scrollbar
@@ -1286,6 +1253,40 @@ $("#toolbarBottomMask").hover( function () {
   } );
 
   ////////////////////// PREFERENCES ///////////////////////
+
+  /////////// color palette for colorplus pref
+  $(".color-custom-plus").spectrum({
+    chooseText: "choisir",
+    cancelText: "annuler",
+    hideAfterPaletteSelect:true,
+    color: "#ECC",
+    showInput: false,
+    showInitial: true,
+    showPalette: true,
+    showSelectionPalette: true,
+    palette: [],
+    maxSelectionSize: 6,
+    preferredFormat: "hex",
+    localStorageKey: "spectrum",
+    clickoutFiresChange: false,
+    move: function (color) {
+    },
+    show: function () {
+    },
+    beforeShow: function () {
+    },
+    hide: function(tinycolor) {
+    },
+    change: function(tinycolor) {
+      let color = tinycolor.toHexString();
+      let place = $(this).attr("data-place");
+      let elem = place.split("-")[1];
+      newPreferences[elem] = color;
+      $(`#${place} div`).css("color", color);
+    }
+  });
+/////////// fin color palette
+
   // pref-color
     $(".pref-color-button").on("click", function(e) {
       prefColorplusButton = e.target.id;

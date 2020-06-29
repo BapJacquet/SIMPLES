@@ -1030,6 +1030,10 @@ li.nav-item {
   cursor: pointer;
 }
 
+#color-select:hover {
+  visibility: visible;
+}
+
 .color-plus {
   position: relative;
   font-size: 25px;

@@ -416,7 +416,7 @@ $version = "0.06.16.0";
 				    <div class="col-3">
 				    </div>
 				    <div class="col-2">      				<!-- taille -->
-				      <input id="pref-text-size" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				      <input id="pref-text-size" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">    					<!-- couleur -->
 				      <div id="pref-text-color">
@@ -449,7 +449,7 @@ $version = "0.06.16.0";
 				      &nbsp;
 				    </div>
 				    <div class="col-2">
-				      <input id="pref-frame-size" type="number" value="28" min="20" max="34" class="num-pref pref-h-size form-control">
+				      <input id="pref-frame-size" type="number" value="1" min="1" max="10" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-color">
@@ -464,7 +464,7 @@ $version = "0.06.16.0";
 							</div>
 				    </div>
 						<div class="col-2">
-				      <input id="pref-frame-radius" type="number" value="16" min="12" max="22" class="num-pref pref-h-size form-control">
+				      <input id="pref-frame-radius" type="number" value="0" min="0" max="20" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 				  </div>
 					<hr>
@@ -491,16 +491,16 @@ $version = "0.06.16.0";
 				      <span class="pref-col1-n2 pref-top5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Taille</span>
 				    </div>
 				    <div class="col-2">
-				      <input id="pref-h1-size" type="number" value="28" min="20" max="34" class="num-pref pref-h-size form-control">
+				      <input id="pref-h1-size" type="number" value="28" min="20" max="34" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">
-				      <input id="pref-h2-size" type="number" value="22" min="16" max="26" class="num-pref pref-h-size form-control">
+				      <input id="pref-h2-size" type="number" value="22" min="16" max="26" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">
-				      <input id="pref-h3-size" type="number" value="18" min="14" max="24" class="num-pref pref-h-size form-control">
+				      <input id="pref-h3-size" type="number" value="18" min="14" max="24" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">
-				      <input id="pref-h4-size" type="number" value="16" min="12" max="22" class="num-pref pref-h-size form-control">
+				      <input id="pref-h4-size" type="number" value="16" min="12" max="22" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 				  </div>
 					<br/>
@@ -582,16 +582,16 @@ $version = "0.06.16.0";
 				    <div class="col-3">
 				    </div>
 				    <div class="col-2">      				<!-- gauche -->
-				      <input id="pref-margin-left" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				      <input id="pref-margin-left" type="number" value="2.54" min="2.54" max="7.62" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">      				<!-- droite -->
-				      <input id="pref-margin-right" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				      <input id="pref-margin-right" type="number" value="2.54" min="2.54" max="7.62" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">      				<!-- haut -->
-				      <input id="pref-margin-top" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				      <input id="pref-margin-top" type="number" value="2.54" min="2.54" max="7.62" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 						<div class="col-2">      				<!-- bas -->
-				      <input id="pref-margin-bottom" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				      <input id="pref-margin-bottom" type="number" value="2.54" min="2.54" max="7.62" class="num-pref pref-h-size form-control px-0 text-right">
 				    </div>
 				  </div>
 

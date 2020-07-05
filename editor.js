@@ -763,6 +763,7 @@ class Editor {
 
   /**
    * Clear all blocks of the document.
+   * @param {boolean} fullclear - Whether to clear the document completely (true) or to reset it to a new document (false).
    */
   clear (fullClear = false) {
     $('.editor-block').remove();
@@ -2114,9 +2115,10 @@ class Editor {
     style += this.toCSS('h2', theme.h2);
     style += this.toCSS('h3', theme.h3);
     style += this.toCSS('h4', theme.h4);
-    style += this.toCSS('p', theme.p);
+    style += this.toCSS('p', theme.default);
     style += this.toCSS('', theme.default);
     style += this.toCSS('.frame', theme.frame);
+    style += this.toCSS('', theme.page);
     $(`<style>${style}</style>`).appendTo(this.id);
   }
 

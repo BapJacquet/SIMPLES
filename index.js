@@ -518,6 +518,10 @@ function sendPreferencesToEditor () {
     // font color
     data[level].color = getPrefColor('#pref-' + level + '-color');
   }
+
+  /* TODO: add alignment directly in preferences window. */
+  data.h1['text-align'] = 'center';
+
   data.page = {};
   let mt = Utils.cmToInches(Number($('#pref-margin-top')[0].value) - 2.54) + 'in';
   let mr = Utils.cmToInches(Number($('#pref-margin-right')[0].value) - 2.54) + 'in';

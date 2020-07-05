@@ -128,12 +128,12 @@ class Converter {
     for (const level of ['h1', 'h2', 'h3', 'h4']) {
       styles[level] = {};
       styles[level].alignment = editor.theme[level]['text-align'];
-      styles[level].fontSize = editor.theme[level]['font-size'];
+      styles[level].fontSize = Number(editor.theme[level]['font-size'].replace('pt', ''));
       styles[level].color = editor.theme[level].color;
       styles[level].bold = editor.theme[level]['font-weight'] !== 'normal';
     }
     const defaultStyle = {
-      fontSize: editor.theme.default['font-size'],
+      fontSize: Number(editor.theme.default['font-size'].replace('pt', '')),
       color: editor.theme.default.color
     };
     const tableLayouts = {
@@ -152,11 +152,11 @@ class Converter {
         }
       }
     };
-    let margin = editor.theme.page.padding.replace(/in/g, '').split(' ');
+    const margin = editor.theme.page.padding.replace(/in/g, '').split(' ');
     for (let i = 0; i < margin.length; i++) {
       margin[i] = (1 + Number(margin[i])) * 72;
     }
-    let docDefinition = {
+    const docDefinition = {
       content: [],
       pageSize: 'A4',
       styles: styles,

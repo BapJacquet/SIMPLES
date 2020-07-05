@@ -1037,8 +1037,10 @@ li.nav-item {
 .color-plus {
   position: relative;
   font-size: 25px;
+  font-weight: 900;
+  color: #0d0d0d;
   left: 89px;
-  top: -45px;
+  top: -46px;
   height: 0;
   background-color: white;
   z-index: 1500;

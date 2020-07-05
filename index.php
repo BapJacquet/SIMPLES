@@ -459,8 +459,8 @@ $version = "0.06.16.0";
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-back">
-								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
-								<div class="color-plus">?</div>
+								<img src="img/pref/pref-colorplus.png" class="pref-h-color pref-color" />
+								<div class="color-plus" style="color: rgba(255, 255, 255, 0)">?</div>
 							</div>
 				    </div>
 						<div class="col-2">

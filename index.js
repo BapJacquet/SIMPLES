@@ -475,6 +475,62 @@ function sendtoEditor(tool, val) {
   }
 }
 
+function getPrefColor (selector) {
+  let path = $(selector + ' img').attr('src').split('/');
+  let ba = path[path.length - 1].split('.')[0].split('-');
+  let c = 'black';
+  switch (ba[ba.length - 1]) {
+    case 'red': c = COLOR_RED; break;
+    case 'green': c = COLOR_GREEN; break;
+    case 'blue': c = '#0000ff'; break;
+    case 'black': break;
+    case 'colorplus':
+      c = $(selector + ' .color-plus').css('color');
+  }
+  return c;
+}
+
+function sendPreferencesToEditor () {
+  let data = {};
+  data.default = {};
+  // font size
+  data.default['font-size'] = $('#pref-text-size')[0].value + 'pt';
+  // font color
+  data.default.color = getPrefColor('#pref-text-color');
+  // frame
+  data.frame = {};
+  let fs = $('#pref-frame-size')[0].value + 'pt';
+  let fc = getPrefColor('#pref-frame-color');
+  let fb = getPrefColor('#pref-frame-back');
+  let fr = $('#pref-frame-radius')[0].value + 'pt';
+  data.frame.border = `${fs} solid ${fc}`;
+  data.frame['border-radius'] = fr;
+  data.frame.background = fb;
+  // levels
+  for (const level of ['h1', 'h2', 'h3', 'h4']) {
+    data[level] = {};
+    // font size
+    data[level]['font-size'] = $('#pref-' + level + '-size')[0].value + 'pt';
+    // font weight
+    const path = $('#pref-' + level + '-bold img').attr('src').split('/');
+    const ba = path[path.length - 1].split('.')[0].split('-');
+    data[level]['font-weight'] = ba[ba.length - 1] === 'bold' ? 'bold' : 'normal';
+    // font color
+    data[level].color = getPrefColor('#pref-' + level + '-color');
+  }
+
+  /* TODO: add alignment directly in preferences window. */
+  data.h1['text-align'] = 'center';
+
+  data.page = {};
+  let mt = Utils.cmToInches(Number($('#pref-margin-top')[0].value) - 2.54) + 'in';
+  let mr = Utils.cmToInches(Number($('#pref-margin-right')[0].value) - 2.54) + 'in';
+  let mb = Utils.cmToInches(Number($('#pref-margin-bottom')[0].value) - 2.54) + 'in';
+  let ml = Utils.cmToInches(Number($('#pref-margin-left')[0].value) - 2.54) + 'in';
+  data.page.padding = `${mt} ${mr} ${mb} ${ml}`;
+  editor.setTheme(data);
+}
+
 /////////////////////////////////////////////////////////////////
 //                                    toolbar update from editor
 function setFormatAtToolbar(format) {
@@ -1375,7 +1431,7 @@ $("#toolbarBottomMask").hover( function () {
 
   // record-pref button
     $("#record-pref").on("click", function (ev) {
-      sendtoEditor(newPreferences);
+      sendPreferencesToEditor();
       $("#prefDialog").modal("hide");
     });
 

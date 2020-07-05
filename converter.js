@@ -124,29 +124,51 @@ class Converter {
    * @return {makePdfDocument} The resulting pdf.
    */
   static async toPdf (editor) {
-    let styles = {
-      h1: {},
-      h2: {},
-      h3: {},
-      h4: {}
+    const styles = {};
+    for (const level of ['h1', 'h2', 'h3', 'h4']) {
+      styles[level] = {};
+      styles[level].alignment = editor.theme[level]['text-align'];
+      styles[level].fontSize = Number(editor.theme[level]['font-size'].replace('pt', ''));
+      styles[level].color = editor.theme[level].color;
+      styles[level].bold = editor.theme[level]['font-weight'] !== 'normal';
+    }
+    const defaultStyle = {
+      fontSize: Number(editor.theme.default['font-size'].replace('pt', '')),
+      color: editor.theme.default.color
     };
-    let defaultStyle = {};
-    // TODO convert theme to styles.
-
-    let margin = 72;
-    let docDefinition = {
+    const tableLayouts = {
+      frame: {
+        hLineWidth: function (i, node) {
+          return (i === 0 || i === node.table.body.length) ? Number(editor.theme.frame.border.split(' ')[0].replace('pt', '')) : 0;
+        },
+        vLineWidth: function (i, node) {
+          return (i === 0 || i === node.table.widths.length) ? Number(editor.theme.frame.border.split(' ')[0].replace('pt', '')) : 0;
+        },
+        hLineColor: function (i, node) {
+          return editor.theme.frame.border.split(' ')[2];
+        },
+        vLineColor: function (i, node) {
+          return editor.theme.frame.border.split(' ')[2];
+        }
+      }
+    };
+    const margin = editor.theme.page.padding.replace(/in/g, '').split(' ');
+    for (let i = 0; i < margin.length; i++) {
+      margin[i] = (1 + Number(margin[i])) * 72;
+    }
+    const docDefinition = {
       content: [],
       pageSize: 'A4',
-      styles: editor.styles,
-      defaultStyle: editor.defaultStyle,
+      styles: styles,
+      defaultStyle: defaultStyle,
       footer: function (currentPage, pageCount) {
-        if (pageCount > 1) return { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, alignment: 'right', margin: [0, 0, margin, 0] };
+        if (pageCount > 1) return { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, alignment: 'right', margin: [0, 0, margin[2], 0] };
         else return '';
       },
       pageBreakBefore: function(currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
         return false;
       },
-      pageMargins: [margin, margin, margin, margin] // 96 = 1 inch
+      pageMargins: margin // 96 = 1 inch
     };
     let contentLength = 1300 - docDefinition.pageMargins[1] - docDefinition.pageMargins[3];
     let bottomY = docDefinition.pageMargins[1];
@@ -221,7 +243,7 @@ class Converter {
       docDefinition.content.push(blockDefinition);
     }
     console.log(docDefinition);
-    return pdfMake.createPdf(docDefinition, editor.tableLayouts);
+    return pdfMake.createPdf(docDefinition, tableLayouts);
   }
 
   /**

@@ -22,6 +22,10 @@ class Utils {
     return (px * 25.4) / 96;
   }
 
+  static cmToInches (cm) {
+    return cm / 2.54;
+  }
+
   static containsEncodedComponents (x) {
     // ie ?,=,&,/ etc
     return (decodeURI(x) !== decodeURIComponent(x));

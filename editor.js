@@ -272,63 +272,33 @@ class Editor {
     this.defaultTheme = {
       h1: {
         'text-align': 'center',
-        'font-size': '28pt'
+        'font-size': '28pt',
+        color: 'black'
       },
       h2: {
-        'font-size': '20pt'
+        'font-size': '20pt',
+        color: 'black'
       },
       h3: {
-        'font-size': '18pt'
+        'font-size': '18pt',
+        color: 'black'
       },
       h4: {
-        'font-size': '16pt'
+        'font-size': '16pt',
+        color: 'black'
       },
       p: {
         'text-align': 'left',
-        'font-size': '14pt'
+        'font-size': '14pt',
+        color: 'black'
       },
       frame: {
-        'border-color': 'black',
-        'border-width': '4pt'
+        border: '4pt solid black',
+        'border-radius': '0pt',
+        background: 'transparent'
       }
     }
     this.defaultTheme.default = this.defaultTheme.p;
-    this.defaultStyle = {
-      fontSize: 14,
-      alignment: 'left'
-    };
-    this.styles = {
-      h1: {
-        alignment: 'center',
-        fontSize: 28
-      },
-      h2: {
-        fontSize: 20
-      },
-      h3: {
-        fontSize: 18
-      },
-      h4: {
-        fontSize: 16
-      }
-    };
-
-    this.tableLayouts = {
-      frame: {
-        hLineWidth: function (i, node) {
-					return (i === 0 || i === node.table.body.length) ? 4 : 0;
-				},
-				vLineWidth: function (i, node) {
-					return (i === 0 || i === node.table.widths.length) ? 4 : 0;
-				},
-				hLineColor: function (i, node) {
-					return 'black';
-				},
-				vLineColor: function (i, node) {
-					return 'black';
-				}
-      }
-    };
   }
 
   /**
@@ -763,6 +733,7 @@ class Editor {
 
   /**
    * Clear all blocks of the document.
+   * @param {boolean} fullclear - Whether to clear the document completely (true) or to reset it to a new document (false).
    */
   clear (fullClear = false) {
     $('.editor-block').remove();
@@ -2114,9 +2085,10 @@ class Editor {
     style += this.toCSS('h2', theme.h2);
     style += this.toCSS('h3', theme.h3);
     style += this.toCSS('h4', theme.h4);
-    style += this.toCSS('p', theme.p);
+    style += this.toCSS('p', theme.default);
     style += this.toCSS('', theme.default);
     style += this.toCSS('.frame', theme.frame);
+    style += this.toCSS('', theme.page);
     $(`<style>${style}</style>`).appendTo(this.id);
   }
 

@@ -960,6 +960,98 @@ li.nav-item {
   margin-left: -50px;
 }
 
+/*               preference dialog */
+.pref-h-size {
+  width: 100px;
+  padding-left: 35px;
+  border: 2px solid black;
+  font-size: 22px;
+}
+
+.pref-h-color {
+  width: 110px;
+  padding: 0;
+}
+
+.pref-h-bold {
+  height: 41px;
+  padding-left: 28px;
+}
+
+.pref-col1-n1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.pref-col1-n2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.pref-top5 {
+  position: relative;
+  top: 5px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.pref-color {
+  position: relative;
+  left: -4px;
+}
+
+.pref-color-button {
+  position: relative;
+  height: 40px;
+  width: 22px;
+  top: -40px;
+  left: 85px;
+  border-radius: 0.25rem;
+}
+
+.pref-color-button:hover {
+  border: 2px solid #444;
+}
+
+#color-select {
+  position: relative;
+  height: 40px;
+  width: 25px;
+  border-radius: 0.25rem;
+  visibility: hidden;
+  border: 2px solid black;
+  z-index: 2000;
+  cursor: pointer;
+}
+
+#color-select:hover {
+  visibility: visible;
+}
+
+.color-plus {
+  position: relative;
+  font-size: 25px;
+  left: 89px;
+  top: -45px;
+  height: 0;
+  background-color: white;
+  z-index: 1500;
+}
+
+.no-text-sel {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+
+
 /*             ...suite #content
 	background:
 		af Shadow cov90s

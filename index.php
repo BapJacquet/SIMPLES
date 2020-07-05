@@ -74,6 +74,8 @@ $version = "0.06.16.0";
 							<a id="exportFilePDF" class="write-file dropdown-item" href="#">Exporter au format PDF...</a>
 							<a id="exportFileODT" class="write-file dropdown-item" href="#">Exporter au format ODT...</a>
 							<a id="exportFileHTML" class="write-file dropdown-item" href="#">Exporter au format HTML...</a>
+							<div class="dropdown-divider"></div>
+							<a id="preferences" class="preferences dropdown-item" href="#">Préférences du document...</a>
 				    </div>
 				  </div>
 					<div class="btn-group" role="group">
@@ -383,8 +385,229 @@ $version = "0.06.16.0";
 	</div>
 </div>
 <!--                         			 D I A L O G S  -->
+
+<!-- preferences dialog -->
+<div id="prefDialog" class="modal fade" tabindex="-1" role="dialog" >
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" data-backdrop="static">
+    <div class="modal-content" style="max-width: 800px!important; min-width: 800px!important">
+      <div class="modal-header">
+        <h1 class="modal-title no-text-sel">Préférences du Document</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+				<!-- bouton de selection de la couleur -->
+				<div id="color-select" class="color-custom-plus" data-img="" data-place=""></div>
+
+				<div class="container no-text-sel">
+					<div class="row">					<!-- TEXTE -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1">TEXTE</span>
+				    </div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Taille</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Couleur</span>
+						</div>
+				  </div>
+				  <div class="row">					<!-- valeurs -->
+				    <div class="col-3">
+				    </div>
+				    <div class="col-2">      				<!-- taille -->
+				      <input id="pref-text-size" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">    					<!-- couleur -->
+				      <div id="pref-text-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
+							</div>
+				    </div>
+				  </div>
+					<hr>
+
+					<div class="row">					<!-- CADRE -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1">CADRE</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Bordure</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Couleur</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Fond</span>
+				    </div>
+						<div class="col-2  text-center">
+							<span class="pref-col1-n2">Arrondi</span>
+				    </div>
+					</div>
+					<div class="row">					<!-- valeurs -->
+				    <div class="col-3">
+				      &nbsp;
+				    </div>
+				    <div class="col-2">
+				      <input id="pref-frame-size" type="number" value="28" min="20" max="34" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <div id="pref-frame-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-frame-back">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <input id="pref-frame-radius" type="number" value="16" min="12" max="22" class="num-pref pref-h-size form-control">
+				    </div>
+				  </div>
+					<hr>
+
+					<div class="row">					<!-- TITRES -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1">TITRE</span>
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h1.png />
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h2.png />
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h3.png />
+				    </div>
+						<div class="col-2">
+							<img src=img/pref/pref-h4.png />
+				    </div>
+					</div>
+					<div class="row">					<!-- taille -->
+				    <div class="col-3">
+				      <span class="pref-col1-n2 pref-top5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Taille</span>
+				    </div>
+				    <div class="col-2">
+				      <input id="pref-h1-size" type="number" value="28" min="20" max="34" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <input id="pref-h2-size" type="number" value="22" min="16" max="26" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <input id="pref-h3-size" type="number" value="18" min="14" max="24" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">
+				      <input id="pref-h4-size" type="number" value="16" min="12" max="22" class="num-pref pref-h-size form-control">
+				    </div>
+				  </div>
+					<br/>
+					<div class="row">					<!-- gras -->
+				    <div class="col-3">
+				      <span class="pref-col1-n2 text-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gras</span>
+				    </div>
+				    <div class="col-2">
+				      <div id="pref-h1-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold  pref-bold" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h2-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold  pref-bold" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h3-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold  pref-bold" />
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h4-bold">
+								<img src="img/pref/pref-thin.png" class="pref-h-bold pref-bold" />
+							</div>
+				    </div>
+				  </div>
+					<br/>
+					<div class="row">					<!-- couleur -->
+				    <div class="col-3">
+				      <span class="pref-col1-n2 text-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Couleur</span>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h1-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h2-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h3-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
+							</div>
+				    </div>
+						<div class="col-2">
+				      <div id="pref-h4-color">
+								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<div class="color-plus">?</div>
+							</div>
+						</div>
+				  </div>
+					<hr>
+
+					<div class="row">					<!-- MARGE -->
+				    <div class="col-3">
+				      <span class="pref-col1-n1">MARGE</span>
+				    </div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Gauche</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Droite</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Haut</span>
+						</div>
+						<div class="col-2 text-center">
+							<span class="pref-col1-n2 ">Bas</span>
+						</div>
+				  </div>
+				  <div class="row">					<!-- valeurs -->
+				    <div class="col-3">
+				    </div>
+				    <div class="col-2">      				<!-- gauche -->
+				      <input id="pref-margin-left" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">      				<!-- droite -->
+				      <input id="pref-margin-right" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">      				<!-- haut -->
+				      <input id="pref-margin-top" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+						<div class="col-2">      				<!-- bas -->
+				      <input id="pref-margin-bottom" type="number" value="14" min="10" max="18" class="num-pref pref-h-size form-control">
+				    </div>
+				  </div>
+
+				</div>
+			</div>
+
+			<div class="modal-footer">
+			   <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+			   <button id="record-pref" type="button" class="btn btn-success">Enregistrer</button>
+			 </div>
+    </div>
+	 </div>
+</div> <!-- END preferences dialog -->
+
 <!-- image dialog -->
-<div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div id="imageClickModal" class="modal fade" tabindex="-1" role="dialog" >
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content">
       <div class="modal-header">
@@ -438,7 +661,7 @@ $version = "0.06.16.0";
           <h4 class="modal-title">Choisir une heure</h4>
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         </div><div class="container"></div>
-        <div class="modal-body">
+        <div id="pref-body" class="modal-body">
 
 					<div class="input-group input-group-sm mb-3">
 						<canvas id="clock-canvas" width="150" height="150" class="mx-auto"></canvas>

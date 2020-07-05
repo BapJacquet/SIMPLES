@@ -1042,6 +1042,7 @@ li.nav-item {
   height: 0;
   background-color: white;
   z-index: 1500;
+  pointer-events: none;
 }
 
 .no-text-sel {

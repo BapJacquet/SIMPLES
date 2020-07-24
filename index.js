@@ -1555,48 +1555,62 @@ $("#toolbarBottomMask").hover( function () {
   //    $(".editor-block").css("background-color", "white");
   });
 ////////////////////////
-  //  insertBlockBefore
-  $("#blockCmd .block-new-up").on("click", function (ev) {
-    editor.insertBlockBefore( activeBlocId, "", true);
-    setTimeout( function () {
-      $(`#blc-${activeBlocId + 1}`).css("background-color", "");
-      blockArrayEnter();
-    }, 15);
-  });
-
-  //  insertImageBlockBefore
-  $("#blockCmd .block-new2-up").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "");
-    editor.insertImageBlockBefore( activeBlocId, true);
-    setTimeout( function () {
-      blockArrayEnter();
-      loadImageDialog("#img-" + activeBlocId + "-0");
-    }, 15);
-  });
-
   // insertBlockAfter
     $("#blockCmd .block-new-down").on("click", function (ev) {
-      editor.insertBlockAfter( activeBlocId, "", true);
-      setTimeout( function () {
-        $("#blockCmd").find("span").text(activeBlocId + 1);
-        $(`#blc-${activeBlocId - 1}`).css("background-color", "");
-        $(`#blc-${activeBlocId}`).css("background-color", "");
-        blockArrayEnter();
-      }, 15);
+      $("#new-text-block-btn").attr("data-lirec-dir", "after");
+      $("#new-images-block-btn").attr("data-lirec-dir", "after");
+      $("#chooseBlockTypeDialog").modal("show");
     });
 
-  // insertImageBlockAfter
-    $("#blockCmd .block-new2-down").on("click", function (ev) {
+  // insertBlockBefore
+    $("#blockCmd .block-new-up").on("click", function (ev) {
+      $("#new-text-block-btn").attr("data-lirec-dir", "before");
+      $("#new-images-block-btn").attr("data-lirec-dir", "before");
+      $("#chooseBlockTypeDialog").modal("show");
+    });
+
+  // new text block
+    $("#new-text-block-btn").on("click", function (ev) {
+      $("#chooseBlockTypeDialog").modal("hide");
+      if ( $(this).attr("data-lirec-dir") == "after" ) {
+        editor.insertBlockAfter( activeBlocId, "", true);
+        setTimeout( function () {
+          $("#blockCmd").find("span").text(activeBlocId + 1);
+          $(`#blc-${activeBlocId - 1}`).css("background-color", "");
+          $(`#blc-${activeBlocId}`).css("background-color", "");
+          blockArrayEnter();
+        }, 15);
+      }
+      else if ( $(this).attr("data-lirec-dir") == "before" ) {
+        editor.insertBlockBefore( activeBlocId, "", true);
+        setTimeout( function () {
+          $(`#blc-${activeBlocId + 1}`).css("background-color", "");
+          blockArrayEnter();
+        }, 15);
+      }
+    });
+
+  // new images block
+    $("#new-images-block-btn").on("click", function (ev) {
+      $("#chooseBlockTypeDialog").modal("hide");
       $(`#blc-${activeBlocId}`).css("background-color", "");
-      editor.insertImageBlockAfter( activeBlocId, true);
-      setTimeout( function () {
-        $("#blockCmd").find("span").text(activeBlocId + 1);
-        blockArrayEnter();
-        loadImageDialog("#img-" + activeBlocId + "-0");
-      }, 15);
+      if ( $(this).attr("data-lirec-dir") == "after" ) {
+        editor.insertImageBlockAfter( activeBlocId, true);
+        setTimeout( function () {
+          $("#blockCmd").find("span").text(activeBlocId + 1);
+          blockArrayEnter();
+          loadImageDialog("#img-" + activeBlocId + "-0");
+        }, 15);
+      }
+      else if ( $(this).attr("data-lirec-dir") == "before" ) {
+        $(`#blc-${activeBlocId}`).css("background-color", "");
+        editor.insertImageBlockBefore( activeBlocId, true);
+        setTimeout( function () {
+          blockArrayEnter();
+          loadImageDialog("#img-" + activeBlocId + "-0");
+        }, 15);
+      }
     });
-
-
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
@@ -1636,7 +1650,7 @@ $("#toolbarBottomMask").hover( function () {
 
 ///////////////////////////////
 
-//  show/hide .block-new2
+/*  show/hide .block-new2
   $("#blockCmd .block-new-up").mouseenter( function () {
     $(".block-new2-up").css("display","block");
   } ).mouseleave( function () {
@@ -1658,7 +1672,7 @@ $("#toolbarBottomMask").hover( function () {
   } ).mouseleave( function () {
     $(".block-new2-down").css("display","none");
   } );
-
+*/
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 

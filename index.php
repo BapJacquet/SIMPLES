@@ -316,13 +316,13 @@ $version = "0.07.05.2";
 				<div id="content">
 					<div id="page-container">
 						<div id="blockCmd"><!-- Block command palette -->
-							<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
+							<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc au dessus">
 								<img src="img/plus-black.png">
 							</div>
 							<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
 								<img src="img/delete-black.png">
 							</div>
-							<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
+							<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc en dessous">
 								<img src="img/plus-black.png">
 							</div>
 							<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
@@ -697,6 +697,25 @@ $version = "0.07.05.2";
       </div>
     </div>
 </div>
+
+<!-- Modal choose text or images block -->
+<div class="modal fade" id="chooseBlockTypeDialog" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Ajouter un bloc</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button id="new-text-block-btn" type="button" class="btn btn-success">Bloc Texte</button>
+				<button id="new-images-block-btn" type="button" class="btn btn-success">Bloc Images</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--  confirm dialog -->
 <div id="confirmDialog" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">

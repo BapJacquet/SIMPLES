@@ -475,6 +475,8 @@ function sendtoEditor(tool, val) {
   }
 }
 
+////////////////////////////////////////////////////////////////////
+//                                             P R E F E R E N C E S
 function getPrefColor (selector) {
   let path = $(selector + ' img').attr('src').split('/');
   let ba = path[path.length - 1].split('.')[0].split('-');
@@ -529,6 +531,53 @@ function sendPreferencesToEditor () {
   let ml = Utils.cmToInches(Number($('#pref-margin-left')[0].value) - 2.54) + 'in';
   data.page.padding = `${mt} ${mr} ${mb} ${ml}`;
   editor.setTheme(data);
+}
+
+function getImgColorName(color, selector) {
+  let img;
+  switch (color) {
+    case COLOR_RED: img = "red.png"; break;
+    case COLOR_GREEN: img = "green.png"; break;
+    case "#0000ff": img = "blue.png"; break;
+    case "black": img = "black.png"; break;
+    case "normal": img = "thin.png"; break;
+    case "bold": img = "bold.png"; break;
+    default:
+      img = "colorplus.png"; break;
+  }
+  selector.find("img").attr("src", "img/pref/pref-" + img);
+  if ( img.split(".")[0] == "colorplus" ) {
+    selector.find(".color-plus").css("color", color);
+  }
+}
+
+function initPreferencesValues(theme) {
+  if ( !theme ) return;
+
+// text
+  $("#pref-text-size").val(theme.default["font-size"].split("pt")[0]);
+  getImgColorName(theme.default.color, $("#pref-text-color"));
+// frame
+  getImgColorName(theme.frame.background, $("#pref-frame-back"));
+  getImgColorName(theme.frame.border.split(" ")[2], $("#pref-frame-color"));
+  $("#pref-frame-size").val(theme.frame.border.split(" ")[0].split("pt")[0]);
+  $("#pref-frame-radius").val(theme.frame["border-radius"].split("pt")[0]);
+// h1
+  getImgColorName(theme.h1.color, $("#pref-h1-color"));
+  $("#pref-h1-size").val(theme.h1["font-size"].split("pt")[0]);
+  $("#pref-h1-bold").val(theme.h1["font-weight"].split("pt")[0]);
+// h2
+  getImgColorName(theme.h2.color, $("#pref-h2-color"));
+  $("#pref-h2-size").val(theme.h2["font-size"].split("pt")[0]);
+  $("#pref-h2-bold").val(theme.h2["font-weight"].split("pt")[0]);
+// h3
+  getImgColorName(theme.h3.color, $("#pref-h3-color"));
+  $("#pref-h3-size").val(theme.h3["font-size"].split("pt")[0]);
+  $("#pref-h3-bold").val(theme.h3["font-weight"].split("pt")[0]);
+// h4
+  getImgColorName(theme.h4.color, $("#pref-h4-color"));
+  $("#pref-h4-size").val(theme.h4["font-size"].split("pt")[0]);
+  $("#pref-h4-bold").val(theme.h4["font-weight"].split("pt")[0]);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -1136,6 +1185,7 @@ $(".write-file").on("click", function () {
 });
 // Ouvrir préférences...
 $("#preferences").on("click", function () {
+  initPreferencesValues(editor.theme);
   $("#prefDialog").modal("show");
 });
 
@@ -1353,8 +1403,9 @@ $("#toolbarBottomMask").hover( function () {
   // #color-select button move
     $(".pref-color, .pref-h-bold").on("mousemove", function (ev) {
       let decal = 22;
-      let imgTop = $(this).offset().top;
-      let imgLeft = $(this).offset().left;
+      let margin = 4;
+      let imgTop = $(this).offset().top - margin;
+      let imgLeft = $(this).offset().left - margin;
       let mouseY = ev.pageY;
       let mouseX = ev.pageX;
       $(".color-custom-plus").spectrum("disable");
@@ -1403,10 +1454,10 @@ $("#toolbarBottomMask").hover( function () {
   // click color-select button
     $("#color-select").on("click", function (ev) {
       $("#color-select").animate({
-        height: 43
+        height: 55 // 43
       }, 200, function() {
         $("#color-select").animate({
-          height: 40
+          height: 51 // 40
         }, 50);
       });
 
@@ -1421,7 +1472,6 @@ $("#toolbarBottomMask").hover( function () {
   // unsel color-select button
     $(".row").on("mouseenter", function (ev) {
       $("#color-select").css("visibility", "hidden");
-      //$(".color-custom-plus").spectrum("hide");
     });
 
   // hide color showPalette

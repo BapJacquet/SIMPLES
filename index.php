@@ -390,16 +390,18 @@ $version = "0.07.05.2";
 <div id="prefDialog" class="modal fade" tabindex="-1" role="dialog" >
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document" data-backdrop="static">
     <div class="modal-content" style="max-width: 800px!important; min-width: 800px!important">
-      <div class="modal-header">
+      <div class="pref-header">
         <h1 class="modal-title no-text-sel">Préférences du Document</h1>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <!--    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
-        </button>
+        </button> -->
       </div>
       <div class="modal-body">
 				<!-- bouton de selection de la couleur -->
-				<div id="color-select" class="color-custom-plus" data-img="" data-place=""></div>
-
+				<div id="color-select" class="color-custom-plus"></div>
+				<div id="pref-preview">
+					<div id="pref-preview-text">La cigale et la fourmi</div>
+				</div>
 				<div class="container no-text-sel">
 					<div class="row">					<!-- TEXTE -->
 				    <div class="col-3">

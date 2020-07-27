@@ -1242,7 +1242,10 @@ $(".write-file").on("click", function () {
 });
 // Ouvrir préférences...
 $("#preferences").on("click", function () {
-  initPreferencesDialog(editor.theme);
+  try { initPreferencesDialog(editor.theme);
+  } catch (ex) {
+    console.log("Old document");
+  }
   $("#prefDialog").modal("show");
 });
 

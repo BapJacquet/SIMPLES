@@ -1076,24 +1076,30 @@ li.nav-item {
 #pref-preview {
   display: none;
   position: absolute;
-  text-align: center;
-  line-height: 100px;
-  height: 100px;
-
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
-
-  width: 600px;
-  top: -145px;
-  left: 100px;
+  line-height: 64px;
+  height: 80px;
+  width: 500px;
+  top: -120px;
+  left: 150px;
   border: 0 solid black;
+  padding: 8px;
   background-color: white;
-  font-size: 60pt;
   overflow: hidden;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
 }
 
 #pref-preview-text {
+}
+
+.pref-body {
+  padding-top: 0;
+}
+
+.pref-zone {
+  position: absolute;
+  z-index: 2000;
 }
 
 .no-text-sel {

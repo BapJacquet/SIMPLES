@@ -492,7 +492,7 @@ function getPrefColor (selector) {
   return c;
 }
 
-function sendPreferencesToEditor () {
+function collectPreferencesData () {
   let data = {};
   data.default = {};
   // font size
@@ -530,7 +530,11 @@ function sendPreferencesToEditor () {
   let mb = Utils.cmToInches(Number($('#pref-margin-bottom')[0].value) - 2.54) + 'in';
   let ml = Utils.cmToInches(Number($('#pref-margin-left')[0].value) - 2.54) + 'in';
   data.page.padding = `${mt} ${mr} ${mb} ${ml}`;
-  editor.setTheme(data);
+  return data;
+}
+
+function sendPreferencesToEditor () {
+  editor.setTheme(collectPreferencesData());
 }
 
 function getImgColorName(color, selector) {
@@ -551,9 +555,8 @@ function getImgColorName(color, selector) {
   }
 }
 
-function initPreferencesValues(theme) {
+function initPreferencesDialog(theme) {
   if ( !theme ) return;
-
 // text
   $("#pref-text-size").val(theme.default["font-size"].split("pt")[0]);
   getImgColorName(theme.default.color, $("#pref-text-color"));
@@ -578,6 +581,46 @@ function initPreferencesValues(theme) {
   getImgColorName(theme.h4.color, $("#pref-h4-color"));
   $("#pref-h4-size").val(theme.h4["font-size"].split("pt")[0]);
   $("#pref-h4-bold").val(theme.h4["font-weight"].split("pt")[0]);
+}
+
+/////////
+function displayPrefPreview(zone) {
+  if ( !zone ) return;
+  var data = collectPreferencesData();
+  var pp = "#pref-preview";
+  var lineHeight0 = 64;
+
+  $(pp).css({"line-height": lineHeight0 + "px"});
+
+  $(pp).css({"display": "block",
+            "border-width": 0,
+            "background-color": "white"});
+//  if ( zone == "h1" ) $(pp).css({"text-align": "center"});
+
+  if ( zone == "text" ) {
+    $(pp).css({"color": data.default.color,
+              "font-size": data.default["font-size"]});
+    $(pp).css({"text-align": "left"});
+  }
+  else if ( zone == "frame") {
+    var back = data.frame.background;
+    if ( back == "rgba(255, 255, 255, 0)" ) back = "white";
+    $(pp).css({"background-color": back,
+                            "border": data.frame.border,
+                            "border-radius": data.frame["border-radius"]});
+    var border = $(pp).css("border-width").split("px")[0] *2;
+    $(pp).css({"line-height": lineHeight0 - border + "px"});
+  }
+  else {
+    for ( var zh of ["h1", "h2", "h3", "h4"]) {
+      if ( zh == zone )
+        $(pp).css({"color": (data[zh]).color,
+                "font-size": (data[zh])["font-size"],
+                "font-weight": (data[zh])["font-weight"]});
+        if ( zone == "h1" ) $(pp).css({"text-align": "center"});
+        else $(pp).css({"text-align": "left"});
+    }
+  }
 }
 
 /////////////////////////////////////////////////////////////////
@@ -1185,7 +1228,7 @@ $(".write-file").on("click", function () {
 });
 // Ouvrir préférences...
 $("#preferences").on("click", function () {
-  initPreferencesValues(editor.theme);
+  initPreferencesDialog(editor.theme);
   $("#prefDialog").modal("show");
 });
 
@@ -1387,13 +1430,18 @@ $("#toolbarBottomMask").hover( function () {
       let color = tinycolor.toHexString();
       let place = $(this).attr("data-place");
       let elem = place.split("-")[1];
-      newPreferences[elem] = color;
       $(`#${place} div`).css("color", color);
+      displayPrefPreview($("#color-select").attr("data-pref-zone"));
     }
+  });
+
+  // dont change zone when color palette is open
+  $(".sp-container").on("mouseenter", function (ev) {
+    $("#pref-preview").css("display", "block");
   });
 /////////// fin color palette
 
-  // pref-color
+  // pref color images
     $(".pref-color-button").on("click", function(e) {
       prefColorplusButton = e.target.id;
       let img = $(this).attr("data-img");
@@ -1465,8 +1513,8 @@ $("#toolbarBottomMask").hover( function () {
       let place = $(this).attr("data-place");
       let color = $(this).attr("data-color");
       let elem = place.split("-")[1];
-      newPreferences[elem] = color;
       $("#" + place).find("img").attr("src", img);
+      displayPrefPreview($("#color-select").attr("data-pref-zone"));
     });
 
   // unsel color-select button
@@ -1487,7 +1535,6 @@ $("#toolbarBottomMask").hover( function () {
 
   // after hidding modal
     $("#prefDialog").on("hidden.bs.modal", function (e) {
-      newPreferences = {};
     });
 
   // num imput value
@@ -1495,8 +1542,44 @@ $("#toolbarBottomMask").hover( function () {
       let elem = $(this).attr("id").split("-")[1] + "-" +
                   $(this).attr("id").split("-")[2];
       let value = $(this).val();
-      newPreferences[elem] = value;
+      displayPrefPreview($("#color-select").attr("data-pref-zone"));
     });
+
+  // mousemove over: find pref zones
+    $(".pref-body").on("mousemove", function(ev) {
+      // return pref zone containing cursor
+      function mouseInZone(X, Y) {
+        var z = {text: {top: 221, right: 915, bottom: 316, left: 321},
+                frame: {top: 315, right: 915, bottom: 427, left: 321},
+                h1: {top: 426, right: 456, bottom: 686, left: 321},
+                h2: {top: 426, right: 582, bottom: 686, left: 455},
+                h3: {top: 426, right: 710, bottom: 686, left: 581},
+                h4: {top: 426, right: 915, bottom: 686, left: 709}
+              };
+        for ( var zone in z ) {
+          if ( X > z[zone].left && X < z[zone].right && Y > z[zone].top && Y < z[zone].bottom ) {
+            $("#color-select").attr("data-pref-zone", zone);
+            return zone;
+          }
+        }
+        return false;
+      }
+      //
+      var zone = mouseInZone(ev.pageX, ev.pageY);
+      if ( zone ) {
+        $("#pref-preview").css("display", "block");
+        displayPrefPreview(zone);
+      }
+      else $("#pref-preview").css("display", "none");
+    });
+
+  ////
+    $(".pref-modal-content").on("mouseleave", function(ev) {
+      $("#pref-preview").css("display", "none");
+    });
+
+
+
 
 
   ////////////////////////////////////////////////////////////////////
@@ -2082,7 +2165,6 @@ var dragIsOn = false;
 var dragMouseX;
 
 var prefColorplusButton;
-var newPreferences = {};
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc

@@ -389,20 +389,21 @@ $version = "0.07.05.2";
 <!-- preferences dialog -->
 <div id="prefDialog" class="modal fade" tabindex="-1" role="dialog" >
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document" data-backdrop="static">
-    <div class="modal-content" style="max-width: 800px!important; min-width: 800px!important">
-      <div class="pref-header">
+    <div class="modal-content pref-modal-content" style="max-width: 800px!important; min-width: 800px!important">
+      <div class="pref-header pref-no-preview">
         <h1 class="modal-title no-text-sel">Préférences du Document</h1>
-    <!--    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button> -->
       </div>
-      <div class="modal-body">
-				<!-- bouton de selection de la couleur -->
-				<div id="color-select" class="color-custom-plus"></div>
+      <div class="modal-body pref-body">
+				<!-- zone de prévisualisation -->
 				<div id="pref-preview">
 					<div id="pref-preview-text">La cigale et la fourmi</div>
 				</div>
+
+				<!-- bouton de selection de la couleur -->
+				<div id="color-select" class="color-custom-plus"></div>
+
 				<div class="container no-text-sel">
+
 					<div class="row">					<!-- TEXTE -->
 				    <div class="col-3">
 				      <span class="pref-col1-n1">TEXTE</span>
@@ -563,7 +564,7 @@ $version = "0.07.05.2";
 				  </div>
 					<hr>
 
-					<div class="row">					<!-- MARGE -->
+					<div class="row pref-no-preview">					<!-- MARGE -->
 				    <div class="col-3">
 				      <span class="pref-col1-n1">MARGE</span>
 				    </div>
@@ -580,7 +581,7 @@ $version = "0.07.05.2";
 							<span class="pref-col1-n2 ">Bas</span>
 						</div>
 				  </div>
-				  <div class="row">					<!-- valeurs -->
+				  <div class="row pref-no-preview">					<!-- valeurs -->
 				    <div class="col-3">
 				    </div>
 				    <div class="col-2">      				<!-- gauche -->
@@ -600,7 +601,7 @@ $version = "0.07.05.2";
 				</div>
 			</div>
 
-			<div class="modal-footer">
+			<div class="modal-footer pref-no-preview">
 			   <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
 			   <button id="record-pref" type="button" class="btn btn-success">Enregistrer</button>
 			 </div>

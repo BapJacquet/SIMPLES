@@ -588,20 +588,25 @@ function displayPrefPreview(zone) {
   if ( !zone ) return;
   var data = collectPreferencesData();
   var pp = "#pref-preview";
-  var lineHeight0 = 64;
-
-  $(pp).css({"line-height": lineHeight0 + "px"});
+  var lineHeight0; // = 48 ou 64
+  var height0; // = 60 ou 80
 
   $(pp).css({"display": "block",
             "border-width": 0,
             "background-color": "white"});
-//  if ( zone == "h1" ) $(pp).css({"text-align": "center"});
 
   if ( zone == "text" ) {
+    lineHeight0 = 48;
+    $("#color-select").attr("data-lineHeight0", "text");
+    height0 = 60;
+    $(pp).css({"line-height": lineHeight0 + "px",
+              "height": height0 + "px"});
+
     $(pp).css({"color": data.default.color,
               "font-size": data.default["font-size"]});
     $(pp).css({"text-align": "left"});
   }
+
   else if ( zone == "frame") {
     var back = data.frame.background;
     if ( back == "rgba(255, 255, 255, 0)" ) back = "white";
@@ -609,9 +614,18 @@ function displayPrefPreview(zone) {
                             "border": data.frame.border,
                             "border-radius": data.frame["border-radius"]});
     var border = $(pp).css("border-width").split("px")[0] *2;
+    if ( $("#color-select").attr("data-lineHeight0") == "text" ) lineHeight0 = 48;
+    else lineHeight0 = 64;
     $(pp).css({"line-height": lineHeight0 - border + "px"});
   }
+
   else {
+    lineHeight0 = 64;
+    $("#color-select").attr("data-lineHeight0", "title");
+    height0 = 80;
+    $(pp).css({"line-height": lineHeight0 + "px",
+              "height": height0 + "px"});
+
     for ( var zh of ["h1", "h2", "h3", "h4"]) {
       if ( zh == zone )
         $(pp).css({"color": (data[zh]).color,

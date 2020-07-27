@@ -1019,31 +1019,13 @@ li.nav-item {
   border: 2px solid #444;
 }
 
-.pref-header {
-  text-align: center;
-  padding: 40px;
-  margin-bottom: 20px;
-  background-color: lightgrey;
-}
-
 .num-pref {
+  position: relative;
+  left: 10px;
   height: 40px;
-  width: 100px;
+  width: 82px;
   border-color: black;
 }
-
-/*
-#color-select {
-  position: absolute;
-  height: 40px;
-  width: 25px;
-  border-radius: 0.25rem;
-  visibility: hidden;
-  border: 2px solid black;
-  z-index: 2000;
-  cursor: pointer;
-}
-*/
 
 #color-select {
   position: absolute;
@@ -1071,6 +1053,13 @@ li.nav-item {
   background-color: white;
   z-index: 1500;
   pointer-events: none;
+}
+
+.pref-header {
+  text-align: center;
+  padding: 40px;
+  margin-bottom: 20px;
+  background-color: lightgrey;
 }
 
 #pref-preview {

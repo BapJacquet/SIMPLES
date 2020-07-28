@@ -1455,6 +1455,7 @@ $("#toolbarBottomMask").hover( function () {
   // dont change zone when color palette is open
   $(".sp-container").on("mouseenter", function (ev) {
     $("#pref-preview").css("display", "block");
+    //$(".pref-header").css("visibility", "hidden");
   });
 /////////// fin color palette
 
@@ -1565,17 +1566,28 @@ $("#toolbarBottomMask").hover( function () {
   // mousemove over: find pref zones
     $(".pref-body").on("mousemove", function(ev) {
       // return pref zone containing cursor
-      function mouseInZone(X, Y) {
-        var z = {text: {top: 221, right: 915, bottom: 316, left: 321},
-                frame: {top: 315, right: 915, bottom: 427, left: 321},
-                h1: {top: 426, right: 456, bottom: 686, left: 321},
-                h2: {top: 426, right: 582, bottom: 686, left: 455},
-                h3: {top: 426, right: 710, bottom: 686, left: 581},
-                h4: {top: 426, right: 915, bottom: 686, left: 709}
+      function mouseInZone(X0, Y0) {
+        var z = {text: {top: -20, right: 720, bottom: 94, left: 200},
+                frame: {top: 93, right: 720, bottom: 204, left: 200},
+                h1: {top: 203, right: 337, bottom: 462, left: 200},
+                h2: {top: 203, right: 464, bottom: 462, left: 336},
+                h3: {top: 203, right: 591, bottom: 462, left: 463},
+                h4: {top: 203, right: 720, bottom: 462, left: 590}
               };
+
+        var X = X0 - $(".pref-body").offset().left;
+        var Y = Y0 - $(".pref-body").offset().top;
+
+        console.log("----");
+        //console.log("X0: " + X0);
+        //console.log("Y0: " + Y0);
+        console.log("X: " + X);
+        console.log("Y: " + Y);
+
         for ( var zone in z ) {
           if ( X > z[zone].left && X < z[zone].right && Y > z[zone].top && Y < z[zone].bottom ) {
             $("#color-select").attr("data-pref-zone", zone);
+            console.log(zone);
             return zone;
           }
         }
@@ -1585,14 +1597,19 @@ $("#toolbarBottomMask").hover( function () {
       var zone = mouseInZone(ev.pageX, ev.pageY);
       if ( zone ) {
         $("#pref-preview").css("display", "block");
+        //$(".pref-header").css("visibility", "hidden");
         displayPrefPreview(zone);
       }
-      else $("#pref-preview").css("display", "none");
+      else {
+        $("#pref-preview").css("display", "none");
+        //$(".pref-header").css("visibility", "visible");
+      }
     });
 
   ////
     $(".pref-modal-content").on("mouseleave", function(ev) {
       $("#pref-preview").css("display", "none");
+      //$(".pref-header").css("visibility", "visible");
     });
 
 

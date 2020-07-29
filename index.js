@@ -593,7 +593,8 @@ function displayPrefPreview(zone) {
 
   $(pp).css({"display": "block",
             "border-width": 0,
-            "background-color": "white"});
+            "background-color": "white",
+            "border-radius": 0});
 
   if ( zone == "text" ) {
     lineHeight0 = 48;

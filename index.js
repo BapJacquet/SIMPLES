@@ -1340,7 +1340,7 @@ $("#toolbarBottomMask").hover( function () {
     chooseText: "choisir",
     cancelText: "annuler",
     hideAfterPaletteSelect:true,
-    color: "#ECC",
+    color: $(".color-custom").css("color"),
     showInput: false,
     showInitial: true,
     showPalette: true,
@@ -1425,7 +1425,6 @@ $("#toolbarBottomMask").hover( function () {
     chooseText: "choisir",
     cancelText: "annuler",
     hideAfterPaletteSelect:true,
-    color: "#ECC",
     showInput: false,
     showInitial: true,
     showPalette: true,
@@ -1438,8 +1437,10 @@ $("#toolbarBottomMask").hover( function () {
     move: function (color) {
     },
     show: function () {
+      console.log($("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     beforeShow: function () {
+      $(".color-custom-plus").spectrum("set", $("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     hide: function(tinycolor) {
     },
@@ -1578,16 +1579,9 @@ $("#toolbarBottomMask").hover( function () {
         var X = X0 - $(".pref-body").offset().left;
         var Y = Y0 - $(".pref-body").offset().top;
 
-        console.log("----");
-        //console.log("X0: " + X0);
-        //console.log("Y0: " + Y0);
-        console.log("X: " + X);
-        console.log("Y: " + Y);
-
         for ( var zone in z ) {
           if ( X > z[zone].left && X < z[zone].right && Y > z[zone].top && Y < z[zone].bottom ) {
             $("#color-select").attr("data-pref-zone", zone);
-            console.log(zone);
             return zone;
           }
         }

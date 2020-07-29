@@ -1457,7 +1457,7 @@ $("#toolbarBottomMask").hover( function () {
   // dont change zone when color palette is open
   $(".sp-container").on("mouseenter", function (ev) {
     $("#pref-preview").css("display", "block");
-    //$(".pref-header").css("visibility", "hidden");
+    //$(".pref-header").css("background-color", "white");
   });
 /////////// fin color palette
 
@@ -1592,19 +1592,19 @@ $("#toolbarBottomMask").hover( function () {
       var zone = mouseInZone(ev.pageX, ev.pageY);
       if ( zone ) {
         $("#pref-preview").css("display", "block");
-        //$(".pref-header").css("visibility", "hidden");
+        $(".pref-header").css("background-color", "#f2f2f2");
         displayPrefPreview(zone);
       }
       else {
         $("#pref-preview").css("display", "none");
-        //$(".pref-header").css("visibility", "visible");
+        $(".pref-header").css("background-color", "lightgrey");
       }
     });
 
   ////
     $(".pref-modal-content").on("mouseleave", function(ev) {
       $("#pref-preview").css("display", "none");
-      //$(".pref-header").css("visibility", "visible");
+      $(".pref-header").css("background-color", "lightgrey");
     });
 
 

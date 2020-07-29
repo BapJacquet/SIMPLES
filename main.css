@@ -1060,6 +1060,7 @@ li.nav-item {
   padding: 40px;
   margin-bottom: 20px;
   background-color: lightgrey;
+  border-bottom: 3px solid #888;
 }
 
 #pref-preview {
@@ -1084,6 +1085,7 @@ li.nav-item {
 
 .pref-body {
   padding-top: 0;
+  border-bottom: 1px solid #888;
 }
 
 .pref-zone {

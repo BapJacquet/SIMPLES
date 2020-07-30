@@ -481,7 +481,9 @@ function getPrefColor (selector) {
   let path = $(selector + ' img').attr('src').split('/');
   let ba = path[path.length - 1].split('.')[0].split('-');
   let c = 'black';
-  switch (ba[ba.length - 1]) {
+  let baba = ba[ba.length - 1];
+  if ( baba == "back" || baba == "color" ) baba = ba[ba.length - 2];
+  switch (baba) {
     case 'red': c = COLOR_RED; break;
     case 'green': c = COLOR_GREEN; break;
     case 'blue': c = '#0000ff'; break;
@@ -540,17 +542,21 @@ function sendPreferencesToEditor () {
 function getImgColorName(color, selector) {
   let img;
   switch (color) {
-    case COLOR_RED: img = "red.png"; break;
-    case COLOR_GREEN: img = "green.png"; break;
-    case "#0000ff": img = "blue.png"; break;
-    case "black": img = "black.png"; break;
-    case "normal": img = "thin.png"; break;
-    case "bold": img = "bold.png"; break;
+    case COLOR_RED: img = "red"; break;
+    case COLOR_GREEN: img = "green"; break;
+    case "#0000ff": img = "blue"; break;
+    case "black": img = "black"; break;
+    case "normal": img = "thin"; break;
+    case "bold": img = "bold"; break;
     default:
-      img = "colorplus.png"; break;
+      img = "colorplus"; break;
   }
-  selector.find("img").attr("src", "img/pref/pref-" + img);
-  if ( img.split(".")[0] == "colorplus" ) {
+  if ( selector.attr("id").match(/frame-back/) ) img = "img/pref/pref-" + img + "-back.png";
+  else if ( selector.attr("id").match(/frame-color/) ) img = "img/pref/pref-" + img + "-color.png";
+  else img = "img/pref/pref-" + img + ".png";
+
+  selector.find("img").attr("src", img);
+  if ( img.match(/colorplus/) ) {
     selector.find(".color-plus").css("color", color);
   }
 }
@@ -1470,6 +1476,7 @@ $("#toolbarBottomMask").hover( function () {
 
   // #color-select button move
     $(".pref-color, .pref-h-bold").on("mousemove", function (ev) {
+      let frameString;
       let decal = 22;
       let margin = 4;
       let imgTop = $(this).offset().top - margin;
@@ -1477,6 +1484,11 @@ $("#toolbarBottomMask").hover( function () {
       let mouseY = ev.pageY;
       let mouseX = ev.pageX;
       $(".color-custom-plus").spectrum("disable");
+
+      if ( $(this).parent().attr("id") == "pref-frame-back" ) frameString = "-back";
+      else if ( $(this).parent().attr("id") == "pref-frame-color" ) frameString = "-color";
+      else frameString = "";
+
       if ( $(ev.target).hasClass("pref-h-bold") ) {
         imgLeft+= 26;
         if ( mouseX - imgLeft < decal ) {
@@ -1491,27 +1503,27 @@ $("#toolbarBottomMask").hover( function () {
       }
       else {
         if ( mouseX - imgLeft < decal ) {
-          $("#color-select").attr("data-img", "img/pref/pref-black.png");
+          $("#color-select").attr("data-img", "img/pref/pref-black" + frameString + ".png");
           $("#color-select").attr("data-color", "black");
         }
         else if ( mouseX - imgLeft < decal *2 ) {
           imgLeft+= decal;
-          $("#color-select").attr("data-img", "img/pref/pref-red.png");
+          $("#color-select").attr("data-img", "img/pref/pref-red" + frameString + ".png");
           $("#color-select").attr("data-color", "red");
         }
         else if ( mouseX - imgLeft < decal *3 ) {
           imgLeft+= decal *2;
-          $("#color-select").attr("data-img", "img/pref/pref-blue.png");
+          $("#color-select").attr("data-img", "img/pref/pref-blue" + frameString + ".png");
           $("#color-select").attr("data-color", "blue");
         }
         else if ( mouseX - imgLeft < decal *4 ) {
           imgLeft+= decal *3;
-          $("#color-select").attr("data-img", "img/pref/pref-green.png");
+          $("#color-select").attr("data-img", "img/pref/pref-green" + frameString + ".png");
           $("#color-select").attr("data-color", "green");
         }
         else if ( mouseX - imgLeft < decal *5 ) {
           imgLeft+= decal *4;
-          $("#color-select").attr("data-img", "img/pref/pref-colorplus.png");
+          $("#color-select").attr("data-img", "img/pref/pref-colorplus" + frameString + ".png");
           $(".color-custom-plus").spectrum("enable");
         }
       }

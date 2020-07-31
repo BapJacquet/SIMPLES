@@ -644,6 +644,18 @@ function displayPrefPreview(zone) {
   }
 }
 
+///////// save picked color
+function savePickedColor (color) {
+  let pc = JSON.parse(localStorage.paletteColors);
+  for ( let i = 0; i < pc.length; i++ ) {
+    if ( pc[i][0] == color ) return;
+  }
+  let colorTab = [color];
+  pc.push(colorTab);
+  if ( pc.length > 6 ) pc.shift();
+  localStorage.paletteColors = JSON.stringify(pc);
+}
+
 /////////////////////////////////////////////////////////////////
 //                                    toolbar update from editor
 function setFormatAtToolbar(format) {
@@ -1351,22 +1363,25 @@ $("#toolbarBottomMask").hover( function () {
     showInput: false,
     showInitial: true,
     showPalette: true,
-    showSelectionPalette: true,
+    showSelectionPalette: false,
     palette: [],
+    selectionPalette: [],
     maxSelectionSize: 6,
     preferredFormat: "hex",
-    localStorageKey: "spectrum",
+    //localStorageKey: "spectrum",
     clickoutFiresChange: false,
     move: function (color) {
     },
     show: function () {
     },
     beforeShow: function () {
+      $(".color-custom").spectrum("option", "palette", JSON.parse(localStorage.paletteColors));
     },
     hide: function() {
     },
     change: function(tinycolor) {
       let color = tinycolor.toHexString();
+      savePickedColor(color);
       $("#" + prefColorplusButton).css("color", color);
       $(".color-custom").css("color", color);
       sendtoEditor("color", color);
@@ -1425,7 +1440,7 @@ $("#toolbarBottomMask").hover( function () {
     //console.log(window.getSelection().getRangeAt(0).toString());
   } );
 
-  ////////////////////// PREFERENCES ///////////////////////
+  ////////////////////// PREFERENCES events ///////////////////////
 
   /////////// color palette for colorplus pref
   $(".color-custom-plus").spectrum({
@@ -1435,11 +1450,11 @@ $("#toolbarBottomMask").hover( function () {
     showInput: false,
     showInitial: true,
     showPalette: true,
-    showSelectionPalette: true,
+    showSelectionPalette: false,
     palette: [],
     maxSelectionSize: 6,
     preferredFormat: "hex",
-    localStorageKey: "spectrum",
+    //localStorageKey: "spectrum",
     clickoutFiresChange: false,
     move: function (color) {
     },
@@ -1447,12 +1462,14 @@ $("#toolbarBottomMask").hover( function () {
       console.log($("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     beforeShow: function () {
+      $(".color-custom-plus").spectrum("option", "palette", JSON.parse(localStorage.paletteColors));
       $(".color-custom-plus").spectrum("set", $("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     hide: function(tinycolor) {
     },
     change: function(tinycolor) {
       let color = tinycolor.toHexString();
+      savePickedColor(color);
       let place = $(this).attr("data-place");
       let elem = place.split("-")[1];
       $(`#${place} div`).css("color", color);
@@ -2123,8 +2140,9 @@ $("#toolbarBottomMask").hover( function () {
   analysisPanelShowHide("hide", 0);
   setTimeout(function () {
     initToolbar();
-    //$("#blc-0").trigger("mouseenter");
-    //$(".img-widget, .img-txt-widget").css("display", "none");
+
+    if ( !localStorage.paletteColors ) localStorage.paletteColors = JSON.stringify([]);
+
     $( window ).trigger("resize");
     $("#blockCmd").css("display", "none");
     $('body').css({"visibility":"visible"});

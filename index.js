@@ -481,7 +481,9 @@ function getPrefColor (selector) {
   let path = $(selector + ' img').attr('src').split('/');
   let ba = path[path.length - 1].split('.')[0].split('-');
   let c = 'black';
-  switch (ba[ba.length - 1]) {
+  let baba = ba[ba.length - 1];
+  if ( baba == "back" || baba == "color" ) baba = ba[ba.length - 2];
+  switch (baba) {
     case 'red': c = COLOR_RED; break;
     case 'green': c = COLOR_GREEN; break;
     case 'blue': c = '#0000ff'; break;
@@ -540,17 +542,21 @@ function sendPreferencesToEditor () {
 function getImgColorName(color, selector) {
   let img;
   switch (color) {
-    case COLOR_RED: img = "red.png"; break;
-    case COLOR_GREEN: img = "green.png"; break;
-    case "#0000ff": img = "blue.png"; break;
-    case "black": img = "black.png"; break;
-    case "normal": img = "thin.png"; break;
-    case "bold": img = "bold.png"; break;
+    case COLOR_RED: img = "red"; break;
+    case COLOR_GREEN: img = "green"; break;
+    case "#0000ff": img = "blue"; break;
+    case "black": img = "black"; break;
+    case "normal": img = "thin"; break;
+    case "bold": img = "bold"; break;
     default:
-      img = "colorplus.png"; break;
+      img = "colorplus"; break;
   }
-  selector.find("img").attr("src", "img/pref/pref-" + img);
-  if ( img.split(".")[0] == "colorplus" ) {
+  if ( selector.attr("id").match(/frame-back/) ) img = "img/pref/pref-" + img + "-back.png";
+  else if ( selector.attr("id").match(/frame-color/) ) img = "img/pref/pref-" + img + "-color.png";
+  else img = "img/pref/pref-" + img + ".png";
+
+  selector.find("img").attr("src", img);
+  if ( img.match(/colorplus/) ) {
     selector.find(".color-plus").css("color", color);
   }
 }
@@ -593,7 +599,8 @@ function displayPrefPreview(zone) {
 
   $(pp).css({"display": "block",
             "border-width": 0,
-            "background-color": "white"});
+            "background-color": "white",
+            "border-radius": 0});
 
   if ( zone == "text" ) {
     lineHeight0 = 48;
@@ -635,6 +642,18 @@ function displayPrefPreview(zone) {
         else $(pp).css({"text-align": "left"});
     }
   }
+}
+
+///////// save picked color
+function savePickedColor (color) {
+  let pc = JSON.parse(localStorage.paletteColors);
+  for ( let i = 0; i < pc.length; i++ ) {
+    if ( pc[i][0] == color ) return;
+  }
+  let colorTab = [color];
+  pc.push(colorTab);
+  if ( pc.length > 6 ) pc.shift();
+  localStorage.paletteColors = JSON.stringify(pc);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -1340,26 +1359,29 @@ $("#toolbarBottomMask").hover( function () {
     chooseText: "choisir",
     cancelText: "annuler",
     hideAfterPaletteSelect:true,
-    color: "#ECC",
+    color: $(".color-custom").css("color"),
     showInput: false,
     showInitial: true,
     showPalette: true,
-    showSelectionPalette: true,
+    showSelectionPalette: false,
     palette: [],
+    selectionPalette: [],
     maxSelectionSize: 6,
     preferredFormat: "hex",
-    localStorageKey: "spectrum",
+    //localStorageKey: "spectrum",
     clickoutFiresChange: false,
     move: function (color) {
     },
     show: function () {
     },
     beforeShow: function () {
+      $(".color-custom").spectrum("option", "palette", JSON.parse(localStorage.paletteColors));
     },
     hide: function() {
     },
     change: function(tinycolor) {
       let color = tinycolor.toHexString();
+      savePickedColor(color);
       $("#" + prefColorplusButton).css("color", color);
       $(".color-custom").css("color", color);
       sendtoEditor("color", color);
@@ -1418,33 +1440,36 @@ $("#toolbarBottomMask").hover( function () {
     //console.log(window.getSelection().getRangeAt(0).toString());
   } );
 
-  ////////////////////// PREFERENCES ///////////////////////
+  ////////////////////// PREFERENCES events ///////////////////////
 
   /////////// color palette for colorplus pref
   $(".color-custom-plus").spectrum({
     chooseText: "choisir",
     cancelText: "annuler",
     hideAfterPaletteSelect:true,
-    color: "#ECC",
     showInput: false,
     showInitial: true,
     showPalette: true,
-    showSelectionPalette: true,
+    showSelectionPalette: false,
     palette: [],
     maxSelectionSize: 6,
     preferredFormat: "hex",
-    localStorageKey: "spectrum",
+    //localStorageKey: "spectrum",
     clickoutFiresChange: false,
     move: function (color) {
     },
     show: function () {
+      console.log($("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     beforeShow: function () {
+      $(".color-custom-plus").spectrum("option", "palette", JSON.parse(localStorage.paletteColors));
+      $(".color-custom-plus").spectrum("set", $("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     hide: function(tinycolor) {
     },
     change: function(tinycolor) {
       let color = tinycolor.toHexString();
+      savePickedColor(color);
       let place = $(this).attr("data-place");
       let elem = place.split("-")[1];
       $(`#${place} div`).css("color", color);
@@ -1455,7 +1480,7 @@ $("#toolbarBottomMask").hover( function () {
   // dont change zone when color palette is open
   $(".sp-container").on("mouseenter", function (ev) {
     $("#pref-preview").css("display", "block");
-    //$(".pref-header").css("visibility", "hidden");
+    //$(".pref-header").css("background-color", "white");
   });
 /////////// fin color palette
 
@@ -1468,6 +1493,7 @@ $("#toolbarBottomMask").hover( function () {
 
   // #color-select button move
     $(".pref-color, .pref-h-bold").on("mousemove", function (ev) {
+      let frameString;
       let decal = 22;
       let margin = 4;
       let imgTop = $(this).offset().top - margin;
@@ -1475,6 +1501,11 @@ $("#toolbarBottomMask").hover( function () {
       let mouseY = ev.pageY;
       let mouseX = ev.pageX;
       $(".color-custom-plus").spectrum("disable");
+
+      if ( $(this).parent().attr("id") == "pref-frame-back" ) frameString = "-back";
+      else if ( $(this).parent().attr("id") == "pref-frame-color" ) frameString = "-color";
+      else frameString = "";
+
       if ( $(ev.target).hasClass("pref-h-bold") ) {
         imgLeft+= 26;
         if ( mouseX - imgLeft < decal ) {
@@ -1489,27 +1520,27 @@ $("#toolbarBottomMask").hover( function () {
       }
       else {
         if ( mouseX - imgLeft < decal ) {
-          $("#color-select").attr("data-img", "img/pref/pref-black.png");
+          $("#color-select").attr("data-img", "img/pref/pref-black" + frameString + ".png");
           $("#color-select").attr("data-color", "black");
         }
         else if ( mouseX - imgLeft < decal *2 ) {
           imgLeft+= decal;
-          $("#color-select").attr("data-img", "img/pref/pref-red.png");
+          $("#color-select").attr("data-img", "img/pref/pref-red" + frameString + ".png");
           $("#color-select").attr("data-color", "red");
         }
         else if ( mouseX - imgLeft < decal *3 ) {
           imgLeft+= decal *2;
-          $("#color-select").attr("data-img", "img/pref/pref-blue.png");
+          $("#color-select").attr("data-img", "img/pref/pref-blue" + frameString + ".png");
           $("#color-select").attr("data-color", "blue");
         }
         else if ( mouseX - imgLeft < decal *4 ) {
           imgLeft+= decal *3;
-          $("#color-select").attr("data-img", "img/pref/pref-green.png");
+          $("#color-select").attr("data-img", "img/pref/pref-green" + frameString + ".png");
           $("#color-select").attr("data-color", "green");
         }
         else if ( mouseX - imgLeft < decal *5 ) {
           imgLeft+= decal *4;
-          $("#color-select").attr("data-img", "img/pref/pref-colorplus.png");
+          $("#color-select").attr("data-img", "img/pref/pref-colorplus" + frameString + ".png");
           $(".color-custom-plus").spectrum("enable");
         }
       }
@@ -1578,16 +1609,9 @@ $("#toolbarBottomMask").hover( function () {
         var X = X0 - $(".pref-body").offset().left;
         var Y = Y0 - $(".pref-body").offset().top;
 
-        console.log("----");
-        //console.log("X0: " + X0);
-        //console.log("Y0: " + Y0);
-        console.log("X: " + X);
-        console.log("Y: " + Y);
-
         for ( var zone in z ) {
           if ( X > z[zone].left && X < z[zone].right && Y > z[zone].top && Y < z[zone].bottom ) {
             $("#color-select").attr("data-pref-zone", zone);
-            console.log(zone);
             return zone;
           }
         }
@@ -1597,19 +1621,19 @@ $("#toolbarBottomMask").hover( function () {
       var zone = mouseInZone(ev.pageX, ev.pageY);
       if ( zone ) {
         $("#pref-preview").css("display", "block");
-        //$(".pref-header").css("visibility", "hidden");
+        $(".pref-header").css("background-color", "#f2f2f2");
         displayPrefPreview(zone);
       }
       else {
         $("#pref-preview").css("display", "none");
-        //$(".pref-header").css("visibility", "visible");
+        $(".pref-header").css("background-color", "lightgrey");
       }
     });
 
   ////
     $(".pref-modal-content").on("mouseleave", function(ev) {
       $("#pref-preview").css("display", "none");
-      //$(".pref-header").css("visibility", "visible");
+      $(".pref-header").css("background-color", "lightgrey");
     });
 
 
@@ -2116,8 +2140,9 @@ $("#toolbarBottomMask").hover( function () {
   analysisPanelShowHide("hide", 0);
   setTimeout(function () {
     initToolbar();
-    //$("#blc-0").trigger("mouseenter");
-    //$(".img-widget, .img-txt-widget").css("display", "none");
+
+    if ( !localStorage.paletteColors ) localStorage.paletteColors = JSON.stringify([]);
+
     $( window ).trigger("resize");
     $("#blockCmd").css("display", "none");
     $('body').css({"visibility":"visible"});

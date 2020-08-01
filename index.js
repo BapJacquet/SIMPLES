@@ -571,22 +571,13 @@ function initPreferencesDialog(theme) {
   getImgColorName(theme.frame.border.split(" ")[2], $("#pref-frame-color"));
   $("#pref-frame-size").val(theme.frame.border.split(" ")[0].split("pt")[0]);
   $("#pref-frame-radius").val(theme.frame["border-radius"].split("pt")[0]);
-// h1
-  getImgColorName(theme.h1.color, $("#pref-h1-color"));
-  $("#pref-h1-size").val(theme.h1["font-size"].split("pt")[0]);
-  $("#pref-h1-bold").val(theme.h1["font-weight"].split("pt")[0]);
-// h2
-  getImgColorName(theme.h2.color, $("#pref-h2-color"));
-  $("#pref-h2-size").val(theme.h2["font-size"].split("pt")[0]);
-  $("#pref-h2-bold").val(theme.h2["font-weight"].split("pt")[0]);
-// h3
-  getImgColorName(theme.h3.color, $("#pref-h3-color"));
-  $("#pref-h3-size").val(theme.h3["font-size"].split("pt")[0]);
-  $("#pref-h3-bold").val(theme.h3["font-weight"].split("pt")[0]);
-// h4
-  getImgColorName(theme.h4.color, $("#pref-h4-color"));
-  $("#pref-h4-size").val(theme.h4["font-size"].split("pt")[0]);
-  $("#pref-h4-bold").val(theme.h4["font-weight"].split("pt")[0]);
+
+
+  for (var level of ['h1', 'h2', 'h3', 'h4']) {
+    getImgColorName(theme[`${level}`].color, $(`#pref-${level}-color`));
+    $("#pref-h1-size").val(theme[`${level}`]["font-size"].split("pt")[0]);
+    $("#pref-h1-bold").val(theme[`${level}`]["font-weight"].split("pt")[0]);
+  }
 }
 
 /////////

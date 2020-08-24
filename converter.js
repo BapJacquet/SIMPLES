@@ -6,6 +6,54 @@
 
 class Converter {
   /**
+   * Fills the editor with the content of the given string, clearing any
+   * previous content.
+   * @param {Editor} editor - The editor to put the content into.
+   * @param {string} string - The string content to insert.
+   */
+  static fromTxt (editor, string) {
+    editor.clear();
+    const lines = string.split('\n');
+    let currentBlockContent = '';
+    let blockId = 0;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] === '') {
+        if (blockId === 0) {
+          editor.setTextAt(0, 0, 0, currentBlockContent);
+        } else {
+          editor.addBlock(currentBlockContent);
+        }
+        blockId++;
+        currentBlockContent = '';
+      } else {
+        currentBlockContent += currentBlockContent === '' ? lines[i] : '\n' + lines[i];
+      }
+    }
+  }
+
+  /**
+   * Create the TXT string from the content of the given editor.
+   * @param {Editor} editor - The editor to draw the content from.
+   * @return {string} The resulting text string.
+   */
+  static async toTxt (editor) {
+    let result = "";
+    for (let i = 0; i < editor.blockCount; i++) {
+      let blockFormat = editor.getBlockFormat(i);
+      switch (blockFormat.blockType) {
+        case 'default':
+          result += editor.getRawTextContent(i);
+          break;
+        case 'images':
+          result += "[Les blocs images ne peuvent pas être exportés en fichiers texte]\n";
+          break;
+      }
+      result += "\n";
+    }
+    return result;
+  }
+
+  /**
    * Create the HTML code from the content of the given editor.
    * @param {Editor} editor - The editor to draw the content from.
    * @return {string} The resulting HTML string.
@@ -43,7 +91,7 @@ class Converter {
           break;
         case 'images':
           for (let c = 0; c < editor.getImageCountInBlock(i); c++) {
-            content += `<div><img src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).children[0].innerHTML}</div>`;
+            content += `<div><img class="image" src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).children[0].innerHTML}</div>`;
           }
           blockStyle = 'grid-template-columns:' + times(' 1fr', editor.getImageCountInBlock(i)) + ';';
           break;
@@ -51,7 +99,7 @@ class Converter {
       blocks += `<div class="${blockClasses}" style="${blockStyle}">${content}</div>`;
     }
     let style = '.lirec-container {font-size: 14pt; font-family: Arial; max-width: 600px; margin: auto;}';
-    style += '.default-block {display: grid; grid-template-columns: 100px 1fr 100px;}';
+    style += '.default-block {display: grid; grid-template-columns: 100px 1fr 100px; margin-bottom: 1em; margin-top: 1em;}';
     style += '.images-block {display: grid;}';
     style += '.frame {border: 4pt solid black; border-thickness: 4pt}';
     style += '.fulltext {grid-column: 1 / span 3;}';
@@ -66,7 +114,7 @@ class Converter {
     style += 'h1 {text-align: center;}'
     style += 'h2,h3,h4,h5 {margin: 0;}';
     let styleContainer = `<style type="text/css">${style}</style>`;
-    let container = `<html><head>${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
+    let container = `<html><head><meta http-equiv="content-type" content="text/html charset=utf-8" />${styleContainer}</head><body><div class="lirec-container">${blocks}</div></body></html>`;
     return container;
   }
 
@@ -76,20 +124,73 @@ class Converter {
    * @return {makePdfDocument} The resulting pdf.
    */
   static async toPdf (editor) {
-    let docDefinition = {
-      content: [],
-      styles: editor.styles,
-      defaultStyle: editor.defaultStyle,
-      pageMargins: [72, 72, 72, 72] // 72 = 1 inch
+    const styles = {};
+    for (const level of ['h1', 'h2', 'h3', 'h4']) {
+      styles[level] = {};
+      styles[level].alignment = editor.theme[level]['text-align'];
+      styles[level].fontSize = Number(editor.theme[level]['font-size'].replace('pt', ''));
+      styles[level].color = editor.theme[level].color;
+      styles[level].bold = editor.theme[level]['font-weight'] !== 'normal';
+    }
+    const defaultStyle = {
+      fontSize: Number(editor.theme.default['font-size'].replace('pt', '')),
+      color: editor.theme.default.color
     };
-
+    const tableLayouts = {
+      frame: {
+        hLineWidth: function (i, node) {
+          return (i === 0 || i === node.table.body.length) ? Number(editor.theme.frame.border.split(' ')[0].replace('pt', '')) : 0;
+        },
+        vLineWidth: function (i, node) {
+          return (i === 0 || i === node.table.widths.length) ? Number(editor.theme.frame.border.split(' ')[0].replace('pt', '')) : 0;
+        },
+        hLineColor: function (i, node) {
+          return editor.theme.frame.border.split(' ')[2];
+        },
+        vLineColor: function (i, node) {
+          return editor.theme.frame.border.split(' ')[2];
+        }
+      }
+    };
+    const margin = editor.theme.page.padding.replace(/in/g, '').split(' ');
+    for (let i = 0; i < margin.length; i++) {
+      margin[i] = (1 + Number(margin[i])) * 72;
+    }
+    const docDefinition = {
+      content: [],
+      pageSize: 'A4',
+      styles: styles,
+      defaultStyle: defaultStyle,
+      footer: function (currentPage, pageCount) {
+        if (pageCount > 1) return { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, alignment: 'right', margin: [0, 0, margin[2], 0] };
+        else return '';
+      },
+      pageBreakBefore: function(currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
+        return false;
+      },
+      pageMargins: margin // 96 = 1 inch
+    };
+    let contentLength = 1300 - docDefinition.pageMargins[1] - docDefinition.pageMargins[3];
+    let bottomY = docDefinition.pageMargins[1];
     for (let i = 0; i < editor.blockCount; i++) {
       let blockElement = editor.getBlockElement(i);
       let blockFormat = editor.getBlockFormat(i);
+      let blockHeight = 0;
+      blockHeight += Utils.pxToNumber($(blockElement).css("margin-top"));
+      blockHeight += Utils.pxToNumber($(blockElement).css("height"));
       let blockDefinition = {
         layout: blockFormat.frame ? 'frame' : 'noBorders',
         margin: [0, 4]
       };
+      console.log(blockHeight);
+      if (bottomY + blockHeight > contentLength) {
+        console.log("Pagebreak because Y (" + (bottomY+blockHeight) + ") would be greater than " + contentLength);
+        blockDefinition.pageBreak = 'before';
+        bottomY = docDefinition.pageMargins[1] + blockHeight + Utils.pxToNumber($(blockElement).css("margin-bottom"));
+      } else {
+        bottomY += blockHeight + Utils.pxToNumber($(blockElement).css("margin-bottom"));
+      }
+
       switch (blockFormat.blockType) {
         case 'default': {
           let content = [[]];
@@ -100,8 +201,9 @@ class Converter {
               margin: [0, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getImageElement(i, 0), blockElement).top), 0, 0]
             });
           }
+          //console.log(editor.getStyledText(i));
           content[0].push({
-            text: editor.getStyledText(i),
+            stack: editor.getStyledText(i),
             margin: [5, Utils.pixelToPoint(Utils.getRelativeOffset(editor.getTextElement(i), blockElement).top), 5, 1]
           });
           if (blockFormat.pictureRight) {
@@ -129,7 +231,7 @@ class Converter {
               width: Utils.pixelToPoint($(img).width()),
               margin: [Utils.pixelToPoint(Utils.getRelativeOffset(img, editor.getTextElement(i, c)).left), 0, 0, 0]
             });
-            content[1].push(editor.getTextElement(i, c).textContent);
+            content[1].push({ stack: editor.getStyledText(i, c), alignment: 'center' });
           }
           blockDefinition.table = {
             widths: widths,
@@ -141,7 +243,7 @@ class Converter {
       docDefinition.content.push(blockDefinition);
     }
     console.log(docDefinition);
-    return pdfMake.createPdf(docDefinition, editor.tableLayouts);
+    return pdfMake.createPdf(docDefinition, tableLayouts);
   }
 
   /**
@@ -150,6 +252,7 @@ class Converter {
    * @return {Blob} The resulting archive.
    */
   static async toDocx (editor) {
+    simplesAlert("En chantier");
     let zip = new JSZip();
     let word = zip.folder('word');
     let props = zip.folder('docProps');
@@ -176,6 +279,7 @@ class Converter {
    * @return {Blob} The resulting archive.
    */
   static async toOdt (editor) {
+    simplesAlert("En chantier");
     let templateData = await JSZipUtils.getBinaryContent('./converters/template.odt');
     let templateZip = await JSZip.loadAsync(templateData);
 

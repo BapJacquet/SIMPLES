@@ -6,6 +6,9 @@ if(!$url) {
 $url =  rawurlencode($url);
 $url = str_replace("%2F", "/", $url);
 $url = str_replace("%3A", ":", $url);
+$url = str_replace("%3D", "=", $url);
+$url = str_replace("%3F", "?", $url);
+$url = str_replace("%26", "&", $url);
 $imgInfo = getimagesize($url);
 if(stripos($imgInfo['mime'], 'image/') === false) {
   die ('Invalid image file at '.$url);

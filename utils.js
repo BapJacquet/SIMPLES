@@ -22,6 +22,15 @@ class Utils {
     return (px * 25.4) / 96;
   }
 
+  static cmToInches (cm) {
+    return cm / 2.54;
+  }
+
+  static containsEncodedComponents (x) {
+    // ie ?,=,&,/ etc
+    return (decodeURI(x) !== decodeURIComponent(x));
+  }
+
   static getRelativeOffset (element, relativeTo = $(element).parent().get(0)) {
     let elem = $(element);
     let eOffset = elem.offset();
@@ -55,5 +64,9 @@ class Utils {
    */
   static stringEndsWith (string, suffix) {
     return string.indexOf(suffix, this.length - suffix.length) !== -1;
+  }
+
+  static pxToNumber (string) {
+    return Number(string.replace('px', ''));
   }
 }

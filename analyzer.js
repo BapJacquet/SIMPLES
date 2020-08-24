@@ -23,7 +23,7 @@ var pings = {
     usable: true
   },
   Stanford: {
-    url: 'http://sioux.univ-paris8.fr:9000',
+    url: 'http://51.91.138.70:9000',
     latency: 0,
     usable: true
   }
@@ -54,7 +54,7 @@ async function pingAll () {
   $('#pingers').html(s);
 }
 
-var pingClock = setInterval(pingAll, 5000)
+var pingClock = setInterval(pingAll, 10000)
 
 async function ping (object) {
   var start = $.now();
@@ -125,6 +125,10 @@ var rules = [
       let appendedContent = '';
       for(let cm of data.complexWords) {
         let synonyms = '';
+        let color = '#333333';
+        if (cm.frequency < 5) color = '#c10000';
+        else if (cm.frequency < 10) color = '#c16700';
+        else if (cm.frequency < 20) color = '#006700';
         let content = `<p>${description(frequencyToText(cm.frequency))}</p>`;
         if (cm.dictionary.meanings.length > 0) {
           for (let j = 0; j < cm.dictionary.meanings[0].synonyms.length; j++) {
@@ -134,7 +138,7 @@ var rules = [
         }
         let popover = `data-html="true" data-boundary="viewport" data-placement="auto" data-trigger="hover" data-toggle="popover" title='${frequencyToText(cm.frequency)}' data-content="${content}"`;
 
-        appendedContent += `<button type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
+        appendedContent += `<button style="background: ${color}; border-color: ${color};" type="button" class="ruleButton" ${popover} onClick='editor.selectFirst("${cm.text}", true)'>${cm.text}</button>`
       }
       return {result: data.complexWords.length === 0, info: {append: '<div>' + appendedContent + '</div>'}};
     }},
@@ -142,7 +146,7 @@ var rules = [
     text: 'Expliquez&nbsp;clairement les&nbsp;mots&nbsp;difficiles au&nbsp;moment où&nbsp;ils&nbsp;sont&nbsp;utilisés.',
     test: function (data) { return {result: undefined, info: {}}; }},
   {priority: 3,
-    text: "Utilisez&nbsp;toujours une&nbsp;police&nbsp;d'écriture facile&nbsp;à&nbsp;lire&nbsp;: Arial&nbsp;14.",
+    text: "Utilisez&nbsp;toujours une&nbsp;police&nbsp;d'écriture facile&nbsp;à&nbsp;lire comme&nbsp;Arial&nbsp;14.",
     test: function (data) { return {result: true, info: {}}; }},
   {priority: 3,
     text: "N'utilisez&nbsp;jamais une&nbsp;écriture&nbsp;trop&nbsp;claire ou&nbsp;en&nbsp;couleur qui&nbsp;ne&nbsp;s'imprime&nbsp;pas&nbsp;bien.",
@@ -172,7 +176,7 @@ var rules = [
   {priority: 3,
     text: 'Commencez&nbsp;toujours une&nbsp;nouvelle&nbsp;phrase sur&nbsp;une&nbsp;nouvelle&nbsp;ligne.',
     test: function (data) {
-      let pattern = /(?<=[\.\?\!])[^\n\.\?\!]+[\.\?\!]?/gm;
+      let pattern = /[\.\?\!][^\n\.\?\!]+/gm;
       let result = true;
       for (let i = 0; i < data.raw.length; i++) {
         if (!Utils.isNullOrUndefined(data.raw[i].match(pattern))) {
@@ -189,10 +193,10 @@ var rules = [
     test: function (data) { return {result: undefined, info: {}}; }},
   // Très importantes
   {priority: 2,
-    text: 'Utilisez le même mot pour parler de la même chose.',
+    text: 'Utilisez&nbsp;le&nbsp;même&nbsp;mot pour&nbsp;parler&nbsp;de&nbsp;la&nbsp;même&nbsp;chose.',
     test: function (data) { return {result: undefined, info: {}}; }},
   {priority: 2,
-    text: 'Parlez&nbsp;directement&nbspaux&nbspgens. Utilisez&nbspdes&nbspmots&nbsp;comme&nbsp;"vous".',
+    text: 'Parlez&nbsp;directement&nbsp;aux&nbsp;gens. Utilisez&nbsp;des&nbsp;mots&nbsp;comme&nbsp;"vous".',
     test: function (data) {
       let positivePattern = /\b(?:vous|tu|je)\b/gmi;
       let negativePattern = /\b(?:il|elle|on|ils|elles|nous)\b/gmi;
@@ -463,13 +467,24 @@ function analyzeAllEditorContent () {
 }
 
 /**
+ * Analyzes one block.
+ */
+/*function analyzeAllEditorContent () {
+  let array = [];
+  for (let i = 0; i < editor.blockCount; i++) {
+    array.push(editor.getRawTextContent(i));
+  }
+  analyzeText(array.join('\n'));
+}*/
+
+/**
  * Begins the analysis of the given text.
  * @param {string} text - Text to analyze.
  */
 function analyzeText (text) {
   dispatchProgressChanged(0);
 
-  var request = createCORSRequest('POST', 'http://sioux.univ-paris8.fr:9000/');
+  var request = createCORSRequest('POST', 'http://51.91.138.70:9000/');
   // var request = createCORSRequest("POST", 'localhost:9000/');
   request.onreadystatechange = async function () {
     if (request.readyState === 4) {
@@ -567,7 +582,8 @@ async function checkTokensComplexity (tokens, checkedWords) {
       }
       switch (frequencyToText(word.frequency)) {
         case 'inconnu': case 'très rare': case 'rare': case 'commun':
-          word.dictionary = await getInternauteEntry(word.lemma || word.text);
+          word.dictionary = await getGoogleEntry(word.lemma || word.text);
+          //word.dictionary = await getInternauteEntry(word.lemma || word.text);
           complexWords.push(word);
           break;
       }
@@ -682,7 +698,7 @@ function createCORSRequest (method, url, async = true) {
 async function getGoogleEntry (word) {
   let response;
   try {
-    response = await $.get('https://googledictionaryapi.eu-gb.mybluemix.net/', {define: encodeURIComponent(word), lang: 'fr'});
+    response = await $.get(`https://api.dictionaryapi.dev/api/v1/entries/fr/${encodeURIComponent(word)}`);
   } catch (e) {
     console.log("Error: " + e.message);
     return {meanings: []};
@@ -692,13 +708,17 @@ async function getGoogleEntry (word) {
   };
   for (let i = 0; i < response.length; i++) {
     let type = Object.keys(response[i].meaning)[0];
-    for (let j = 0; j < response[i].meaning[type].definitions.length; j++) {
-      result.meanings.push({
-        type: type,
-        definition: response[i].meaning[type].definitions[j].definition,
-        example: response[i].meaning[type].definitions[j].example,
-        synonyms: response[i].meaning[type].definitions[j].synonyms
-      });
+    if (!Utils.isNullOrUndefined(response[i].meaning[type].definitions)) {
+      for (let j = 0; j < response[i].meaning[type].definitions.length; j++) {
+        result.meanings.push({
+          type: type,
+          definition: response[i].meaning[type].definitions[j].definition,
+          example: response[i].meaning[type].definitions[j].example,
+          synonyms: response[i].meaning[type].definitions[j].synonyms
+        });
+      }
+    } else {
+      console.log("Error: No definition found.");
     }
   }
   return result;
@@ -739,7 +759,7 @@ async function getImagesSuggestions (blockIndex) {
 
 async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: true, qwant: true }) {
   console.log('Checking images for: ' + keyword);
-  const result = { arasaac: [], sclera: [], qwant: [], searchText: keyword };
+  const result = { arasaac: [], sclera: [], qwant: [], google: [], searchText: keyword };
   if (keyword) {
     if (options.arasaac) {
       console.log('Trying on ARASAAC...')
@@ -751,7 +771,7 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
         });
         console.log('Found ' + json.length + ' pictograms.');
         for (let i = 0; i < json.length; i++) {
-          result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i].idPictogram}_300.png`);
+          result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i]._id}_300.png`);
         }
       } catch (ex) {
         console.log('Failed to get images from ARASAAC.');
@@ -759,10 +779,29 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
       }
     }
     if (options.sclera) {
-      // TODO add.
+      console.log('Trying on SCLERA...');
+      try {
+        // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
+        const response = await $.ajax('./sclera_proxy.php', {
+          data: {
+            q: keyword
+          },
+          dataType: 'json',
+          timeout: 5000
+        });
+        const items = response;
+        console.log('Found ' + items.length + ' pictograms.');
+        for (const r in items) {
+          result.sclera.push(items[r]);
+        }
+      } catch (ex) {
+        console.log('Failed to get images from SCLERA.');
+        console.log(ex);
+      }
     }
     if (options.qwant) {
       console.log('Trying on QWANT...');
+      let qwanted = false;
       try {
         // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
         const response = await $.ajax('./qwant_proxy.php', {
@@ -778,14 +817,99 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
         for (const r in items) {
           result.qwant.push(items[r].media);
         }
+        qwanted = true;
       } catch (ex) {
         console.log('Failed to get images from QWANT.');
         console.log(ex);
+      }
+      if (!qwanted) {
+        console.log('Trying to get them from Google instead.');
+        try {
+          // let response = await fetch(`./qwant_proxy.php?count=10&q=${keyword} pictogramme`);
+          const response = await $.ajax('./google_images_proxy.php', {
+            data: {
+              q: keyword + ' pictogramme'
+            },
+            dataType: 'json',
+            timeout: 5000
+          });
+          const items = response[0];
+          console.log('Found ' + items.length + ' pictograms.');
+          for (const r in items) {
+            result.google.push(items[r]);
+          }
+        } catch (ex) {
+          console.log('Failed to get images from Google.');
+          console.log(ex);
+        }
       }
     }
   }
   console.log(result);
   return result;
+}
+
+async function checkFalcQualityForBlock (editor, blockid) {
+  dispatchProgressChanged(0);
+  const rawTextContent = [];
+  const sentencesTokens = [];
+  const fullStyledContent = [];
+  rawTextContent.push(editor.getRawTextContent(blockid));
+  if (pings.Stanford.usable) sentencesTokens.push(await getTokens(rawTextContent[0]));
+  fullStyledContent.push(editor.getStyledText(blockid));
+
+  let checkedTokens = 0;
+  let tokensCount = 0;
+
+  if (sentencesTokens.length > 0) {
+    for(let i = 0; i < sentencesTokens[0].sentences.length; i++) {
+      tokensCount += sentencesTokens[0].sentences[i].tokens.length;
+    }
+  }
+
+  let complexWords = [];
+  const checkedWords = [];
+
+  if (sentencesTokens.length > 0) {
+    for (let s = 0; s < sentencesTokens[0].sentences.length; s++) {
+      const cw = await checkTokensComplexity(sentencesTokens[0].sentences[s].tokens, checkedWords);
+      complexWords = complexWords.concat(cw);
+      checkedTokens += sentencesTokens[0].sentences[s].tokens.length;
+      dispatchProgressChanged(((checkedTokens) * 100) / tokensCount);
+    }
+  }
+
+  const result = {
+    rules: await checkRules({ raw: rawTextContent, complexWords: complexWords, tokens: sentencesTokens, styled: fullStyledContent })
+  };
+  let mainRules = 0;
+  let veryImportantRules = 0;
+  let importantRules = 0;
+  for (let i = 0; i < result.rules.length; i++) {
+    if (result.rules[i].priority === 3 && result.rules[i].success) {
+      mainRules++;
+    } else if (result.rules[i].priority === 2 && result.rules[i].success) {
+      veryImportantRules++;
+    } else if (result.rules[i].priority === 1 && result.rules[i].success) {
+      importantRules++;
+    }
+  }
+  result.mainRulesSuccess = mainRules;
+  result.veryImportantRulesSuccess = veryImportantRules;
+  result.importantRulesSuccess = importantRules;
+
+  result.score = Math.round(((mainRules * 3 + veryImportantRules * 2 + importantRules) / (15 * 3 + 4 + 30)) * 100);
+
+  return result;
+}
+
+function createAnalysisLog (analysisResults) {
+  let result = ";Score Total; " + analysisResults.score + "\n";
+  result += "Règle;Remplie;Score\n";
+  for (let i = 0; i < analysisResults.rules.length; i++) {
+    result += `${analysisResults.rules[i].rule.replace(/&nbsp;/g, ' ').replace(/\n/g,' ')};${analysisResults.rules[i].success ? 'oui' : 'non'};${analysisResults.rules[i].success ? analysisResults.rules[i].priority : 0}\n`;
+  }
+  return '\ufeff' + result; // Add UTF-8
 }
 
 async function checkFalcQuality (editor) {
@@ -849,7 +973,7 @@ async function checkFalcQuality (editor) {
 async function getTokens (text) {
   return $.ajax({
     type: 'POST',
-    url: 'http://sioux.univ-paris8.fr:9000/',
+    url: 'http://51.91.138.70:9000',
     data: text,
     dataType: 'json',
     async: false

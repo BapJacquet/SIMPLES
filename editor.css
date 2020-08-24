@@ -38,11 +38,14 @@
 }
 
 .editor-block {
-  /*display: grid;*/
   margin-top: 1em; /* 5 */
   margin-bottom: 1em; /* 0 */
+  /* border-radius: 8px; */
   width: 100%;
-  /* cursor: text; */
+}
+
+.editor-block.selected {
+  background-color: #bfb;
 }
 
 .editor-block.image-block .editor-text {
@@ -161,6 +164,12 @@
   height: 37px;
 }
 
+.block-delete-right,
+.block-delete-left {
+  width: 35px;
+  height: 35px;
+}
+
 .img-widget img,
 .img-txt-widget img {
   -webkit-user-select: none;
@@ -172,7 +181,7 @@
   top: 1px;
 }
 
-.img-txt-widget img {
+.block-new img {
   left: 4px;
   top: 4px;
 }
@@ -208,14 +217,17 @@
   z-index: 1000;
 }
 
-/*
-.img-widget.block-delete img {
-  position: relative;
-  pointer-events: none;
-  left: 10px;
-  top: 2px;
+.img-txt-widget.block-delete-left,
+.img-txt-widget.block-delete-right {
+  border-color: red;
 }
-*/
+
+.img-txt-widget.block-delete-left:hover,
+.img-txt-widget.block-delete-right:hover {
+  background-color: #fbb;
+  border-color: #fbb;
+  z-index: 1000;
+}
 
 /*                           P A L E T T E  */
 
@@ -225,11 +237,11 @@
   width: 80px;
   height: 110px;
   border-radius: 20px;
-  background-color: #f4f4f4; /* #eee; */
+  background-color: white; /* #f4f4f4; */
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  border: 2px solid rgba(0, 0, 0, 0);
+  border: 2px solid #ddd; /* rgba(0, 0, 0, 0); */
 }
 
 #blockCmd div {
@@ -242,7 +254,7 @@
 
 #blockCmd:hover {
   /* background-color: #eaeaea; */
-  border: 2px solid #bbb;  /* #e4e4e4; */
+  border: 2px solid #2bac51; /* #bbb;  /* #e4e4e4; */
 }
 
 #blockCmd div[data-toggle]:hover {

@@ -475,11 +475,15 @@ function sendtoEditor(tool, val) {
   }
 }
 
+////////////////////////////////////////////////////////////////////
+//                                             P R E F E R E N C E S
 function getPrefColor (selector) {
   let path = $(selector + ' img').attr('src').split('/');
   let ba = path[path.length - 1].split('.')[0].split('-');
   let c = 'black';
-  switch (ba[ba.length - 1]) {
+  let baba = ba[ba.length - 1];
+  if ( baba == "back" || baba == "color" ) baba = ba[ba.length - 2];
+  switch (baba) {
     case 'red': c = COLOR_RED; break;
     case 'green': c = COLOR_GREEN; break;
     case 'blue': c = '#0000ff'; break;
@@ -490,7 +494,7 @@ function getPrefColor (selector) {
   return c;
 }
 
-function sendPreferencesToEditor () {
+function collectPreferencesData () {
   let data = {};
   data.default = {};
   // font size
@@ -528,7 +532,119 @@ function sendPreferencesToEditor () {
   let mb = Utils.cmToInches(Number($('#pref-margin-bottom')[0].value) - 2.54) + 'in';
   let ml = Utils.cmToInches(Number($('#pref-margin-left')[0].value) - 2.54) + 'in';
   data.page.padding = `${mt} ${mr} ${mb} ${ml}`;
-  editor.setTheme(data);
+  return data;
+}
+
+function sendPreferencesToEditor () {
+  editor.setTheme(collectPreferencesData());
+}
+
+function getImgColorName(color, selector) {
+  let img;
+  switch (color) {
+    case COLOR_RED: img = "red"; break;
+    case COLOR_GREEN: img = "green"; break;
+    case "#0000ff": img = "blue"; break;
+    case "black": img = "black"; break;
+    case "normal": img = "thin"; break;
+    case "bold": img = "bold"; break;
+    default:
+      img = "colorplus"; break;
+  }
+  if ( selector.attr("id").match(/frame-back/) ) img = "img/pref/pref-" + img + "-back.png";
+  else if ( selector.attr("id").match(/frame-color/) ) img = "img/pref/pref-" + img + "-color.png";
+  else img = "img/pref/pref-" + img + ".png";
+
+  selector.find("img").attr("src", img);
+  if ( img.match(/colorplus/) ) {
+    selector.find(".color-plus").css("color", color);
+  }
+}
+
+function initPreferencesDialog(theme) {
+  if ( !theme ) return;
+// text
+  $("#pref-text-size").val(theme.default["font-size"].split("pt")[0]);
+  getImgColorName(theme.default.color, $("#pref-text-color"));
+// frame
+  getImgColorName(theme.frame.background, $("#pref-frame-back"));
+  getImgColorName(theme.frame.border.split(" ")[2], $("#pref-frame-color"));
+  $("#pref-frame-size").val(theme.frame.border.split(" ")[0].split("pt")[0]);
+  $("#pref-frame-radius").val(theme.frame["border-radius"].split("pt")[0]);
+
+
+  for (var level of ['h1', 'h2', 'h3', 'h4']) {
+    getImgColorName(theme[`${level}`].color, $(`#pref-${level}-color`));
+    $("#pref-h1-size").val(theme[`${level}`]["font-size"].split("pt")[0]);
+    $("#pref-h1-bold").val(theme[`${level}`]["font-weight"].split("pt")[0]);
+  }
+}
+
+/////////
+function displayPrefPreview(zone) {
+  if ( !zone ) return;
+  var data = collectPreferencesData();
+  var pp = "#pref-preview";
+  var lineHeight0; // = 48 ou 64
+  var height0; // = 60 ou 80
+
+  $(pp).css({"display": "block",
+            "border-width": 0,
+            "background-color": "white",
+            "border-radius": 0});
+
+  if ( zone == "text" ) {
+    lineHeight0 = 48;
+    $("#color-select").attr("data-lineHeight0", "text");
+    height0 = 60;
+    $(pp).css({"line-height": lineHeight0 + "px",
+              "height": height0 + "px"});
+
+    $(pp).css({"color": data.default.color,
+              "font-size": data.default["font-size"]});
+    $(pp).css({"text-align": "left"});
+  }
+
+  else if ( zone == "frame") {
+    var back = data.frame.background;
+    if ( back == "rgba(255, 255, 255, 0)" ) back = "white";
+    $(pp).css({"background-color": back,
+                            "border": data.frame.border,
+                            "border-radius": data.frame["border-radius"]});
+    var border = $(pp).css("border-width").split("px")[0] *2;
+    if ( $("#color-select").attr("data-lineHeight0") == "text" ) lineHeight0 = 48;
+    else lineHeight0 = 64;
+    $(pp).css({"line-height": lineHeight0 - border + "px"});
+  }
+
+  else {
+    lineHeight0 = 64;
+    $("#color-select").attr("data-lineHeight0", "title");
+    height0 = 80;
+    $(pp).css({"line-height": lineHeight0 + "px",
+              "height": height0 + "px"});
+
+    for ( var zh of ["h1", "h2", "h3", "h4"]) {
+      if ( zh == zone )
+        $(pp).css({"color": (data[zh]).color,
+                "font-size": (data[zh])["font-size"],
+                "font-weight": (data[zh])["font-weight"]});
+        if ( zone == "h1" ) $(pp).css({"text-align": "center"});
+        else $(pp).css({"text-align": "left"});
+    }
+  }
+}
+
+///////// save picked color
+function savePickedColor (color) {
+  let pc = JSON.parse(localStorage.paletteColors);
+  for ( let i = 0; i < pc.length; i++ ) {
+    if ( pc[i][0] == color ) return;
+  }
+  let colorTab = [color];
+  pc.push(colorTab);
+  if ( pc.length > 6 ) pc.shift();
+  localStorage.paletteColors = JSON.stringify(pc);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -1136,6 +1252,10 @@ $(".write-file").on("click", function () {
 });
 // Ouvrir préférences...
 $("#preferences").on("click", function () {
+  try { initPreferencesDialog(editor.theme);
+  } catch (ex) {
+    console.log("Old document");
+  }
   $("#prefDialog").modal("show");
 });
 
@@ -1230,26 +1350,29 @@ $("#toolbarBottomMask").hover( function () {
     chooseText: "choisir",
     cancelText: "annuler",
     hideAfterPaletteSelect:true,
-    color: "#ECC",
+    color: $(".color-custom").css("color"),
     showInput: false,
     showInitial: true,
     showPalette: true,
-    showSelectionPalette: true,
+    showSelectionPalette: false,
     palette: [],
+    selectionPalette: [],
     maxSelectionSize: 6,
     preferredFormat: "hex",
-    localStorageKey: "spectrum",
+    //localStorageKey: "spectrum",
     clickoutFiresChange: false,
     move: function (color) {
     },
     show: function () {
     },
     beforeShow: function () {
+      $(".color-custom").spectrum("option", "palette", JSON.parse(localStorage.paletteColors));
     },
     hide: function() {
     },
     change: function(tinycolor) {
       let color = tinycolor.toHexString();
+      savePickedColor(color);
       $("#" + prefColorplusButton).css("color", color);
       $(".color-custom").css("color", color);
       sendtoEditor("color", color);
@@ -1308,42 +1431,51 @@ $("#toolbarBottomMask").hover( function () {
     //console.log(window.getSelection().getRangeAt(0).toString());
   } );
 
-  ////////////////////// PREFERENCES ///////////////////////
+  ////////////////////// PREFERENCES events ///////////////////////
 
   /////////// color palette for colorplus pref
   $(".color-custom-plus").spectrum({
     chooseText: "choisir",
     cancelText: "annuler",
     hideAfterPaletteSelect:true,
-    color: "#ECC",
     showInput: false,
     showInitial: true,
     showPalette: true,
-    showSelectionPalette: true,
+    showSelectionPalette: false,
     palette: [],
     maxSelectionSize: 6,
     preferredFormat: "hex",
-    localStorageKey: "spectrum",
+    //localStorageKey: "spectrum",
     clickoutFiresChange: false,
     move: function (color) {
     },
     show: function () {
+      console.log($("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     beforeShow: function () {
+      $(".color-custom-plus").spectrum("option", "palette", JSON.parse(localStorage.paletteColors));
+      $(".color-custom-plus").spectrum("set", $("#" + $("#color-select").attr("data-place") + " div").css("color"));
     },
     hide: function(tinycolor) {
     },
     change: function(tinycolor) {
       let color = tinycolor.toHexString();
+      savePickedColor(color);
       let place = $(this).attr("data-place");
       let elem = place.split("-")[1];
-      newPreferences[elem] = color;
       $(`#${place} div`).css("color", color);
+      displayPrefPreview($("#color-select").attr("data-pref-zone"));
     }
+  });
+
+  // dont change zone when color palette is open
+  $(".sp-container").on("mouseenter", function (ev) {
+    $("#pref-preview").css("display", "block");
+    //$(".pref-header").css("background-color", "white");
   });
 /////////// fin color palette
 
-  // pref-color
+  // pref color images
     $(".pref-color-button").on("click", function(e) {
       prefColorplusButton = e.target.id;
       let img = $(this).attr("data-img");
@@ -1352,12 +1484,19 @@ $("#toolbarBottomMask").hover( function () {
 
   // #color-select button move
     $(".pref-color, .pref-h-bold").on("mousemove", function (ev) {
+      let frameString;
       let decal = 22;
-      let imgTop = $(this).offset().top;
-      let imgLeft = $(this).offset().left;
+      let margin = 4;
+      let imgTop = $(this).offset().top - margin;
+      let imgLeft = $(this).offset().left - margin;
       let mouseY = ev.pageY;
       let mouseX = ev.pageX;
       $(".color-custom-plus").spectrum("disable");
+
+      if ( $(this).parent().attr("id") == "pref-frame-back" ) frameString = "-back";
+      else if ( $(this).parent().attr("id") == "pref-frame-color" ) frameString = "-color";
+      else frameString = "";
+
       if ( $(ev.target).hasClass("pref-h-bold") ) {
         imgLeft+= 26;
         if ( mouseX - imgLeft < decal ) {
@@ -1372,27 +1511,27 @@ $("#toolbarBottomMask").hover( function () {
       }
       else {
         if ( mouseX - imgLeft < decal ) {
-          $("#color-select").attr("data-img", "img/pref/pref-black.png");
+          $("#color-select").attr("data-img", "img/pref/pref-black" + frameString + ".png");
           $("#color-select").attr("data-color", "black");
         }
         else if ( mouseX - imgLeft < decal *2 ) {
           imgLeft+= decal;
-          $("#color-select").attr("data-img", "img/pref/pref-red.png");
+          $("#color-select").attr("data-img", "img/pref/pref-red" + frameString + ".png");
           $("#color-select").attr("data-color", "red");
         }
         else if ( mouseX - imgLeft < decal *3 ) {
           imgLeft+= decal *2;
-          $("#color-select").attr("data-img", "img/pref/pref-blue.png");
+          $("#color-select").attr("data-img", "img/pref/pref-blue" + frameString + ".png");
           $("#color-select").attr("data-color", "blue");
         }
         else if ( mouseX - imgLeft < decal *4 ) {
           imgLeft+= decal *3;
-          $("#color-select").attr("data-img", "img/pref/pref-green.png");
+          $("#color-select").attr("data-img", "img/pref/pref-green" + frameString + ".png");
           $("#color-select").attr("data-color", "green");
         }
         else if ( mouseX - imgLeft < decal *5 ) {
           imgLeft+= decal *4;
-          $("#color-select").attr("data-img", "img/pref/pref-colorplus.png");
+          $("#color-select").attr("data-img", "img/pref/pref-colorplus" + frameString + ".png");
           $(".color-custom-plus").spectrum("enable");
         }
       }
@@ -1403,10 +1542,10 @@ $("#toolbarBottomMask").hover( function () {
   // click color-select button
     $("#color-select").on("click", function (ev) {
       $("#color-select").animate({
-        height: 43
+        height: 55 // 43
       }, 200, function() {
         $("#color-select").animate({
-          height: 40
+          height: 51 // 40
         }, 50);
       });
 
@@ -1414,14 +1553,13 @@ $("#toolbarBottomMask").hover( function () {
       let place = $(this).attr("data-place");
       let color = $(this).attr("data-color");
       let elem = place.split("-")[1];
-      newPreferences[elem] = color;
       $("#" + place).find("img").attr("src", img);
+      displayPrefPreview($("#color-select").attr("data-pref-zone"));
     });
 
   // unsel color-select button
     $(".row").on("mouseenter", function (ev) {
       $("#color-select").css("visibility", "hidden");
-      //$(".color-custom-plus").spectrum("hide");
     });
 
   // hide color showPalette
@@ -1437,7 +1575,6 @@ $("#toolbarBottomMask").hover( function () {
 
   // after hidding modal
     $("#prefDialog").on("hidden.bs.modal", function (e) {
-      newPreferences = {};
     });
 
   // num imput value
@@ -1445,8 +1582,53 @@ $("#toolbarBottomMask").hover( function () {
       let elem = $(this).attr("id").split("-")[1] + "-" +
                   $(this).attr("id").split("-")[2];
       let value = $(this).val();
-      newPreferences[elem] = value;
+      displayPrefPreview($("#color-select").attr("data-pref-zone"));
     });
+
+  // mousemove over: find pref zones
+    $(".pref-body").on("mousemove", function(ev) {
+      // return pref zone containing cursor
+      function mouseInZone(X0, Y0) {
+        var z = {text: {top: -20, right: 720, bottom: 94, left: 200},
+                frame: {top: 93, right: 720, bottom: 204, left: 200},
+                h1: {top: 203, right: 337, bottom: 462, left: 200},
+                h2: {top: 203, right: 464, bottom: 462, left: 336},
+                h3: {top: 203, right: 591, bottom: 462, left: 463},
+                h4: {top: 203, right: 720, bottom: 462, left: 590}
+              };
+
+        var X = X0 - $(".pref-body").offset().left;
+        var Y = Y0 - $(".pref-body").offset().top;
+
+        for ( var zone in z ) {
+          if ( X > z[zone].left && X < z[zone].right && Y > z[zone].top && Y < z[zone].bottom ) {
+            $("#color-select").attr("data-pref-zone", zone);
+            return zone;
+          }
+        }
+        return false;
+      }
+      //
+      var zone = mouseInZone(ev.pageX, ev.pageY);
+      if ( zone ) {
+        $("#pref-preview").css("display", "block");
+        $(".pref-header").css("background-color", "#f2f2f2");
+        displayPrefPreview(zone);
+      }
+      else {
+        $("#pref-preview").css("display", "none");
+        $(".pref-header").css("background-color", "lightgrey");
+      }
+    });
+
+  ////
+    $(".pref-modal-content").on("mouseleave", function(ev) {
+      $("#pref-preview").css("display", "none");
+      $(".pref-header").css("background-color", "lightgrey");
+    });
+
+
+
 
 
   ////////////////////////////////////////////////////////////////////
@@ -1555,48 +1737,62 @@ $("#toolbarBottomMask").hover( function () {
   //    $(".editor-block").css("background-color", "white");
   });
 ////////////////////////
-  //  insertBlockBefore
-  $("#blockCmd .block-new-up").on("click", function (ev) {
-    editor.insertBlockBefore( activeBlocId, "", true);
-    setTimeout( function () {
-      $(`#blc-${activeBlocId + 1}`).css("background-color", "");
-      blockArrayEnter();
-    }, 15);
-  });
-
-  //  insertImageBlockBefore
-  $("#blockCmd .block-new2-up").on("click", function (ev) {
-    $(`#blc-${activeBlocId}`).css("background-color", "");
-    editor.insertImageBlockBefore( activeBlocId, true);
-    setTimeout( function () {
-      blockArrayEnter();
-      loadImageDialog("#img-" + activeBlocId + "-0");
-    }, 15);
-  });
-
   // insertBlockAfter
     $("#blockCmd .block-new-down").on("click", function (ev) {
-      editor.insertBlockAfter( activeBlocId, "", true);
-      setTimeout( function () {
-        $("#blockCmd").find("span").text(activeBlocId + 1);
-        $(`#blc-${activeBlocId - 1}`).css("background-color", "");
-        $(`#blc-${activeBlocId}`).css("background-color", "");
-        blockArrayEnter();
-      }, 15);
+      $("#new-text-block-btn").attr("data-lirec-dir", "after");
+      $("#new-images-block-btn").attr("data-lirec-dir", "after");
+      $("#chooseBlockTypeDialog").modal("show");
     });
 
-  // insertImageBlockAfter
-    $("#blockCmd .block-new2-down").on("click", function (ev) {
+  // insertBlockBefore
+    $("#blockCmd .block-new-up").on("click", function (ev) {
+      $("#new-text-block-btn").attr("data-lirec-dir", "before");
+      $("#new-images-block-btn").attr("data-lirec-dir", "before");
+      $("#chooseBlockTypeDialog").modal("show");
+    });
+
+  // new text block
+    $("#new-text-block-btn").on("click", function (ev) {
+      $("#chooseBlockTypeDialog").modal("hide");
+      if ( $(this).attr("data-lirec-dir") == "after" ) {
+        editor.insertBlockAfter( activeBlocId, "", true);
+        setTimeout( function () {
+          $("#blockCmd").find("span").text(activeBlocId + 1);
+          $(`#blc-${activeBlocId - 1}`).css("background-color", "");
+          $(`#blc-${activeBlocId}`).css("background-color", "");
+          blockArrayEnter();
+        }, 15);
+      }
+      else if ( $(this).attr("data-lirec-dir") == "before" ) {
+        editor.insertBlockBefore( activeBlocId, "", true);
+        setTimeout( function () {
+          $(`#blc-${activeBlocId + 1}`).css("background-color", "");
+          blockArrayEnter();
+        }, 15);
+      }
+    });
+
+  // new images block
+    $("#new-images-block-btn").on("click", function (ev) {
+      $("#chooseBlockTypeDialog").modal("hide");
       $(`#blc-${activeBlocId}`).css("background-color", "");
-      editor.insertImageBlockAfter( activeBlocId, true);
-      setTimeout( function () {
-        $("#blockCmd").find("span").text(activeBlocId + 1);
-        blockArrayEnter();
-        loadImageDialog("#img-" + activeBlocId + "-0");
-      }, 15);
+      if ( $(this).attr("data-lirec-dir") == "after" ) {
+        editor.insertImageBlockAfter( activeBlocId, true);
+        setTimeout( function () {
+          $("#blockCmd").find("span").text(activeBlocId + 1);
+          blockArrayEnter();
+          loadImageDialog("#img-" + activeBlocId + "-0");
+        }, 15);
+      }
+      else if ( $(this).attr("data-lirec-dir") == "before" ) {
+        $(`#blc-${activeBlocId}`).css("background-color", "");
+        editor.insertImageBlockBefore( activeBlocId, true);
+        setTimeout( function () {
+          blockArrayEnter();
+          loadImageDialog("#img-" + activeBlocId + "-0");
+        }, 15);
+      }
     });
-
-
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {
@@ -1636,7 +1832,7 @@ $("#toolbarBottomMask").hover( function () {
 
 ///////////////////////////////
 
-//  show/hide .block-new2
+/*  show/hide .block-new2
   $("#blockCmd .block-new-up").mouseenter( function () {
     $(".block-new2-up").css("display","block");
   } ).mouseleave( function () {
@@ -1658,7 +1854,7 @@ $("#toolbarBottomMask").hover( function () {
   } ).mouseleave( function () {
     $(".block-new2-down").css("display","none");
   } );
-
+*/
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////////                  I M A G E  W I D G E T S
 
@@ -1935,8 +2131,9 @@ $("#toolbarBottomMask").hover( function () {
   analysisPanelShowHide("hide", 0);
   setTimeout(function () {
     initToolbar();
-    //$("#blc-0").trigger("mouseenter");
-    //$(".img-widget, .img-txt-widget").css("display", "none");
+
+    if ( !localStorage.paletteColors ) localStorage.paletteColors = JSON.stringify([]);
+
     $( window ).trigger("resize");
     $("#blockCmd").css("display", "none");
     $('body').css({"visibility":"visible"});
@@ -2018,7 +2215,6 @@ var dragIsOn = false;
 var dragMouseX;
 
 var prefColorplusButton;
-var newPreferences = {};
 
 var globalMenuItem; // id menu item à envoyer à l'aditeur  avec fichier texte
 var lastBlockBlur = ""; // id dernier bloc

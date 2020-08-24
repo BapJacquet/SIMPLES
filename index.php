@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.07.05.2";
+$version = "0.08.01.0";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -316,13 +316,13 @@ $version = "0.07.05.2";
 				<div id="content">
 					<div id="page-container">
 						<div id="blockCmd"><!-- Block command palette -->
-							<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE au dessus">
+							<div class="block-new-up"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc au dessus">
 								<img src="img/plus-black.png">
 							</div>
 							<div class="block-delete"  data-toggle="tooltip" data-placement="right" title="Supprimer le bloc">  <!--  block delete -->
 								<img src="img/delete-black.png">
 							</div>
-							<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc TEXTE en dessous">
+							<div class="block-new-down"  data-toggle="tooltip" data-placement="right" title="Ajouter un bloc en dessous">
 								<img src="img/plus-black.png">
 							</div>
 							<div class="block-move-down"  data-toggle="tooltip" data-placement="right" title="Faire descendre le bloc">  <!--  block down -->
@@ -389,18 +389,21 @@ $version = "0.07.05.2";
 <!-- preferences dialog -->
 <div id="prefDialog" class="modal fade" tabindex="-1" role="dialog" >
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document" data-backdrop="static">
-    <div class="modal-content" style="max-width: 800px!important; min-width: 800px!important">
-      <div class="modal-header">
+    <div class="modal-content pref-modal-content" style="max-width: 800px!important; min-width: 800px!important">
+      <div class="pref-header pref-no-preview">
         <h1 class="modal-title no-text-sel">Préférences du Document</h1>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body pref-body">
+				<!-- zone de prévisualisation -->
+				<div id="pref-preview">
+					<div id="pref-preview-text">La cigale et la fourmi</div>
+				</div>
+
 				<!-- bouton de selection de la couleur -->
-				<div id="color-select" class="color-custom-plus" data-img="" data-place=""></div>
+				<div id="color-select" class="color-custom-plus"></div>
 
 				<div class="container no-text-sel">
+
 					<div class="row">					<!-- TEXTE -->
 				    <div class="col-3">
 				      <span class="pref-col1-n1">TEXTE</span>
@@ -432,10 +435,10 @@ $version = "0.07.05.2";
 				      <span class="pref-col1-n1">CADRE</span>
 				    </div>
 						<div class="col-2  text-center">
-							<span class="pref-col1-n2">Bordure</span>
+							<span class="pref-col1-n2">Epaisseur</span>
 				    </div>
 						<div class="col-2  text-center">
-							<span class="pref-col1-n2">Couleur</span>
+							<span class="pref-col1-n2">Bord</span>
 				    </div>
 						<div class="col-2  text-center">
 							<span class="pref-col1-n2">Fond</span>
@@ -453,13 +456,13 @@ $version = "0.07.05.2";
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-color">
-								<img src="img/pref/pref-black.png" class="pref-h-color pref-color" />
+								<img src="img/pref/pref-black-color.png" class="pref-h-color pref-color" />
 								<div class="color-plus">?</div>
 							</div>
 				    </div>
 						<div class="col-2">
 				      <div id="pref-frame-back">
-								<img src="img/pref/pref-colorplus.png" class="pref-h-color pref-color" />
+								<img src="img/pref/pref-colorplus-back.png" class="pref-h-color pref-color" />
 								<div class="color-plus" style="color: rgba(255, 255, 255, 0)">?</div>
 							</div>
 				    </div>
@@ -561,7 +564,7 @@ $version = "0.07.05.2";
 				  </div>
 					<hr>
 
-					<div class="row">					<!-- MARGE -->
+					<div class="row pref-no-preview">					<!-- MARGE -->
 				    <div class="col-3">
 				      <span class="pref-col1-n1">MARGE</span>
 				    </div>
@@ -578,7 +581,7 @@ $version = "0.07.05.2";
 							<span class="pref-col1-n2 ">Bas</span>
 						</div>
 				  </div>
-				  <div class="row">					<!-- valeurs -->
+				  <div class="row pref-no-preview">					<!-- valeurs -->
 				    <div class="col-3">
 				    </div>
 				    <div class="col-2">      				<!-- gauche -->
@@ -598,7 +601,7 @@ $version = "0.07.05.2";
 				</div>
 			</div>
 
-			<div class="modal-footer">
+			<div class="modal-footer pref-no-preview">
 			   <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
 			   <button id="record-pref" type="button" class="btn btn-success">Enregistrer</button>
 			 </div>
@@ -697,6 +700,25 @@ $version = "0.07.05.2";
       </div>
     </div>
 </div>
+
+<!-- Modal choose text or images block -->
+<div class="modal fade" id="chooseBlockTypeDialog" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Ajouter un bloc</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button id="new-text-block-btn" type="button" class="btn btn-success">Bloc Texte</button>
+				<button id="new-images-block-btn" type="button" class="btn btn-success">Bloc Images</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--  confirm dialog -->
 <div id="confirmDialog" data-action="" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">

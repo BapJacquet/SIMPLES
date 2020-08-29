@@ -830,7 +830,7 @@ function analysisPanelShowHide(showHide, timeOut) {
 
 // page is empty
 function pageEmpty() {
-  if ( $("#editor").children().length > 1 || $("#txt-0").text() != "" ) return false;
+  if ( $("#editor").children().length > 2 || $("#txt-0").text() != "" ) return false;
   else return true;
 }
 

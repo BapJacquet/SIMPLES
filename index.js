@@ -575,8 +575,8 @@ function initPreferencesDialog(theme) {
 
   for (var level of ['h1', 'h2', 'h3', 'h4']) {
     getImgColorName(theme[`${level}`].color, $(`#pref-${level}-color`));
-    $("#pref-h1-size").val(theme[`${level}`]["font-size"].split("pt")[0]);
-    $("#pref-h1-bold").val(theme[`${level}`]["font-weight"].split("pt")[0]);
+    $(`#pref-${level}-size`).val(theme[`${level}`]["font-size"].split("pt")[0]);
+    $(`#pref-${level}-bold`).val(theme[`${level}`]["font-weight"].split("pt")[0]);
   }
 }
 

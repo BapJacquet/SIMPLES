@@ -607,7 +607,7 @@ function displayPrefPreview(zone) {
 
   else if ( zone == "frame") {
     var back = data.frame.background;
-    if ( back == "rgba(255, 255, 255, 0)" ) back = "white";
+    if ( back == "rgba(255, 255, 255, 0)" || back == "rgba(0, 0, 0, 0)" ) back = "white";
     $(pp).css({"background-color": back,
                             "border": data.frame.border,
                             "border-radius": data.frame["border-radius"]});

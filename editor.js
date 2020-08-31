@@ -2080,6 +2080,12 @@ class Editor {
    */
   setTheme (theme) {
     if (Utils.isNullOrUndefined(theme)) theme = this.defaultTheme;
+    for (const level of ['h1', 'h2', 'h3', 'h4', 'default', 'frame', 'page']) {
+      if (Utils.isNullOrUndefined(theme[level])) {
+        theme[level] = this.defaultTheme[level];
+        console.log('No theme information found for ' + level + '. Filling in with default theme.');
+      }
+    }
     this.theme = theme;
     let style = '';
     if ($(this.id + ' style').length > 0) {

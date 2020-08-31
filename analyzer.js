@@ -342,7 +342,7 @@ var rules = [
   {priority: 1,
     text: "N'utilisez jamais de chiffres romains.",
     test: function (data) {
-      let pattern = /\W[IVX]+\W/gm;
+      let pattern = /[^a-zA-Z0-9éèêàùû_][IVX]+[^a-zA-Z0-9éèêàùû_]/gm;
       let count = 0;
       for (let i = 0; i < data.raw.length; i++) {
         let m = data.raw[i].match(pattern);

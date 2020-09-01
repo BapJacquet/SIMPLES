@@ -296,9 +296,13 @@ class Editor {
         border: '4pt solid black',
         'border-radius': '0pt',
         background: 'transparent'
+      },
+      page: {
+        padding: '0in 0in 0in 0in'
       }
-    }
+    };
     this.defaultTheme.default = this.defaultTheme.p;
+    this.setTheme(this.defaultTheme);
   }
 
   /**

@@ -575,8 +575,8 @@ function initPreferencesDialog(theme) {
 
   for (var level of ['h1', 'h2', 'h3', 'h4']) {
     getImgColorName(theme[`${level}`].color, $(`#pref-${level}-color`));
-    $("#pref-h1-size").val(theme[`${level}`]["font-size"].split("pt")[0]);
-    $("#pref-h1-bold").val(theme[`${level}`]["font-weight"].split("pt")[0]);
+    $(`#pref-${level}-size`).val(theme[`${level}`]["font-size"].split("pt")[0]);
+    $(`#pref-${level}-bold`).val(theme[`${level}`]["font-weight"].split("pt")[0]);
   }
 }
 
@@ -607,7 +607,7 @@ function displayPrefPreview(zone) {
 
   else if ( zone == "frame") {
     var back = data.frame.background;
-    if ( back == "rgba(255, 255, 255, 0)" ) back = "white";
+    if ( back == "rgba(255, 255, 255, 0)" || back == "rgba(0, 0, 0, 0)" ) back = "white";
     $(pp).css({"background-color": back,
                             "border": data.frame.border,
                             "border-radius": data.frame["border-radius"]});
@@ -830,7 +830,7 @@ function analysisPanelShowHide(showHide, timeOut) {
 
 // page is empty
 function pageEmpty() {
-  if ( $("#editor").children().length > 1 || $("#txt-0").text() != "" ) return false;
+  if ( $("#editor").children().length > 2 || $("#txt-0").text() != "" ) return false;
   else return true;
 }
 

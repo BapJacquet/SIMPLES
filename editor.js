@@ -308,7 +308,7 @@ class Editor {
       page: {
         padding: '0in 0in 0in 0in'
       }
-    }
+    };
     this.defaultTheme.default = this.defaultTheme.p;
     this.setTheme(this.defaultTheme);
   }

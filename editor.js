@@ -150,11 +150,19 @@ class Editor {
   }
 
   /**
+   * Get the words after which there can be line breaks.
+   * @return {Array} Array of strings.
+   */
+  get precedeBreakKeywords () {
+    return ['?', '.', '!', ':', ',', ';'];
+  }
+
+  /**
    * Get the words before which there can be line breaks.
    * @return {Array} Array of strings.
    */
   get breakKeywords () {
-    return ['le', 'ne', 'la', 'de', 'du', 'dans', 'se', 'les', 'pour', 'à', 'et', 'un', 'une', 'en', 'est', 'sont', 'es', 'êtes', 'sommes', 'avec'];
+    return ['le', 'ne', 'la', 'de', 'du', 'dans', 'se', 'les', 'pour', 'à', 'et', 'un', 'une', 'en', 'est', 'sont', 'avec', 'qui'];
   }
 
   /**
@@ -519,7 +527,7 @@ class Editor {
         break;
     }
     // Update the format.
-    setTimeout(() => this.updateFormat(), 1);
+    setTimeout(() => { this.processBlock(id); this.updateFormat(); }, 1);
     /*switch (event.key) {
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -529,6 +537,50 @@ class Editor {
     }
     setTimeout(() => this.processAllSpaces(id), 1);
     setTimeout(() => this.cleanContent(id), 2);*/
+  }
+
+  /**
+   * Process the block to make it FALC style.
+   */
+  processBlock (id) {
+    switch (this.getBlockFormat(id).blockType) {
+      case 'default': {
+        const text = this.getQuill(id).getText();
+        const spacesPattern = /[ \u00A0]/gm;
+        let array;
+        while ((array = spacesPattern.exec(text)) != null) {
+          let spacebreak = false;
+          for (const word of this.breakKeywords) {
+            const patt = RegExp('^' + word + '\\b');
+            if (patt.test(text.substring(spacesPattern.lastIndex))) {
+              spacebreak = true;
+              break;
+            }
+          }
+          if (!spacebreak) {
+            for (const word of this.precedeBreakKeywords) {
+              if (text.substring(0, array.index).endsWith(word)) {
+                spacebreak = true;
+                break;
+              }
+            }
+          }
+          if (!spacebreak) {
+            // Replace with non breaking space.
+            const format = this.getQuill(id).getFormat(array.index, 1);
+            this.getQuill(id).deleteText(array.index, 1);
+            this.getQuill(id).insertText(array.index, '\xa0', format);
+          } else {
+            // Replace with breaking space.
+            const format = this.getQuill(id).getFormat(array.index, 1);
+            this.getQuill(id).deleteText(array.index, 1);
+            this.getQuill(id).insertText(array.index, ' ', format);
+          }
+        }
+        break;
+      }
+      default: break;
+    }
   }
 
   /**
@@ -1757,7 +1809,7 @@ class Editor {
           this.select(i, null, offset, matches[0].length);
           return;
         }
-      } else {
+      } else if (this.getBlockFormat(i).blockType === 'images') {
         for (let j = startSubBlock; j < this.getImageCountInBlock(i); j++) {
           startSubBlock = 0;
           let index = i === startBlock ? (j === startSubBlock ? startIndex : 0) : 0;

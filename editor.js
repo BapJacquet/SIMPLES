@@ -2094,7 +2094,10 @@ class Editor {
         object.blocks.push({
           type: 'letter',
           expeditor: this.getQuill(i, 0).getContents(),
-          recipient: this.getQuill(i,1).getContents()
+          recipient: this.getQuill(i,1).getContents(),
+          options: {
+            frame: format.frame
+          }
         });
         break;
       }
@@ -2162,6 +2165,7 @@ class Editor {
           this.addLetterHeaderBlock();
           this.getQuill(i, 0).setContents(json.blocks[i].expeditor);
           this.getQuill(i, 1).setContents(json.blocks[i].recipient);
+          this.setBlockFormat(i, {frame: json.blocks[i].options.frame});
           break;
       }
     }

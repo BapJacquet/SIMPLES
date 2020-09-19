@@ -1741,6 +1741,7 @@ $("#toolbarBottomMask").hover( function () {
     $("#blockCmd .block-new-down").on("click", function (ev) {
       $("#new-text-block-btn").attr("data-lirec-dir", "after");
       $("#new-images-block-btn").attr("data-lirec-dir", "after");
+      $("#new-letter-block-btn").hide();
       $("#chooseBlockTypeDialog").modal("show");
     });
 
@@ -1748,6 +1749,12 @@ $("#toolbarBottomMask").hover( function () {
     $("#blockCmd .block-new-up").on("click", function (ev) {
       $("#new-text-block-btn").attr("data-lirec-dir", "before");
       $("#new-images-block-btn").attr("data-lirec-dir", "before");
+      $("#new-letter-block-btn").attr("data-lirec-dir", "before");
+      if(activeBlocId == 0) {
+        $("#new-letter-block-btn").show();
+      } else {
+        $("#new-letter-block-btn").hide();
+      }
       $("#chooseBlockTypeDialog").modal("show");
     });
 
@@ -1793,6 +1800,28 @@ $("#toolbarBottomMask").hover( function () {
         }, 15);
       }
     });
+
+    // new images block
+      $("#new-letter-block-btn").on("click", function (ev) {
+        $("#chooseBlockTypeDialog").modal("hide");
+        $(`#blc-${activeBlocId}`).css("background-color", "");
+        /*if ( $(this).attr("data-lirec-dir") == "after" ) {
+          editor.insertImageBlockAfter( activeBlocId, true);
+          setTimeout( function () {
+            $("#blockCmd").find("span").text(activeBlocId + 1);
+            blockArrayEnter();
+            loadImageDialog("#img-" + activeBlocId + "-0");
+          }, 15);
+        }*/
+        if ( $(this).attr("data-lirec-dir") == "before" ) {
+          $(`#blc-${activeBlocId}`).css("background-color", "");
+          editor.insertLetterHeaderBlockBefore( activeBlocId, true);
+          setTimeout( function () {
+            $(`#blc-${activeBlocId + 1}`).css("background-color", "");
+            blockArrayEnter();
+          }, 15);
+        }
+      });
 
 //  removeBlockAt
   $("#blockCmd .block-delete").on("click", function (ev) {

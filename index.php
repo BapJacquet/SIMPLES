@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.09.13.0";
+$version = "0.09.19.0";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -714,6 +714,7 @@ $version = "0.09.13.0";
       <div class="modal-footer">
         <button id="new-text-block-btn" type="button" class="btn btn-success">Bloc Texte</button>
 				<button id="new-images-block-btn" type="button" class="btn btn-success">Bloc Images</button>
+				<button id="new-letter-block-btn" type="button" class="btn btn-success">Entête de lettre</button>
       </div>
     </div>
   </div>

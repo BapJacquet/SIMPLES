@@ -269,6 +269,13 @@ class Editor {
             }
           }
           break;
+        case 'letter':
+        for (let j = 0; j < 2; j++) {
+          const s = this.getQuill(i, j).getSelection();
+          if (!Utils.isNullOrUndefined(s)) {
+            return { block: i, subBlock: j, range: s };
+          }
+        }
       }
     }
   }

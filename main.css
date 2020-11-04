@@ -466,6 +466,19 @@ li.nav-item {
   grid-template-columns: 1fr auto;
 }
 
+#questionairebutton {
+  position: relative;
+  background: var(--lirec-color);
+  border: 0px solid var(--lirec-color);
+  border-radius: 25px;
+  font-size: 14pt;
+  cursor: pointer;
+  top: -2px;
+  padding: 0px 5px;
+  margin: 5px;
+  color: white;
+}
+
 #versionnumberbutton {
   background: #333333;
   border: 0px solid #333333;

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.08.31.0";
+$version = "0.11.04.0";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -119,6 +119,7 @@ $version = "0.08.31.0";
 				</div>
 
 				<div>
+					<a id="questionairebutton" class="btn btn-primary" href="http://bit.ly/lien_questionnaire" target="_blank">Donnez votre avis ici</a>
 					<button id="versionnumberbutton" type="button" data-title="Version de LIREC" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec date&nbsp;du&nbsp;<?=preg_split("/\./", $version)[2] ?>/<?= preg_split("/\./", $version)[1] ?>/202<?= preg_split("/\./", $version)[0]?>" data-placement="top">v<?= $version ?></button>
 					<button id="versionbutton" type="button" data-title="Accès anticipé" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><p>Cette&nbsp;version&nbsp;de&nbsp;Lirec est&nbsp;mise&nbsp;à&nbsp;disposition pour&nbsp;faciliter la&nbsp;simplification&nbsp;d'informations liées&nbsp;au&nbsp;Covid-19.</p><p>Toutes&nbsp;les&nbsp;fonctionnalités ne&nbsp;sont&nbsp;pas&nbsp;disponibles.</p><p>Voir&nbsp;la&nbsp;rubrique&nbsp;Aide.</p></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i> Covid-19</button>
 					<button id="pingbutton" type="button" data-title="Connexion" data-boundary="window" data-toggle="popover" data-placement="left" data-trigger="hover" data-html="true" data-content="<div><div id='pingers' style='width:400px;'>Un instant...<div></div>" data-placement="top"><i class="fas fa-exclamation-triangle"></i></button>
@@ -714,6 +715,7 @@ $version = "0.08.31.0";
       <div class="modal-footer">
         <button id="new-text-block-btn" type="button" class="btn btn-success">Bloc Texte</button>
 				<button id="new-images-block-btn" type="button" class="btn btn-success">Bloc Images</button>
+				<button id="new-letter-block-btn" type="button" class="btn btn-success">Entête de lettre</button>
       </div>
     </div>
   </div>

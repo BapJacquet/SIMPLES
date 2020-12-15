@@ -91,10 +91,13 @@ class Converter {
           break;
         case 'images':
           for (let c = 0; c < editor.getImageCountInBlock(i); c++) {
-            content += `<div><img class="image" src="${editor.getImageElement(i, c).dataURL}"></img></div><div>${editor.getTextElement(i, c).children[0].innerHTML}</div>`;
+            content += `<div><img class="image" src="${editor.getImageElement(i, c).dataURL}"></img><div>${editor.getTextElement(i, c).children[0].innerHTML}</div></div>`;
           }
           blockStyle = 'grid-template-columns:' + times(' 1fr', editor.getImageCountInBlock(i)) + ';';
           break;
+        case 'letter':
+          content = `<div class="fulltext">${editor.getTextElement(i,0).children[0].innerHTML}</div>`;
+          content += `<div class="fulltext">${editor.getTextElement(i,1).children[0].innerHTML}</div>`;
       }
       blocks += `<div class="${blockClasses}" style="${blockStyle}">${content}</div>`;
     }
@@ -110,6 +113,7 @@ class Converter {
     style += '.rightpicture {grid-column: 3 / span 1; width: 100px; align-self: center;}';
     style += '.image {display: block; max-width: 100%; height: auto; margin: auto;}';
     style += '.ql-wrap-nowrap {white-space: nowrap; display: inline-block;}'
+    style += '.ql-align-right {text-align: right !important;}'
     style += 'p {margin: 0;}';
     style += 'h1 {text-align: center;}'
     style += 'h2,h3,h4,h5 {margin: 0;}';
@@ -237,6 +241,10 @@ class Converter {
             widths: widths,
             body: content
           };
+          break;
+        }
+        case 'letter': {
+          blockDefinition.stack = [editor.getStyledText(i,0), {stack: editor.getStyledText(i,1), alignment: 'right'}];
           break;
         }
       }

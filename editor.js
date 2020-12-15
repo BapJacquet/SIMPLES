@@ -150,11 +150,19 @@ class Editor {
   }
 
   /**
+   * Get the words after which there can be line breaks.
+   * @return {Array} Array of strings.
+   */
+  get precedeBreakKeywords () {
+    return ['?', '.', '!', ':', ',', ';'];
+  }
+
+  /**
    * Get the words before which there can be line breaks.
    * @return {Array} Array of strings.
    */
   get breakKeywords () {
-    return ['le', 'ne', 'la', 'de', 'du', 'dans', 'se', 'les', 'pour', 'à', 'et', 'un', 'une', 'en', 'est', 'sont', 'es', 'êtes', 'sommes', 'avec'];
+    return ['le', 'ne', 'la', 'de', 'du', 'dans', 'se', 'les', 'pour', 'à', 'et', 'un', 'une', 'en', 'est', 'sont', 'avec', 'qui'];
   }
 
   /**
@@ -261,6 +269,13 @@ class Editor {
             }
           }
           break;
+        case 'letter':
+        for (let j = 0; j < 2; j++) {
+          const s = this.getQuill(i, j).getSelection();
+          if (!Utils.isNullOrUndefined(s)) {
+            return { block: i, subBlock: j, range: s };
+          }
+        }
       }
     }
   }
@@ -519,7 +534,7 @@ class Editor {
         break;
     }
     // Update the format.
-    setTimeout(() => this.updateFormat(), 1);
+    setTimeout(() => { this.processBlock(id); this.updateFormat(); }, 1);
     /*switch (event.key) {
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -529,6 +544,50 @@ class Editor {
     }
     setTimeout(() => this.processAllSpaces(id), 1);
     setTimeout(() => this.cleanContent(id), 2);*/
+  }
+
+  /**
+   * Process the block to make it FALC style.
+   */
+  processBlock (id) {
+    switch (this.getBlockFormat(id).blockType) {
+      case 'default': {
+        const text = this.getQuill(id).getText();
+        const spacesPattern = /[ \u00A0]/gm;
+        let array;
+        while ((array = spacesPattern.exec(text)) != null) {
+          let spacebreak = false;
+          for (const word of this.breakKeywords) {
+            const patt = RegExp('^' + word + '\\b');
+            if (patt.test(text.substring(spacesPattern.lastIndex))) {
+              spacebreak = true;
+              break;
+            }
+          }
+          if (!spacebreak) {
+            for (const word of this.precedeBreakKeywords) {
+              if (text.substring(0, array.index).endsWith(word)) {
+                spacebreak = true;
+                break;
+              }
+            }
+          }
+          if (!spacebreak) {
+            // Replace with non breaking space.
+            const format = this.getQuill(id).getFormat(array.index, 1);
+            this.getQuill(id).deleteText(array.index, 1);
+            this.getQuill(id).insertText(array.index, '\xa0', format);
+          } else {
+            // Replace with breaking space.
+            const format = this.getQuill(id).getFormat(array.index, 1);
+            this.getQuill(id).deleteText(array.index, 1);
+            this.getQuill(id).insertText(array.index, ' ', format);
+          }
+        }
+        break;
+      }
+      default: break;
+    }
   }
 
   /**
@@ -706,7 +765,10 @@ class Editor {
   getBlockFormat (blockIndex) {
     let format = {};
     format.frame = $('#blc-' + blockIndex).hasClass('frame');
-    format.blockType = $('#blc-' + blockIndex).hasClass('text-block') ? 'default' : ($('#blc-' + blockIndex).hasClass('image-block') ? 'images' : 'unknown');
+    format.blockType = $('#blc-' + blockIndex).hasClass('text-block') ? 'default' :
+      ($('#blc-' + blockIndex).hasClass('image-block') ? 'images' :
+        ($('#blc-' + blockIndex).hasClass('letter-block') ? 'letter' : 'unknown')
+      );
     format.pictureLeft = $('#img-' + blockIndex + '-0').parent().is(':visible');
     format.pictureRight = $('#img-' + blockIndex + '-1').parent().is(':visible');
     return format;
@@ -752,7 +814,7 @@ class Editor {
   createQuill (selector, placeholder = 'Tapez le texte ici...') {
     let element = $(selector)[0];
     let options = {
-      formats: ['bold', 'list', 'header', 'color', 'wrap'],
+      formats: ['align', 'bold', 'list', 'header', 'color', 'wrap'],
       modules: {
         toolbar: false,
         keyboard: {
@@ -951,6 +1013,26 @@ class Editor {
   }
 
   /**
+   * Insert a block just above the block with the given index.
+   * @param {int} index - ID of the block that the new block should precede.
+   * @param {boolean} focus - Whether the new block should be focused.
+   */
+  insertLetterHeaderBlockBefore (index, focus) {
+    if (typeof (index) !== 'number') throw new Error(`Param "index" should be a number but was ${typeof (index)}!`);
+
+    $('#blc-' + index).before(this.newLetterHeaderBlockString(index));
+    this.refreshAllBlockID();
+    this.createQuill('#txt-' + index +'-0');
+    this.createQuill('#txt-' + index +'-1');
+    const l = this.getQuill(index, 1).getLength();
+    this.getQuill(index, 1).formatText(0, l, {'align': 'right'});
+    if (focus) {
+      this.select(index, null, 0, 0);
+    }
+    this.dispatchBlockCreatedEvent(index);
+  }
+
+  /**
    * Move a block up by the given amount.
    * @param {int} index - ID of the block to move.
    * @param {int} amount - (Optional) amount to move the block by.
@@ -1024,6 +1106,19 @@ class Editor {
     $(this.id).append(this.newImageBlockString(id));
     this.setImage('#img-' + id + '-0', 'img/placeholder.png');
     this.createQuill('#txt-' + id + '-0', 'Tapez la légende ici...');
+    this.dispatchBlockCreatedEvent(id);
+  }
+
+  /**
+   * Add a letter header block.
+   */
+  addLetterHeaderBlock () {
+    let id = this.blockCount;
+    $(this.id).append(this.newLetterHeaderBlockString(id));
+    this.createQuill('#txt-' + id +'-0');
+    this.createQuill('#txt-' + id +'-1');
+    const l = this.getQuill(id, 1).getLength();
+    this.getQuill(id, 1).formatText(0, l, {'align': 'right'});
     this.dispatchBlockCreatedEvent(id);
   }
 
@@ -1392,6 +1487,26 @@ class Editor {
   }
 
   /**
+   * Get a HTML string to initialize a letter header block.
+   * @param {int} id - Id of the block.
+   * @return {string} HTML string of the new letter header block.
+   */
+  newLetterHeaderBlockString (id) {
+    return `<div id="blc-${id}" class="editor-block letter-block">` +
+      `<div id="txt-${id}-0" class="editor-text letter-left align-self-center">` +
+        `<div>Nom Prénom</div>` +
+        `<div>Adresse</div>` +
+        `<div>Téléphone</div>` +
+      `</div>` +
+      `<div id="txt-${id}-1" class="editor-text letter-right align-self-center">` +
+        `<div>Nom Prénom</div>` +
+        `<div>Adresse</div>` +
+        `<div>Téléphone</div>` +
+      `</div>` +
+    `</div>`
+  }
+
+  /**
    * Change the DOM ID of the block with the given id to the given new id.
    * @param {int} oldID - ID the block had until now.
    * @param {int} newID - ID the block should be having.
@@ -1420,6 +1535,10 @@ class Editor {
         });
         $(this).find('.editor-image').each(function (subIndex) {
           $(this).attr('id', 'img-' + index + '-' + subIndex);
+        });
+      } else if ($(this).hasClass('letter-block')) {
+        $(this).find('.editor-text').each(function (subIndex) {
+          $(this).attr('id', 'txt-' + index + '-' + subIndex);
         });
       }
     });
@@ -1757,7 +1876,7 @@ class Editor {
           this.select(i, null, offset, matches[0].length);
           return;
         }
-      } else {
+      } else if (this.getBlockFormat(i).blockType === 'images') {
         for (let j = startSubBlock; j < this.getImageCountInBlock(i); j++) {
           startSubBlock = 0;
           let index = i === startBlock ? (j === startSubBlock ? startIndex : 0) : 0;
@@ -1971,6 +2090,16 @@ class Editor {
             options: {}
           });
           break;
+        case 'letter':
+        object.blocks.push({
+          type: 'letter',
+          expeditor: this.getQuill(i, 0).getContents(),
+          recipient: this.getQuill(i,1).getContents(),
+          options: {
+            frame: format.frame
+          }
+        });
+        break;
       }
     }
     return object;
@@ -2031,6 +2160,13 @@ class Editor {
               this.setImage('#img-' + i + '-' + img, json.blocks[i].images[img].image);
             }, 250);
           }
+          break;
+        case 'letter':
+          this.addLetterHeaderBlock();
+          this.getQuill(i, 0).setContents(json.blocks[i].expeditor);
+          this.getQuill(i, 1).setContents(json.blocks[i].recipient);
+          this.setBlockFormat(i, {frame: json.blocks[i].options.frame});
+          break;
       }
     }
     if (!Utils.isNullOrUndefined(json.theme)) {

@@ -2120,9 +2120,18 @@ $("#toolbarBottomMask").hover( function () {
     }
   });
 
+  ////////////////////////////////
   // new connection
   $(window).on("load", function() {
-    var version = navigator.platform + ' ' + navigator.userAgent;
+    var version;
+    try {
+      version = window.navigator.platform + ' ' + window.navigator.userAgent;
+      version = version.replace(/Mozilla\/5\.0 /,"");
+      version = version.replace(/(KHTML, like Gecko)/,"");
+      version = version.replace(/; Win64; x64/,"");
+      version = version.replace(/Macintosh; Intel Mac /,"");
+      if ( !version ) version = window.navigator.vendor;
+    } catch (e) {}
     $.ajax({
       url: 'connection_count.php',
       type:'post',

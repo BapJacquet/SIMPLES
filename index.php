@@ -105,8 +105,9 @@ $version = "0.11.04.0";
 				      Aide
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-							<a id="aideItem" class="dropdown-item" href="#">Informations sur Lirec</a>
+							<a id="aideItem" class="dropdown-item" href="#">À propos de LIREC</a>
 							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/doc_seb_lirec.pdf" target="_blank">Présentation (PDF)
 							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto_lirec.pdf" target="_blank">Tutoriel (PDF)</a>
 							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto.html" target="_blank">Tutoriel (HTML)</a>
 							<div class="dropdown-divider"></div>

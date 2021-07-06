@@ -478,16 +478,16 @@ $version = "0.11.04.0";
 				      <span class="pref-col1-n1">TITRE</span>
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h1.png />
+							<img src=img/pref/pref-h1.png style="margin-left:35px" />
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h2.png />
+							<img src=img/pref/pref-h2.png style="margin-left:10px"  />
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h3.png />
+							<img src=img/pref/pref-h3.png style="margin-left:-17px"  />
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h4.png />
+							<img src=img/pref/pref-h4.png style="margin-left:-40px"  />
 				    </div>
 					</div>
 					<div class="row">					<!-- taille -->

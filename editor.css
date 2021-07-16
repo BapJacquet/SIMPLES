@@ -44,7 +44,9 @@
   width: 100%;
   border-right: solid 5px transparent;
 }
-.editor-block:hover {
+/*.editor-block:hover {*/
+.text-block:hover,
+.letter-block:hover {
   border-right: solid 5px var(--lirec-color);
 }
 

@@ -403,6 +403,8 @@ $version = "1.07.06.0";
 
 				<!-- bouton de selection de la couleur -->
 				<div id="color-select" class="color-custom-plus"></div>
+				<div id="frame-preview"></div>
+				<div id="text-title-preview"></div>
 
 				<div class="container no-text-sel">
 

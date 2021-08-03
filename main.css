@@ -1059,6 +1059,24 @@ li.nav-item {
   visibility: visible;
 }
 
+#frame-preview {
+  position: absolute;
+  height: 51px;
+  width: 120px;
+  top: 102px;
+  left: 14px;
+  border-radius: 0.25rem;
+  visibility: hidden;
+  border: 10px solid #c5c500;
+  opacity: 0.4;
+  z-index: 2000;
+}
+
+#text-title-preview {
+  position: absolute;
+  visibility: hidden;
+}
+
 .color-plus {
   position: relative;
   font-size: 25px;

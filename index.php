@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "0.11.04.0";
+$version = "1.07.16.1";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -105,8 +105,9 @@ $version = "0.11.04.0";
 				      Aide
 				    </button>
 				    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-							<a id="aideItem" class="dropdown-item" href="#">Informations sur Lirec</a>
+							<a id="aideItem" class="dropdown-item" href="#">À propos de LIREC</a>
 							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/doc_seb_lirec.pdf" target="_blank">Présentation (PDF)
 							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto_lirec.pdf" target="_blank">Tutoriel (PDF)</a>
 							<a class="dropdown-item" href="http://sioux.univ-paris8.fr/lirec/tuto.html" target="_blank">Tutoriel (HTML)</a>
 							<div class="dropdown-divider"></div>
@@ -402,6 +403,8 @@ $version = "0.11.04.0";
 
 				<!-- bouton de selection de la couleur -->
 				<div id="color-select" class="color-custom-plus"></div>
+				<div id="frame-preview"></div>
+				<div id="text-title-preview"></div>
 
 				<div class="container no-text-sel">
 
@@ -478,16 +481,16 @@ $version = "0.11.04.0";
 				      <span class="pref-col1-n1">TITRE</span>
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h1.png />
+							<img src=img/pref/pref-h1.png style="margin-left:35px" />
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h2.png />
+							<img src=img/pref/pref-h2.png style="margin-left:10px"  />
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h3.png />
+							<img src=img/pref/pref-h3.png style="margin-left:-17px"  />
 				    </div>
 						<div class="col-2">
-							<img src=img/pref/pref-h4.png />
+							<img src=img/pref/pref-h4.png style="margin-left:-40px"  />
 				    </div>
 					</div>
 					<div class="row">					<!-- taille -->

@@ -1,5 +1,14 @@
 // data.js
 
+<<<<<<< HEAD
+=======
+function isMobile() {
+	mobile = ['iphone','ipad','android','blackberry','nokia','opera mini','windows mobile','windows phone','iemobile'];
+		for (var i in mobile) if (navigator.userAgent.toLowerCase().indexOf(mobile[i]) != -1) return true;
+		return false;
+}
+
+>>>>>>> sioux
 function jourString(date) {
   var tab_jour = new Array("Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam");
   var ladate = new Date(date);
@@ -20,7 +29,12 @@ function clearCanvas() {
 
 setTimeout( function() {
   clearCanvas();
+<<<<<<< HEAD
   location.href = 'data.php';
+=======
+  //location.href = 'data.php';
+  location.reload();
+>>>>>>> sioux
 }, 60000);
 
 window.addEventListener("beforeunload", clearCanvas);
@@ -33,6 +47,7 @@ var plot1, plot2, plot3, plot4;
 // ********************************************************** R E A D Y
 $(document).ready(function () {
   $.jqplot.config.enablePlugins = true;
+<<<<<<< HEAD
   $("#nbVisTotal").css({"display":"block",
                         "position":"absolute",
                         "font-size":"2em",
@@ -43,6 +58,18 @@ $(document).ready(function () {
                         "padding-left":"12px",
                         "top":"128px",
                         "left":"440px"}); // 186px
+=======
+  $("#nbVisTotal").css({"display": "block",
+                        "position": "absolute",
+                        "font-size": "2em",
+                        "font-weight": "900",
+                        "color": "white",
+                        "background": "#222",
+                        "padding-right": "12px",
+                        "padding-left": "12px",
+                        "top": "128px",
+                        "left": "440px"});
+>>>>>>> sioux
 
   if ( !data1 || !data2 ) location.href = 'data.php';
 
@@ -85,7 +112,11 @@ $(document).ready(function () {
             rendererOptions: {
               smooth: true,
               animation: {
+<<<<<<< HEAD
                 speed: 500
+=======
+                speed: 1
+>>>>>>> sioux
               }
             },
             showMarker: true
@@ -143,7 +174,11 @@ $(document).ready(function () {
                 rendererOptions: {
                   smooth: true,
                   animation: {
+<<<<<<< HEAD
                     speed: 500
+=======
+                    speed: 1
+>>>>>>> sioux
                   }
                 },
                 showMarker: true
@@ -252,4 +287,9 @@ $(document).ready(function () {
     }
   });
 
+<<<<<<< HEAD
+=======
+  $("body").css("opacity", 1);
+
+>>>>>>> sioux
 }); // ********************************************** fin ready

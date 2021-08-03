@@ -30,7 +30,11 @@ function arrayResult($result, $colTitles) {
 <head>
 	<title>SIMPLES infos</title>
 	<meta charset="UTF-8" />
+<<<<<<< HEAD
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=yes">
+=======
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1, shrink-to-fit=yes">
+>>>>>>> sioux
 	<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 	<!-- ====== Bootstrap ====== -->
 	<!-- Latest compiled and minified CSS -->
@@ -45,7 +49,12 @@ function arrayResult($result, $colTitles) {
 	<script src="https://d3js.org/d3.v6.min.js"></script>
 	-->
 </head>
+<<<<<<< HEAD
 <body style="margin-left:3%;margin-right:3%;user-select:none;pointer-events:none">
+=======
+<!--    -->
+<body style="opacity: 0; margin-left: 3%; margin-right: 3%; user-select: none; pointer-events: none;">
+>>>>>>> sioux
 <br />
 <div><img src="img/LUTINLOGO.jpg" /></div>
 <h4 style="color: gray">&nbsp;Le FALC c'est simple</h4>
@@ -116,7 +125,11 @@ $query = "SELECT count(*) FROM Connection WHERE version RLIKE 'MacIntel'";
 $result = $base->query($query);
 $data4[1] = ['MacOS', $result->fetch_array(MYSQLI_NUM)[0]];
 
+<<<<<<< HEAD
 $query = "SELECT count(*) FROM Connection WHERE version RLIKE 'Linux'";
+=======
+$query = "SELECT count(*) FROM Connection WHERE version RLIKE 'Linux' AND version NOT RLIKE 'Android'";
+>>>>>>> sioux
 $result = $base->query($query);
 $data4[2] = ['Linux', $result->fetch_array(MYSQLI_NUM)[0]];
 

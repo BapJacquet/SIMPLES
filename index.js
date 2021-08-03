@@ -617,7 +617,7 @@ function displayPrefPreview(zone) {
     $(pp).css({"line-height": lineHeight0 - border + "px"});
   }
 
-  else {
+  else { // z == "h?"
     lineHeight0 = 64;
     $("#color-select").attr("data-lineHeight0", "title");
     height0 = 80;
@@ -1587,8 +1587,8 @@ $("#toolbarBottomMask").hover( function () {
 
   // mousemove over: find pref zones
     $(".pref-body").on("mousemove", function(ev) {
-      // return pref zone containing cursor
-      function mouseInZone(X0, Y0) {
+
+      function mouseInZone(X0, Y0) {  // return pref zone containing cursor
         var z = {text: {top: -20, right: 720, bottom: 94, left: 200},
                 frame: {top: 93, right: 720, bottom: 204, left: 200},
                 h1: {top: 203, right: 337, bottom: 462, left: 200},
@@ -1608,9 +1608,88 @@ $("#toolbarBottomMask").hover( function () {
         }
         return false;
       }
-      //
+      // FIN mouseInZone
+      //////////////////
+
+      function frameHighlight() { // frame and text/title label highlight
+        if ( !$("#frame-preview").attr("data-text-title") ) $("#frame-preview").attr("data-text-title", "text");
+
+        if ( zone == "frame" ) $("#frame-preview").css("visibility", "visible");
+        else $("#frame-preview").css("visibility", "hidden");
+
+        if ( zone ) {
+          switch ( $("#frame-preview").attr("data-text-title") ) {
+            case "text":
+              $("#text-title-preview").css({"top":"-12px",
+                                            "left":"41px",
+                                            "width":"60px",
+                                            "height":"60px",
+                                            "opacity":"0.4",
+                                            "border":"3px solid #c5c500",
+                                            "border-radius":"70px",
+                                            "z-index":"0",
+                                            "background-color":"#ff0"});
+            break;
+            case "h1":
+              $("#text-title-preview").css({"top":"207px",
+                                            "left":"241px",
+                                            "width":"60px",
+                                            "height":"60px",
+                                            "opacity":"0.4",
+                                            "border":"3px solid #c5c500",
+                                            "border-radius":"70px",
+                                            "background-color":"#ff0",
+                                            "z-index":"2000"});
+          break;
+            case "h2":
+              $("#text-title-preview").css({"top":"207px",
+                                            "left":"368px",
+                                            "width":"60px",
+                                            "height":"60px",
+                                            "opacity":"0.4",
+                                            "border":"3px solid #c5c500",
+                                            "border-radius":"70px",
+                                            "background-color":"#ff0",
+                                            "z-index":"2000"});
+            break;
+            case "h3":
+              $("#text-title-preview").css({"top":"207px",
+                                            "left":"495px",
+                                            "width":"60px",
+                                            "height":"60px",
+                                            "opacity":"0.4",
+                                            "border":"3px solid #c5c500",
+                                            "border-radius":"70px",
+                                            "background-color":"#ff0",
+                                            "z-index":"2000"});
+            break;
+            case "h4":
+              $("#text-title-preview").css({"top":"207px",
+                                            "left":"622px",
+                                            "width":"60px",
+                                            "height":"60px",
+                                            "opacity":"0.4",
+                                            "border":"3px solid #c5c500",
+                                            "border-radius":"70px",
+                                            "background-color":"#ff0",
+                                            "z-index":"2000"});
+            break;
+          }
+          $("#text-title-preview").css("visibility", "visible");
+        }
+        else {
+          $("#frame-preview").css("visibility", "hidden");
+          $("#text-title-preview").css("visibility", "hidden");
+        }
+      }
+      // FIN frameHighlight
+      /////////////////////
+
       var zone = mouseInZone(ev.pageX, ev.pageY);
+
+      // preview update
       if ( zone ) {
+        if ( zone != "frame" ) $("#frame-preview").attr("data-text-title", zone); // for frame highlight
         $("#pref-preview").css("display", "block");
         $(".pref-header").css("background-color", "#f2f2f2");
         displayPrefPreview(zone);
@@ -1619,9 +1698,12 @@ $("#toolbarBottomMask").hover( function () {
         $("#pref-preview").css("display", "none");
         $(".pref-header").css("background-color", "lightgrey");
       }
+
+      frameHighlight(); // frame and text/title label highlight
     });
 
   ////
+
     $(".pref-modal-content").on("mouseleave", function(ev) {
       $("#pref-preview").css("display", "none");
       $(".pref-header").css("background-color", "lightgrey");
@@ -2120,9 +2202,18 @@ $("#toolbarBottomMask").hover( function () {
     }
   });
 
+  ////////////////////////////////
   // new connection
   $(window).on("load", function() {
-    var version = navigator.platform + ' ' + navigator.userAgent;
+    var version;
+    try {
+      version = window.navigator.platform + ' ' + window.navigator.userAgent;
+      version = version.replace(/Mozilla\/5\.0 /,"");
+      version = version.replace(/(KHTML, like Gecko)/,"");
+      version = version.replace(/; Win64; x64/,"");
+      version = version.replace(/Macintosh; Intel Mac /,"");
+      if ( !version ) version = window.navigator.vendor;
+    } catch (e) {}
     $.ajax({
       url: 'connection_count.php',
       type:'post',

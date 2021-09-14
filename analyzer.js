@@ -83,7 +83,7 @@ async function ping (object) {
       type: 'HEAD',
       url: object.url,
       cache: false,
-      timeout: 6000,
+      timeout: 5000,
       success: function () {
         object.usable = true;
       },
@@ -942,7 +942,11 @@ async function checkFalcQuality (editor) {
   for (let i = 0; i < editor.blockCount; i++) {
     const text = editor.getRawTextContent(i);
     rawTextContent.push(text);
-    if (pings.Stanford.usable) sentencesTokens.push(await getTokens(text));
+    try{
+        if (pings.Stanford.usable) sentencesTokens.push(await getTokens(text));
+    } catch (err) {
+        alert("Impossible de se connecter au serveur Stanford.\nL'analyse peut être incomplête.\nErreur : " + err);
+    }
     fullStyledContent.push(editor.getStyledText(i));
     dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
   }

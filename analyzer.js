@@ -998,10 +998,15 @@ async function checkFalcQuality (editor) {
 async function getTokens (text) {
   return $.ajax({
     type: 'POST',
+    timeout: 5000,
     url: 'http://51.91.138.70:9000',
     data: text,
     dataType: 'json',
-    async: false
+    async: false,
+    error: function(xhr){
+        console.log("Erreur pour obtenir les tokens.");
+        console.log(xhr);
+    }
   });
 }
 

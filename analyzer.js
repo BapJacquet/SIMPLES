@@ -83,6 +83,7 @@ async function ping (object) {
       type: 'HEAD',
       url: object.url,
       cache: false,
+      timeout: 6000,
       success: function () {
         object.usable = true;
       },

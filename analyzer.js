@@ -1,3 +1,23 @@
+/*
+    This file is part of the LIREC program developped for the SIMPLES project.
+    It was developped by Baptiste Jacquet and Sébastien Poitrenaud for the
+    LUTIN-Userlab from 2018 to 2020.
+    Copyright (C) 2018  Baptiste Jacquet & Sébastien Poitrenaud
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 /* eslint no-unused-vars: ["warn", { "varsIgnorePattern": "analyzeAllEditorContent" }] */
 /* global $ */
 /* global CustomEvent */
@@ -63,6 +83,7 @@ async function ping (object) {
       type: 'HEAD',
       url: object.url,
       cache: false,
+      timeout: 5000,
       success: function () {
         object.usable = true;
       },
@@ -921,7 +942,11 @@ async function checkFalcQuality (editor) {
   for (let i = 0; i < editor.blockCount; i++) {
     const text = editor.getRawTextContent(i);
     rawTextContent.push(text);
-    if (pings.Stanford.usable) sentencesTokens.push(await getTokens(text));
+    try{
+        if (pings.Stanford.usable) sentencesTokens.push(await getTokens(text));
+    } catch (err) {
+        alert("Impossible de se connecter au serveur Stanford.\nL'analyse peut être incomplête.\nErreur : " + err);
+    }
     fullStyledContent.push(editor.getStyledText(i));
     dispatchProgressChanged(((i + 1) * 100) / editor.blockCount);
   }
@@ -973,10 +998,15 @@ async function checkFalcQuality (editor) {
 async function getTokens (text) {
   return $.ajax({
     type: 'POST',
+    timeout: 5000,
     url: 'http://51.91.138.70:9000',
     data: text,
     dataType: 'json',
-    async: false
+    async: false,
+    error: function(xhr){
+        console.log("Erreur pour obtenir les tokens.");
+        console.log(xhr);
+    }
   });
 }
 

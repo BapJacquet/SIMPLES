@@ -991,7 +991,7 @@ async function checkFalcQuality (editor) {
   result.veryImportantRulesSuccess = veryImportantRules;
   result.importantRulesSuccess = importantRules;
 
-  result.score = Math.round(((mainRules * 3 + veryImportantRules * 2 + importantRules) / (15 * 3 + 4 + 30)) * 100);
+  result.score = Math.round(((mainRules * 3 + veryImportantRules * 2 + importantRules) / (15 * 3 + 4 * 2 + 30)) * 100);
   return result;
 }
 

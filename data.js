@@ -28,7 +28,7 @@ setTimeout( function() {
   clearCanvas();
   //location.href = 'data.php';
   location.reload();
-}, 60000);
+}, 300000);
 
 window.addEventListener("beforeunload", clearCanvas);
 window.addEventListener("pagehide", clearCanvas);
@@ -105,8 +105,8 @@ $(document).ready(function () {
               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
               tickOptions: {
-                labelPosition: 'auto',
-                angle: 35,
+              //  labelPosition: 'auto',
+                angle: -60,
                 textColor: '#222',
               }
             },
@@ -163,8 +163,8 @@ $(document).ready(function () {
                   labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                   tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                   tickOptions: {
-                    labelPosition: 'auto',
-                    angle: 60,
+                    // labelPosition: 'auto',
+                    angle: -60,
                     textColor: '#222',
                   }
                 },

@@ -97,7 +97,7 @@ $(document).ready(function () {
           seriesColors: ['rgba(88, 205, 128, 1)'],
           title: {
             rendererOptions: {
-              text: '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Visites des 30 derniers mois</strong>',
+              text: '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Visites des 24 derniers mois</strong>',
               fontSize: '24px',
               textAlign: 'left',
               textColor: '#222'

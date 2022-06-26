@@ -96,8 +96,8 @@ function arrayResult($result, $colTitles) {
 	$data1 = json_encode(arrayResult($result, 0));
 	*/
 	$nbRows = $base->affected_rows;
-	if ( $nbRows < 30 ) $firstRow = 0;
-	else $firstRow = $nbRows - 30;
+	if ( $nbRows < 24 ) $firstRow = 0;
+	else $firstRow = $nbRows - 24;
 	$query = "SELECT left(date,7), count(*) FROM Connection GROUP BY left(date,7) LIMIT $firstRow,$nbRows";
 	$result = $base->query($query);
 	$data1 = json_encode(arrayResult($result, 0));

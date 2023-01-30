@@ -1745,6 +1745,8 @@ class Editor {
     };
     img.onerror = (e) => {
       alert("Erreur lors du chargement de l'image." + e);
+      console.log(src);
+      console.log(e);
       setTimeout(() => {
         img.src = 'img/placeholder.png';
       }, 1);

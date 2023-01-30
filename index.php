@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!--
+<?php
+/*
     This file is part of the LIREC program developped for the SIMPLES project.
     It was developped by Baptiste Jacquet and Sébastien Poitrenaud for the
     LUTIN-Userlab from 2018 to 2020.
@@ -17,10 +18,10 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
-<?php
+*/
+
 // Nomenclature : [Années depuis 2020].[Mois].[Jour].[Nombre dans la journée]
-$version = "2.06.26.1";
+$version = "3.01.30.1";
 ?>
 <html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>

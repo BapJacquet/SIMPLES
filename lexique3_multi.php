@@ -1,4 +1,5 @@
-<!--
+<?php
+/*
     This file is part of the LIREC program developped for the SIMPLES project.
     It was developped by Baptiste Jacquet and Sébastien Poitrenaud for the
     LUTIN-Userlab from 2018 to 2020.
@@ -16,8 +17,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
-<?php
+*/
 header('Content-Type: application/json');
 // à virer en production
 header("Access-Control-Allow-Origin: *");

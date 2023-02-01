@@ -792,7 +792,7 @@ async function getImagesForKeyword (keyword, options = { arasaac: true, sclera: 
         });
         console.log('Found ' + json.length + ' pictograms.');
         for (let i = 0; i < json.length; i++) {
-          result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i]._id}_300.png`);
+          result.arasaac.push(`https://static.arasaac.org/pictograms/${json[i]._id}/${json[i]._id}_300.png`);
         }
       } catch (ex) {
         console.log('Failed to get images from ARASAAC.');

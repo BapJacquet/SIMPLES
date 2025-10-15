@@ -21,8 +21,8 @@
 function connect()
 {
 	define("MYHOST","localhost");
-	define("MYUSER","simples");
-	define("MYPASS","lutins");
+	define("MYUSER","sioux"); //  simples
+	define("MYPASS","sioux");  //  lutins
 	define("MYBASE","simples");
 
 	$idcomW = new mysqli(MYHOST,MYUSER,MYPASS,MYBASE);

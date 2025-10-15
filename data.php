@@ -71,6 +71,10 @@ function arrayResult($result, $colTitles) {
 <h4 style="color: gray">&nbsp;Le FALC c'est simple</h4>
 <h4	style="color: gray">&nbsp;avec&nbsp;&nbsp;&nbsp;<img src="img/lirec-black_BgLight74.png" /"></h4>
 <?php
+//
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+//
 	require_once("connectMySQL.php");
 	$base=connect();
 	$query = 'SELECT COUNT(*) FROM Connection';

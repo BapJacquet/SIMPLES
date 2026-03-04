@@ -28,7 +28,11 @@
 /* global pdfMake */
 /* global Quill */
 
-var Keyboard = Quill.import('modules/keyboard');
+// Key codes for keyboard bindings (Quill 2 does not expose Keyboard.keys)
+var KEY_ENTER = 13;
+var KEY_UP = 38;
+var KEY_DOWN = 40;
+
 /**
  * Class containing all the functions and tools for the editor.
  */
@@ -119,7 +123,7 @@ class Editor {
         }
       },
       newBlock: {
-        key: Keyboard.keys.ENTER,
+        key: KEY_ENTER,
         prefix: /^$/,
         handler: () => {
           const s = this.getSelection();
@@ -137,14 +141,14 @@ class Editor {
         }
       },
       moveBlockDown: {
-        key: Keyboard.keys.DOWN, // ArrowDown
+        key: KEY_DOWN, // ArrowDown
         shortKey: true,
         handler: () => {
           this.moveBlockDown(this.getSelection().block);
         }
       },
       moveBlockUp: {
-        key: Keyboard.keys.UP, // ArrowUp
+        key: KEY_UP, // ArrowUp
         shortKey: true,
         handler: () => {
           this.moveBlockUp(this.getSelection().block);
@@ -342,19 +346,23 @@ class Editor {
 
   /**
    * Initializes quill for the editor.
+   * Compatible with Quill 2.x: uses StyleAttributor/ClassAttributor and Keyboard module reference.
    */
   initializeQuill () {
-    Quill.imports['modules/keyboard'].DEFAULTS = [];
+    const KeyboardModule = Quill.import('modules/keyboard');
+    if (KeyboardModule && typeof KeyboardModule.DEFAULTS !== 'undefined') {
+      KeyboardModule.DEFAULTS = [];
+    }
 
-    let Inline = Quill.import('blots/inline');
-    let Block = Quill.import('blots/block');
-    let Container = Quill.import('blots/container');
-    let Parchment = Quill.import('parchment');
+    const Parchment = Quill.import('parchment');
+    const StyleAttributorBase = Parchment.StyleAttributor || Parchment.Attributor?.Style;
+    const ClassAttributorBase = Parchment.ClassAttributor || Parchment.Attributor?.Class;
+    const scope = Parchment.Scope?.INLINE;
 
-    class ColorAttributor extends Parchment.Attributor.Style {
+    class ColorAttributor extends StyleAttributorBase {
       value (domNode) {
         let value = super.value(domNode);
-        if (!value.startsWith('rgb(')) return value;
+        if (!value || !value.startsWith('rgb(')) return value;
         value = value.replace(/^[^\d]+/, '').replace(/[^\d]+$/, '');
         const hex = value
           .split(',')
@@ -365,17 +373,14 @@ class Editor {
     }
 
     const ColorStyle = new ColorAttributor('color', 'color', {
-      scope: Parchment.Scope.INLINE
+      scope: scope
     });
-    const WrapClass = new Parchment.Attributor.Class('wrap', 'ql-wrap', {
-      scope: Parchment.Scope.INLINE
+    const WrapClass = new ClassAttributorBase('wrap', 'ql-wrap', {
+      scope: scope
     });
 
-    //Quill.register(BoldBlot);
-    //Quill.register(HeaderBlot);
     Quill.register(ColorStyle);
     Quill.register(WrapClass);
-    //Quill.register(IndentClass);
   }
 
   /**
